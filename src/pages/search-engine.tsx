@@ -1,5 +1,4 @@
 "use client";
-import Fuse from "fuse.js";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "@/components/filters/column-def";
 import { useTableStore } from "@/app/context/store";
