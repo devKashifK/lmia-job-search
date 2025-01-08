@@ -108,6 +108,17 @@ export const columnDefs = [
     ),
     cellRendererFramework: (params) => <span>{params.value}</span>,
   },
+  {
+    headerName: "NOC",
+    field: "2021 NOC",
+    headerComponentFramework: () => (
+      <div className="flex items-center gap-1">
+        <AreaChart className="ml-2 h-4 w-4 text-gray-500" />
+        NOC
+      </div>
+    ),
+    cellRendererFramework: (params) => <span>{params.value}</span>,
+  },
 ];
 
 export default function SearchEngine({ keywords }: { keywords: string }) {
