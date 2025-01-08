@@ -45,7 +45,9 @@ export const useTableStore = create((set, get) => ({
   },
 
   searchWithFuse: (keywords) => {
-    if (!keywords.trim()) {
+    const safeKeywords = keywords || "";
+
+    if (!safeKeywords.trim()) {
       set({ data: DATA, filteredData: DATA });
       return;
     }
