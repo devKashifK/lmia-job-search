@@ -19,7 +19,7 @@ export function Filter() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button className="flex justify-center items-center gap-2 shadow-none hover:bg-purple-800 hover:text-white bg-white text-black border-2 border-gray-200 hover:border-purple-600 rounded-sm transition-all duration-100">
+        <Button className="flex justify-center items-center gap-2 shadow-none hover:bg-purple-800 hover:text-white bg-purple-800  border-none border-gray-200 hover:border-purple-600 rounded-sm transition-all duration-100 text-white">
           <FilterIcon className="h-4 w-4" />
           Advance Filter
         </Button>

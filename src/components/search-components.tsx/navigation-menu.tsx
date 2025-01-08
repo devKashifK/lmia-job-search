@@ -14,11 +14,11 @@ import { Avatar, AvatarImage } from "../ui/avatar";
 
 export function NavigationMenu() {
   return (
-    <header className="border-b">
+    <header className=" border-b ">
       <div className="w-full flex justify-between items-center px-6">
         <div className="flex h-16 items-center  gap-8">
           <div className="flex items-center gap-2 font-semibold">
-            <div className="h-6 w-6 rounded bg-primary text-primary-foreground flex items-center justify-center text-sm">
+            <div className="h-6 w-6 rounded bg-purple-600 text-primary-foreground flex items-center justify-center text-sm">
               L
             </div>
             LIMA

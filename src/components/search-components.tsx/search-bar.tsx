@@ -52,13 +52,13 @@ export function SearchBar() {
 
   return (
     <div
-      className={`relative border-gray-200 border-2 rounded-sm h-9 overflow-hidden hover:border-purple-600 transition-all duration-300 ease-in-out ${
+      className={`relative   rounded-sm h-9 overflow-hidden  transition-all duration-300 ease-in-out ${
         isExpanded ? "w-80" : "w-60"
       }`}
     >
       <Input
         ref={InputRef}
-        className="peer  h-8 -pt-2 rounded-sm border-none focus:ring-0 bg-white focus-visible:ring-0 transition-all duration-300 ease-in-out"
+        className="peer outline-none  h-8 -pt-2 rounded-sm border-none focus:ring-0 bg-white focus-visible:ring-0 transition-all duration-300 ease-in-out"
         placeholder={isExpanded ? "Search with Noc code, Employee" : "Search"}
         type="text"
         onFocus={() => setIsExpanded(true)}

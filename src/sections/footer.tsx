@@ -30,7 +30,9 @@ const FOOTER_SECTIONS = [
 
 export function Footer() {
   return (
-    <footer className="bg-[#faf5ff] border-t border-purple-100 py-16">
+    <footer className="bg-[#faf5ff] relative border-t border-purple-100 py-16">
+      <div className="w-64 h-64 bg-gradient-to-br from-purple-500 to-purple-500 rounded-full opacity-20 absolute -top-24 -right-0 blur-3xl" />
+      <div className="w-64 h-64 bg-gradient-to-br from-blue-300 to-purple-400 rounded-full opacity-20 absolute bottom-0 left-0 blur-3xl" />
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
         <div>
           <div className="flex items-center space-x-2 mb-4">
