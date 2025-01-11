@@ -6,6 +6,14 @@ export const useTableStore = create((set, get) => ({
   data: [],
   filteredData: [],
   filters: {},
+  showFilterPanel: true,
+
+  setShowFilterPanel: (value) => {
+    const currentValue = get().showFilterPanel;
+    set({
+      showFilterPanel: typeof value === "boolean" ? value : !currentValue,
+    });
+  },
 
   setDataToInitial: () => set({ data: DATA, filteredData: DATA }),
 
@@ -43,7 +51,57 @@ export const useTableStore = create((set, get) => ({
       filteredData: newFilteredData,
     });
   },
+  clearAllFilters: () => {
+    set({ filters: {}, filteredData: get().data });
+  },
 
+  clearFilter: (columnKey) => {
+    const { filters, data } = get();
+
+    const updatedFilters = { ...filters };
+    delete updatedFilters[columnKey]; // Remove the filter for the specific column
+
+    const filteredData =
+      Object.keys(updatedFilters).length === 0
+        ? data
+        : data.filter((item) =>
+            Object.entries(updatedFilters).every(([key, values]) =>
+              values.has(item[key])
+            )
+          );
+
+    set({
+      filters: updatedFilters,
+      filteredData,
+    });
+  },
+  clearSingleFilter: (columnKey, value) => {
+    const { filters, data } = get();
+
+    if (!filters[columnKey]) return; // If the column has no filters, do nothing
+
+    const updatedFilters = { ...filters };
+    updatedFilters[columnKey].delete(value); // Remove the specific filter value
+
+    // If the column has no more filters, remove the column key
+    if (updatedFilters[columnKey].size === 0) {
+      delete updatedFilters[columnKey];
+    }
+
+    const filteredData =
+      Object.keys(updatedFilters).length === 0
+        ? data
+        : data.filter((item) =>
+            Object.entries(updatedFilters).every(([key, values]) =>
+              values.has(item[key])
+            )
+          );
+
+    set({
+      filters: updatedFilters,
+      filteredData,
+    });
+  },
   searchWithFuse: (keywords) => {
     const safeKeywords = keywords || "";
 

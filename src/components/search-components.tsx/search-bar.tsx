@@ -52,7 +52,7 @@ export function SearchBar() {
 
   return (
     <div
-      className={`relative   rounded-sm h-9 overflow-hidden  transition-all duration-300 ease-in-out ${
+      className={`relative  flex justify-center items-center  rounded-sm h-9 overflow-hidden  transition-all duration-300 ease-in-out ${
         isExpanded ? "w-80" : "w-60"
       }`}
     >

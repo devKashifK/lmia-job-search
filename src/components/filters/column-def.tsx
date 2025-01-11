@@ -45,80 +45,80 @@ export type LMIA = {
 export const columns: ColumnDef<LMIA>[] = [
   {
     accessorKey: "Employer_Name",
-    icon: <PersonStanding className="ml-2 h-4 w-4 text-gray-500" />,
+    icon: <PersonStanding className="mr-2 h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <PersonStanding className="ml-2 h-4 w-4 text-gray-500" />
+        <PersonStanding className="mr-2 h-5 w-5 text-black/50" />
         Employer Name
       </div>
     ),
   },
   {
     accessorKey: "City",
-    icon: <Satellite className="ml-2 h-4 w-4 text-gray-500" />,
+    icon: <Satellite className="mr-2 h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <Satellite className="ml-2 h-4 w-4 text-gray-500" />
+        <Satellite className="mr-2 h-5 w-5 text-black/50" />
         City
       </div>
     ),
   },
   {
     accessorKey: "Program",
-    icon: <DatabaseIcon className="ml-2 h-4 w-4 text-gray-500" />,
+    icon: <DatabaseIcon className="mr-2 h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <DatabaseIcon className="ml-2 h-4 w-4 text-gray-500" />
+        <DatabaseIcon className="mr-2 h-5 w-5 text-black/50" />
         Program
       </div>
     ),
   },
   {
     accessorKey: "Occupation Title",
-    icon: <Briefcase className="ml-2 h-4 w-4 text-gray-500" />,
+    icon: <Briefcase className="mr-2 h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <Briefcase className="ml-2 h-4 w-4 text-gray-500" />
+        <Briefcase className="mr-2 h-5 w-5 text-black/50" />
         Occupation
       </div>
     ),
   },
   {
     accessorKey: "Province/Territory",
-    icon: <Building className="ml-2 h-4 w-4 text-gray-500" />,
+    icon: <Building className="mr-2 h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <Building className="ml-2 h-4 w-4 text-gray-500" />
+        <Building className="mr-2 h-5 w-5 text-black/50" />
         Province
       </div>
     ),
   },
   {
     accessorKey: "Approved Positions",
-    icon: <PowerSquare className="ml-2 h-4 w-4 text-gray-500" />,
+    icon: <PowerSquare className="mr-2 h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <PowerSquare className="ml-2 h-4 w-4 text-gray-500" />
+        <PowerSquare className="mr-2 h-5 w-5 text-black/50" />
         Positions
       </div>
     ),
   },
   {
     accessorKey: "LMIA Year",
-    icon: <Map className="ml-2 h-4 w-4 text-gray-500" />,
+    icon: <Map className="mr-2 h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <Map className="ml-2 h-4 w-4 text-gray-500" />
+        <Map className="mr-2 h-5 w-5 text-black/50" />
         LMIA
       </div>
     ),
   },
   {
     accessorKey: "Postal_Code",
-    icon: <AreaChart className="ml-2 h-4 w-4 text-gray-500" />,
+    icon: <AreaChart className="mr-2 h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <AreaChart className="ml-2 h-4 w-4 text-gray-500" />
+        <AreaChart className="mr-2 h-5 w-5 text-black/50" />
         Postal
       </div>
     ),

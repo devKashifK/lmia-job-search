@@ -1,6 +1,6 @@
 "use client";
 
-import { FilterIcon, FilterX, X } from "lucide-react";
+import { FilterX, SlidersHorizontal, X } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -10,19 +10,19 @@ import {
 import { useTableStore } from "@/app/context/store";
 import { useMemo, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
 import { columns } from "./column-def";
 import { Checkbox } from "../ui/checkbox";
+import { useFilterAttributes } from "@/hooks/use-attribute";
 
 export function Filter() {
   const [open, setOpen] = useState(false);
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button className="flex justify-center items-center gap-2 shadow-none hover:bg-purple-800 hover:text-white bg-purple-800  border-none border-gray-200 hover:border-purple-600 rounded-sm transition-all duration-100 text-white">
-          <FilterIcon className="h-4 w-4" />
+        <div className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-red-600 cursor-pointer">
+          <SlidersHorizontal className="w-4 h-4 mr-2" />
           Advance Filter
-        </Button>
+        </div>
       </PopoverTrigger>
       <PopoverContent
         onInteractOutside={(e) => {
@@ -93,31 +93,4 @@ export const FilterAttribute = ({ column }) => {
       </AccordionContent>
     </AccordionItem>
   );
-};
-
-const useFilterAttributes = (key) => {
-  const { data } = useTableStore();
-
-  console.log(data, "CheckData");
-
-  const attributes = useMemo(() => {
-    if (!Array.isArray(data) || data.length === 0) {
-      // Return an empty array if data is not valid or empty
-      return [];
-    }
-
-    const countMap = data.reduce((acc, item) => {
-      const value = item[key] || "Unknown"; // Default to "Unknown" for missing values
-      acc[value] = (acc[value] || 0) + 1;
-      return acc;
-    }, {});
-
-    return Object.entries(countMap).map(([value, count]) => ({
-      value,
-      count,
-    }));
-  }, [key, data]);
-
-  console.log(attributes, "CheckAttr");
-  return attributes;
 };

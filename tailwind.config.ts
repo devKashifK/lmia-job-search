@@ -14,6 +14,7 @@ export default {
         sans: ["var(--font-mona-sans)", "sans-serif"], // Use Mona Sans as the default sans font
       },
       colors: {
+        active: "#f1f3f3",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

@@ -18,6 +18,8 @@ import {
   Map,
   AreaChart,
 } from "lucide-react";
+import FilterPanel from "@/components/filters/filter-panel";
+import { AnimatePresence, motion } from "framer-motion";
 
 export const columnDefs = [
   {
@@ -121,15 +123,83 @@ export const columnDefs = [
   },
 ];
 
+// export default function SearchEngine({ keywords }: { keywords: string }) {
+//   const { searchWithFuse, filteredData } = useTableStore();
+//   const fuseSearch = useMemo(
+//     () => searchWithFuse(keywords),
+//     [keywords, searchWithFuse]
+//   );
+
+//   const showFilterPanel = useTableStore((state) => state.showFilterPanel);
+//   return (
+//     <div className="w-full py-6 px-6 flex gap-4">
+//       {showFilterPanel && (
+//         <div className="w-1/6">
+//           <FilterPanel />
+//         </div>
+//       )}
+//       <div className="w-5/6">
+//         <DataTable columnDefs={columnDefs} rowData={filteredData} />
+//       </div>
+//     </div>
+//   );
+// }
+
 export default function SearchEngine({ keywords }: { keywords: string }) {
   const { searchWithFuse, filteredData } = useTableStore();
   const fuseSearch = useMemo(
     () => searchWithFuse(keywords),
     [keywords, searchWithFuse]
   );
+
+  const showFilterPanel = useTableStore((state) => state.showFilterPanel);
+
   return (
     <div className="w-full py-6 px-6">
-      <DataTable columnDefs={columnDefs} rowData={filteredData} />
+      <div className="flex gap-4 relative">
+        <AnimatePresence initial={false}>
+          {showFilterPanel && (
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{
+                width: "300px",
+                opacity: 1,
+                transition: {
+                  duration: 0.3,
+                  ease: "easeOut",
+                },
+              }}
+              exit={{
+                width: 0,
+                opacity: 0,
+                transition: {
+                  duration: 0.3,
+                  ease: "easeIn",
+                },
+              }}
+              className="shrink-0"
+            >
+              <div className="w-[300px]">
+                <FilterPanel />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.div
+          layout
+          className="flex-1"
+          initial={false}
+          animate={{
+            transition: {
+              duration: 0.3,
+              ease: "easeOut",
+            },
+          }}
+        >
+          <DataTable columnDefs={columnDefs} rowData={filteredData} />
+        </motion.div>
+      </div>
     </div>
   );
 }
@@ -149,14 +219,14 @@ const DataTable = ({ rowData, columnDefs }) => {
       }}
     >
       <AgGridReact
-        rowData={rowData} // Table data
-        columnDefs={columnDefs} // Column definitions
+        rowData={rowData}
+        columnDefs={columnDefs}
         defaultColDef={{
-          sortable: true, // Enable sorting
-          resizable: true, // Allow column resizing
+          sortable: true,
+          resizable: true,
           headerClass:
             "bg-purple-500 text-white text-sm font-semibold uppercase",
-          cellClass: "text-gray-800 text-sm font-normal px-2 py-2", // Style for cells
+          cellClass: "text-gray-800 text-sm font-normal px-2 py-2",
           flex: 1,
         }}
         rowClass="even:bg-gray-50 hover:bg-purple-100"
@@ -164,7 +234,7 @@ const DataTable = ({ rowData, columnDefs }) => {
         modules={[ClientSideRowModelModule]}
         overlayNoRowsTemplate={
           '<span class="text-gray-500">No data available</span>'
-        } // Custom message for no data
+        }
       />
     </div>
   );
