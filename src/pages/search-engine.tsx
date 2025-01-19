@@ -21,7 +21,6 @@ import {
 import FilterPanel from "@/components/filters/filter-panel";
 import { AnimatePresence, motion } from "framer-motion";
 import DynamicChart from "@/components/charts/chart";
-import PremiumTable from "./table";
 
 export const columnDefs = [
   {
