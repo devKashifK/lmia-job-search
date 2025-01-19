@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import IconInput from "../ui/input-with-icon";
 import { Checkbox } from "../ui/checkbox";
-import { useTableStore } from "@/app/context/store";
+import { useTableStore } from "@/context/store";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger } from "../ui/tooltip";
 import { TooltipContent, TooltipProvider } from "@radix-ui/react-tooltip";
@@ -56,11 +56,11 @@ export default function FilterPanel() {
             <Tooltip>
               <TooltipTrigger>
                 <ListCollapse
-                  className="w-5 h-5 text-red-600 cursor-pointer"
+                  className="w-5 h-5 text-blue-600 cursor-pointer"
                   onClick={setShowFilterPanel}
                 />
               </TooltipTrigger>
-              <TooltipContent className="bg-white shadow-xl px-3 py-1 text-red-600 rounded-md z-[1000000000]  text-sm">
+              <TooltipContent className="bg-white shadow-xl px-3 py-1 text-blue-600 rounded-md z-[1000000000]  text-sm">
                 Close Filter
               </TooltipContent>
             </Tooltip>

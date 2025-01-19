@@ -1,7 +1,7 @@
 "use client";
 // import { DataTable } from "@/components/ui/data-table";
 
-import { useTableStore } from "@/app/context/store";
+import { useTableStore } from "@/context/store";
 import { useMemo, useState } from "react";
 import { AgGridReact } from "@ag-grid-community/react";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import FilterPanel from "@/components/filters/filter-panel";
 import { AnimatePresence, motion } from "framer-motion";
+import DynamicChart from "@/components/charts/chart";
+import PremiumTable from "./table";
 
 export const columnDefs = [
   {
@@ -155,7 +157,20 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
   const showFilterPanel = useTableStore((state) => state.showFilterPanel);
 
   return (
-    <div className="w-full py-6 px-6">
+    <div className="w-full py-6 px-6 flex flex-col gap-4">
+      <div className="flex gap-2">
+        <DynamicChart
+          data={filteredData}
+          keyName={"Occupation"}
+          active={"bar"}
+        />
+        <DynamicChart
+          data={filteredData}
+          keyName={"2021 NOC"}
+          active={"line"}
+        />
+        <DynamicChart data={filteredData} keyName={"Employer"} active={"bar"} />
+      </div>
       <div className="flex gap-4 relative">
         <AnimatePresence initial={false}>
           {showFilterPanel && (
@@ -198,6 +213,7 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
           }}
         >
           <DataTable columnDefs={columnDefs} rowData={filteredData} />
+          {/* <PremiumTable /> */}
         </motion.div>
       </div>
     </div>

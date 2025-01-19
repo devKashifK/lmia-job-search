@@ -14,7 +14,7 @@ import { Button } from "../ui/button";
 import { SearchBar } from "./search-bar";
 
 import { Filter } from "../filters/filter";
-import { useTableStore } from "@/app/context/store";
+import { useTableStore } from "@/context/store";
 import { cn } from "@/lib/utils";
 
 export default function Header({ keywords }: { keywords: string }) {
@@ -26,21 +26,21 @@ export default function Header({ keywords }: { keywords: string }) {
       <div className="flex space-x-4">
         <a
           href="#"
-          className="flex items-center px-3 py-3 text-sm text-red-600 border-b-2 border-red-600"
+          className="flex items-center px-3 py-3 text-sm text-blue-800 border-b-2 border-blue-800"
         >
           <SearchCheck className="w-4 h-4 mr-2" />
           <div className="flex gap-2 justify-center items-center">
             <span>
               {keywords} {"  "} -{" "}
             </span>
-            <span className="bg-red-200 text-red-600 text-xs rounded-sm w-6 h-6 relative flex justify-center items-center">
+            <span className="bg-blue-200 text-blue-800 text-xs rounded-sm w-6 h-6 relative flex justify-center items-center">
               {filteredData.length}
             </span>
           </div>
         </a>
         {/* <a
           href="#"
-          className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-red-600"
+          className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-blue-800"
         >
           <Building2 className="w-4 h-4 mr-2" />
           <span>Companies</span>
@@ -48,8 +48,8 @@ export default function Header({ keywords }: { keywords: string }) {
        */}
         <div
           className={cn(
-            "flex items-center px-3 py-3 text-sm text-gray-600 hover:text-red-600 cursor-pointer",
-            showFilterPanel && "text-red-600 border-b-2 border-red-600"
+            "flex items-center px-3 py-3 text-sm text-gray-600 hover:text-blue-800 cursor-pointer",
+            showFilterPanel && "text-blue-800 border-b-2 border-blue-800"
           )}
           onClick={setShowFilterPanel}
         >
@@ -58,14 +58,14 @@ export default function Header({ keywords }: { keywords: string }) {
         </div>
         <a
           href="#"
-          className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-red-600"
+          className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-blue-800"
         >
           <Binoculars className="w-4 h-4 mr-2" />
           <span>Recent Searches</span>
         </a>
         <a
           href="#"
-          className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-red-600"
+          className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-blue-800"
         >
           <BookmarkMinus className="w-4 h-4 mr-2" />
           <span>Saved Searches</span>
@@ -83,7 +83,7 @@ export default function Header({ keywords }: { keywords: string }) {
 
 export function Export() {
   return (
-    <div className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-red-600 cursor-pointer">
+    <div className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-blue-800 cursor-pointer">
       <FileDown className="w-4 h-4 mr-2" />
       Export
     </div>
@@ -92,7 +92,7 @@ export function Export() {
 
 export function SaveSearch() {
   return (
-    <div className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-red-600 cursor-pointer">
+    <div className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-blue-800 cursor-pointer">
       <Save className="w-4 h-4 mr-2" />
       Save
     </div>

@@ -1,4 +1,4 @@
-import { useTableStore } from "@/app/context/store";
+import { useTableStore } from "@/context/store";
 import { useMemo } from "react";
 
 export const useFilterAttributes = (key) => {

@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { useTableStore } from "@/app/context/store";
+import { useTableStore } from "@/context/store";
 import { useMemo, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { columns } from "./column-def";
@@ -19,7 +19,7 @@ export function Filter() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-red-600 cursor-pointer">
+        <div className="flex items-center px-3 py-3 text-sm text-gray-600 hover:text-blue-800 cursor-pointer">
           <SlidersHorizontal className="w-4 h-4 mr-2" />
           Advance Filter
         </div>
@@ -36,10 +36,10 @@ export function Filter() {
             <span>Filter</span>
           </div>
           <div
-            className="bg-red-400/60 border rounded-sm cursor-pointer px-1 py-0.5 border-red-800"
+            className="bg-blue-400/60 border rounded-sm cursor-pointer px-1 py-0.5 border-blue-800"
             onClick={() => setOpen(false)}
           >
-            <X className="h-4 w-4 text-red-800" />
+            <X className="h-4 w-4 text-blue-800" />
           </div>
         </div>
         <div className="">

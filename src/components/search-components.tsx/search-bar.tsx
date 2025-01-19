@@ -3,39 +3,21 @@ import { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { Search, X } from "lucide-react";
 import Fuse from "fuse.js";
-import { useTableStore } from "@/app/context/store";
+import { useTableStore } from "@/context/store";
 
 export function SearchBar() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState(null);
   const debouncedQuery = useDebounce(searchQuery, 300);
-  const { data, setData, setDataToInitial } = useTableStore();
   const InputRef = useRef(null);
+  const { searchWithFuse } = useTableStore();
 
-  const fuse = new Fuse(data, {
-    keys: [
-      "Province/Territory",
-      "Program",
-      "Employer",
-      "Address",
-      "Occupation",
-      "2021 NOC",
-      "City",
-      "Postal_Code",
-      "Occupation Title",
-      "Employer_Name",
-    ],
-    threshold: 0.4,
-  });
-
-  const handleClear = () => {
-    setDataToInitial();
-    InputRef.current.value = "";
-  };
+  // const handleClear = () => {
+  //   InputRef.current.value = "";
+  // };
 
   const handleSearch = () => {
-    const results = fuse.search(searchQuery).map((result) => result.item);
-    setData(results);
+    searchWithFuse(searchQuery);
   };
 
   const handleKeyPress = (e) => {
@@ -52,13 +34,13 @@ export function SearchBar() {
 
   return (
     <div
-      className={`relative  flex justify-center items-center  rounded-sm h-9 overflow-hidden  transition-all duration-300 ease-in-out ${
+      className={`relative  flex justify-center items-center  border rounded-sm h-9 overflow-hidden  transition-all duration-300 ease-in-out ${
         isExpanded ? "w-80" : "w-60"
       }`}
     >
       <Input
         ref={InputRef}
-        className="peer outline-none  h-8 -pt-2 rounded-sm border-none focus:ring-0 bg-white focus-visible:ring-0 transition-all duration-300 ease-in-out"
+        className="peer outline-none  h-9 -pt-2 rounded-sm border-none focus:ring-0   focus-visible:ring-0 transition-all duration-300 ease-in-out"
         placeholder={isExpanded ? "Search with Noc code, Employee" : "Search"}
         type="text"
         onFocus={() => setIsExpanded(true)}
@@ -83,7 +65,7 @@ export function SearchBar() {
             strokeWidth={2}
             aria-hidden="true"
             className="cursor-pointer"
-            onClick={() => handleClear()}
+            // onClick={() => handleClear()}
           />
         ) : (
           <Search size={16} strokeWidth={2} aria-hidden="true" />

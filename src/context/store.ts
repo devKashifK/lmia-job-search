@@ -59,7 +59,7 @@ export const useTableStore = create((set, get) => ({
     const { filters, data } = get();
 
     const updatedFilters = { ...filters };
-    delete updatedFilters[columnKey]; // Remove the filter for the specific column
+    delete updatedFilters[columnKey];
 
     const filteredData =
       Object.keys(updatedFilters).length === 0

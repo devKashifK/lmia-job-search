@@ -47,6 +47,8 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
+    "echarts": "^5.6.0",
+    "echarts-for-react": "^3.0.2",
     "embla-carousel-autoplay": "^8.5.1",
     "embla-carousel-react": "^8.5.1",
     "framer-motion": "^11.15.0",
