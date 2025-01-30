@@ -1,12 +1,34 @@
 import { create } from "zustand";
 import Fuse from "fuse.js";
 import { DATA } from "@/data/data";
+import db from "@/db";
+import { toast } from "@/hooks/use-toast";
 
-export const useTableStore = create((set, get) => ({
+interface TableState {
+  data: any[];
+  filteredData: any[];
+  filters: Record<string, Set<string>>;
+  showFilterPanel: boolean;
+  currentSearchId: string | null;
+  updateSearchSaved: (searchId: string, saved: boolean) => Promise<void>;
+
+  setShowFilterPanel: (value: boolean) => void;
+  setDataToInitial: () => void;
+  setFilteredData: (newData: any[]) => void;
+  updateFilter: (columnKey: string, value: string) => void;
+  clearAllFilters: () => void;
+  clearFilter: (columnKey: string) => void;
+  clearSingleFilter: (columnKey: string, value: string) => void;
+  searchWithFuse: (keywords: string) => void;
+  setCurrentSearchId: (id: string) => void;
+}
+
+export const useTableStore = create<TableState>((set, get) => ({
   data: [],
   filteredData: [],
   filters: {},
   showFilterPanel: true,
+  currentSearchId: null,
 
   setShowFilterPanel: (value) => {
     const currentValue = get().showFilterPanel;
@@ -129,5 +151,21 @@ export const useTableStore = create((set, get) => ({
     const result = fuse.search(keywords).map((res) => res.item);
 
     set({ data: result, filteredData: result });
+  },
+  setCurrentSearchId: (id) => set({ currentSearchId: id }),
+  updateSearchSaved: async (searchId, saved) => {
+    try {
+      const { error } = await db
+        .from("searches")
+        .update({ save: saved })
+        .eq("search_id", searchId);
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error("Error updating search:", error);
+      throw error;
+    }
   },
 }));

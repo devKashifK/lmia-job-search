@@ -3,19 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --font-mona-sans: "Mona Sans", sans-serif;
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
 }
 
-body {
-  @apply font-sans;
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
   }
 }
 
@@ -46,14 +43,6 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -80,14 +69,6 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -100,66 +81,78 @@ body {
   }
 }
 
-@layer utilities {
-  .pretty-scroll::-webkit-scrollbar {
-    width: 4px;
-    height: 10px;
-  }
+/* Import nProgress styles */
+@import "nprogress/nprogress.css";
 
-  .pretty-scroll::-webkit-scrollbar-track {
-    border-radius: 100vh;
-    background: #1e40af;
-  }
+/* Optional: Hide the default spinner */
 
-  .pretty-scroll::-webkit-scrollbar-thumb {
-    background: #1e40af;
-    border-radius: 10vh;
-    border: 2px solid #1e40af;
-  }
+/* nprogress-custom.css */
 
-  .pretty-scroll::-webkit-scrollbar-thumb:hover {
-    background: #1e40af;
-  }
+/* Change the color of the progress bar */
+#nprogress .bar {
+  background: #ea580c !important; /* Green color */
+  height: 4px; /* Increase thickness */
 }
 
-.ag-theme-alpine .ag-header-cell {
-  background-color: #1e40af !important; /* Tailwind's purple-600 */
-  color: white !important;
-  font-size: 0.875rem; /* Tailwind's text-sm */
-  font-weight: bold;
-  transition: background-color 0.2s ease-in-out;
+/* Customize the spinner (if enabled) */
+#nprogress .spinner-icon {
+  border-top-color: #ea580c !important;
+  border-left-color: #ea580c !important;
 }
 
-/* Hover style */
-.ag-theme-alpine .ag-header-cell:hover {
-  background-color: #1e40af !important; /* Tailwind's purple-800 */
-  cursor: pointer !important;
+/* Hide the spinner if not needed */
+#nprogress .spinner {
+  display: none !important;
 }
 
-.ag-header {
+/* Add a shadow effect below the progress bar */
+#nprogress .bar {
+  box-shadow: 0 0 10px #ea580c, 0 0 5px #4caf50 !important;
+}
+
+/* Optional: Add a fade-in effect */
+#nprogress {
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+}
+
+/* Map Styles */
+.leaflet-container {
+  height: 100%;
   width: 100%;
 }
 
-.ag-header-row {
-  display: flex;
-  justify-content: space-between;
-}
-::-webkit-scrollbar {
-  width: 4px;
-  height: 10px;
+/* Custom Scrollbar Styles */
+@layer base {
+  /* Style the scrollbar */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 10px;
+  }
+
+  /* Scrollbar track (background) */
+  ::-webkit-scrollbar-track {
+    background: rgb(0 0 0 / 0.1);
+  }
+
+  /* Scrollbar thumb (slider) */
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(249 115 22 / 0.5); /* orange-500 with opacity */
+    border-radius: 0px;
+  }
+
+  /* Scrollbar thumb hover effect */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(251 146 60); /* orange-400 solid */
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: #1e40af;
-  border-radius: 10vh;
-  border: 2px solid #1e40af;
+/* Hide scrollbar class */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #1e40af;
-}
-
-::-webkit-scrollbar-track {
-  border-radius: 100vh;
-  background: #1e40af;
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }

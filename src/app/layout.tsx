@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Mona_Sans } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
+import { SessionProvider } from "@/hooks/use-session";
+import ReactQueryProvider from "./react-query-provider";
+import { SheetProvider } from "@/context/sheet-context";
 
 const monaSans = Mona_Sans({
   variable: "--font-geist-sans",
@@ -19,7 +23,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${monaSans.variable} antialiased`}>{children}</body>
+      <body className={`${monaSans.variable} antialiased`}>
+        <SessionProvider>
+          <ReactQueryProvider>
+            <SheetProvider>
+              {children}
+              <Toaster />
+            </SheetProvider>
+          </ReactQueryProvider>
+        </SessionProvider>
+      </body>
     </html>
   );
 }

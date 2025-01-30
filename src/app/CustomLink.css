@@ -1,0 +1,23 @@
+/* Import nProgress styles */
+@import "nprogress/nprogress.css";
+
+/* Custom styling for the progress bar */
+#nprogress .bar {
+  background: linear-gradient(to right, #4776e6, #8e54e9, #ff4081) !important;
+  height: 3px !important;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px #4776e6, 0 0 5px #8e54e9 !important;
+}
+
+/* Hide the spinner */
+#nprogress .spinner {
+  display: none !important;
+}
+
+/* Fix SVG properties to use camelCase */
+#nprogress .spinner-icon {
+  border-top-color: #4776e6;
+  border-left-color: #4776e6;
+}

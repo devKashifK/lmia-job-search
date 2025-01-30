@@ -191,7 +191,7 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
                   ease: "easeIn",
                 },
               }}
-              className="shrink-0"
+              className="shrink-0 relative z-40"
             >
               <div className="w-[300px]">
                 <FilterPanel />
@@ -202,7 +202,7 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
 
         <motion.div
           layout
-          className="flex-1"
+          className="flex-1 relative z-30"
           initial={false}
           animate={{
             transition: {

@@ -1,92 +1,47 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Input } from "../ui/input";
 import { Search, X } from "lucide-react";
-import Fuse from "fuse.js";
 import { useTableStore } from "@/context/store";
 
 export function SearchBar() {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(null);
-  const debouncedQuery = useDebounce(searchQuery, 300);
-  const InputRef = useRef(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const { searchWithFuse } = useTableStore();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // const handleClear = () => {
-  //   InputRef.current.value = "";
-  // };
-
-  const handleSearch = () => {
-    searchWithFuse(searchQuery);
+  const handleSearch = (value: string) => {
+    setSearchQuery(value);
+    searchWithFuse(value);
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
+  const handleClear = () => {
+    setSearchQuery("");
+    searchWithFuse("");
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   };
-
-  useEffect(() => {
-    if (searchQuery) {
-      handleSearch(debouncedQuery);
-    }
-  }, [debouncedQuery]);
 
   return (
-    <div
-      className={`relative  flex justify-center items-center  border rounded-sm h-9 overflow-hidden  transition-all duration-300 ease-in-out ${
-        isExpanded ? "w-80" : "w-60"
-      }`}
-    >
-      <Input
-        ref={InputRef}
-        className="peer outline-none  h-9 -pt-2 rounded-sm border-none focus:ring-0   focus-visible:ring-0 transition-all duration-300 ease-in-out"
-        placeholder={isExpanded ? "Search with Noc code, Employee" : "Search"}
-        type="text"
-        onFocus={() => setIsExpanded(true)}
-        onBlur={(e) => {
-          if (!e.target.value) {
-            setIsExpanded(false);
-          }
-        }}
-        onChange={(e) => {
-          if (e.target.value) {
-            setIsExpanded(true);
-            setSearchQuery(e.target.value);
-          }
-        }}
-        onKeyDown={handleKeyPress}
-      />
-
-      <div className=" absolute inset-y-0  flex items-center justify-center right-3 text-muted-foreground/80  border-none focus:ring-0 cursor-pointer">
-        {isExpanded ? (
-          <X
-            size={16}
-            strokeWidth={2}
-            aria-hidden="true"
-            className="cursor-pointer"
-            // onClick={() => handleClear()}
-          />
-        ) : (
-          <Search size={16} strokeWidth={2} aria-hidden="true" />
+    <div className="relative w-64">
+      <div className="relative flex items-center">
+        <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+        <input
+          ref={inputRef}
+          type="text"
+          value={searchQuery}
+          onChange={(e) => handleSearch(e.target.value)}
+          placeholder="Search..."
+          className="w-full h-7 pl-8 pr-8 text-xs bg-zinc-50 border border-zinc-200 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500/20 focus:border-orange-500/30"
+        />
+        {searchQuery && (
+          <button
+            onClick={handleClear}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         )}
       </div>
     </div>
   );
-}
-
-export function useDebounce(value: string, delay: number): string {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
 }
