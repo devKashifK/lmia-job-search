@@ -1,5 +1,7 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
+import dynamic from "next/dynamic";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -10,105 +12,17 @@ import UserDropdown from "@/components/ui/user-dropdown";
 import Footer from "@/pages/homepage/footer";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import dynamic from "next/dynamic";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
 
-const MapContainer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-const TileLayer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const Marker = dynamic(
-  () => import("react-leaflet").then((mod) => mod.Marker),
-  { ssr: false }
-);
-const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
-  ssr: false,
-});
+// Dynamically import the Map component with SSR disabled
+const DynamicMap = dynamic(() => import("./Map"), { ssr: false });
 
 export default function ContactPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+
   const { session } = useSession();
-  const [markerIcon, setMarkerIcon] = useState<any>(null);
-  const mapRef = useRef<HTMLDivElement>(null);
-
-  const LONDON_CENTER: [number, number] = [51.5074, -0.1278];
-  const ZOOM_LEVEL = 13;
-
-  // Initialize marker icon
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Fix Leaflet's default icon path issues
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconUrl: "/marker-icon.png",
-        iconRetinaUrl: "/marker-icon-2x.png",
-        shadowUrl: "/marker-shadow.png",
-      });
-
-      setMarkerIcon(
-        new L.Icon({
-          iconUrl: "/marker-icon.png",
-          iconRetinaUrl: "/marker-icon-2x.png",
-          shadowUrl: "/marker-shadow.png",
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-        })
-      );
-    }
-  }, []);
-
-  // Initialize and cleanup map
-  useEffect(() => {
-    if (typeof window === "undefined" || !mapRef.current) return;
-
-    // Fix Leaflet's default icon path issues
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconUrl: "/marker-icon.png",
-      iconRetinaUrl: "/marker-icon-2x.png",
-      shadowUrl: "/marker-shadow.png",
-    });
-
-    // Initialize map
-    const map = L.map(mapRef.current).setView(LONDON_CENTER, ZOOM_LEVEL);
-
-    // Add tile layer
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
-
-    // Add marker
-    L.marker(LONDON_CENTER).addTo(map).bindPopup(`
-        <div class="text-center">
-          <h3 class="font-semibold">SearchPro London Office</h3>
-          <p class="text-sm text-gray-600">
-            123 Business Street<br />
-            London, SW1A 1AA
-          </p>
-        </div>
-      `);
-
-    // Force map to update its size
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 250);
-
-    // Cleanup
-    return () => {
-      map.remove();
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600">
@@ -137,13 +51,13 @@ export default function ContactPage() {
             <>
               <CustomLink
                 href="/sign-in"
-                className=" text-white hover:underline"
+                className="text-white hover:underline"
               >
                 Sign In
               </CustomLink>
               <CustomLink
                 href="/sign-up"
-                className=" text-white hover:underline"
+                className="text-white hover:underline"
               >
                 Sign Up
               </CustomLink>
@@ -198,6 +112,7 @@ export default function ContactPage() {
           </p>
         </div>
 
+        {/* Bottom SVG Wave */}
         <div className="absolute bottom-0 left-0 w-full">
           <svg
             viewBox="0 0 1440 200"
@@ -360,15 +275,8 @@ export default function ContactPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div
-                ref={mapRef}
-                style={{
-                  height: "400px",
-                  width: "100%",
-                  position: "relative",
-                  zIndex: 0,
-                }}
-              />
+              {/* Render the dynamic, client-only Map */}
+              <DynamicMap />
             </CardContent>
           </Card>
         </div>
