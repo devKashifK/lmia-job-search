@@ -32,36 +32,27 @@ const CustomLink: React.FC<CustomLinkProps> = ({
           </div>
         `,
       });
-
-      const handleRouteChangeStart = () => NProgress.start();
-      const handleRouteChangeComplete = () => NProgress.done();
-
-      // Listen to navigation start and complete using push or replace
-      const originalPush = router.push;
-      const originalReplace = router.replace;
-
-      router.push = async (...args) => {
-        handleRouteChangeStart();
-        await originalPush(...args);
-        handleRouteChangeComplete();
-      };
-
-      router.replace = async (...args) => {
-        handleRouteChangeStart();
-        await originalReplace(...args);
-        handleRouteChangeComplete();
-      };
-
-      return () => {
-        // Cleanup overrides
-        router.push = originalPush;
-        router.replace = originalReplace;
-      };
     }
-  }, [router]);
+  }, []);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    NProgress.start();
+
+    if (onClick) {
+      onClick();
+    }
+
+    router.push(href);
+
+    // Add a small delay before completing the progress bar
+    setTimeout(() => {
+      NProgress.done();
+    }, 500);
+  };
 
   return (
-    <Link href={href} className={className} onClick={onClick}>
+    <Link href={href} className={className} onClick={handleClick}>
       {children}
     </Link>
   );

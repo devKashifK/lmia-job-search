@@ -2,7 +2,7 @@
 // import { DataTable } from "@/components/ui/data-table";
 
 import { useTableStore } from "@/context/store";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { AgGridReact } from "@ag-grid-community/react";
 import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
 import "@ag-grid-community/styles/ag-grid.css";
@@ -21,106 +21,71 @@ import {
 import FilterPanel from "@/components/filters/filter-panel";
 import { AnimatePresence, motion } from "framer-motion";
 import DynamicChart from "@/components/charts/chart";
+import { DataTable } from "@/components/ui/custom-table";
 
-export const columnDefs = [
+const columns = [
   {
-    headerName: "Employer Name",
     field: "Employer_Name",
-    headerComponentFramework: () => (
-      <div className="flex items-center gap-1">
-        <PersonStanding className="ml-2 h-4 w-4 text-gray-500" />
-        Employer Name
-      </div>
-    ),
-    cellRendererFramework: (params) => <span>{params.value}</span>,
+    headerName: "Employer Name",
+    headerIcon: <PersonStanding className="w-4 h-4 text-orange-600" />,
+    width: 180,
+    minWidth: 150,
   },
   {
-    headerName: "City",
     field: "City",
-    headerComponentFramework: () => (
-      <div className="flex items-center gap-1">
-        <Satellite className="ml-2 h-4 w-4 text-gray-500" />
-        City
-      </div>
-    ),
-    cellRendererFramework: (params) => <span>{params.value}</span>,
+    headerName: "City",
+    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    width: 120,
+    minWidth: 100,
   },
   {
-    headerName: "Program",
     field: "Program",
-    headerComponentFramework: () => (
-      <div className="flex items-center gap-1">
-        <DatabaseIcon className="ml-2 h-4 w-4 text-gray-500" />
-        Program
-      </div>
-    ),
-    cellRendererFramework: (params) => <span>{params.value}</span>,
+    headerName: "Program",
+    headerIcon: <DatabaseIcon className="w-4 h-4 text-orange-600" />,
+    width: 120,
+    minWidth: 100,
   },
   {
-    headerName: "Occupation",
     field: "Occupation Title",
-    headerComponentFramework: () => (
-      <div className="flex items-center gap-1">
-        <Briefcase className="ml-2 h-4 w-4 text-gray-500" />
-        Occupation
-      </div>
-    ),
-    cellRendererFramework: (params) => <span>{params.value}</span>,
+    headerName: "Occupation",
+    headerIcon: <Briefcase className="w-4 h-4 text-orange-600" />,
+    width: 180,
+    minWidth: 150,
   },
   {
-    headerName: "Province",
     field: "Province/Territory",
-    headerComponentFramework: () => (
-      <div className="flex items-center gap-1">
-        <Building className="ml-2 h-4 w-4 text-gray-500" />
-        Province
-      </div>
-    ),
-    cellRendererFramework: (params) => <span>{params.value}</span>,
+    headerName: "Province",
+    headerIcon: <Building className="w-4 h-4 text-orange-600" />,
+    width: 120,
+    minWidth: 100,
   },
   {
-    headerName: "Positions",
     field: "Approved Positions",
-    headerComponentFramework: () => (
-      <div className="flex items-center gap-1">
-        <PowerSquare className="ml-2 h-4 w-4 text-gray-500" />
-        Positions
-      </div>
-    ),
-    cellRendererFramework: (params) => <span>{params.value}</span>,
+    headerName: "Positions",
+    headerIcon: <PowerSquare className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
   },
   {
-    headerName: "LMIA",
     field: "LMIA Year",
-    headerComponentFramework: () => (
-      <div className="flex items-center gap-1">
-        <Map className="ml-2 h-4 w-4 text-gray-500" />
-        LMIA
-      </div>
-    ),
-    cellRendererFramework: (params) => <span>{params.value}</span>,
+    headerName: "LMIA",
+    headerIcon: <Map className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
   },
   {
-    headerName: "Postal",
     field: "Postal_Code",
-    headerComponentFramework: () => (
-      <div className="flex items-center gap-1">
-        <AreaChart className="ml-2 h-4 w-4 text-gray-500" />
-        Postal
-      </div>
-    ),
-    cellRendererFramework: (params) => <span>{params.value}</span>,
+    headerName: "Postal",
+    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
   },
   {
-    headerName: "NOC",
     field: "2021 NOC",
-    headerComponentFramework: () => (
-      <div className="flex items-center gap-1">
-        <AreaChart className="ml-2 h-4 w-4 text-gray-500" />
-        NOC
-      </div>
-    ),
-    cellRendererFramework: (params) => <span>{params.value}</span>,
+    headerName: "NOC",
+    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
   },
 ];
 
@@ -147,11 +112,15 @@ export const columnDefs = [
 // }
 
 export default function SearchEngine({ keywords }: { keywords: string }) {
-  const { searchWithFuse, filteredData } = useTableStore();
-  const fuseSearch = useMemo(
-    () => searchWithFuse(keywords),
-    [keywords, searchWithFuse]
-  );
+  const { searchWithFuse, filteredData, isLoading } = useTableStore();
+
+  console.log(filteredData, "Check");
+
+  useEffect(() => {
+    if (keywords) {
+      searchWithFuse(keywords);
+    }
+  }, [keywords, searchWithFuse]);
 
   const showFilterPanel = useTableStore((state) => state.showFilterPanel);
 
@@ -170,7 +139,7 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
         />
         <DynamicChart data={filteredData} keyName={"Employer"} active={"bar"} />
       </div>
-      <div className="flex gap-4 relative">
+      <div className="flex gap-0 relative">
         <AnimatePresence initial={false}>
           {showFilterPanel && (
             <motion.div
@@ -211,7 +180,12 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
             },
           }}
         >
-          <DataTable columnDefs={columnDefs} rowData={filteredData} />
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            className="h-[calc(100vh-23rem)] shadow-lg"
+            isLoading={isLoading}
+          />
           {/* <PremiumTable /> */}
         </motion.div>
       </div>
@@ -219,38 +193,38 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
   );
 }
 
-const DataTable = ({ rowData, columnDefs }) => {
-  const [gridApi, setGridApi] = useState(null);
+// const DataTable = ({ rowData, columnDefs }) => {
+//   const [gridApi, setGridApi] = useState(null);
 
-  const onGridReady = (params) => {
-    setGridApi(params.api);
-  };
+//   const onGridReady = (params) => {
+//     setGridApi(params.api);
+//   };
 
-  return (
-    <div
-      className="ag-theme-alpine h-[600px] rounded-md border border-gray-300 shadow-lg"
-      style={{
-        width: "100%",
-      }}
-    >
-      <AgGridReact
-        rowData={rowData}
-        columnDefs={columnDefs}
-        defaultColDef={{
-          sortable: true,
-          resizable: true,
-          headerClass:
-            "bg-purple-500 text-white text-sm font-semibold uppercase",
-          cellClass: "text-gray-800 text-sm font-normal px-2 py-2",
-          flex: 1,
-        }}
-        rowClass="even:bg-gray-50 hover:bg-purple-100"
-        onGridReady={onGridReady}
-        modules={[ClientSideRowModelModule]}
-        overlayNoRowsTemplate={
-          '<span class="text-gray-500">No data available</span>'
-        }
-      />
-    </div>
-  );
-};
+//   return (
+//     <div
+//       className="ag-theme-alpine h-[600px] rounded-md border border-gray-300 shadow-lg"
+//       style={{
+//         width: "100%",
+//       }}
+//     >
+//       <AgGridReact
+//         rowData={rowData}
+//         columnDefs={columnDefs}
+//         defaultColDef={{
+//           sortable: true,
+//           resizable: true,
+//           headerClass:
+//             "bg-purple-500 text-white text-sm font-semibold uppercase",
+//           cellClass: "text-gray-800 text-sm font-normal px-2 py-2",
+//           flex: 1,
+//         }}
+//         rowClass="even:bg-gray-50 hover:bg-purple-100"
+//         onGridReady={onGridReady}
+//         modules={[ClientSideRowModelModule]}
+//         overlayNoRowsTemplate={
+//           '<span class="text-gray-500">No data available</span>'
+//         }
+//       />
+//     </div>
+//   );
+// };

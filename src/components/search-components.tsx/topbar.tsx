@@ -1,4 +1,6 @@
+"use client";
 import { LayoutDashboardIcon, Home, Search, Settings } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import CustomLink from "@/app/CustomLink";
 import { cn } from "@/lib/utils";
@@ -6,8 +8,13 @@ import { cloneElement } from "react";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { Bell, Clock } from "lucide-react";
 
-export default function Topbar({ className }: { className: string }) {
-  const active = "search";
+export default function Topbar({ className }: { className?: string }) {
+  const pathname = usePathname();
+
+  const getActiveState = (path: string) => {
+    if (path === "/") return pathname === path;
+    return pathname.startsWith(path);
+  };
 
   return (
     <header
@@ -32,17 +39,19 @@ export default function Topbar({ className }: { className: string }) {
                 href="/"
                 icon={<Home className="w-3.5 h-3.5" />}
                 label="Home"
+                isActive={getActiveState("/")}
               />
               <NavLink
                 href="/search"
                 icon={<Search className="w-3.5 h-3.5" />}
                 label="Search"
-                isActive={active === "search"}
+                isActive={getActiveState("/search")}
               />
               <NavLink
-                href="/dashboard/profile"
+                href="/dashboard"
                 icon={<LayoutDashboardIcon className="w-3.5 h-3.5" />}
                 label="Dashboard"
+                isActive={getActiveState("/dashboard")}
               />
             </div>
           </div>

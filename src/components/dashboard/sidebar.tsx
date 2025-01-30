@@ -21,6 +21,8 @@ import {
 import { cn } from "@/lib/utils";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "@/hooks/use-session";
+import db from "@/db";
+import { toast } from "@/hooks/use-toast";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -60,6 +62,15 @@ export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { session } = useSession();
 
+  const handleLogout = async () => {
+    toast({
+      title: "Logged out",
+      description: "You have been logged out",
+      variant: "success",
+    });
+    await db.auth.signOut();
+    router.push("/");
+  };
   return (
     <>
       {/* Backdrop for mobile */}
@@ -162,7 +173,10 @@ export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600 flex items-center gap-2">
+                <DropdownMenuItem
+                  className="text-red-600 flex items-center gap-2"
+                  onClick={() => handleLogout()}
+                >
                   <LogOut className="w-4 h-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>

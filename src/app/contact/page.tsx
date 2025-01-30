@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import dynamic from "next/dynamic";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -10,7 +9,6 @@ import CustomLink from "../CustomLink";
 import { useSession } from "@/hooks/use-session";
 import UserDropdown from "@/components/ui/user-dropdown";
 import Footer from "@/pages/homepage/footer";
-import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Dynamically import the Map component with SSR disabled

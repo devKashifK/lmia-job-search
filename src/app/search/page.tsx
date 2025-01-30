@@ -10,6 +10,8 @@ import Footer from "@/pages/homepage/footer";
 import AuthenticatedRoute from "@/helpers/authenticated-route";
 import Navbar from "../nabvar";
 import { useUpdateCredits } from "@/hooks/use-credits";
+import { useToast } from "@/hooks/use-toast";
+import db from "@/db";
 
 const FloatingIcon = ({
   icon,
@@ -36,22 +38,92 @@ const FloatingIcon = ({
 
 export default function Page() {
   const [input, setInput] = useState("");
+  const [isChecking, setIsChecking] = useState(false);
   const { updateCreditsAndSearch } = useUpdateCredits();
   const navigate = useRouter();
-  const handleChange = (e) => {
+  const { toast } = useToast();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
 
-  const startSearch = async () => {
-    await updateCreditsAndSearch(input);
-    navigate.push(`/search/${input}`);
+  const checkCredits = async () => {
+    try {
+      const { data: credits, error } = await db
+        .from("credits")
+        .select("total_credit, used_credit")
+        .single();
+
+      if (error) throw error;
+
+      if (!credits) {
+        toast({
+          title: "Error",
+          description: "Unable to fetch credits information",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      const remainingCredits =
+        credits.total_credit - (credits.used_credit || 0);
+
+      if (remainingCredits <= 0) {
+        toast({
+          title: "No Credits Remaining",
+          description:
+            "You've used all your credits. Please purchase more to continue searching.",
+          variant: "destructive",
+        });
+        navigate.push("/dashboard/credits"); // Redirect to credits page
+        return false;
+      }
+
+      toast({
+        title: "Credits Available",
+        description: `You have ${remainingCredits} credits remaining`,
+        variant: "info",
+      });
+      return true;
+    } catch (error) {
+      console.error("Error checking credits:", error);
+      toast({
+        title: "Error",
+        description: "Unable to verify credits. Please try again.",
+        variant: "destructive",
+      });
+      return false;
+    }
   };
 
-  const handleKeyPress = (e) => {
+  const startSearch = async () => {
+    if (!input.trim()) {
+      toast({
+        title: "Empty Search",
+        description: "Please enter a search term",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsChecking(true);
+    try {
+      const hasCredits = await checkCredits();
+      if (!hasCredits) return;
+
+      await updateCreditsAndSearch(input);
+      navigate.push(`/search/${input}`);
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       startSearch();
     }
   };
+
   return (
     <>
       <AuthenticatedRoute>
@@ -113,9 +185,13 @@ export default function Page() {
                 className="absolute top-2 right-2 bg-orange-600 rounded-full p-2 cursor-pointer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={async () => await startSearch()}
+                onClick={startSearch}
               >
-                <Search className="text-white" />
+                {isChecking ? (
+                  <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Search className="text-white" />
+                )}
               </motion.div>
             </motion.div>
 
