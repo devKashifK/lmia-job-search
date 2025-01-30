@@ -14,7 +14,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Dynamically import the Map component with SSR disabled
-const DynamicMap = dynamic(() => import("./Map"), { ssr: false });
+const DynamicMap = dynamic(() => import("./map"), { ssr: false });
 
 export default function ContactPage() {
   const [firstName, setFirstName] = useState("");
