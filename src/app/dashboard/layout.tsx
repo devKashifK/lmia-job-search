@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import AuthenticatedRoute from "@/helpers/authenticated-route";
+import { Menu } from "lucide-react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
