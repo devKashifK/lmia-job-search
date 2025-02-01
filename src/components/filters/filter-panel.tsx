@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { columns } from "./column-def";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { useFilterAttributes } from "@/hooks/use-attribute";

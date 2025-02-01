@@ -139,7 +139,7 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
         />
         <DynamicChart data={filteredData} keyName={"Employer"} active={"bar"} />
       </div>
-      <div className="flex gap-0 relative">
+      <div className="flex gap-0 relative min-h-[calc(100vh-23rem)]">
         <AnimatePresence initial={false}>
           {showFilterPanel && (
             <motion.div
@@ -160,7 +160,8 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
                   ease: "easeIn",
                 },
               }}
-              className="shrink-0 relative z-40"
+              className="shrink-0 relative"
+              style={{ zIndex: 40 }}
             >
               <div className="w-[300px]">
                 <FilterPanel />
@@ -171,7 +172,8 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
 
         <motion.div
           layout
-          className="flex-1 relative z-30"
+          className="flex-1 relative"
+          style={{ zIndex: 30 }}
           initial={false}
           animate={{
             transition: {
