@@ -1,26 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Search, Sparkles, Shield, Zap } from "lucide-react";
 
 export default function LoadingScreen({ className }: { className?: string }) {
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [currentIconIndex, setCurrentIconIndex] = useState(0);
+
+  const icons = [
+    {
+      icon: Search,
+      text: "Initializing search engines...",
+    },
+    {
+      icon: Sparkles,
+      text: "Optimizing algorithms...",
+    },
+    {
+      icon: Shield,
+      text: "Securing your connection...",
+    },
+    {
+      icon: Zap,
+      text: "Powering up systems...",
+    },
+  ];
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const iconInterval = setInterval(() => {
+      setCurrentIconIndex((prev) => (prev + 1) % icons.length);
+    }, 2000);
+
+    const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          clearInterval(timer);
+          clearInterval(progressInterval);
+          clearInterval(iconInterval);
           setIsComplete(true);
           return 100;
         }
         return prev + 1;
       });
-    }, 20);
+    }, 30);
 
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(progressInterval);
+      clearInterval(iconInterval);
+    };
   }, []);
 
   return (
@@ -30,89 +59,99 @@ export default function LoadingScreen({ className }: { className?: string }) {
         className
       )}
     >
-      {/* Logo Animation */}
-      <motion.div
-        initial={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="mb-12"
-      >
-        <svg
-          className="w-24 h-24 text-white"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <motion.path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 2, ease: "easeInOut" }}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </motion.div>
-
-      {/* Loading Bar */}
-      <div className="w-64 h-2 bg-white/20 rounded-full overflow-hidden">
-        <motion.div
-          className="h-full bg-white"
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.1 }}
-        />
-      </div>
-
-      {/* Progress Text */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="mt-4 text-white text-lg font-medium"
-      >
-        {isComplete ? "Welcome to SearchPro!" : `Loading... ${progress}%`}
-      </motion.p>
-
-      {/* Loading Messages */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="mt-8 text-white/80 text-center"
-      >
-        {getLoadingMessage(progress)}
-      </motion.div>
-
       {/* Background Shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-white/10 rounded-full blur-3xl animate-pulse delay-300" />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center">
+        {/* Logo Animation */}
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="mb-12"
+        >
+          <div className="relative flex items-center justify-center gap-4">
+            <motion.div
+              className="text-5xl font-bold text-white"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              SearchPro
+            </motion.div>
+
+            {/* Animated Icon */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIconIndex}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+              >
+                <div className="p-3 bg-white/10 backdrop-blur-sm rounded-xl">
+                  {React.createElement(icons[currentIconIndex].icon, {
+                    className: "w-6 h-6 text-white",
+                  })}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.div>
+
+        {/* Progress Bar */}
+        <div className="w-80 h-2 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+          <motion.div
+            className="h-full bg-white"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.1 }}
+          />
+        </div>
+
+        {/* Loading Message */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIconIndex}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            className="mt-6 text-center"
+          >
+            <p className="text-white/90 text-lg font-medium">
+              {icons[currentIconIndex].text}
+            </p>
+            <p className="text-white/60 text-sm mt-1">{progress}% Complete</p>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Completion Animation */}
-      {isComplete && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: [1, 1.2, 0] }}
-          transition={{ duration: 0.5, times: [0, 0.8, 1] }}
-          className="absolute inset-0 bg-white"
-        />
-      )}
+      <AnimatePresence>
+        {isComplete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-white flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{
+                type: "spring",
+                damping: 15,
+                stiffness: 200,
+              }}
+              className="text-gradient text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 text-transparent bg-clip-text"
+            >
+              Welcome to SearchPro!
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
-}
-
-function getLoadingMessage(progress: number): string {
-  if (progress < 25) {
-    return "Initializing search engines...";
-  } else if (progress < 50) {
-    return "Optimizing search algorithms...";
-  } else if (progress < 75) {
-    return "Preparing your personalized experience...";
-  } else if (progress < 100) {
-    return "Almost there...";
-  } else {
-    return "Ready to search!";
-  }
 }
