@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import db from "@/db";
 import { useToast } from "@/hooks/use-toast";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collison";
-import { Github, Mail, Gift, ChevronLeft } from "lucide-react";
+import { Gift, ChevronLeft } from "lucide-react";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -75,6 +75,7 @@ export default function SignUpPage() {
       const { error: profileError } = await db.from("credits").insert({
         id: userId,
         total_credit: 5,
+        used_credit: 0,
       });
 
       if (profileError) throw profileError;

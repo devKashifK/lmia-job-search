@@ -12,6 +12,7 @@ import Navbar from "../nabvar";
 import { useUpdateCredits } from "@/hooks/use-credits";
 import { useToast } from "@/hooks/use-toast";
 import db from "@/db";
+import { useSession } from "@/hooks/use-session";
 
 const FloatingIcon = ({
   icon,
@@ -42,6 +43,7 @@ export default function Page() {
   const { updateCreditsAndSearch } = useUpdateCredits();
   const navigate = useRouter();
   const { toast } = useToast();
+  const { session } = useSession();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -52,6 +54,7 @@ export default function Page() {
       const { data: credits, error } = await db
         .from("credits")
         .select("total_credit, used_credit")
+        .eq("id", session.user.id)
         .single();
 
       if (error) throw error;
