@@ -9,6 +9,7 @@ import {
   ExternalLink,
   Clock,
   Bookmark,
+  History,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -127,32 +128,42 @@ export default function RecentSearches() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="max-w-7xl mx-auto p-6 space-y-6 mt-20">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center gap-3 mb-6"
+      >
         <div className="p-2.5 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-xl shadow-sm">
-          <Bookmark className="w-5 h-5 text-orange-600" />
+          <History className="w-5 h-5 text-orange-600" />
         </div>
         <div>
           <h1 className="text-xl font-semibold text-zinc-900">
-            Saved Searches
+            Recent Searches
           </h1>
           <p className="text-sm text-zinc-500 mt-1">
-            Access and manage your saved searches
+            View and manage your recent search history
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {recentSearches.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="flex flex-col items-center justify-center py-16 px-4"
+        >
           <div className="p-4 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-2xl shadow-sm mb-4">
             <Search className="w-8 h-8 text-orange-600" />
           </div>
           <h2 className="text-lg font-medium text-zinc-900 mb-2">
-            No saved searches yet
+            No recent searches yet
           </h2>
           <p className="text-sm text-zinc-500 text-center max-w-sm mb-6">
-            Save your searches to quickly access them later. Your saved searches
-            will appear here.
+            Your recent searches will appear here. Start searching to see your
+            history.
           </p>
           <CustomLink href="/search">
             <Button
@@ -163,126 +174,144 @@ export default function RecentSearches() {
               Start Searching
             </Button>
           </CustomLink>
-        </div>
+        </motion.div>
       ) : (
-        <Card className="overflow-hidden border-none shadow-sm">
-          <CardHeader className="p-6 bg-gradient-to-r from-orange-50/80 to-white border-b">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <h2 className="text-sm font-medium text-zinc-900">
-                  Your Saved Searches
-                </h2>
-                <p className="text-xs text-zinc-500">
-                  {recentSearches.length} recent{" "}
-                  {recentSearches.length === 1 ? "search" : "searches"}
-                </p>
-              </div>
-              <CustomLink href="/search">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2 hover:bg-orange-50 hover:text-orange-600 transition-colors"
-                >
-                  <Search className="w-3.5 h-3.5" />
-                  New Search
-                </Button>
-              </CustomLink>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <AnimatePresence mode="popLayout">
-                {recentSearches.map((search) => (
-                  <motion.div
-                    key={search.id}
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    className="group relative"
-                  >
-                    <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50/60 transition-all">
-                      <div className="shrink-0 w-9 h-9 flex items-center justify-center rounded-lg bg-gradient-to-br from-orange-100 via-orange-50 to-white text-orange-600 shadow-sm">
-                        <Search className="w-4 h-4" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
+            <CardHeader className="p-6 bg-gradient-to-r from-orange-50/90 via-orange-50/80 to-white border-b shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-2 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-lg shadow-md">
+                    <History className="w-4 h-4 text-orange-600" />
+                  </div>
+                  <div className="space-y-1">
+                    <h2 className="text-base font-semibold text-zinc-900">
+                      Search History
+                    </h2>
+                    <div className="flex items-center gap-2">
+                      <div className="px-2 py-0.5 bg-orange-50 rounded-full shadow-sm">
+                        <span className="text-xs font-medium text-orange-600">
+                          {recentSearches.length}{" "}
+                          {recentSearches.length === 1 ? "search" : "searches"}
+                        </span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <CustomLink
-                            href={`/search/${search.keyword}`}
-                            className="block flex-1"
-                          >
-                            <h3 className="text-sm font-medium text-zinc-900 truncate group-hover:text-orange-600 transition-colors">
-                              {search.keyword}
-                            </h3>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <Clock className="w-3 h-3 text-zinc-400" />
-                              <span className="text-xs text-zinc-500">
-                                {new Date(search.created_at).toLocaleDateString(
-                                  "en-US",
-                                  {
+                      <span className="text-xs text-zinc-400">•</span>
+                      <span className="text-xs text-zinc-500">
+                        Last updated{" "}
+                        {new Date(
+                          recentSearches[0]?.created_at
+                        ).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <CustomLink href="/search">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2 hover:bg-orange-50 hover:text-orange-600 transition-colors shadow-sm"
+                  >
+                    <Search className="w-3.5 h-3.5" />
+                    New Search
+                  </Button>
+                </CustomLink>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="space-y-2">
+                <AnimatePresence mode="popLayout">
+                  {recentSearches.map((search) => (
+                    <motion.div
+                      key={search.id}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      className="group relative"
+                    >
+                      <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50/60 transition-all duration-300">
+                        <div className="shrink-0 w-9 h-9 flex items-center justify-center rounded-lg bg-gradient-to-br from-orange-100 via-orange-50 to-white text-orange-600 shadow-sm">
+                          <Search className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <CustomLink
+                              href={`/search/${search.keyword}`}
+                              className="block flex-1"
+                            >
+                              <h3 className="text-sm font-medium text-zinc-900 truncate group-hover:text-orange-600 transition-colors">
+                                {search.keyword}
+                              </h3>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <Clock className="w-3 h-3 text-zinc-400" />
+                                <span className="text-xs text-zinc-500">
+                                  {new Date(
+                                    search.created_at
+                                  ).toLocaleDateString("en-US", {
                                     month: "short",
                                     day: "numeric",
                                     year: "numeric",
-                                  }
-                                )}
-                              </span>
+                                  })}
+                                </span>
+                              </div>
+                            </CustomLink>
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 hover:bg-white hover:text-blue-600"
+                                onClick={() => {
+                                  setEditingSearch(search);
+                                  setNewQuery(search.query);
+                                  setIsDialogOpen(true);
+                                }}
+                              >
+                                <Edit2 className="w-3.5 h-3.5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 hover:bg-white hover:text-red-600"
+                                onClick={() => handleDelete(search.id)}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
                             </div>
-                          </CustomLink>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 hover:bg-white hover:text-blue-600"
-                              onClick={() => {
-                                setEditingSearch(search);
-                                setNewQuery(search.query);
-                                setIsDialogOpen(true);
-                              }}
-                            >
-                              <Edit2 className="w-3.5 h-3.5" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 hover:bg-white hover:text-red-600"
-                              onClick={() => handleDelete(search.id)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </CardContent>
-        </Card>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Rename Saved Search</DialogTitle>
+            <DialogTitle>Rename Search</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="space-y-4">
             <Input
               value={newQuery}
               onChange={(e) => setNewQuery(e.target.value)}
-              placeholder="Enter new search query"
-              className="border-zinc-200 focus:border-orange-500 focus:ring-orange-500/20"
+              placeholder="Enter new search name"
             />
-            <div className="flex gap-2 justify-end">
+            <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleRename}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-              >
-                Save Changes
-              </Button>
+              <Button onClick={handleRename}>Save</Button>
             </div>
           </div>
         </DialogContent>

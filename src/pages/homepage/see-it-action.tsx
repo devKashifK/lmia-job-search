@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, BarChart2, Filter, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import SectionTitle from "@/components/ui/section-title";
@@ -12,7 +12,7 @@ const features = [
     description: "Type and see results instantly",
     icon: Search,
     demo: (
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 h-[500px] w-full">
+      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 h-[400px] w-full">
         <div className="flex gap-3 mb-6">
           <div className="flex-1">
             <input
@@ -48,7 +48,7 @@ const features = [
     description: "Interactive charts and graphs",
     icon: BarChart2,
     demo: (
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 h-[500px] w-full">
+      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 h-[400px] w-full">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-lg font-medium text-gray-900">
             Job Market Trends
@@ -61,7 +61,7 @@ const features = [
             </select>
           </div>
         </div>
-        <div className="relative h-64">
+        <div className="relative h-48">
           <div className="absolute inset-0 flex items-end gap-4">
             {[60, 85, 40, 95, 70, 55, 80].map((height, i) => (
               <div key={i} className="flex-1 group">
@@ -109,7 +109,7 @@ const features = [
     description: "Refine your search results",
     icon: Filter,
     demo: (
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 h-[500px] w-full">
+      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 h-[400px] w-full">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-medium text-gray-900">Filter Options</h3>
           <button className="text-sm text-orange-600 hover:text-orange-700">
@@ -159,21 +159,7 @@ const features = [
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Experience Level
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {["Entry", "Mid", "Senior", "Executive"].map((level) => (
-                <button
-                  key={level}
-                  className="px-3 py-1.5 rounded-full text-sm border border-gray-200 hover:border-orange-200 hover:bg-orange-50/50 transition-all"
-                >
-                  {level}
-                </button>
-              ))}
-            </div>
-          </div>
+
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Employment Type
@@ -199,7 +185,7 @@ const features = [
     description: "Download in multiple formats",
     icon: Download,
     demo: (
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 h-[500px] w-full">
+      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 h-[400px] w-full">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-medium text-gray-900">Export Options</h3>
           <button className="text-sm text-orange-600 hover:text-orange-700">
@@ -248,6 +234,30 @@ const features = [
 
 export default function SeeItAction() {
   const [activeFeature, setActiveFeature] = useState("search");
+  const [isHovered, setIsHovered] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    const startAutoRotation = () => {
+      intervalRef.current = setInterval(() => {
+        if (!isHovered) {
+          setActiveFeature((current) => {
+            const currentIndex = features.findIndex((f) => f.id === current);
+            const nextIndex = (currentIndex + 1) % features.length;
+            return features[nextIndex].id;
+          });
+        }
+      }, 2000);
+    };
+
+    startAutoRotation();
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isHovered]);
 
   return (
     <section className="py-16">
@@ -288,7 +298,11 @@ export default function SeeItAction() {
           </div>
 
           {/* Feature Demo - Takes 3/4 of the space */}
-          <div className="lg:col-span-3 h-[500px]">
+          <div
+            className="lg:col-span-3 h-[400px] relative"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
             <motion.div
               key={activeFeature}
               initial={{ opacity: 0, y: 20 }}

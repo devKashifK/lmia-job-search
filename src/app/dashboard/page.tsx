@@ -1,58 +1,35 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
-import UserProfile from "./profile/page";
-import Settings from "./settings/page";
-import Credits from "./credits/page";
-import db from "@/db";
-import LoadingScreen from "@/components/ui/loading-screen";
-import { User } from "@supabase/supabase-js";
-import RecentSearches from "./recent-searches/page";
+import { Construction } from "lucide-react";
 
-export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("profile");
-  const [userData, setUserData] = useState<User | null>(null);
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  async function fetchUserData() {
-    const {
-      data: { user },
-    } = await db.auth.getUser();
-    setUserData(user);
-  }
-
+export default function DashboardPage() {
   return (
-    <motion.div
-      key={activeTab}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
-    >
-      {activeTab === "profile" && (
-        <Suspense fallback={<LoadingScreen />}>
-          <UserProfile />{" "}
-        </Suspense>
-      )}
-      {activeTab === "settings" && (
-        <Suspense fallback={<LoadingScreen />}>
-          <Settings />
-        </Suspense>
-      )}
-      {activeTab === "credits" && (
-        <Suspense fallback={<LoadingScreen />}>
-          <Credits />
-        </Suspense>
-      )}
-      {activeTab === "recent-searches" && (
-        <Suspense fallback={<LoadingScreen />}>
-          <RecentSearches />
-        </Suspense>
-      )}
-    </motion.div>
+    <div className="w-full h-full">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full h-full flex items-center justify-center"
+      >
+        <div className="text-center space-y-6">
+          <div className="flex justify-center">
+            <div className="p-4 rounded-full bg-orange-50">
+              <Construction className="w-12 h-12 text-orange-500" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+              Dashboard Coming Soon
+            </h1>
+            <p className="text-gray-500 max-w-md">
+              We&apos;re working on building an amazing dashboard experience for
+              you. In the meantime, you can use the sidebar to navigate to
+              different sections.
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 }

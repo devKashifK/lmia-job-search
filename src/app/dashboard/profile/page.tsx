@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,6 +29,7 @@ import {
   Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface EditableFieldProps {
   icon: React.ReactNode;
@@ -78,7 +79,7 @@ function EditableField({
         description: `Your ${title.toLowerCase()} has been updated`,
       });
       setIsEditing(false);
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error",
@@ -90,75 +91,81 @@ function EditableField({
   };
 
   return (
-    <Card className="group overflow-hidden bg-white hover:bg-zinc-50/50 transition-colors">
-      <div className="flex items-center justify-between px-5 py-4 bg-white border-b border-zinc-100">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-orange-50 to-white rounded-lg text-orange-500 shadow-sm">
-            {icon}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className="group overflow-hidden bg-white hover:bg-zinc-50/50 transition-all duration-300 hover:shadow-md">
+        <div className="flex items-center justify-between px-5 py-4 bg-white border-b border-zinc-100">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-orange-50 to-white rounded-lg text-orange-500 shadow-sm">
+              {icon}
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-zinc-900">{title}</h3>
+              {!isEditing && !value && (
+                <p className="text-xs text-zinc-400 mt-0.5">Not set</p>
+              )}
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-medium text-zinc-900">{title}</h3>
-            {!isEditing && !value && (
-              <p className="text-xs text-zinc-400 mt-0.5">Not set</p>
-            )}
-          </div>
-        </div>
-        {!isEditing ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleStartEditing}
-            className="h-8 w-8 p-0 text-zinc-400 opacity-0 group-hover:opacity-100 hover:text-zinc-900 transition-all"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-        ) : (
-          <div className="flex gap-1.5">
+          {!isEditing ? (
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleCancelEditing}
-              className="h-8 w-8 p-0 text-zinc-400 hover:text-zinc-900 hover:bg-white/50"
+              onClick={handleStartEditing}
+              className="h-8 w-8 p-0 text-zinc-400 opacity-0 group-hover:opacity-100 hover:text-zinc-900 transition-all"
             >
-              <X className="h-4 w-4" />
+              <Pencil className="h-4 w-4" />
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleUpdate}
-              disabled={isLoading}
-              className="h-8 w-8 p-0 text-orange-500 hover:text-orange-600 hover:bg-orange-50"
-            >
-              <Check className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-      </div>
-      <CardContent className={cn("p-5", isEditing && "bg-zinc-50/80")}>
-        {isEditing ? (
-          isTextArea ? (
-            <Textarea
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              placeholder={placeholder}
-              className="min-h-[120px] resize-none bg-white border-zinc-200 focus:border-orange-500 focus:ring-orange-500/20"
-            />
           ) : (
-            <Input
-              type={type}
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              placeholder={placeholder}
-              className="bg-white border-zinc-200 focus:border-orange-500 focus:ring-orange-500/20"
-            />
-          )
-        ) : (
-          <p className="text-sm text-zinc-600 leading-relaxed">
-            {value || <span className="text-zinc-400">{placeholder}</span>}
-          </p>
-        )}
-      </CardContent>
-    </Card>
+            <div className="flex gap-1.5">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancelEditing}
+                className="h-8 w-8 p-0 text-zinc-400 hover:text-zinc-900 hover:bg-white/50"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleUpdate}
+                disabled={isLoading}
+                className="h-8 w-8 p-0 text-orange-500 hover:text-orange-600 hover:bg-orange-50"
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
+        <CardContent className={cn("p-5", isEditing && "bg-zinc-50/80")}>
+          {isEditing ? (
+            isTextArea ? (
+              <Textarea
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                placeholder={placeholder}
+                className="min-h-[120px] resize-none bg-white border-zinc-200 focus:border-orange-500 focus:ring-orange-500/20"
+              />
+            ) : (
+              <Input
+                type={type}
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                placeholder={placeholder}
+                className="bg-white border-zinc-200 focus:border-orange-500 focus:ring-orange-500/20"
+              />
+            )
+          ) : (
+            <p className="text-sm text-zinc-600 leading-relaxed">
+              {value || <span className="text-zinc-400">{placeholder}</span>}
+            </p>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }
 
@@ -178,8 +185,13 @@ export default function UserProfile() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="mb-8">
+    <div className="max-w-7xl mx-auto p-6 mt-20">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8"
+      >
         <div className="flex items-center gap-3 mb-3">
           <div className="p-2.5 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-xl shadow-sm">
             <User className="w-5 h-5 text-orange-600" />
@@ -193,7 +205,7 @@ export default function UserProfile() {
             </p>
           </div>
         </div>
-        <div className="p-4 bg-orange-50/50 rounded-lg border border-orange-100/50">
+        <div className="p-4 bg-gradient-to-r from-orange-50/50 to-orange-100/30 rounded-lg border border-orange-100/50">
           <div className="flex items-start gap-3">
             <div className="p-2 bg-white rounded-lg shadow-sm">
               <Shield className="w-4 h-4 text-orange-500" />
@@ -209,11 +221,16 @@ export default function UserProfile() {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Personal Information */}
-        <div className="space-y-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="space-y-4"
+        >
           <div className="mb-6">
             <h2 className="text-sm font-medium text-zinc-900">
               Personal Information
@@ -267,16 +284,21 @@ export default function UserProfile() {
             onUpdate={(value) => updateUserMetadata("address", value)}
             isTextArea
           />
-        </div>
+        </motion.div>
 
         {/* Professional Information */}
-        <div className="space-y-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="space-y-4"
+        >
           <div className="mb-6">
             <h2 className="text-sm font-medium text-zinc-900">
-              Professional Details
+              Professional Information
             </h2>
             <p className="text-xs text-zinc-500 mt-0.5">
-              Your work and professional information
+              Your work and education details
             </p>
           </div>
           <EditableField
@@ -305,9 +327,8 @@ export default function UserProfile() {
             icon={<GraduationCap className="w-4 h-4" />}
             title="Education"
             value={session?.user?.user_metadata?.education || ""}
-            placeholder="Add your educational background"
+            placeholder="Add your education details"
             onUpdate={(value) => updateUserMetadata("education", value)}
-            isTextArea
           />
           <EditableField
             icon={<Code className="w-4 h-4" />}
@@ -356,7 +377,7 @@ export default function UserProfile() {
             onUpdate={(value) => updateUserMetadata("bio", value)}
             isTextArea
           />
-        </div>
+        </motion.div>
       </div>
     </div>
   );

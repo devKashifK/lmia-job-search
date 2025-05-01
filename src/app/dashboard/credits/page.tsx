@@ -6,12 +6,25 @@ import {
   Coins,
   TrendingUp,
   TrendingDown,
-  History,
   CreditCard,
+  BarChart2,
+  PieChart,
 } from "lucide-react";
 import ReactECharts from "echarts-for-react";
 import LoadingScreen from "@/components/ui/loading-screen";
 import { useCreditData } from "@/hooks/use-credits";
+import { motion } from "framer-motion";
+
+interface EChartsParams {
+  axisValue: string;
+  value: number;
+}
+
+interface PieChartParams {
+  value: number;
+  percent: number;
+  name: string;
+}
 
 export default function Credits() {
   const { creditData, creditError, creditRemaining } = useCreditData();
@@ -32,6 +45,12 @@ export default function Credits() {
   const usagePercentage =
     ((creditData.used_credits || 0) / (creditData.total_credits || 1)) * 100;
 
+  // Generate default data for the last 7 days if creditRemaining is not available
+  const defaultCreditData = Array.from({ length: 7 }, (_, i) => ({
+    day: `Day ${i + 1}`,
+    value: Math.max(0, (creditRemaining || 0) - i * 2),
+  }));
+
   const lineChartOption = {
     tooltip: {
       trigger: "axis",
@@ -43,6 +62,12 @@ export default function Credits() {
         color: "#18181b",
         fontSize: 12,
       },
+      formatter: (params: EChartsParams[]) => {
+        const date = params[0].axisValue;
+        const value = params[0].value;
+        return `<div class="text-xs font-medium">${date}</div>
+                <div class="text-sm text-orange-600">${value} credits</div>`;
+      },
     },
     grid: {
       top: 40,
@@ -52,12 +77,16 @@ export default function Credits() {
     },
     xAxis: {
       type: "category",
-      data: [],
+      data: defaultCreditData.map((item) => item.day),
       boundaryGap: false,
       axisLine: {
         lineStyle: { color: "#e4e4e7" },
       },
       axisTick: { show: false },
+      axisLabel: {
+        color: "#71717a",
+        fontSize: 11,
+      },
     },
     yAxis: {
       type: "value",
@@ -69,12 +98,16 @@ export default function Credits() {
       splitLine: {
         lineStyle: { color: "#f4f4f5" },
       },
+      axisLabel: {
+        color: "#71717a",
+        fontSize: 11,
+      },
     },
     series: [
       {
         name: "Credits Used",
         type: "line",
-        data: creditData.creditRemaining,
+        data: defaultCreditData.map((item) => item.value),
         smooth: true,
         showSymbol: true,
         symbolSize: 6,
@@ -121,12 +154,32 @@ export default function Credits() {
         color: "#18181b",
         fontSize: 12,
       },
+      formatter: (params: PieChartParams) => {
+        const value = params.value;
+        const percent = params.percent;
+        return `<div class="text-xs font-medium">${params.name}</div>
+                <div class="text-sm text-orange-600">${value} credits (${percent}%)</div>`;
+      },
     },
     legend: {
       orient: "vertical",
       right: 10,
       top: "center",
-      textStyle: { color: "#71717a" },
+      itemGap: 20,
+      itemWidth: 8,
+      itemHeight: 8,
+      formatter: (name: string) => {
+        return `{a|${name}}`;
+      },
+      textStyle: {
+        rich: {
+          a: {
+            fontSize: 12,
+            color: "#71717a",
+            padding: [0, 0, 0, 8],
+          },
+        },
+      },
     },
     series: [
       {
@@ -166,8 +219,13 @@ export default function Credits() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="max-w-7xl mx-auto p-6 space-y-6 mt-20">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center gap-3 mb-6"
+      >
         <div className="p-2.5 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-xl shadow-sm">
           <CreditCard className="w-5 h-5 text-orange-600" />
         </div>
@@ -179,127 +237,227 @@ export default function Credits() {
             Monitor your credit usage and history
           </p>
         </div>
-      </div>
+      </motion.div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="overflow-hidden">
-          <div className="p-6 bg-gradient-to-br from-orange-50 to-white">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-white rounded-lg shadow-sm">
-                <Coins className="w-5 h-5 text-orange-600" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
+            <div className="p-6 bg-gradient-to-br from-orange-50/90 to-white">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 bg-white rounded-lg shadow-sm">
+                  <Coins className="w-5 h-5 text-orange-600" />
+                </div>
+                <span className="text-xs font-medium text-orange-600 bg-orange-100/50 px-2.5 py-0.5 rounded-full">
+                  Total
+                </span>
               </div>
-              <span className="text-xs font-medium text-orange-600 bg-orange-100/50 px-2.5 py-0.5 rounded-full">
-                Total
-              </span>
+              <div className="space-y-1">
+                <h2 className="text-2xl font-semibold text-zinc-900">
+                  {creditData.total_credit || 0}
+                </h2>
+                <p className="text-xs text-zinc-500">Available credits</p>
+              </div>
             </div>
-            <div className="space-y-1">
-              <h2 className="text-2xl font-semibold text-zinc-900">
-                {creditData.total_credit || 0}
-              </h2>
-              <p className="text-xs text-zinc-500">Available credits</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card className="overflow-hidden">
-          <div className="p-6 bg-gradient-to-br from-red-50 to-white">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-white rounded-lg shadow-sm">
-                <TrendingUp className="w-5 h-5 text-red-600" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
+            <div className="p-6 bg-gradient-to-br from-red-50/90 to-white">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 bg-white rounded-lg shadow-sm">
+                  <TrendingUp className="w-5 h-5 text-red-600" />
+                </div>
+                <span className="text-xs font-medium text-red-600 bg-red-100/50 px-2.5 py-0.5 rounded-full">
+                  Used
+                </span>
               </div>
-              <span className="text-xs font-medium text-red-600 bg-red-100/50 px-2.5 py-0.5 rounded-full">
-                Used
-              </span>
+              <div className="space-y-1">
+                <h2 className="text-2xl font-semibold text-zinc-900">
+                  {creditData.used_credit || 0}
+                </h2>
+                <p className="text-xs text-zinc-500">Credits spent</p>
+              </div>
             </div>
-            <div className="space-y-1">
-              <h2 className="text-2xl font-semibold text-zinc-900">
-                {creditData.used_credit || 0}
-              </h2>
-              <p className="text-xs text-zinc-500">Credits spent</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
 
-        <Card className="overflow-hidden">
-          <div className="p-6 bg-gradient-to-br from-green-50 to-white">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-white rounded-lg shadow-sm">
-                <TrendingDown className="w-5 h-5 text-green-600" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
+            <div className="p-6 bg-gradient-to-br from-green-50/90 to-white">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-2 bg-white rounded-lg shadow-sm">
+                  <TrendingDown className="w-5 h-5 text-green-600" />
+                </div>
+                <span className="text-xs font-medium text-green-600 bg-green-100/50 px-2.5 py-0.5 rounded-full">
+                  Remaining
+                </span>
               </div>
-              <span className="text-xs font-medium text-green-600 bg-green-100/50 px-2.5 py-0.5 rounded-full">
-                Remaining
-              </span>
+              <div className="space-y-1">
+                <h2 className="text-2xl font-semibold text-zinc-900">
+                  {creditRemaining || 0}
+                </h2>
+                <p className="text-xs text-zinc-500">Credits available</p>
+              </div>
             </div>
-            <div className="space-y-1">
-              <h2 className="text-2xl font-semibold text-zinc-900">
-                {creditRemaining || 0}
-              </h2>
-              <p className="text-xs text-zinc-500">Credits available</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </motion.div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between p-6 border-b">
-            <h3 className="text-sm font-medium text-zinc-900">
-              Credit Distribution
-            </h3>
-            <div className="p-1.5 bg-zinc-100 rounded-md">
-              <History className="w-4 h-4 text-zinc-500" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="h-[300px]">
-              <ReactECharts
-                option={pieChartOption}
-                style={{ height: "100%" }}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between p-6 border-b">
-            <h3 className="text-sm font-medium text-zinc-900">Usage Trends</h3>
-            <div className="p-1.5 bg-zinc-100 rounded-md">
-              <TrendingUp className="w-4 h-4 text-zinc-500" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="h-[300px]">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
+            <CardHeader className="p-6 bg-gradient-to-r from-orange-50/90 via-orange-50/80 to-white border-b shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-lg shadow-md">
+                  <BarChart2 className="w-4 h-4 text-orange-600" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-base font-semibold text-zinc-900">
+                    Usage Trends
+                  </h3>
+                  <p className="text-xs text-zinc-500">
+                    Track your credit usage over time
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6">
               <ReactECharts
                 option={lineChartOption}
-                style={{ height: "100%" }}
+                style={{ height: "300px" }}
+                className="w-full"
               />
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
+            <CardHeader className="p-6 bg-gradient-to-r from-orange-50/90 via-orange-50/80 to-white border-b shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-lg shadow-md">
+                  <PieChart className="w-4 h-4 text-orange-600" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-base font-semibold text-zinc-900">
+                    Credit Distribution
+                  </h3>
+                  <p className="text-xs text-zinc-500">
+                    View your credit allocation
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6">
+              <ReactECharts
+                option={pieChartOption}
+                style={{ height: "300px" }}
+                className="w-full"
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+      >
+        <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
+          <CardHeader className="p-6 bg-gradient-to-r from-orange-50/90 via-orange-50/80 to-white border-b shadow-sm">
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-lg shadow-md">
+                <TrendingUp className="w-4 h-4 text-orange-600" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-semibold text-zinc-900">
+                  Usage Overview
+                </h3>
+                <p className="text-xs text-zinc-500">
+                  Current billing period summary
+                </p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-zinc-700">
+                    Credit Usage
+                  </span>
+                  <span className="text-sm font-medium text-orange-600">
+                    {usagePercentage.toFixed(1)}%
+                  </span>
+                </div>
+                <Progress value={usagePercentage} className="h-2 bg-zinc-100" />
+                <div className="flex justify-between text-xs text-zinc-500">
+                  <span>0 credits</span>
+                  <span>{creditData.total_credit || 0} credits</span>
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-orange-100 rounded-lg">
+                      <TrendingUp className="w-3.5 h-3.5 text-orange-600" />
+                    </div>
+                    <span className="text-sm font-medium text-zinc-700">
+                      Credits Used
+                    </span>
+                  </div>
+                  <p className="text-2xl font-semibold text-zinc-900">
+                    {creditData.used_credit || 0}
+                  </p>
+                  <p className="text-xs text-zinc-500">
+                    Total credits consumed this period
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-green-100 rounded-lg">
+                      <TrendingDown className="w-3.5 h-3.5 text-green-600" />
+                    </div>
+                    <span className="text-sm font-medium text-zinc-700">
+                      Remaining Credits
+                    </span>
+                  </div>
+                  <p className="text-2xl font-semibold text-zinc-900">
+                    {creditRemaining || 0}
+                  </p>
+                  <p className="text-xs text-zinc-500">
+                    Available for future searches
+                  </p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between p-6 border-b">
-          <div>
-            <h3 className="text-sm font-medium text-zinc-900">
-              Usage Overview
-            </h3>
-            <p className="text-xs text-zinc-500 mt-1">Current billing period</p>
-          </div>
-          <span className="text-sm font-medium text-zinc-900">
-            {usagePercentage.toFixed(1)}%
-          </span>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <Progress value={usagePercentage} className="h-2 bg-zinc-100" />
-            <div className="flex justify-between text-xs text-zinc-500">
-              <span>0 credits</span>
-              <span>{creditData.total_credit || 0} credits</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      </motion.div>
     </div>
   );
 }

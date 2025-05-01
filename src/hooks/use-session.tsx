@@ -15,6 +15,11 @@ import db from "@/db"; // Supabase client
 //   return session;
 // }
 
+interface SessionContextType {
+  session: any | null;
+  loading: boolean;
+}
+
 export const getSession = async (db) => {
   const {
     data: { session },
@@ -22,14 +27,14 @@ export const getSession = async (db) => {
   return session;
 };
 
-const SessionContext = createContext(null);
+const SessionContext = createContext<SessionContextType | null>(null);
 
 export const SessionProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,7 +64,13 @@ export const SessionProvider = ({
   );
 };
 
-export const useSession = () => useContext(SessionContext);
+export const useSession = () => {
+  const context = useContext(SessionContext);
+  if (!context) {
+    throw new Error("useSession must be used within a SessionProvider");
+  }
+  return context;
+};
 
 export const useGetuser = () => {
   const [user, setUser] = useState<any>(null);

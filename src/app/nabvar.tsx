@@ -32,9 +32,7 @@ const solutions = [
 ];
 
 export default function Navbar({ className }: { className?: string }) {
-  const session = useSession();
-
-  console.log(session, "session");
+  const { session, loading } = useSession();
 
   return (
     <nav
@@ -107,7 +105,9 @@ export default function Navbar({ className }: { className?: string }) {
           </div>
           {/* Right Section (auth) */}
           <div className="flex items-center gap-2 md:gap-4 min-w-[120px] justify-end">
-            {session ? (
+            {loading ? (
+              <div className="h-9 w-24 bg-orange-100/50 rounded-md animate-pulse" />
+            ) : session ? (
               <>
                 <Button
                   variant="ghost"
@@ -119,21 +119,12 @@ export default function Navbar({ className }: { className?: string }) {
                 <UserDropdown />
               </>
             ) : (
-              <>
-                <Button
-                  variant="ghost"
-                  className="h-9 px-4 text-orange-700 hover:bg-orange-100/60"
-                  asChild
-                >
-                  <CustomLink href="/sign-in">Sign in</CustomLink>
-                </Button>
-                <Button
-                  className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white"
-                  asChild
-                >
-                  <CustomLink href="/sign-up">Get Started</CustomLink>
-                </Button>
-              </>
+              <Button
+                className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white"
+                asChild
+              >
+                <CustomLink href="/sign-in">Get Started</CustomLink>
+              </Button>
             )}
           </div>
         </div>
