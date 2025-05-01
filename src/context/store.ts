@@ -1,8 +1,6 @@
 import { create } from "zustand";
-import Fuse from "fuse.js";
 import { DATA } from "@/data/data";
 import db from "@/db";
-import { toast } from "@/hooks/use-toast";
 
 interface TableState {
   data: any[];
@@ -124,7 +122,7 @@ export const useTableStore = create<TableState>((set, get) => ({
       filteredData,
     });
   },
-  searchWithFuse: (keywords) => {
+  searchWithFuse: async (keywords) => {
     const safeKeywords = keywords || "";
 
     if (!safeKeywords.trim()) {
@@ -132,23 +130,33 @@ export const useTableStore = create<TableState>((set, get) => ({
       return;
     }
 
-    const fuse = new Fuse(DATA, {
-      keys: [
-        "Province/Territory",
-        "Program",
-        "Employer",
-        "Address",
-        "Occupation",
-        "2021 NOC",
-        "City",
-        "Postal_Code",
-        "Occupation Title",
-        "Employer_Name",
-      ],
-      threshold: 0.4,
+    // const fuse = new Fuse(DATA, {
+    //   keys: [
+    //     "Province/Territory",
+    //     "Program",
+    //     "Employer",
+    //     "Address",
+    //     "Occupation",
+    //     "2021 NOC",
+    //     "City",
+    //     "Postal_Code",
+    //     "Occupation Title",
+    //     "Employer_Name",
+    //   ],
+    //   threshold: 0.4,
+    // });
+
+    // const result = fuse.search(keywords).map((res) => res.item);
+
+    const { data: result, error } = await db.rpc("rpc_search_hot_leads", {
+      term: keywords,
     });
 
-    const result = fuse.search(keywords).map((res) => res.item);
+    console.log(result, "checkResult");
+    if (error) {
+      console.error("Error searching:", error);
+      throw error;
+    }
 
     set({ data: result, filteredData: result });
   },

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { motion } from "framer-motion";
+import { HoverCard } from "@/components/ui/hover-card";
 
 const faqs = [
   {
@@ -31,37 +32,65 @@ const faqs = [
   },
 ];
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 },
+};
+
 export default function FAQ() {
   return (
-    <section id="faq" className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Frequently Asked Questions
+    <section className="py-16">
+      <div className="w-full max-w-4xl mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-3xl md:text-4xl font-medium text-gray-900 mb-6">
+            Frequently asked questions
           </h2>
-          <p className="text-xl text-gray-600">
-            Get answers to common questions about our platform
-          </p>
-        </div>
-
-        <div className="max-w-3xl mx-auto">
-          <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="bg-white rounded-lg shadow-md"
-              >
-                <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-gray-900 hover:no-underline">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4 text-gray-600">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+          <div className="w-20 h-0.5 bg-gray-200 mx-auto" />
+        </motion.div>
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+        >
+          <HoverCard>
+            <div className="bg-white/80 border border-orange-100 rounded-2xl shadow-lg p-8">
+              <Accordion type="single" collapsible className="space-y-4">
+                {faqs.map((faq, index) => (
+                  <motion.div key={index} variants={item}>
+                    <AccordionItem
+                      value={`item-${index}`}
+                      className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-orange-50 hover:-translate-y-0.5"
+                    >
+                      <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-gray-900 hover:no-underline group-hover:text-orange-600 transition-colors duration-300">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="px-6 pb-4 text-gray-600 leading-relaxed">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </motion.div>
+                ))}
+              </Accordion>
+            </div>
+          </HoverCard>
+        </motion.div>
       </div>
     </section>
   );

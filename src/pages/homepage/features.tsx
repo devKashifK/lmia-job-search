@@ -9,6 +9,8 @@ import {
   Play,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import SectionTitle from "@/components/ui/section-title";
 
 const features = [
   {
@@ -47,35 +49,55 @@ const features = [
   },
 ];
 
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 },
+};
+
 export default function Features() {
   return (
-    <section id="features" className="py-20 bg-gray-50">
+    <section className="py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Powerful Features for Enhanced Search
-          </h2>
-          <p className="text-xl text-gray-600">
-            Everything you need to streamline your search experience
-          </p>
-        </div>
+        <SectionTitle
+          title="Powerful Features for Enhanced Search"
+          subtitle="Everything you need to streamline your search experience"
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           {features.map((feature) => (
-            <Card
-              key={feature.title}
-              className="hover:shadow-lg transition-shadow duration-300"
-            >
-              <CardContent className="p-6">
-                <feature.icon className="w-12 h-12 text-orange-600 mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </CardContent>
-            </Card>
+            <motion.div key={feature.title} variants={item}>
+              <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full">
+                <CardContent className="p-8">
+                  <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-orange-200 transition-colors duration-300">
+                    <feature.icon className="w-7 h-7 text-orange-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors duration-300">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

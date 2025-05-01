@@ -1,10 +1,9 @@
 "use client";
-
 import { Input } from "@/components/ui/input";
 import { TypewriterEffect } from "@/components/ui/type-writter";
 import { Search } from "lucide-react";
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Footer from "@/pages/homepage/footer";
 import AuthenticatedRoute from "@/helpers/authenticated-route";
@@ -13,43 +12,91 @@ import { useUpdateCredits } from "@/hooks/use-credits";
 import { useToast } from "@/hooks/use-toast";
 import db from "@/db";
 import { useSession } from "@/hooks/use-session";
-
-const FloatingIcon = ({
-  icon,
-  className,
-}: {
-  icon: string;
-  className: string;
-}) => (
-  <motion.div
-    className={`absolute ${className} opacity-70`}
-    animate={{
-      y: ["0%", "20%", "0%"],
-      rotate: [0, 10, -10, 0],
-    }}
-    transition={{
-      duration: 5,
-      repeat: Infinity,
-      repeatType: "reverse",
-    }}
-  >
-    {icon}
-  </motion.div>
-);
+import { ScrollArea } from "@/components/ui/scroll-area";
+import BackgroundWrapper from "@/components/ui/background-wrapper";
+import { SearchFeatures } from "@/components/search/features";
 
 export default function Page() {
   const [input, setInput] = useState("");
   const [isChecking, setIsChecking] = useState(false);
+  const [suggestions, setSuggestions] = useState<{ suggestion: string }[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
   const { updateCreditsAndSearch } = useUpdateCredits();
   const navigate = useRouter();
   const { toast } = useToast();
   const { session } = useSession();
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const fetchSuggestions = async (query: string) => {
+    if (!query.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    setIsLoadingSuggestions(true);
+    try {
+      const { data, error } = await db.rpc("rpc_search_hot_leads_suggestions", {
+        term: query,
+        p_limit: 20,
+        branch_lim: 100,
+      });
+
+      if (error) throw error;
+      setSuggestions(data || []);
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    const value = e.target.value;
+    setInput(value);
+    setShowSuggestions(true);
+    fetchSuggestions(value);
+  };
+
+  const handleSuggestionClick = async (suggestion: string) => {
+    setInput(suggestion);
+    setShowSuggestions(false);
+    try {
+      const hasCredits = await checkCredits();
+      if (!hasCredits) return;
+
+      await updateCreditsAndSearch(input);
+      navigate.push(`/search/${suggestion}`);
+    } finally {
+      setIsChecking(false);
+    }
   };
 
   const checkCredits = async () => {
+    if (!session?.user?.id) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to perform this action",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     try {
       const { data: credits, error } = await db
         .from("credits")
@@ -128,113 +175,128 @@ export default function Page() {
   };
 
   return (
-    <>
-      <AuthenticatedRoute>
-        {/* <Header className="bg-[#faf5ff] border-purple-600 border-b-2" /> */}
-        <Navbar className="bg-transparent" />
-        {/* <BackgroundLines> */}
-        <div className="min-h-screen h-screen  flex flex-col items-center -mt-16 pt-16 ">
-          <div className="flex flex-col w-full h-full items-center justify-center gap-8 relative">
-            {/* Background gradients */}
-            <div className="w-64 h-64 bg-gradient-to-br from-orange-200 to-red-300 rounded-full opacity-20 absolute -top-24 -left-16 blur-3xl" />
-            {/* <div className="w-64 h-64 bg-gradient-to-br from-blue-300 to-purple-400 rounded-full opacity-20 absolute -bottom-24 right-0 blur-3xl" /> */}
+    <AuthenticatedRoute>
+      <BackgroundWrapper>
+        <div className="flex flex-col min-h-[130vh]">
+          <Navbar className="" />
 
-            {/* Floating icons */}
-            {/* <FloatingIcon icon="🔍" className="text-4xl top-[30%] left-96" /> */}
-            {/* <FloatingIcon icon="📊" className="text-4xl bottom-20 right-20" />
-          <FloatingIcon icon="🏢" className="text-4xl top-1/3 right-52" /> */}
-            {/* <FloatingIcon icon="🌎" className="text-4xl bottom-[40%] right-96" /> */}
+          <main className="flex-1 flex items-center justify-center px-4 min-h-screen py-28 mt-8">
+            <div className="w-full max-w-7xl mx-auto flex flex-col items-center justify-center gap-12">
+              {/* Title Section */}
+              <div className="text-center space-y-4">
+                <motion.h1
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-4xl md:text-6xl font-bold text-gray-900"
+                >
+                  Find Your Next Opportunity
+                </motion.h1>
+                <TypewriterEffect
+                  title="Search With"
+                  words={[
+                    "Noc Code",
+                    "Program",
+                    "Employer",
+                    "Address",
+                    "Occupation",
+                    "City",
+                    "Employer Name",
+                    "Province Mapping",
+                    "",
+                  ]}
+                />
+              </div>
 
-            {/* Main content */}
-            {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-2xl font-bold text-purple-800 mb-4">
-              Explore opportunities with our advanced search
-            </h1>
-          </motion.div> */}
-
-            <TypewriterEffect
-              title="Search With"
-              words={[
-                "Noc Code",
-                "Program",
-                "Employer",
-                "Address",
-                "Occupation",
-                "City",
-                "Employer Name",
-                "Province Mapping",
-                "",
-              ]}
-            />
-
-            <motion.div
-              className="w-[40%] relative"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Input
-                className="w-full rounded-full py-3 font-bold text-2xl h-14 focus-visible:ring-orange-600 pl-4 pr-14 shadow-lg"
-                placeholder="Start Your Search ..."
-                onChange={handleChange}
-                onKeyDown={handleKeyPress}
-              />
+              {/* Search Input */}
               <motion.div
-                className="absolute top-2 right-2 bg-orange-600 rounded-full p-2 cursor-pointer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={startSearch}
+                className="w-full max-w-3xl relative"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
               >
-                {isChecking ? (
-                  <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Search className="text-white" />
-                )}
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              className="mt-16 grid grid-cols-3 gap-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              {[
-                {
-                  icon: "🚀",
-                  title: "Fast Results",
-                  description: "Get instant matches",
-                },
-                {
-                  icon: "🔒",
-                  title: "Secure Search",
-                  description: "Your data is protected",
-                },
-                {
-                  icon: "🌟",
-                  title: "Smart Filters",
-                  description: "Refine your search easily",
-                },
-              ].map((feature, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-4xl mb-2">{feature.icon}</div>
-                  <h3 className="text-lg font-semibold text-orange-700">
-                    {feature.title}
-                  </h3>
-                  <p className="text-orange-600">{feature.description}</p>
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-br from-orange-500 to-red-500 rounded-full blur opacity-25 group-hover:opacity-40 transition duration-300" />
+                  <Input
+                    className="w-full rounded-full py-6 text-xl h-16 focus-visible:ring-orange-600 pl-6 pr-16 shadow-lg bg-white/90 backdrop-blur-sm border-orange-100 group-hover:border-orange-200 transition duration-300"
+                    placeholder="Start Your Search ..."
+                    value={input}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyPress}
+                    onFocus={() => setShowSuggestions(true)}
+                  />
+                  <motion.button
+                    className="absolute top-2 right-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-full p-3 cursor-pointer shadow-lg hover:shadow-orange-500/25 transition duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={startSearch}
+                  >
+                    {isChecking ? (
+                      <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Search className="w-6 h-6 text-white" />
+                    )}
+                  </motion.button>
                 </div>
-              ))}
-            </motion.div>
-          </div>
+
+                {/* Suggestions Dropdown */}
+                <AnimatePresence>
+                  {showSuggestions &&
+                    (input.trim() || isLoadingSuggestions) && (
+                      <motion.div
+                        ref={suggestionsRef}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 right-0 mt-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-orange-100 overflow-hidden z-50"
+                      >
+                        <ScrollArea className="max-h-[300px]">
+                          {isLoadingSuggestions ? (
+                            <div className="p-6 flex items-center justify-center">
+                              <div className="h-8 w-8 border-3 border-orange-600 border-t-transparent rounded-full animate-spin" />
+                            </div>
+                          ) : suggestions.length > 0 ? (
+                            suggestions.map((suggestion, index) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.05 }}
+                                className="group p-4 hover:bg-orange-50 cursor-pointer transition-all duration-300"
+                                onClick={() =>
+                                  handleSuggestionClick(suggestion.suggestion)
+                                }
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="p-2 rounded-full bg-orange-100 group-hover:bg-orange-200 transition-colors">
+                                    <Search className="w-4 h-4 text-orange-600" />
+                                  </div>
+                                  <span className="text-gray-800 group-hover:text-orange-600 transition-colors">
+                                    {suggestion.suggestion}
+                                  </span>
+                                </div>
+                              </motion.div>
+                            ))
+                          ) : (
+                            <div className="p-6 text-center text-gray-500">
+                              No suggestions found
+                            </div>
+                          )}
+                        </ScrollArea>
+                      </motion.div>
+                    )}
+                </AnimatePresence>
+              </motion.div>
+
+              {/* Features Grid */}
+              <SearchFeatures />
+            </div>
+          </main>
+
+          <Footer />
         </div>
-        {/* </BackgroundLines> */}
-        <Footer />
-      </AuthenticatedRoute>
-    </>
+      </BackgroundWrapper>
+    </AuthenticatedRoute>
   );
 }

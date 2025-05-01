@@ -258,11 +258,11 @@ export function DataTable({
                   }}
                 >
                   <div className="flex items-center py-3.5 px-4 group">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="flex items-center gap-1  min-w-0">
                       <div className="shrink-0 w-5 h-5 flex items-center justify-center rounded-md bg-orange-100/50 text-orange-600">
                         {column.headerIcon}
                       </div>
-                      <div className="flex-1 min-w-0">
+                      <div className=" min-w-0">
                         <span className="text-sm font-medium text-zinc-800 whitespace-nowrap">
                           {column.headerName}
                         </span>

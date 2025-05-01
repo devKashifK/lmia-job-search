@@ -1,65 +1,151 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles, Zap, Search } from "lucide-react";
+
 export default function CTA() {
   return (
-    <section
-      id="cta"
-      className="py-20 bg-gradient-to-br from-orange-500 to-red-600"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-6 animate__animated animate__fadeInUp">
-            Ready to Transform Your Search Experience?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 animate__animated animate__fadeInUp animate__delay-1s">
-            Get started today with 5 free credits! Unlock premium insights and
-            elevate your data analysis.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate__animated animate__fadeInUp animate__delay-2s">
-            <button className="bg-white text-orange-600 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-200 w-full sm:w-auto">
-              Get Started Free
-            </button>
-            <button className="bg-orange-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-orange-700 transition-colors border-2 border-white shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-200 w-full sm:w-auto">
-              Purchase Credits
-            </button>
-          </div>
-
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-white">
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 animate__animated animate__fadeInUp">
-              <div className="text-3xl font-bold mb-2">5</div>
-              <div className="text-white/90">Free Credits</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 animate__animated animate__fadeInUp animate__delay-1s">
-              <div className="text-3xl font-bold mb-2">Instant</div>
-              <div className="text-white/90">Access</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 animate__animated animate__fadeInUp animate__delay-2s">
-              <div className="text-3xl font-bold mb-2">24/7</div>
-              <div className="text-white/90">Support</div>
-            </div>
-          </div>
-
-          <div className="mt-12 text-white/90 text-sm animate__animated animate__fadeInUp animate__delay-3s">
-            <p>
-              No credit card required for free credits. Start searching now!
-            </p>
-          </div>
-        </div>
+    <section className="py-16">
+      {/* Background with diagonal split */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br " />
+        <div
+          className="absolute inset-0 bg-gradient-to-br  opacity-90"
+          style={{
+            clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 70%)",
+          }}
+        />
       </div>
 
-      {/* <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
-        <svg
-          className="relative block w-full h-16"
-          data-name="Layer 1"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
-            fill="#ffffff"
-          ></path>
-        </svg>
-      </div> */}
+      {/* Content */}
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left Column */}
+          <div className="text-gray-900">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="relative"
+            >
+              <div className="mb-8 inline-block">
+                <div className="flex items-center gap-2 text-orange-700  rounded-full px-4 py-2 text-sm font-medium">
+                  <Sparkles className="w-4 h-4" />
+                  <span>No Credit Card Required</span>
+                </div>
+              </div>
+              <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                Start Your Search{" "}
+                <span className="text-orange-600">Journey Today</span>
+              </h2>
+              <p className="text-xl text-gray-700 mb-12 max-w-lg">
+                Get instant access to premium insights with 5 free credits. Join
+                thousands of professionals making data-driven decisions.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button className="group relative inline-flex items-center justify-center bg-orange-600 text-white text-lg font-semibold px-8 py-4 rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/20">
+                  <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                  <span className="relative flex items-center gap-2">
+                    Get Started Free
+                    <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </button>
+                <button className="group inline-flex items-center justify-center bg-white text-orange-600 text-lg font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:bg-orange-50">
+                  <span className="flex items-center gap-2">
+                    Watch Demo
+                    <Zap className="w-5 h-5" />
+                  </span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right Column */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="relative"
+          >
+            {/* Feature Cards */}
+            <div className="relative space-y-6">
+              {/* Search Card */}
+              <div className="w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl shadow-black/10 p-6 transform hover:scale-105 transition-transform duration-300">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <Search className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">
+                      Smart Search
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Find exactly what you need
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-orange-50 rounded-xl p-4">
+                  <div className="h-2 w-2/3 bg-orange-200 rounded mb-2" />
+                  <div className="h-2 w-1/2 bg-orange-100 rounded" />
+                </div>
+              </div>
+
+              {/* Stats Card */}
+              <div className="w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl shadow-black/10 p-6 transform hover:scale-105 transition-transform duration-300">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="text-sm font-medium text-gray-600">
+                    Active Users
+                  </div>
+                  <div className="text-orange-600">↑ 42%</div>
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">
+                  10,000+
+                </div>
+                <div className="flex items-end gap-1 h-24">
+                  {[40, 70, 55, 80, 60, 90, 75].map((height, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 bg-gradient-to-t from-orange-500 to-orange-600 rounded-t opacity-80 hover:opacity-100 transition-opacity"
+                      style={{ height: `${height}%` }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Main Card */}
+              <div className="w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl shadow-black/10 p-8 transform hover:scale-105 transition-transform duration-300">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-16 h-16 bg-orange-600 rounded-2xl flex items-center justify-center">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900">
+                      5 Free Credits
+                    </h3>
+                    <p className="text-gray-600">Start exploring now</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                        <div className="w-3 h-3 rounded-full bg-orange-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="h-2 w-full bg-orange-50 rounded" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
     </section>
   );
 }

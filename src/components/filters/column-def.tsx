@@ -15,111 +15,95 @@ import { ReactNode } from "react";
 
 export type LMIA = {
   id: number;
-  "Province/Territory": string;
-  Program: string;
-  Employer: string;
-  Address: string;
-  Occupation: string;
-  "Incorporate Status": string;
-  "Approved LMIAs": number;
-  "Approved Positions": number;
-  "LMIA Period": string;
-  "LMIA Year": string;
-  "LMIA Day": number;
-  "2021 NOC": string;
-  City: string;
-  Postal_Code: string;
-  "GTR Lead Type": string;
-  "New Key": string;
-  "Occupation Title": string;
-  Employer_Name: string;
-  Operating_Name: string;
-  Local_Lead_ID: string;
-  "KEY 1": string;
-  Key_1: string;
-  "Contact Status": string;
-  Province_Mapping: string;
-  "Check 1": string;
+  "2021_noc": string;
+  city: string;
+  date_of_job_posting: string;
+  email: string;
+  job_location: string;
+  noc_priority: string;
+  occupation_title: string;
+  operating_name: string;
+  state: string;
 };
 
 export const columns: ColumnDef<LMIA>[] = [
   {
-    accessorKey: "Employer_Name",
-    icon: <PersonStanding className="mr-2 h-5 w-5 text-black/50" />,
+    accessorKey: "2021_noc",
+    icon: <PersonStanding className=" h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <PersonStanding className="mr-2 h-5 w-5 text-black/50" />
-        Employer Name
+        <PersonStanding className=" h-5 w-5 text-black/50" />
+        2021 NOC
       </div>
     ),
   },
   {
-    accessorKey: "City",
-    icon: <Satellite className="mr-2 h-5 w-5 text-black/50" />,
+    accessorKey: "city",
+    icon: <Satellite className=" h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <Satellite className="mr-2 h-5 w-5 text-black/50" />
+        <Satellite className=" h-5 w-5 text-black/50" />
         City
       </div>
     ),
   },
   {
-    accessorKey: "Program",
-    icon: <DatabaseIcon className="mr-2 h-5 w-5 text-black/50" />,
+    accessorKey: "date_of_job_posting",
+    icon: <DatabaseIcon className=" h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <DatabaseIcon className="mr-2 h-5 w-5 text-black/50" />
-        Program
+        <DatabaseIcon className=" h-5 w-5 text-black/50" />
+        Date of Job Posting
       </div>
     ),
   },
   {
-    accessorKey: "Occupation Title",
-    icon: <Briefcase className="mr-2 h-5 w-5 text-black/50" />,
+    accessorKey: "email",
+    icon: <Briefcase className=" h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <Briefcase className="mr-2 h-5 w-5 text-black/50" />
-        Occupation
+        <Briefcase className=" h-5 w-5 text-black/50" />
+        Email
       </div>
     ),
   },
   {
-    accessorKey: "Province/Territory",
-    icon: <Building className="mr-2 h-5 w-5 text-black/50" />,
+    accessorKey: "job_location",
+    icon: <Building className=" h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <Building className="mr-2 h-5 w-5 text-black/50" />
-        Province
+        <Building className=" h-5 w-5 text-black/50" />
+        Job Location
       </div>
     ),
   },
   {
-    accessorKey: "Approved Positions",
-    icon: <PowerSquare className="mr-2 h-5 w-5 text-black/50" />,
+    accessorKey: "noc_priority",
+    icon: <PowerSquare className=" h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <PowerSquare className="mr-2 h-5 w-5 text-black/50" />
-        Positions
+        <PowerSquare className=" h-5 w-5 text-black/50" />
+        Noc Priority
       </div>
     ),
   },
   {
-    accessorKey: "LMIA Year",
-    icon: <Map className="mr-2 h-5 w-5 text-black/50" />,
+    accessorKey: "occupation_title",
+    icon: <Map className="h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <Map className="mr-2 h-5 w-5 text-black/50" />
-        LMIA
+        <Map className=" h-5 w-5 text-black/50" />
+        Occupation Title
       </div>
     ),
   },
   {
-    accessorKey: "Postal_Code",
-    icon: <AreaChart className="mr-2 h-5 w-5 text-black/50" />,
+    accessorKey: "operating_name",
+    icon: <AreaChart className=" h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
-        <AreaChart className="mr-2 h-5 w-5 text-black/50" />
-        Postal
+        <AreaChart className=" h-5 w-5 text-black/50" />
+        Operating Name
       </div>
     ),
   },

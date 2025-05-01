@@ -9,14 +9,25 @@ import { Label } from "@/components/ui/label";
 import db from "@/db";
 import { useToast } from "@/hooks/use-toast";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collison";
-import { Gift, ChevronLeft } from "lucide-react";
+import { Gift, ChevronLeft, Eye, EyeOff } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [userType, setUserType] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { toast } = useToast();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -31,10 +42,19 @@ export default function SignUpPage() {
       return;
     }
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !userType || !confirmPassword) {
       toast({
         title: "Missing Information",
         description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast({
+        title: "Passwords Don't Match",
+        description: "Please make sure your passwords match",
         variant: "destructive",
       });
       return;
@@ -58,6 +78,7 @@ export default function SignUpPage() {
         options: {
           data: {
             name: name,
+            user_type: userType,
           },
           emailRedirectTo: `${window.location.origin}/search`,
         },
@@ -178,36 +199,107 @@ export default function SignUpPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm text-zinc-700">
-                  Email address
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-11"
-                  placeholder="name@example.com"
-                  autoComplete="email"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm text-zinc-700">
+                    Email address
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-11"
+                    placeholder="name@example.com"
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="userType" className="text-sm text-zinc-700">
+                    You are
+                  </Label>
+                  <Select value={userType} onValueChange={setUserType}>
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student</SelectItem>
+                      <SelectItem value="employer">Employer</SelectItem>
+                      <SelectItem value="business">Business</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm text-zinc-700">
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-11"
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm text-zinc-700">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-11 pr-10"
+                      placeholder="••••••••"
+                      autoComplete="new-password"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-zinc-500" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-zinc-500" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="confirmPassword"
+                    className="text-sm text-zinc-700"
+                  >
+                    Confirm Password
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="h-11 pr-10"
+                      placeholder="••••••••"
+                      autoComplete="new-password"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4 text-zinc-500" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-zinc-500" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               <div className="bg-orange-50/50 border border-orange-100 rounded-lg p-4 flex items-start gap-3">
@@ -229,6 +321,7 @@ export default function SignUpPage() {
                   checked={agreed}
                   onCheckedChange={(checked) => setAgreed(checked as boolean)}
                   className="mt-1"
+                  required
                 />
                 <label htmlFor="terms" className="text-sm text-zinc-600">
                   By creating an account, you agree to our{" "}
@@ -251,7 +344,7 @@ export default function SignUpPage() {
               <Button
                 type="submit"
                 className="w-full h-11 bg-orange-600 hover:bg-orange-700"
-                disabled={isLoading}
+                disabled={isLoading || !agreed}
               >
                 {isLoading ? (
                   <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
