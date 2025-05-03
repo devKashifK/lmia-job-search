@@ -1,10 +1,7 @@
 "use client";
-// import { DataTable } from "@/components/ui/data-table";
 
 import { useTableStore } from "@/context/store";
-import { useMemo, useState, useEffect } from "react";
-import { AgGridReact } from "@ag-grid-community/react";
-import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
+import { useEffect } from "react";
 import "@ag-grid-community/styles/ag-grid.css";
 import "@ag-grid-community/styles/ag-theme-alpine.css";
 
@@ -12,7 +9,6 @@ import {
   PersonStanding,
   Satellite,
   DatabaseIcon,
-  Briefcase,
   Building,
   PowerSquare,
   Map,
@@ -22,6 +18,7 @@ import FilterPanel from "@/components/filters/filter-panel";
 import { AnimatePresence, motion } from "framer-motion";
 import DynamicChart from "@/components/charts/chart";
 import { DataTable } from "@/components/ui/custom-table";
+import { SearchEngineSkeleton } from "@/components/search-components.tsx/search-engine-skeleton";
 
 const columns = [
   {
@@ -114,30 +111,32 @@ const columns = [
 export default function SearchEngine({ keywords }: { keywords: string }) {
   const { searchWithFuse, filteredData, isLoading } = useTableStore();
 
-  console.log(filteredData, "Check");
-
   useEffect(() => {
     if (keywords) {
-      searchWithFuse(keywords);
+      searchWithFuse(decodeURIComponent(keywords));
     }
   }, [keywords, searchWithFuse]);
 
   const showFilterPanel = useTableStore((state) => state.showFilterPanel);
 
+  if (isLoading) {
+    return <SearchEngineSkeleton showOverlay={false} />;
+  }
+
   return (
     <div className="w-full py-6 px-6 flex flex-col gap-4">
       <div className="flex gap-2">
+        <DynamicChart data={filteredData} keyName={"state"} active={"bar"} />
         <DynamicChart
           data={filteredData}
-          keyName={"Occupation"}
-          active={"bar"}
-        />
-        <DynamicChart
-          data={filteredData}
-          keyName={"2021 NOC"}
+          keyName={"2021_noc"}
           active={"line"}
         />
-        <DynamicChart data={filteredData} keyName={"Employer"} active={"bar"} />
+        <DynamicChart
+          data={filteredData}
+          keyName={"occupation_title"}
+          active={"bar"}
+        />
       </div>
       <div className="flex gap-0 relative min-h-[calc(100vh-23rem)]">
         <AnimatePresence initial={false}>
@@ -188,45 +187,8 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
             className="h-[calc(100vh-23rem)] shadow-lg"
             isLoading={isLoading}
           />
-          {/* <PremiumTable /> */}
         </motion.div>
       </div>
     </div>
   );
 }
-
-// const DataTable = ({ rowData, columnDefs }) => {
-//   const [gridApi, setGridApi] = useState(null);
-
-//   const onGridReady = (params) => {
-//     setGridApi(params.api);
-//   };
-
-//   return (
-//     <div
-//       className="ag-theme-alpine h-[600px] rounded-md border border-gray-300 shadow-lg"
-//       style={{
-//         width: "100%",
-//       }}
-//     >
-//       <AgGridReact
-//         rowData={rowData}
-//         columnDefs={columnDefs}
-//         defaultColDef={{
-//           sortable: true,
-//           resizable: true,
-//           headerClass:
-//             "bg-purple-500 text-white text-sm font-semibold uppercase",
-//           cellClass: "text-gray-800 text-sm font-normal px-2 py-2",
-//           flex: 1,
-//         }}
-//         rowClass="even:bg-gray-50 hover:bg-purple-100"
-//         onGridReady={onGridReady}
-//         modules={[ClientSideRowModelModule]}
-//         overlayNoRowsTemplate={
-//           '<span class="text-gray-500">No data available</span>'
-//         }
-//       />
-//     </div>
-//   );
-// };

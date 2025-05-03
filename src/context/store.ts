@@ -8,6 +8,7 @@ interface TableState {
   filters: Record<string, Set<string>>;
   showFilterPanel: boolean;
   currentSearchId: string | null;
+  isLoading: boolean;
   updateSearchSaved: (searchId: string, saved: boolean) => Promise<void>;
 
   setShowFilterPanel: (value: boolean) => void;
@@ -27,6 +28,7 @@ export const useTableStore = create<TableState>((set, get) => ({
   filters: {},
   showFilterPanel: true,
   currentSearchId: null,
+  isLoading: false,
 
   setShowFilterPanel: (value) => {
     const currentValue = get().showFilterPanel;
@@ -130,35 +132,24 @@ export const useTableStore = create<TableState>((set, get) => ({
       return;
     }
 
-    // const fuse = new Fuse(DATA, {
-    //   keys: [
-    //     "Province/Territory",
-    //     "Program",
-    //     "Employer",
-    //     "Address",
-    //     "Occupation",
-    //     "2021 NOC",
-    //     "City",
-    //     "Postal_Code",
-    //     "Occupation Title",
-    //     "Employer_Name",
-    //   ],
-    //   threshold: 0.4,
-    // });
+    set({ isLoading: true });
 
-    // const result = fuse.search(keywords).map((res) => res.item);
+    try {
+      const { data: result, error } = await db.rpc("rpc_search_hot_leads", {
+        term: keywords,
+      });
 
-    const { data: result, error } = await db.rpc("rpc_search_hot_leads", {
-      term: keywords,
-    });
+      if (error) {
+        console.error("Error searching:", error);
+        throw error;
+      }
 
-    console.log(result, "checkResult");
-    if (error) {
-      console.error("Error searching:", error);
-      throw error;
+      set({ data: result, filteredData: result });
+    } catch (error) {
+      console.error("Error in search:", error);
+    } finally {
+      set({ isLoading: false });
     }
-
-    set({ data: result, filteredData: result });
   },
   setCurrentSearchId: (id) => set({ currentSearchId: id }),
   updateSearchSaved: async (searchId, saved) => {
