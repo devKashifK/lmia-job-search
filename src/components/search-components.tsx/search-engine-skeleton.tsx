@@ -1,4 +1,6 @@
+"use client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "@/hooks/use-session";
 import { Lock } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -8,13 +10,14 @@ export function SearchEngineSkeleton({
 }: {
   showOverlay?: boolean;
 }) {
+  const { session } = useSession();
   const params = useParams();
   const searchKey = params?.search as string;
 
   return (
     <div className="w-full py-6 px-6 flex flex-col gap-4 relative">
       {/* Overlay */}
-      {showOverlay && (
+      {!session && showOverlay && (
         <div className="absolute inset-0 bg-white/20 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center gap-4 p-8 bg-white/90 rounded-lg shadow-lg">
             <Lock className="w-12 h-12 text-orange-600" />
