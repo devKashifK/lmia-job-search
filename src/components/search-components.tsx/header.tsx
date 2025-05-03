@@ -35,7 +35,7 @@ export default function Header({ keywords }: { keywords: string }) {
               </div>
               <div className="flex items-center gap-1">
                 <span className="text-xs font-medium text-zinc-900">
-                  {keywords}
+                  {decodeURIComponent(keywords)}
                 </span>
                 <span className="text-[10px] px-1.5 py-0.5 bg-zinc-100 text-zinc-600 rounded-md font-medium">
                   {filteredData.length}
