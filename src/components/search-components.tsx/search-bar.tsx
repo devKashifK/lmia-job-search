@@ -192,7 +192,7 @@ export function SearchBar() {
           transition={{ duration: 0.2 }}
         >
           <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-md blur-sm group-hover:opacity-40 transition duration-300" />
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black" />
+          {/* <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black" /> */}
           <input
             ref={inputRef}
             type="text"
@@ -201,7 +201,7 @@ export function SearchBar() {
             onKeyDown={handleKeyPress}
             onFocus={() => setShowSuggestions(true)}
             placeholder="Search..."
-            className="relative w-full h-7 pl-8 pr-8 text-xs bg-white/90 backdrop-blur-sm border border-orange-100 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500/20 focus:border-orange-500/30 transition-all duration-200"
+            className="relative w-full h-8 pl-4 pr-8 text-xs bg-white/90 backdrop-blur-sm border border-orange-100 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500/20 focus:border-orange-500/30 transition-all duration-200"
           />
           <AnimatePresence>
             {searchQuery && (
