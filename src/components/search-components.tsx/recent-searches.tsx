@@ -10,6 +10,12 @@ import CustomLink from "@/app/CustomLink";
 import { Clock, Search as SearchIcon, ArrowRight } from "lucide-react";
 import { SheetHeader } from "@/components/ui/sheet-header";
 import { toast } from "@/hooks/use-toast";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 interface RecentSearchesProps {
   onClose: () => void;
@@ -26,7 +32,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
     sessionStorage.setItem("currentSearchId", search.id);
     toast({
       title: "Search loaded",
-      description: `Loading search: ${search.keyword}`,
+      description: `Loading search: ${search.keywords}`,
     });
     onClose();
   };
@@ -35,14 +41,18 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
     return (
       <>
         <SheetHeader
-          title="Recent Searches"
+          title={
+            <span className="font-bold text-lg text-orange-600">
+              Recent Searches
+            </span>
+          }
           description="Quick access to your previous searches"
           onClose={onClose}
         />
         <div className="flex items-center justify-center h-[300px]">
           <div className="animate-pulse flex flex-col items-center gap-3">
-            <div className="w-8 h-8 bg-orange-100 rounded-xl" />
-            <div className="h-3 w-20 bg-orange-100/70 rounded-lg" />
+            <div className="w-10 h-10 bg-orange-100 rounded-xl" />
+            <div className="h-4 w-24 bg-orange-100/70 rounded-lg" />
           </div>
         </div>
       </>
@@ -53,18 +63,22 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
     return (
       <>
         <SheetHeader
-          title="Recent Searches"
+          title={
+            <span className="font-bold text-lg text-orange-600">
+              Recent Searches
+            </span>
+          }
           description="Quick access to your previous searches"
           onClose={onClose}
         />
         <div className="flex flex-col items-center justify-center h-[300px] px-6 text-center">
-          <div className="p-3.5 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-2xl mb-4 shadow-[0_2px_4px_rgba(251,146,60,0.1)]">
-            <SearchIcon className="w-6 h-6 text-orange-500" />
+          <div className="p-4 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-2xl mb-4 shadow-[0_2px_8px_rgba(251,146,60,0.12)]">
+            <SearchIcon className="w-8 h-8 text-orange-500" />
           </div>
-          <p className="text-sm font-medium text-zinc-800">
+          <p className="text-base font-semibold text-zinc-800">
             No recent searches
           </p>
-          <p className="text-xs text-zinc-500 mt-1 max-w-[200px] leading-relaxed">
+          <p className="text-sm text-zinc-500 mt-1 max-w-[240px] leading-relaxed">
             Your search history will appear here for quick access
           </p>
         </div>
@@ -75,60 +89,82 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
   return (
     <div className="flex flex-col h-full">
       <SheetHeader
-        title="Recent Searches"
+        title={
+          <span className="font-bold text-lg text-orange-600">
+            Recent Searches
+          </span>
+        }
         description="Quick access to your previous searches"
         onClose={onClose}
       />
+      <div className="border-b border-orange-100 mb-2" />
       <ScrollArea className="flex-1">
         <div className="p-3">
-          {searches.map((search) => (
-            <CustomLink
-              key={search.id}
-              href={`/search/${encodeURIComponent(search.keyword)}`}
-              onClick={() => handleSearchSelect(search)}
-              className="group block mb-1"
-            >
-              <div className="flex items-start gap-3 p-3 rounded-xl hover:bg-gradient-to-r hover:from-orange-50 hover:to-orange-50/50 transition-all">
-                <div className="shrink-0 w-9 h-9 flex items-center justify-center rounded-xl bg-gradient-to-br from-orange-100 via-orange-50 to-white text-orange-600 shadow-sm group-hover:shadow-md transition-all">
-                  <Clock className="w-4 h-4" />
-                </div>
-                <div className="flex-1 min-w-0 py-0.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-[13px] font-medium text-zinc-900 truncate leading-none">
-                      {search.keyword}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-medium text-zinc-400 whitespace-nowrap">
+          <TooltipProvider>
+            {searches.map((search) => (
+              <CustomLink
+                key={search.id}
+                href={`/search/${encodeURIComponent(search.keywords)}`}
+                onClick={() => handleSearchSelect(search)}
+                className="group block mb-2"
+              >
+                <div className="group flex items-center gap-3 p-3 rounded-xl bg-white shadow-sm hover:shadow-md border border-zinc-100 hover:border-orange-200 transition-all cursor-pointer">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 via-orange-50 to-white text-orange-600 shadow group-hover:shadow-md">
+                    <Clock className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-zinc-900 truncate">
+                        {search.keywords}
+                      </span>
+                      <span className="text-xs text-zinc-400">
                         {formatDistanceToNow(new Date(search.created_at), {
                           addSuffix: true,
                         })}
                       </span>
-                      <ArrowRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-orange-500 transition-colors" />
                     </div>
-                  </div>
-                  {search.filters && Object.keys(search.filters).length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {Object.entries(search.filters)
-                        .slice(0, 2)
-                        .map(([key, value]) => (
-                          <span
-                            key={key}
-                            className="px-2 py-0.5 text-[11px] font-medium bg-white text-zinc-600 rounded-md border shadow-sm group-hover:border-orange-200 transition-all"
-                          >
-                            {key}: {value}
-                          </span>
-                        ))}
-                      {Object.keys(search.filters).length > 2 && (
-                        <span className="px-2 py-0.5 text-[11px] font-medium text-zinc-400 bg-zinc-50 rounded-md">
-                          +{Object.keys(search.filters).length - 2} more
-                        </span>
+                    {search.filters &&
+                      Object.keys(search.filters).length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {Object.entries(search.filters)
+                            .slice(0, 2)
+                            .map(([key, value]) => (
+                              <span
+                                key={key}
+                                className="px-2 py-0.5 bg-orange-50 text-orange-700 rounded-full text-xs font-medium border border-orange-200"
+                              >
+                                {key}: {value}
+                              </span>
+                            ))}
+                          {Object.keys(search.filters).length > 2 && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="px-2 py-0.5 bg-zinc-100 text-zinc-500 rounded-full text-xs font-medium border border-zinc-200 cursor-pointer">
+                                  +{Object.keys(search.filters).length - 2} more
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" align="center">
+                                {Object.entries(search.filters)
+                                  .slice(2)
+                                  .map(([key, value]) => (
+                                    <div
+                                      key={key}
+                                      className="text-xs text-zinc-700"
+                                    >
+                                      {key}: {value}
+                                    </div>
+                                  ))}
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                        </div>
                       )}
-                    </div>
-                  )}
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-orange-500 transition-colors" />
                 </div>
-              </div>
-            </CustomLink>
-          ))}
+              </CustomLink>
+            ))}
+          </TooltipProvider>
         </div>
       </ScrollArea>
     </div>

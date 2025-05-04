@@ -37,7 +37,7 @@ export default function Map() {
     // Add a marker
     L.marker(LONDON_CENTER).addTo(map).bindPopup(`
         <div class="text-center">
-          <h3 class="font-semibold">SearchPro London Office</h3>
+          <h3 class="font-semibold">Job Maze London Office</h3>
           <p class="text-sm text-gray-600">
             123 Business Street<br/>
             London, SW1A 1AA

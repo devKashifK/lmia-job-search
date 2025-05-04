@@ -27,7 +27,6 @@ export default function Header({ keywords }: { keywords: string }) {
     <div className="bg-white border-b border-zinc-100 h-11">
       <div className="max-w-screen-2xl mx-auto h-full">
         <div className="flex items-center justify-between px-4 h-full">
-          {/* Left side */}
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 pr-3 border-r border-zinc-200 h-5">
               <div className="p-1 bg-orange-50 rounded-md">

@@ -9,9 +9,9 @@ import SearchEngine from "@/pages/search-engine";
 
 export default function Search({ searchKey }: { searchKey: string }) {
   const session = useSession();
-  console.log(session);
+  console.log(session, "checkSession");
 
-  if (!session.session) {
+  if (!session.session && !session.loading) {
     return (
       <div className="min-h-screen bg-zinc-50/40 max-h-screen overflow-hidden">
         <Topbar />
@@ -24,7 +24,6 @@ export default function Search({ searchKey }: { searchKey: string }) {
   return (
     <div className="min-h-screen bg-zinc-50/40">
       <Topbar />
-
       <Header keywords={searchKey} />
       <SearchEngine keywords={searchKey} />
     </div>

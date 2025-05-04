@@ -5,8 +5,16 @@ import {
   GridComponent,
   TooltipComponent,
   TitleComponent,
+  VisualMapComponent,
 } from "echarts/components";
-import { BarChart, LineChart, PieChart } from "echarts/charts";
+import {
+  BarChart,
+  LineChart,
+  PieChart,
+  TreemapChart,
+  HeatmapChart,
+  ScatterChart,
+} from "echarts/charts";
 import { CanvasRenderer } from "echarts/renderers";
 import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
@@ -27,6 +35,10 @@ import {
   Share2,
   Maximize2,
   X,
+  FlameIcon,
+  DotIcon,
+  ActivityIcon,
+  LayoutGridIcon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -37,15 +49,25 @@ import {
 import { Button } from "../ui/button";
 import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "../ui/tooltip";
 
 // Register the required components
 echarts.use([
   GridComponent,
   TooltipComponent,
   TitleComponent,
+  VisualMapComponent,
   BarChart,
   LineChart,
   PieChart,
+  TreemapChart,
+  HeatmapChart,
+  ScatterChart,
   CanvasRenderer,
 ]);
 
@@ -90,6 +112,10 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
     { id: "bar", icon: ChartBarIcon },
     { id: "line", icon: ChartLineIcon },
     { id: "pie", icon: ChartPieIcon },
+    { id: "treemap", icon: LayoutGridIcon },
+    { id: "heatmap", icon: FlameIcon },
+    { id: "scatter", icon: DotIcon },
+    { id: "sparkline", icon: ActivityIcon },
   ];
 
   const top10Highest = sortedData.slice(0, 10);
@@ -205,9 +231,66 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
         },
       };
 
+      if (chartType === "treemap") {
+        return {
+          ...commonOptions,
+          visualMap: undefined,
+          series: [
+            {
+              type: "treemap",
+              data: dataset.map((item) => ({
+                name: item.name,
+                value: item.value,
+                itemStyle: {
+                  color:
+                    colors.gradient[
+                      Math.floor(Math.random() * colors.gradient.length)
+                    ],
+                },
+              })),
+              label: {
+                show: true,
+                formatter: "{b}",
+                fontSize: 10,
+              },
+              upperLabel: {
+                show: true,
+                height: 30,
+              },
+              itemStyle: {
+                borderColor: theme === "dark" ? "#374151" : "#e5e7eb",
+                borderWidth: 1,
+                gapWidth: 1,
+              },
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowColor: "rgba(0,0,0,0.2)",
+                },
+              },
+              breadcrumb: {
+                show: false,
+              },
+              roam: false,
+              nodeClick: false,
+              levels: [
+                {
+                  itemStyle: {
+                    borderColor: theme === "dark" ? "#374151" : "#e5e7eb",
+                    borderWidth: 1,
+                    gapWidth: 1,
+                  },
+                },
+              ],
+            },
+          ],
+        };
+      }
+
       if (chartType === "pie") {
         return {
           ...commonOptions,
+          visualMap: undefined,
           series: [
             {
               type: "pie",
@@ -246,6 +329,7 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
       if (chartType === "bar") {
         return {
           ...commonOptions,
+          visualMap: undefined,
           xAxis: {
             type: "category",
             data: dataset.map((item) => item.name),
@@ -301,6 +385,7 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
       if (chartType === "line") {
         return {
           ...commonOptions,
+          visualMap: undefined,
           xAxis: {
             type: "category",
             data: dataset.map((item) => item.name),
@@ -360,6 +445,183 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
                 },
               },
               data: dataset.map((item) => item.value),
+            },
+          ],
+        };
+      }
+
+      if (chartType === "heatmap") {
+        // Generate heatmap data
+        const heatmapData = dataset.map((item, index) => [
+          index,
+          Math.floor(Math.random() * dataset.length),
+          item.value,
+        ]);
+
+        return {
+          ...commonOptions,
+          visualMap: {
+            show: false,
+            min: 0,
+            max: Math.max(...dataset.map((item) => item.value)),
+            calculable: true,
+            orient: "horizontal",
+            left: "center",
+            bottom: "15%",
+            inRange: {
+              color:
+                theme === "dark"
+                  ? [
+                      "#313695",
+                      "#4575b4",
+                      "#74add1",
+                      "#abd9e9",
+                      "#e0f3f8",
+                      "#ffffbf",
+                      "#fee090",
+                      "#fdae61",
+                      "#f46d43",
+                      "#d73027",
+                      "#a50026",
+                    ]
+                  : [
+                      "#313695",
+                      "#4575b4",
+                      "#74add1",
+                      "#abd9e9",
+                      "#e0f3f8",
+                      "#ffffbf",
+                      "#fee090",
+                      "#fdae61",
+                      "#f46d43",
+                      "#d73027",
+                      "#a50026",
+                    ],
+            },
+          },
+          xAxis: {
+            type: "category",
+            data: dataset.map((item) => item.name),
+            splitArea: {
+              show: true,
+            },
+          },
+          yAxis: {
+            type: "category",
+            data: dataset.map((item) => item.name),
+            splitArea: {
+              show: true,
+            },
+          },
+          series: [
+            {
+              type: "heatmap",
+              data: heatmapData,
+              label: {
+                show: true,
+              },
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowColor: "rgba(0, 0, 0, 0.5)",
+                },
+              },
+            },
+          ],
+        };
+      }
+
+      if (chartType === "scatter") {
+        return {
+          ...commonOptions,
+          visualMap: undefined,
+          xAxis: {
+            type: "value",
+            scale: true,
+          },
+          yAxis: {
+            type: "value",
+            scale: true,
+          },
+          series: [
+            {
+              type: "scatter",
+              data: dataset.map((item, index) => ({
+                value: [index, item.value],
+                name: item.name,
+                itemStyle: {
+                  color:
+                    colors.gradient[
+                      Math.floor(Math.random() * colors.gradient.length)
+                    ],
+                },
+              })),
+              symbolSize: (data) => {
+                return Math.sqrt(data[1]) * 5;
+              },
+              emphasis: {
+                focus: "series",
+                label: {
+                  show: true,
+                  formatter: function (param) {
+                    return param.data.name;
+                  },
+                  position: "top",
+                },
+              },
+            },
+          ],
+        };
+      }
+
+      if (chartType === "sparkline") {
+        return {
+          ...commonOptions,
+          visualMap: undefined,
+          grid: {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+          },
+          xAxis: {
+            type: "category",
+            show: false,
+            boundaryGap: false,
+          },
+          yAxis: {
+            type: "value",
+            show: false,
+          },
+          series: [
+            {
+              type: "line",
+              data: dataset.map((item) => item.value),
+              smooth: true,
+              symbol: "none",
+              lineStyle: {
+                width: 2,
+                color: colors.primary,
+              },
+              areaStyle: {
+                color: {
+                  type: "linear",
+                  x: 0,
+                  y: 0,
+                  x2: 0,
+                  y2: 1,
+                  colorStops: [
+                    {
+                      offset: 0,
+                      color: colors.primary,
+                    },
+                    {
+                      offset: 1,
+                      color: "rgba(255,255,255,0)",
+                    },
+                  ],
+                },
+              },
             },
           ],
         };
@@ -456,22 +718,33 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
             <div className="w-px h-2.5 bg-zinc-200 mx-0.5" />
 
             {/* Chart Type Controls */}
-            {chartTypes.map(({ id, icon: Icon }) => (
-              <motion.button
-                key={id}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setActiveChartType(id)}
-                className={cn(
-                  "p-1 rounded transition-all duration-200",
-                  activeChartType === id
-                    ? "text-orange-600 bg-orange-100 shadow-sm"
-                    : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100"
-                )}
-              >
-                <Icon className="h-2.5 w-2.5" />
-              </motion.button>
-            ))}
+            <div className="flex gap-2 items-center">
+              <TooltipProvider>
+                {chartTypes.map(({ id, icon: Icon }) => (
+                  <Tooltip key={id}>
+                    <TooltipTrigger asChild>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setActiveChartType(id)}
+                        aria-label={id + " chart"}
+                        className={cn(
+                          "p-1 rounded transition-all duration-200",
+                          activeChartType === id
+                            ? "text-orange-600 bg-orange-100 shadow-sm"
+                            : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100"
+                        )}
+                      >
+                        <Icon className="h-2.5 w-2.5" />
+                      </motion.button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" align="center">
+                      <span className="capitalize">{id} chart</span>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </TooltipProvider>
+            </div>
 
             <div className="w-px h-2.5 bg-zinc-200 mx-0.5" />
 
@@ -533,6 +806,7 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
             className="transition-all duration-300"
             onChartReady={(instance) => setChartInstance(instance)}
             theme={theme}
+            notMerge={true}
           />
         </div>
 
@@ -697,6 +971,7 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
                       option={getChartOptions(displayData, activeChartType)}
                       style={{ height: "100%", width: "100%" }}
                       theme={theme}
+                      notMerge={true}
                     />
                   </div>
 

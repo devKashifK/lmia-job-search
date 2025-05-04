@@ -80,7 +80,7 @@ export default function LoadingScreen({ className }: { className?: string }) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              SearchPro
+              Job Maze
             </motion.div>
 
             {/* Animated Icon */}
@@ -147,7 +147,7 @@ export default function LoadingScreen({ className }: { className?: string }) {
               }}
               className="text-gradient text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 text-transparent bg-clip-text"
             >
-              Welcome to SearchPro!
+              Welcome to Job Maze!
             </motion.div>
           </motion.div>
         )}

@@ -130,7 +130,7 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
         <DynamicChart
           data={filteredData}
           keyName={"2021_noc"}
-          active={"line"}
+          active={"heatmap"}
         />
         <DynamicChart
           data={filteredData}

@@ -112,7 +112,8 @@ export default function SignUpPage() {
 
       if (profileError) throw profileError;
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Something went wrong";
+      const errorMessage =
+        error instanceof Error ? error.message : "Something went wrong";
       toast({
         title: "Error",
         description: errorMessage,
@@ -155,7 +156,7 @@ export default function SignUpPage() {
                     Create an account
                   </h1>
                   <p className="text-sm text-gray-500">
-                    Enter your details to get started with SearchPro
+                    Enter your details to get started with Job Maze
                   </p>
                 </div>
 
@@ -361,7 +362,7 @@ export default function SignUpPage() {
                     </h2>
                     <p className="text-lg text-orange-50 mb-8">
                       Join thousands of users who are finding their perfect
-                      opportunities with SearchPro.
+                      opportunities with Job Maze.
                     </p>
 
                     {/* Preview Box */}

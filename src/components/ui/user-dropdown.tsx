@@ -60,7 +60,11 @@ export default function UserDropdown({ className }: { className?: string }) {
           )}
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="bottom" align="end" className="w-48">
+      <DropdownMenuContent
+        side="bottom"
+        align="end"
+        className="w-48 bg-orange-50/80"
+      >
         <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
           <User className="w-1 h-1 " />
           <span className="text-base">Profile</span>

@@ -3,13 +3,18 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
+import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import CustomLink from "../CustomLink";
 import { useSession } from "@/hooks/use-session";
 import UserDropdown from "@/components/ui/user-dropdown";
 import Footer from "@/pages/homepage/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MapPin, Mail, Phone, Building2 } from "lucide-react";
+import SectionTitle from "@/components/ui/section-title";
+import { motion } from "framer-motion";
+import Navbar from "@/app/nabvar";
+import { HoverCard } from "@/components/ui/hover-card";
 
 // Dynamically import the Map component with SSR disabled
 const DynamicMap = dynamic(() => import("./map"), { ssr: false });
@@ -19,266 +24,142 @@ export default function ContactPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
 
   const { session } = useSession();
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-amber-400 via-orange-500 to-orange-600">
-      {/* Navigation */}
-      <nav className="relative z-10 px-6 py-4 flex items-center justify-between">
-        <CustomLink href="/" className="flex items-center space-x-2">
-          <span className="text-white text-xl font-semibold">SearchPro</span>
-        </CustomLink>
+    <div className="min-h-screen bg-orange-50/80 flex flex-col">
+      <Navbar />
 
-        <div className="hidden md:flex items-center space-x-8">
-          <Link
-            href="#"
-            className="text-white hover:text-white/80 transition-colors"
-          >
-            What is SearchPro?
-          </Link>
-          <Link
-            href="#"
-            className="text-white hover:text-white/80 transition-colors"
-          >
-            Features
-          </Link>
-          {session ? (
-            <UserDropdown className="bg-white" />
-          ) : (
-            <>
-              <CustomLink
-                href="/sign-in"
-                className="text-white hover:underline"
-              >
-                Sign In
-              </CustomLink>
-              <CustomLink
-                href="/sign-up"
-                className="text-white hover:underline"
-              >
-                Sign Up
-              </CustomLink>
-            </>
-          )}
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <div className="relative">
-        {/* Floating Avatars */}
-        <div className="absolute top-20 left-[15%] animate-float-slow">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white/50 shadow-lg">
-            <Image
-              src="/photo-2.jpg"
-              alt="Team member"
-              width={64}
-              height={64}
-              className="object-cover"
-            />
+      {/* Unified Hero + Get in Touch Section */}
+      <section className="relative py-24 bg-white overflow-hidden">
+        {/* Abstract SVG background */}
+        <svg
+          className="absolute left-1/2 top-0 -translate-x-1/2"
+          width="900"
+          height="400"
+          fill="none"
+        >
+          <ellipse
+            cx="450"
+            cy="200"
+            rx="400"
+            ry="120"
+            fill="url(#hero-gradient)"
+            fillOpacity="0.15"
+          />
+          <defs>
+            <linearGradient
+              id="hero-gradient"
+              x1="0"
+              x2="900"
+              y1="0"
+              y2="400"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stopColor="#fb923c" />
+              <stop offset="1" stopColor="#f59e42" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div className="relative z-10 flex flex-col items-center justify-center">
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl px-8 py-12 max-w-xl mx-auto text-center border border-orange-100 mb-12">
+            <span className="inline-flex items-center gap-2 mb-4">
+              <span className="w-3 h-3 rounded-full bg-orange-500" />
+              <span className="uppercase text-xs font-semibold text-orange-600 tracking-widest">
+                Contact
+              </span>
+            </span>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+              How can we help you?
+            </h1>
+            <p className="text-lg text-gray-600 mb-0">
+              Our team is ready to answer your questions and support your
+              journey.
+            </p>
           </div>
-        </div>
-        <div className="absolute top-40 right-[20%] animate-float-delayed">
-          <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white/50 shadow-lg">
-            <Image
-              src="/photo-3.jpg"
-              alt="Team member"
-              width={80}
-              height={80}
-              className="object-cover"
-            />
-          </div>
-        </div>
-        <div className="absolute bottom-20 left-[30%] animate-float">
-          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/50 shadow-lg">
-            <Image
-              src="/photo-1.jpeg"
-              alt="Team member"
-              width={96}
-              height={96}
-              className="object-cover"
-            />
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-6 pt-20 pb-40 text-center relative z-10">
-          <h1 className="text-5xl font-bold text-white mb-4">Contact</h1>
-          <p className="text-white/90 text-xl max-w-2xl mx-auto">
-            Let's start something great together. Get in touch with one of the
-            team today!
-          </p>
-        </div>
-
-        {/* Bottom SVG Wave */}
-        <div className="absolute bottom-0 left-0 w-full">
-          <svg
-            viewBox="0 0 1440 200"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M0 200V80C240 0 480 160 720 160C960 160 1200 0 1440 80V200H0Z"
-              fill="white"
-            />
-          </svg>
-        </div>
-      </div>
-
-      {/* Contact Section */}
-      <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-20">
-          <div className="grid md:grid-cols-2 gap-16">
-            {/* Contact Info */}
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">
-                Get in touch
-              </h2>
-
-              <div className="space-y-8">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Phone
-                  </h3>
-                  <p className="text-gray-600">
-                    Please email us or request a callback.
-                  </p>
+          <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Phone Card */}
+            <HoverCard>
+              <div className="bg-white/90 border border-orange-100 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
+                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+                  <Phone className="w-7 h-7 text-orange-600" />
                 </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Email
-                  </h3>
-                  <div className="space-y-2">
-                    <a
-                      href="mailto:hello@searchpro.com"
-                      className="block text-orange-600 hover:text-orange-700"
-                    >
-                      hello@searchpro.com
-                    </a>
-                    <a
-                      href="mailto:business@searchpro.com"
-                      className="block text-orange-600 hover:text-orange-700"
-                    >
-                      business@searchpro.com
-                    </a>
-                    <a
-                      href="mailto:support@searchpro.com"
-                      className="block text-orange-600 hover:text-orange-700"
-                    >
-                      support@searchpro.com
-                    </a>
-                  </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Phone</h3>
+                <p className="text-gray-600 mb-2">
+                  Call us for immediate assistance.
+                </p>
+                <span className="text-orange-600 font-semibold">
+                  +1 234 567 8901
+                </span>
+              </div>
+            </HoverCard>
+            {/* Email Card */}
+            <HoverCard>
+              <div className="bg-white/90 border border-orange-100 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
+                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+                  <Mail className="w-7 h-7 text-orange-600" />
                 </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    London Office
-                  </h3>
-                  <p className="text-gray-600">
-                    123 Business Street
-                    <br />
-                    London, SW1A 1AA
-                  </p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Email</h3>
+                <p className="text-gray-600 mb-2">
+                  Email us for support or business inquiries.
+                </p>
+                <div className="flex flex-col gap-1">
+                  <a
+                    href="mailto:hello@jobmaze.ca"
+                    className="text-orange-600 hover:underline font-medium"
+                  >
+                    hello@jobmaze.ca
+                  </a>
+                  <a
+                    href="mailto:business@jobmaze.ca"
+                    className="text-orange-600 hover:underline font-medium"
+                  >
+                    business@jobmaze.ca
+                  </a>
+                  <a
+                    href="mailto:support@jobmaze.ca"
+                    className="text-orange-600 hover:underline font-medium"
+                  >
+                    support@jobmaze.ca
+                  </a>
                 </div>
               </div>
-            </div>
-
-            {/* Contact Form */}
-            <div className="bg-gray-50 rounded-2xl p-8">
-              <form className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div>
-                    <label
-                      htmlFor="firstName"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      First name
-                    </label>
-                    <Input
-                      id="firstName"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      className="h-12"
-                      placeholder="Mike"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="lastName"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Last name
-                    </label>
-                    <Input
-                      id="lastName"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      className="h-12"
-                      placeholder="Smith"
-                    />
-                  </div>
+            </HoverCard>
+            {/* Office Card */}
+            <HoverCard>
+              <div className="bg-white/90 border border-orange-100 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
+                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+                  <Building2 className="w-7 h-7 text-orange-600" />
                 </div>
-
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Email
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="h-12"
-                    placeholder="mike@example.com"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Phone number
-                  </label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="h-12"
-                    placeholder="+44 20 1234 5678"
-                  />
-                </div>
-
-                <Button className="w-full h-12 bg-orange-600 hover:bg-orange-700">
-                  Send message
-                </Button>
-              </form>
-            </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Office</h3>
+                <p className="text-gray-600 mb-2">Visit our London office.</p>
+                <span className="text-orange-600 font-semibold">
+                  123 Business Street, London, SW1A 1AA
+                </span>
+              </div>
+            </HoverCard>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Map Section */}
-      <div className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <Card className="border-none shadow-lg overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-orange-500 to-red-600 border-b">
+      <section className="bg-white py-16">
+        <div className="max-w-5xl mx-auto px-4">
+          <Card className="border-none shadow-lg overflow-hidden rounded-2xl">
+            <CardHeader className="bg-gradient-to-r from-orange-500 to-red-600 border-b flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-white mr-2" />
               <CardTitle className="text-lg font-semibold text-white">
                 Our Location
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {/* Render the dynamic, client-only Map */}
               <DynamicMap />
             </CardContent>
           </Card>
         </div>
-      </div>
+      </section>
 
       <Footer />
     </div>

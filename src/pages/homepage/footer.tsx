@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-orange-600">SearchPro</h3>
+            <h3 className="text-2xl font-bold text-orange-600">Job Maze</h3>
             <p className="text-gray-600">
               Empowering your search experience with advanced insights and
               analytics.
@@ -142,10 +142,10 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="mailto:support@searchpro.com"
+                  href="mailto:support@jobmaze.ca"
                   className="text-gray-600 hover:text-orange-600 transition-colors"
                 >
-                  support@searchpro.com
+                  support@jobmaze.ca
                 </a>
               </li>
               <li className="text-gray-600">
@@ -161,7 +161,7 @@ export default function Footer() {
         <div className="border-t border-orange-200 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-600 text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} SearchPro. All rights reserved.
+              © {new Date().getFullYear()} Job Maze. All rights reserved.
             </div>
             <div className="flex space-x-6">
               <a

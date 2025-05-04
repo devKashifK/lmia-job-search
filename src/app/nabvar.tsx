@@ -46,7 +46,7 @@ export default function Navbar({ className }: { className?: string }) {
           {/* Logo on the left */}
           <CustomLink href="/" className="flex items-center min-w-[120px]">
             <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 text-transparent bg-clip-text">
-              SearchPro
+              Job Maze
             </span>
           </CustomLink>
           {/* Centered Navigation */}
