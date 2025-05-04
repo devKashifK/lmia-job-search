@@ -67,15 +67,15 @@ const PricingPage = () => {
       <div className="bg-orange-50/80">
         <Navbar />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center mb-20">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
+          <div className="text-center mb-12 sm:mb-16 lg:mb-20">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 mb-4"
+              className="inline-flex items-center gap-2 mb-3 sm:mb-4"
             >
-              <span className="w-3 h-3 rounded-full bg-orange-500" />
-              <span className="uppercase text-xs font-semibold text-orange-600 tracking-widest">
+              <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-orange-500" />
+              <span className="uppercase text-[10px] sm:text-xs font-semibold text-orange-600 tracking-widest">
                 Pricing
               </span>
             </motion.div>
@@ -83,7 +83,7 @@ const PricingPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl font-bold text-gray-900 sm:text-5xl mb-4"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4"
             >
               Find Your Perfect Job Match
             </motion.h1>
@@ -91,7 +91,7 @@ const PricingPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-xl text-gray-600 max-w-2xl mx-auto"
+              className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4 sm:px-0"
             >
               Access comprehensive job listings, advanced search tools, and
               powerful analytics to streamline your job search or recruitment
@@ -99,7 +99,7 @@ const PricingPage = () => {
             </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {tiers.map((tier, index) => (
               <motion.div
                 key={tier.name}
@@ -110,7 +110,7 @@ const PricingPage = () => {
               >
                 <HoverCard>
                   <div
-                    className={`rounded-2xl p-8 h-full flex flex-col ${
+                    className={`rounded-2xl p-6 sm:p-8 h-full flex flex-col ${
                       tier.highlighted
                         ? "bg-white border-2 border-orange-500 shadow-xl scale-105"
                         : "bg-white/80 backdrop-blur-sm border border-orange-100 shadow-md hover:shadow-lg transition-all duration-300"
@@ -119,7 +119,7 @@ const PricingPage = () => {
                     {tier.badge && (
                       <div className="absolute top-4 right-4">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          className={`inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                             tier.highlighted
                               ? "bg-orange-500 text-white"
                               : "bg-orange-100 text-orange-600"
@@ -129,29 +129,33 @@ const PricingPage = () => {
                         </span>
                       </div>
                     )}
-                    <div className="mb-8">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    <div className="mb-6 sm:mb-8">
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                         {tier.name}
                       </h2>
-                      <div className="mb-4">
-                        <span className="text-4xl font-bold text-gray-900">
+                      <div className="mb-3 sm:mb-4">
+                        <span className="text-3xl sm:text-4xl font-bold text-gray-900">
                           {tier.price}
                         </span>
                         {tier.price !== "Custom" && (
-                          <span className="text-lg text-gray-500">/month</span>
+                          <span className="text-base sm:text-lg text-gray-500">
+                            /month
+                          </span>
                         )}
                       </div>
-                      <p className="text-gray-600">{tier.description}</p>
+                      <p className="text-sm sm:text-base text-gray-600">
+                        {tier.description}
+                      </p>
                     </div>
 
-                    <ul className="space-y-4 mb-8 flex-1">
+                    <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 flex-1">
                       {tier.features.map((feature) => (
                         <li
                           key={feature}
-                          className="flex items-center text-gray-700"
+                          className="flex items-center text-sm sm:text-base text-gray-700"
                         >
                           <Check
-                            className={`h-5 w-5 mr-3 flex-shrink-0 ${
+                            className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0 ${
                               tier.highlighted
                                 ? "text-orange-500"
                                 : "text-orange-400"
@@ -164,7 +168,7 @@ const PricingPage = () => {
 
                     <div className="mt-auto">
                       <Button
-                        className={`w-full h-12 ${
+                        className={`w-full h-11 sm:h-12 ${
                           tier.highlighted
                             ? "bg-orange-500 hover:bg-orange-600 text-white"
                             : "bg-orange-100 hover:bg-orange-200 text-orange-600"
@@ -190,35 +194,35 @@ const PricingPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="mt-20 text-center"
+            className="mt-16 sm:mt-20 text-center"
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-orange-100 shadow-lg">
-              <div className="inline-flex items-center gap-2 mb-4">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-orange-100 shadow-lg">
+              <div className="inline-flex items-center gap-2 mb-3 sm:mb-4">
                 <Zap className="h-4 w-4 text-orange-500" />
-                <span className="uppercase text-xs font-semibold text-orange-600 tracking-widest">
+                <span className="uppercase text-[10px] sm:text-xs font-semibold text-orange-600 tracking-widest">
                   Enterprise Solutions
                 </span>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                 Need a Custom Solution?
               </h2>
-              <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+              <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto">
                 Our enterprise plan includes personalized support, custom
                 integrations, and flexible pricing tailored to your
-                organization's specific needs.
+                organization&apos;s specific needs.
               </p>
-              <div className="flex gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <Button
                   variant="outline"
                   size="lg"
-                  className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                  className="w-full sm:w-auto border-orange-200 text-orange-600 hover:bg-orange-50"
                 >
                   Schedule Demo
                 </Button>
                 <Button
                   variant="default"
                   size="lg"
-                  className="bg-orange-500 hover:bg-orange-600"
+                  className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600"
                 >
                   Contact Sales
                 </Button>

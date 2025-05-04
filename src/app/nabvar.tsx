@@ -49,8 +49,8 @@ export default function Navbar({ className }: { className?: string }) {
               Job Maze
             </span>
           </CustomLink>
-          {/* Centered Navigation */}
-          <div className="flex-1 flex justify-center">
+          {/* Centered Navigation - Hidden on mobile */}
+          <div className="hidden md:flex flex-1 justify-center">
             <NavigationMenu>
               <NavigationMenuList className="flex flex-row items-center gap-2 md:gap-4">
                 <NavigationMenuItem>
@@ -103,8 +103,8 @@ export default function Navbar({ className }: { className?: string }) {
               </NavigationMenuList>
             </NavigationMenu>
           </div>
-          {/* Right Section (auth) */}
-          <div className="flex items-center gap-2 md:gap-4 min-w-[120px] justify-end">
+          {/* Right Section (auth) - Hidden on mobile */}
+          <div className="hidden md:flex items-center gap-2 md:gap-4 min-w-[120px] justify-end">
             {loading ? (
               <div className="h-9 w-24 bg-orange-100/50 rounded-md animate-pulse" />
             ) : session ? (
