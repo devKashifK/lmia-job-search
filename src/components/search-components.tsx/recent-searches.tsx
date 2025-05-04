@@ -115,7 +115,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-zinc-900 truncate">
-                        {search.keywords}
+                        {search?.keyword}
                       </span>
                       <span className="text-xs text-zinc-400">
                         {formatDistanceToNow(new Date(search.created_at), {
