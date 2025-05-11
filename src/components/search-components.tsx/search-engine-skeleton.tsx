@@ -5,6 +5,29 @@ import { Lock } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
+export function TopbarSkeleton() {
+  return (
+    <div className="w-full h-14 flex items-center px-4 border-b border-zinc-100 bg-white/80 backdrop-blur-sm">
+      {/* Left: Hamburger + Logo */}
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-8 w-8 rounded-md bg-orange-100" />
+        <Skeleton className="h-7 w-24 rounded bg-orange-50" />
+      </div>
+      {/* Center: Search/Actions */}
+      <div className="flex-1 flex justify-center gap-3">
+        <Skeleton className="h-9 w-80 rounded-lg bg-orange-50" />
+        <Skeleton className="h-9 w-10 rounded-md bg-orange-50" />
+        <Skeleton className="h-9 w-10 rounded-md bg-orange-50" />
+      </div>
+      {/* Right: Notifications/User */}
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-8 w-8 rounded-full bg-orange-100" />
+        <Skeleton className="h-8 w-8 rounded-full bg-orange-100" />
+      </div>
+    </div>
+  );
+}
+
 export function SearchEngineSkeleton({
   showOverlay = true,
 }: {
@@ -15,7 +38,110 @@ export function SearchEngineSkeleton({
   const searchKey = params?.search as string;
 
   return (
-    <div className="w-full py-6 px-6 flex flex-col gap-4 relative">
+    <div className="w-full h-[calc(100vh-3.5rem)] flex flex-col relative">
+      {/* Topbar Skeleton */}
+      <TopbarSkeleton />
+      <div className="flex flex-1 min-h-0">
+        {/* Filter Panel Skeleton */}
+        <div className="w-[300px] shrink-0 h-full border-r border-zinc-200/50 bg-white/95 backdrop-blur-sm flex flex-col">
+          {/* Header */}
+          <div className="flex-shrink-0 px-3 py-2.5 border-b border-zinc-100 bg-gradient-to-r from-orange-50/80 to-white flex items-center gap-2">
+            <div className="p-1 bg-orange-100 rounded-md">
+              <Skeleton className="h-4 w-4 bg-orange-200" />
+            </div>
+            <div className="flex flex-col gap-1 flex-1">
+              <Skeleton className="h-4 w-20 bg-orange-100" />
+              <Skeleton className="h-2 w-16 bg-orange-50" />
+            </div>
+          </div>
+          {/* Search */}
+          <div className="flex-shrink-0 p-2 border-b border-zinc-100">
+            <Skeleton className="h-8 w-full rounded-lg bg-orange-50" />
+          </div>
+          {/* Tabs */}
+          <div className="flex-shrink-0 flex border-b border-zinc-100">
+            <Skeleton className="h-8 w-1/2 rounded-none bg-orange-50" />
+            <Skeleton className="h-8 w-1/2 rounded-none bg-orange-50" />
+          </div>
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-transparent">
+            {[...Array(7)].map((_, i) => (
+              <Skeleton key={i} className="h-6 w-full rounded bg-orange-50" />
+            ))}
+          </div>
+          {/* Footer for filter panel skeleton */}
+          <div className="px-4 py-2 border-t border-zinc-100 bg-gradient-to-r from-orange-50/60 to-white flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-4 bg-orange-200 rounded-full" />
+              <Skeleton className="h-3 w-32 bg-orange-50" />
+            </div>
+            <Skeleton className="h-3 w-10 bg-orange-100" />
+          </div>
+        </div>
+
+        {/* Main Content Skeleton */}
+        <div className="flex-1 flex flex-col gap-4 py-3 px-4">
+          {/* Charts Section Skeleton */}
+          <div className="flex flex-col">
+            {/* Charts Header Skeleton */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-gradient-to-r from-orange-50/80 to-white rounded-t-lg">
+              <div className="flex items-center gap-1.5">
+                <div className="p-1 bg-orange-100 rounded-md">
+                  <Skeleton className="h-3.5 w-3.5 bg-orange-200" />
+                </div>
+                <div>
+                  <Skeleton className="h-4 w-20 mb-1 bg-orange-100" />
+                  <Skeleton className="h-2 w-24 bg-orange-50" />
+                </div>
+              </div>
+              <Skeleton className="h-6 w-6 bg-orange-100 rounded-md" />
+            </div>
+            {/* Charts Cards Skeleton */}
+            <div className="flex gap-3 overflow-hidden bg-white/95 backdrop-blur-sm shadow-lg border-x border-b border-zinc-200/50 rounded-b-lg pt-3 pb-2 px-3">
+              <div className="flex-1 h-[220px] rounded-lg overflow-hidden">
+                <Skeleton className="w-full h-full bg-gradient-to-br from-orange-50 to-orange-100" />
+              </div>
+              <div className="flex-1 h-[220px] rounded-lg overflow-hidden">
+                <Skeleton className="w-full h-full bg-gradient-to-br from-orange-50 to-orange-100" />
+              </div>
+              <div className="flex-1 h-[220px] rounded-lg overflow-hidden">
+                <Skeleton className="w-full h-full bg-gradient-to-br from-orange-50 to-orange-100" />
+              </div>
+            </div>
+          </div>
+          {/* Table Skeleton */}
+          <div className="flex-1 min-h-0">
+            <div className="h-full shadow-lg rounded-lg overflow-hidden flex flex-col">
+              {/* Table Header */}
+              <div className="grid grid-cols-8 gap-4 p-4 border-b">
+                <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
+                <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
+                <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
+                <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
+                <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
+                <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
+                <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
+                <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
+              </div>
+              {/* Table Rows */}
+              <div className="space-y-2 p-4 flex-1 overflow-y-auto">
+                {[...Array(7)].map((_, i) => (
+                  <div key={i} className="grid grid-cols-8 gap-4">
+                    <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
+                    <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
+                    <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
+                    <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
+                    <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
+                    <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
+                    <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
+                    <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Overlay */}
       {!session && showOverlay && (
         <div className="absolute inset-0 bg-white/20 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
@@ -40,65 +166,6 @@ export function SearchEngineSkeleton({
           </div>
         </div>
       )}
-      {/* Charts Section */}
-      <div className="flex gap-2">
-        <div className="w-1/3 h-[300px] rounded-lg overflow-hidden">
-          <Skeleton className="w-full h-full bg-gradient-to-br from-orange-50 to-orange-100" />
-        </div>
-        <div className="w-1/3 h-[300px] rounded-lg overflow-hidden">
-          <Skeleton className="w-full h-full bg-gradient-to-br from-orange-50 to-orange-100" />
-        </div>
-        <div className="w-1/3 h-[300px] rounded-lg overflow-hidden">
-          <Skeleton className="w-full h-full bg-gradient-to-br from-orange-50 to-orange-100" />
-        </div>
-      </div>
-
-      {/* Main Content Section */}
-      <div className="flex gap-0 relative min-h-[calc(100vh-23rem)]">
-        {/* Filter Panel Skeleton */}
-        <div className="w-[300px] shrink-0">
-          <div className="space-y-4 p-4">
-            <Skeleton className="h-8 w-full bg-gradient-to-br from-orange-50 to-orange-100" />
-            <Skeleton className="h-8 w-full bg-gradient-to-br from-orange-50 to-orange-100" />
-            <Skeleton className="h-8 w-full bg-gradient-to-br from-orange-50 to-orange-100" />
-            <Skeleton className="h-8 w-full bg-gradient-to-br from-orange-50 to-orange-100" />
-            <Skeleton className="h-8 w-full bg-gradient-to-br from-orange-50 to-orange-100" />
-          </div>
-        </div>
-
-        {/* Table Skeleton */}
-        <div className="flex-1 relative">
-          <div className="h-[calc(100vh-23rem)] shadow-lg rounded-lg overflow-hidden">
-            {/* Table Header */}
-            <div className="grid grid-cols-8 gap-4 p-4 border-b">
-              <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
-              <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
-              <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
-              <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
-              <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
-              <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
-              <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
-              <Skeleton className="h-6 bg-gradient-to-br from-orange-50 to-orange-100" />
-            </div>
-
-            {/* Table Rows */}
-            <div className="space-y-2 p-4">
-              {[...Array(7)].map((_, i) => (
-                <div key={i} className="grid grid-cols-8 gap-4">
-                  <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
-                  <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
-                  <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
-                  <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
-                  <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
-                  <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
-                  <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
-                  <Skeleton className="h-4 bg-gradient-to-br from-orange-50 to-orange-100" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

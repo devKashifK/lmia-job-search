@@ -1,7 +1,5 @@
 "use client";
 
-import Header from "@/components/search-components.tsx/header";
-import { HeaderSkeleton } from "@/components/search-components.tsx/header-skeleton";
 import { SearchEngineSkeleton } from "@/components/search-components.tsx/search-engine-skeleton";
 import Topbar from "@/components/search-components.tsx/topbar";
 import { useSession } from "@/hooks/use-session";
@@ -14,8 +12,6 @@ export default function Search({ searchKey }: { searchKey: string }) {
   if (!session.session && !session.loading) {
     return (
       <div className="min-h-screen bg-zinc-50/40 max-h-screen overflow-hidden">
-        <Topbar />
-        <HeaderSkeleton />
         <SearchEngineSkeleton />
       </div>
     );
@@ -23,8 +19,7 @@ export default function Search({ searchKey }: { searchKey: string }) {
 
   return (
     <div className="min-h-screen bg-zinc-50/40">
-      <Topbar />
-      <Header keywords={searchKey} />
+      <Topbar keywords={searchKey} />
       <SearchEngine keywords={searchKey} />
     </div>
   );
