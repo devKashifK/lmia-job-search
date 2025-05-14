@@ -150,7 +150,7 @@ export default function FilterPanel({ type }: { type: string }) {
       <div className="flex-1 overflow-y-auto">
         {activeTab === "filters" ? (
           <Accordion
-            type="single"
+            type="multiple"
             className="w-full"
             defaultValue={defaultOpenValue}
           >

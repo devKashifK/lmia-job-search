@@ -158,7 +158,6 @@ export const lmiaColumns: ColumnDef<LMIA>[] = [
       </div>
     ),
   },
-
   {
     accessorKey: "noc_code",
     icon: <Building className=" h-5 w-5 text-black/50" />,
