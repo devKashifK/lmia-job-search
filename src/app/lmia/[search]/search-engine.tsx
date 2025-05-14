@@ -19,8 +19,8 @@ export default function Search({ searchKey }: { searchKey: string }) {
 
   return (
     <div className="min-h-screen bg-zinc-50/40">
-      <Topbar keywords={searchKey} type="hot_leads" />
-      <SearchEngine keywords={searchKey} type="hot_leads" />
+      <Topbar keywords={searchKey} type="lmia" />
+      <SearchEngine keywords={searchKey} type="lmia" />
     </div>
   );
 }

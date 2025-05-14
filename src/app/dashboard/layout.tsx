@@ -9,7 +9,9 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import AuthenticatedRoute from "@/helpers/authenticated-route";
 import { Menu } from "lucide-react";
 import BackgroundWrapper from "@/components/ui/background-wrapper";
-import Topbar from "@/components/search-components.tsx/topbar";
+import { Notifications } from "@/components/search-components.tsx/topbar";
+import Link from "next/link";
+import UserDropdown from "@/components/ui/user-dropdown";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -35,17 +37,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex h-screen w-full bg-white/50 backdrop-blur-sm overflow-hidden">
           {/* Navbar */}
           <div className="fixed top-0 left-0 right-0 h-16 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-            <div className="flex h-full items-center px-4 md:px-6">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-9 w-9 p-0 mr-4 hover:bg-orange-50"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              >
-                <Menu className="h-5 w-5 text-gray-600" />
-                <span className="sr-only">Toggle sidebar</span>
-              </Button>
-              <Topbar className="w-full border-none" />
+            <div className="flex h-full items-center justify-between px-4 md:px-6">
+              <div className="flex h-full items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-9 w-9 p-0 hover:bg-orange-50"
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                >
+                  <Menu className="h-5 w-5 text-gray-600" />
+                  <span className="sr-only">Toggle sidebar</span>
+                </Button>
+                <Link href="/" className="flex items-center">
+                  <span className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 text-transparent bg-clip-text">
+                    Job Maze
+                  </span>
+                </Link>
+              </div>
+              <div className="flex items-center gap-4">
+                <Notifications />
+                <UserDropdown />
+              </div>
             </div>
           </div>
 

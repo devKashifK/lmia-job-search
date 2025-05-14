@@ -31,6 +31,19 @@ const solutions = [
   },
 ];
 
+const searchPages = [
+  {
+    title: "Hot Leads",
+    href: "/search",
+    description: "Search for Hot Leads",
+  },
+  {
+    title: "LMIA",
+    href: "/lmia",
+    description: "Search for LMIA jobs and candidates",
+  },
+];
+
 export default function Navbar({ className }: { className?: string }) {
   const { session, loading } = useSession();
 
@@ -76,6 +89,31 @@ export default function Navbar({ className }: { className?: string }) {
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="h-9 px-4 bg-transparent hover:bg-orange-100/60 data-[state=open]:bg-orange-100/60 text-orange-700 font-medium">
+                    Search
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid w-[400px] gap-3 p-4">
+                      {searchPages.map((item) => (
+                        <NavigationMenuLink
+                          key={item.title}
+                          href={item.href}
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-orange-50"
+                        >
+                          <div className="text-sm font-medium text-orange-900">
+                            {item.title}
+                          </div>
+                          <p className="line-clamp-2 text-sm leading-snug text-orange-500">
+                            {item.description}
+                          </p>
+                        </NavigationMenuLink>
+                      ))}
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
                 <NavigationMenuItem>
                   <CustomLink
                     href="/pricing"
@@ -90,14 +128,6 @@ export default function Navbar({ className }: { className?: string }) {
                     className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-orange-700 hover:bg-orange-100/60 transition-colors"
                   >
                     Contact
-                  </CustomLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <CustomLink
-                    href="/search"
-                    className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-orange-700 hover:bg-orange-100/60 transition-colors"
-                  >
-                    Search
                   </CustomLink>
                 </NavigationMenuItem>
               </NavigationMenuList>

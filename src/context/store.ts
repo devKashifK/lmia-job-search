@@ -18,7 +18,7 @@ interface TableState {
   clearAllFilters: () => void;
   clearFilter: (columnKey: string) => void;
   clearSingleFilter: (columnKey: string, value: string) => void;
-  searchWithFuse: (keywords: string) => void;
+  searchWithFuse: (keywords: string, type: string) => void;
   setCurrentSearchId: (id: string) => void;
 }
 
@@ -124,7 +124,7 @@ export const useTableStore = create<TableState>((set, get) => ({
       filteredData,
     });
   },
-  searchWithFuse: async (keywords) => {
+  searchWithFuse: async (keywords, type = "hot_leads") => {
     const safeKeywords = keywords || "";
 
     if (!safeKeywords.trim()) {
@@ -134,21 +134,43 @@ export const useTableStore = create<TableState>((set, get) => ({
 
     set({ isLoading: true });
 
-    try {
-      const { data: result, error } = await db.rpc("rpc_search_hot_leads", {
-        term: keywords,
-      });
+    if (type !== "hot_leads") {
+      try {
+        const { data: result, error } = await db.rpc("rpc_search_lmia", {
+          term: keywords,
+        });
 
-      if (error) {
-        console.error("Error searching:", error);
-        throw error;
+        if (error) {
+          console.error("Error searching:", error);
+          throw error;
+        }
+
+        set({ data: result, filteredData: result });
+      } catch (error) {
+        console.error("Error in search:", error);
+      } finally {
+        set({ isLoading: false });
       }
+    } else {
+      try {
+        const { data: result, error } = await db.rpc(
+          "rpc_search_hot_leads_new",
+          {
+            term: keywords,
+          }
+        );
 
-      set({ data: result, filteredData: result });
-    } catch (error) {
-      console.error("Error in search:", error);
-    } finally {
-      set({ isLoading: false });
+        if (error) {
+          console.error("Error searching:", error);
+          throw error;
+        }
+
+        set({ data: result, filteredData: result });
+      } catch (error) {
+        console.error("Error in search:", error);
+      } finally {
+        set({ isLoading: false });
+      }
     }
   },
   setCurrentSearchId: (id) => set({ currentSearchId: id }),

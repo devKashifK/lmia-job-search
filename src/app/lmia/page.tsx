@@ -50,7 +50,7 @@ export default function Page() {
 
     setIsLoadingSuggestions(true);
     try {
-      const { data, error } = await db.rpc("rpc_suggest_hot_leads_new", {
+      const { data, error } = await db.rpc("rpc_suggest_lmia", {
         term: query,
         p_limit: 10,
       });
@@ -74,7 +74,7 @@ export default function Page() {
 
   const handleSuggestionClick = async (suggestion: string) => {
     if (!session?.session) {
-      navigate.push(`/search/${encodeURIComponent(suggestion)}`);
+      navigate.push(`/lmia/${encodeURIComponent(suggestion)}`);
       return;
     }
     setInput(suggestion);
@@ -84,7 +84,7 @@ export default function Page() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(input);
-      navigate.push(`/search/${encodeURIComponent(suggestion)}`);
+      navigate.push(`/lmia/${encodeURIComponent(suggestion)}`);
     } finally {
       setIsChecking(false);
     }
@@ -160,7 +160,7 @@ export default function Page() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(input);
-      navigate.push(`/search/${encodeURIComponent(input)}`);
+      navigate.push(`/lmia/${encodeURIComponent(input)}`);
     } finally {
       setIsChecking(false);
     }

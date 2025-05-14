@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function SearchBar() {
+export function SearchBar({ type }: { type: string }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isChecking, setIsChecking] = useState(false);
   const [suggestions, setSuggestions] = useState<{ suggestion: string }[]>([]);
@@ -44,14 +44,23 @@ export function SearchBar() {
 
     setIsLoadingSuggestions(true);
     try {
-      const { data, error } = await db.rpc("rpc_search_hot_leads_suggestions", {
-        term: query,
-        p_limit: 5,
-        branch_lim: 100,
-      });
+      if (type == "hot_leads") {
+        const { data, error } = await db.rpc("rpc_suggest_hot_leads_new", {
+          term: query,
+          p_limit: 10,
+        });
 
-      if (error) throw error;
-      setSuggestions(data || []);
+        if (error) throw error;
+        setSuggestions(data || []);
+      } else {
+        const { data, error } = await db.rpc("rpc_suggest_lmia", {
+          term: query,
+          p_limit: 10,
+        });
+
+        if (error) throw error;
+        setSuggestions(data || []);
+      }
     } catch (error) {
       console.error("Error fetching suggestions:", error);
       setSuggestions([]);
@@ -133,7 +142,7 @@ export function SearchBar() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(query);
-      searchWithFuse(query);
+      searchWithFuse(query, type);
 
       const { data: updatedCredits } = await db
         .from("credits")
@@ -150,7 +159,11 @@ export function SearchBar() {
         variant: "success",
       });
 
-      navigate.push(`/search/${query}`);
+      if (type == "hot_leads") {
+        navigate.push(`/search/${query}`);
+      } else {
+        navigate.push(`/lmia/${query}`);
+      }
     } catch (error) {
       toast({
         title: "Search Failed",
@@ -172,7 +185,7 @@ export function SearchBar() {
     setSearchQuery("");
     setSuggestions([]);
     setShowSuggestions(false);
-    searchWithFuse("");
+    searchWithFuse("", type);
     if (inputRef.current) {
       inputRef.current.focus();
     }

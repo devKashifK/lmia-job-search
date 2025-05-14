@@ -229,7 +229,13 @@ function NavItem({
 }
 
 // Search Actions Component
-function SearchActions({ keywords }: { keywords?: string }) {
+function SearchActions({
+  keywords,
+  type,
+}: {
+  keywords?: string;
+  type?: string;
+}) {
   const filteredData = useTableStore((state) => state.filteredData);
   const updateSearchSaved = useTableStore((state) => state.updateSearchSaved);
   const showFilterPanel = useTableStore((state) => state.showFilterPanel);
@@ -345,7 +351,7 @@ function SearchActions({ keywords }: { keywords?: string }) {
           />
         </div>
         <div className="h-4 w-px bg-zinc-200" />
-        <SearchBar />
+        <SearchBar type={type} />
         <div className="h-4 w-px bg-zinc-200" />
         <div className="flex items-center gap-1">
           <Filter />
@@ -374,7 +380,7 @@ function SearchActions({ keywords }: { keywords?: string }) {
 }
 
 // Notifications Component
-function Notifications() {
+export function Notifications() {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -422,9 +428,11 @@ function Notifications() {
 export default function Topbar({
   className,
   keywords,
+  type,
 }: {
   className?: string;
   keywords?: string;
+  type?: string;
 }) {
   const router = useRouter();
   const filteredData = useTableStore((state) => state.filteredData);
@@ -493,7 +501,7 @@ export default function Topbar({
 
           {/* Right side - Search, Actions & Notifications */}
           <div className="flex items-center gap-2">
-            <SearchActions keywords={keywords} />
+            <SearchActions keywords={keywords} type={type} />
             <div className="h-4 w-px bg-zinc-200" />
             <Notifications />
           </div>

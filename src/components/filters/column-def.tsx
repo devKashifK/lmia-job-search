@@ -26,7 +26,7 @@ export type LMIA = {
   state: string;
 };
 
-export const columns: ColumnDef<LMIA>[] = [
+export const hotLeadsColumns: ColumnDef<LMIA>[] = [
   {
     accessorKey: "2021_noc",
     icon: <PersonStanding className=" h-5 w-5 text-black/50" />,
@@ -34,6 +34,16 @@ export const columns: ColumnDef<LMIA>[] = [
       <div className="flex items-center gap-1">
         <PersonStanding className=" h-5 w-5 text-black/50" />
         2021 NOC
+      </div>
+    ),
+  },
+  {
+    accessorKey: "state",
+    icon: <PersonStanding className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <PersonStanding className=" h-5 w-5 text-black/50" />
+        State
       </div>
     ),
   },
@@ -57,26 +67,7 @@ export const columns: ColumnDef<LMIA>[] = [
       </div>
     ),
   },
-  {
-    accessorKey: "email",
-    icon: <Briefcase className=" h-5 w-5 text-black/50" />,
-    header: () => (
-      <div className="flex items-center gap-1">
-        <Briefcase className=" h-5 w-5 text-black/50" />
-        Email
-      </div>
-    ),
-  },
-  {
-    accessorKey: "job_location",
-    icon: <Building className=" h-5 w-5 text-black/50" />,
-    header: () => (
-      <div className="flex items-center gap-1">
-        <Building className=" h-5 w-5 text-black/50" />
-        Job Location
-      </div>
-    ),
-  },
+
   {
     accessorKey: "noc_priority",
     icon: <PowerSquare className=" h-5 w-5 text-black/50" />,
@@ -88,12 +79,95 @@ export const columns: ColumnDef<LMIA>[] = [
     ),
   },
   {
-    accessorKey: "occupation_title",
+    accessorKey: "job_title",
     icon: <Map className="h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
         <Map className=" h-5 w-5 text-black/50" />
-        Occupation Title
+        Job Title
+      </div>
+    ),
+  },
+  {
+    accessorKey: "operating_name",
+    icon: <AreaChart className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <AreaChart className=" h-5 w-5 text-black/50" />
+        Operating Name
+      </div>
+    ),
+  },
+];
+
+export const lmiaColumns: ColumnDef<LMIA>[] = [
+  {
+    accessorKey: "territory",
+    icon: <PersonStanding className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <PersonStanding className=" h-5 w-5 text-black/50" />
+        Province
+      </div>
+    ),
+  },
+  {
+    accessorKey: "program",
+    icon: <Satellite className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <Satellite className=" h-5 w-5 text-black/50" />
+        Program
+      </div>
+    ),
+  },
+  {
+    accessorKey: "city",
+    icon: <DatabaseIcon className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <DatabaseIcon className=" h-5 w-5 text-black/50" />
+        City
+      </div>
+    ),
+  },
+  {
+    accessorKey: "lmia_year",
+    icon: <Briefcase className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <Briefcase className=" h-5 w-5 text-black/50" />
+        Year
+      </div>
+    ),
+  },
+  {
+    accessorKey: "job_title",
+    icon: <Building className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <Building className=" h-5 w-5 text-black/50" />
+        Job Title
+      </div>
+    ),
+  },
+  {
+    accessorKey: "priority_occupation",
+    icon: <PowerSquare className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <PowerSquare className=" h-5 w-5 text-black/50" />
+        Occupation
+      </div>
+    ),
+  },
+  {
+    accessorKey: "approved_positions",
+    icon: <Map className="h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <Map className=" h-5 w-5 text-black/50" />
+        Positions
       </div>
     ),
   },

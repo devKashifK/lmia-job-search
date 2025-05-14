@@ -9,7 +9,6 @@ import {
   PersonStanding,
   Satellite,
   DatabaseIcon,
-  Building,
   PowerSquare,
   Map,
   AreaChart,
@@ -23,7 +22,7 @@ import { DataTable } from "@/components/ui/custom-table";
 import { SearchEngineSkeleton } from "@/components/search-components.tsx/search-engine-skeleton";
 import { cn } from "@/lib/utils";
 
-const columns = [
+const hotLeadsColumns = [
   {
     field: "2021_noc",
     headerName: "2021 NOC",
@@ -39,23 +38,24 @@ const columns = [
     minWidth: 100,
   },
   {
+    field: "year",
+    headerName: "Year",
+    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
+  },
+
+  {
+    field: "noc_code",
+    headerName: "Noc Code",
+    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
+  },
+  {
     field: "date_of_job_posting",
     headerName: "Posted On",
     headerIcon: <DatabaseIcon className="w-4 h-4 text-orange-600" />,
-    width: 120,
-    minWidth: 100,
-  },
-  // {
-  //   field: "email",
-  //   headerName: "Email",
-  //   headerIcon: <Briefcase className="w-4 h-4 text-orange-600" />,
-  //   width: 100,
-  //   minWidth: 80,
-  // },
-  {
-    field: "job_location",
-    headerName: "Location",
-    headerIcon: <Building className="w-4 h-4 text-orange-600" />,
     width: 120,
     minWidth: 100,
   },
@@ -67,12 +67,13 @@ const columns = [
     minWidth: 80,
   },
   {
-    field: "occupation_title",
-    headerName: "Occupation",
+    field: "job_title",
+    headerName: "Job Title",
     headerIcon: <Map className="w-4 h-4 text-orange-600" />,
     width: 180,
     minWidth: 150,
   },
+
   {
     field: "operating_name",
     headerName: "Operating",
@@ -89,37 +90,88 @@ const columns = [
   },
 ];
 
-// export default function SearchEngine({ keywords }: { keywords: string }) {
-//   const { searchWithFuse, filteredData } = useTableStore();
-//   const fuseSearch = useMemo(
-//     () => searchWithFuse(keywords),
-//     [keywords, searchWithFuse]
-//   );
+const lmiaColumns = [
+  {
+    field: "territory",
+    headerName: "Province",
+    headerIcon: <PersonStanding className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
+  },
+  {
+    field: "program",
+    headerName: "Program",
+    headerIcon: <PersonStanding className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
+  },
+  {
+    field: "city",
+    headerName: "City",
+    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    width: 120,
+    minWidth: 100,
+  },
+  {
+    field: "lmia_year",
+    headerName: "Year",
+    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
+  },
 
-//   const showFilterPanel = useTableStore((state) => state.showFilterPanel);
-//   return (
-//     <div className="w-full py-6 px-6 flex gap-4">
-//       {showFilterPanel && (
-//         <div className="w-1/6">
-//           <FilterPanel />
-//         </div>
-//       )}
-//       <div className="w-5/6">
-//         <DataTable columnDefs={columnDefs} rowData={filteredData} />
-//       </div>
-//     </div>
-//   );
-// }
+  {
+    field: "noc_code",
+    headerName: "Noc Code",
+    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
+  },
+  {
+    field: "job_title",
+    headerName: "Job Title",
+    headerIcon: <DatabaseIcon className="w-4 h-4 text-orange-600" />,
+    width: 120,
+    minWidth: 100,
+  },
+  {
+    field: "priority_occupation",
+    headerName: "Occupation",
+    headerIcon: <PowerSquare className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
+  },
+  {
+    field: "approved_positions",
+    headerName: "Positions",
+    headerIcon: <PowerSquare className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
+  },
+  {
+    field: "operating_name",
+    headerName: "Operating",
+    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
+    width: 180,
+    minWidth: 150,
+  },
+];
 
-export default function SearchEngine({ keywords }: { keywords: string }) {
+export default function SearchEngine({
+  keywords,
+  type,
+}: {
+  keywords: string;
+  type: string;
+}) {
   const { searchWithFuse, filteredData, isLoading } = useTableStore();
   const [isChartsExpanded, setIsChartsExpanded] = useState(true);
 
   useEffect(() => {
     if (keywords) {
-      searchWithFuse(decodeURIComponent(keywords));
+      searchWithFuse(decodeURIComponent(keywords), type);
     }
-  }, [keywords, searchWithFuse]);
+  }, [keywords, searchWithFuse, type]);
 
   const showFilterPanel = useTableStore((state) => state.showFilterPanel);
 
@@ -140,7 +192,7 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
       >
         {showFilterPanel && (
           <div className="w-[300px] h-full">
-            <FilterPanel />
+            <FilterPanel type={type} />
           </div>
         )}
       </div>
@@ -192,17 +244,17 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
               >
                 <DynamicChart
                   data={filteredData}
-                  keyName={"state"}
+                  keyName={"city"}
                   active={"bar"}
                 />
                 <DynamicChart
                   data={filteredData}
-                  keyName={"2021_noc"}
+                  keyName={"lmia_year"}
                   active={"line"}
                 />
                 <DynamicChart
                   data={filteredData}
-                  keyName={"occupation_title"}
+                  keyName={"program"}
                   active={"bar"}
                 />
               </motion.div>
@@ -218,7 +270,7 @@ export default function SearchEngine({ keywords }: { keywords: string }) {
           )}
         >
           <DataTable
-            columns={columns}
+            columns={type === "hot_leads" ? hotLeadsColumns : lmiaColumns}
             data={filteredData}
             className="h-full shadow-lg"
             isLoading={isLoading}

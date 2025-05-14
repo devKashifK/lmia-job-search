@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from "react";
-import { columns } from "./column-def";
+import React, { useMemo, useState } from "react";
 import { useFilterAttributes } from "@/hooks/use-attribute";
 import { AttributeName, snakeCaseToTitleCase } from "@/helpers/attribute";
 import {
@@ -13,7 +12,6 @@ import {
 } from "lucide-react";
 import { useTableStore } from "@/context/store";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
 import Fuse from "fuse.js";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "../ui/badge";
@@ -23,10 +21,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { hotLeadsColumns, lmiaColumns } from "./column-def";
 
 type Tab = "filters" | "applied";
 
-export default function FilterPanel() {
+export default function FilterPanel({ type }: { type: string }) {
   const [activeTab, setActiveTab] = useState<Tab>("filters");
   const [searchQuery, setSearchQuery] = useState("");
   const {
@@ -41,6 +40,13 @@ export default function FilterPanel() {
     (acc, set) => acc + set.size,
     0
   );
+
+  const columns = useMemo(() => {
+    if (type === "hot-leads") {
+      return hotLeadsColumns;
+    }
+    return lmiaColumns;
+  }, [type]);
 
   const fuse = new Fuse(columns, {
     keys: ["accessorKey"],
@@ -140,7 +146,7 @@ export default function FilterPanel() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto hide-scrollbar">
+      <div className="flex-1 overflow-y-auto">
         {activeTab === "filters" ? (
           <Accordion
             type="single"
