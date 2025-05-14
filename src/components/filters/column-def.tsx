@@ -3,15 +3,12 @@ import {
   AreaChart,
   Briefcase,
   Building,
-  ChevronDown,
-  ChevronUp,
   DatabaseIcon,
   Map,
   PersonStanding,
   PowerSquare,
   Satellite,
 } from "lucide-react"; // Example icons from Lucide
-import { ReactNode } from "react";
 
 export type LMIA = {
   id: number;
@@ -27,16 +24,6 @@ export type LMIA = {
 };
 
 export const hotLeadsColumns: ColumnDef<LMIA>[] = [
-  {
-    accessorKey: "2021_noc",
-    icon: <PersonStanding className=" h-5 w-5 text-black/50" />,
-    header: () => (
-      <div className="flex items-center gap-1">
-        <PersonStanding className=" h-5 w-5 text-black/50" />
-        2021 NOC
-      </div>
-    ),
-  },
   {
     accessorKey: "state",
     icon: <PersonStanding className=" h-5 w-5 text-black/50" />,
@@ -74,7 +61,7 @@ export const hotLeadsColumns: ColumnDef<LMIA>[] = [
     header: () => (
       <div className="flex items-center gap-1">
         <PowerSquare className=" h-5 w-5 text-black/50" />
-        Noc Priority
+        Industry
       </div>
     ),
   },
