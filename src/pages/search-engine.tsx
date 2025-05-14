@@ -260,12 +260,12 @@ export default function SearchEngine({
                 />
                 <DynamicChart
                   data={filteredData}
-                  keyName={"lmia_year"}
+                  keyName={type === "hot_leads" ? "year" : "lmia_year"}
                   active={"line"}
                 />
                 <DynamicChart
                   data={filteredData}
-                  keyName={"program"}
+                  keyName={type === "hot_leads" ? "noc_code" : "territory"}
                   active={"bar"}
                 />
               </motion.div>

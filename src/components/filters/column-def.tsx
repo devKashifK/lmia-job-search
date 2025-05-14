@@ -50,7 +50,17 @@ export const hotLeadsColumns: ColumnDef<LMIA>[] = [
     header: () => (
       <div className="flex items-center gap-1">
         <DatabaseIcon className=" h-5 w-5 text-black/50" />
-        Date of Job Posting
+        Posted On
+      </div>
+    ),
+  },
+  {
+    accessorKey: "noc_code",
+    icon: <DatabaseIcon className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <DatabaseIcon className=" h-5 w-5 text-black/50" />
+        NOC Code
       </div>
     ),
   },
@@ -82,6 +92,16 @@ export const hotLeadsColumns: ColumnDef<LMIA>[] = [
       <div className="flex items-center gap-1">
         <AreaChart className=" h-5 w-5 text-black/50" />
         Operating Name
+      </div>
+    ),
+  },
+  {
+    accessorKey: "year",
+    icon: <AreaChart className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <AreaChart className=" h-5 w-5 text-black/50" />
+        Year
       </div>
     ),
   },
@@ -130,6 +150,17 @@ export const lmiaColumns: ColumnDef<LMIA>[] = [
   },
   {
     accessorKey: "job_title",
+    icon: <Building className=" h-5 w-5 text-black/50" />,
+    header: () => (
+      <div className="flex items-center gap-1">
+        <Building className=" h-5 w-5 text-black/50" />
+        Job Title
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "noc_code",
     icon: <Building className=" h-5 w-5 text-black/50" />,
     header: () => (
       <div className="flex items-center gap-1">
