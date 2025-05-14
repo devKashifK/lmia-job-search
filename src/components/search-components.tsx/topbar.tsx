@@ -354,8 +354,8 @@ function SearchActions({
         <SearchBar type={type} />
         <div className="h-4 w-px bg-zinc-200" />
         <div className="flex items-center gap-1">
-          <Filter />
-          <Button
+          {/* <Filter /> */}
+          {/* <Button
             variant="ghost"
             size="sm"
             className="h-8 px-2"
@@ -363,7 +363,7 @@ function SearchActions({
           >
             <FileDown className="w-3 h-3 mr-1" />
             Export
-          </Button>
+          </Button> */}
           <Button
             variant="ghost"
             size="sm"
@@ -476,10 +476,25 @@ export default function Topbar({
               className="flex items-center gap-1.5 cursor-pointer"
               onClick={() => router.push("/")}
             >
-              <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 text-white flex items-center justify-center text-sm font-medium shadow-sm">
-                L
-              </div>
-              <span className="text-sm font-semibold text-zinc-800">LIMA</span>
+              {type == "hot_leads" ? (
+                <>
+                  <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 text-white flex items-center justify-center text-sm font-medium shadow-sm">
+                    H
+                  </div>
+                  <span className="text-sm font-semibold text-zinc-800">
+                    Hot Leads
+                  </span>
+                </>
+              ) : (
+                <>
+                  <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 text-white flex items-center justify-center text-sm font-medium shadow-sm">
+                    L
+                  </div>
+                  <span className="text-sm font-semibold text-zinc-800">
+                    LMIA
+                  </span>
+                </>
+              )}
             </motion.div>
 
             {keywords && (

@@ -14,6 +14,9 @@ import {
   AreaChart,
   ChevronDown,
   ChevronUp,
+  SlidersHorizontal,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import FilterPanel from "@/components/filters/filter-panel";
 import { AnimatePresence, motion } from "framer-motion";
@@ -24,11 +27,46 @@ import { cn } from "@/lib/utils";
 
 const hotLeadsColumns = [
   {
-    field: "2021_noc",
-    headerName: "2021 NOC",
-    headerIcon: <PersonStanding className="w-4 h-4 text-orange-600" />,
+    field: "noc_code",
+    headerName: "Noc Code",
+    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
     width: 100,
     minWidth: 80,
+  },
+  {
+    field: "job_title",
+    headerName: "Job Title",
+    headerIcon: <Map className="w-4 h-4 text-orange-600" />,
+    width: 180,
+    minWidth: 150,
+  },
+  {
+    field: "noc_priority",
+    headerName: "Industry",
+    headerIcon: <PowerSquare className="w-4 h-4 text-orange-600" />,
+    width: 100,
+    minWidth: 80,
+  },
+  {
+    field: "operating_name",
+    headerName: "Company",
+    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
+    width: 180,
+    minWidth: 150,
+  },
+  {
+    field: "date_of_job_posting",
+    headerName: "Posted On",
+    headerIcon: <DatabaseIcon className="w-4 h-4 text-orange-600" />,
+    width: 120,
+    minWidth: 100,
+  },
+  {
+    field: "state",
+    headerName: "State",
+    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
+    width: 120,
+    minWidth: 100,
   },
   {
     field: "city",
@@ -43,50 +81,6 @@ const hotLeadsColumns = [
     headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
     width: 100,
     minWidth: 80,
-  },
-
-  {
-    field: "noc_code",
-    headerName: "Noc Code",
-    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
-    width: 100,
-    minWidth: 80,
-  },
-  {
-    field: "date_of_job_posting",
-    headerName: "Posted On",
-    headerIcon: <DatabaseIcon className="w-4 h-4 text-orange-600" />,
-    width: 120,
-    minWidth: 100,
-  },
-  {
-    field: "noc_priority",
-    headerName: "Noc",
-    headerIcon: <PowerSquare className="w-4 h-4 text-orange-600" />,
-    width: 100,
-    minWidth: 80,
-  },
-  {
-    field: "job_title",
-    headerName: "Job Title",
-    headerIcon: <Map className="w-4 h-4 text-orange-600" />,
-    width: 180,
-    minWidth: 150,
-  },
-
-  {
-    field: "operating_name",
-    headerName: "Operating",
-    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
-    width: 180,
-    minWidth: 150,
-  },
-  {
-    field: "state",
-    headerName: "State",
-    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
-    width: 120,
-    minWidth: 100,
   },
 ];
 
@@ -164,8 +158,14 @@ export default function SearchEngine({
   keywords: string;
   type: string;
 }) {
-  const { searchWithFuse, filteredData, isLoading } = useTableStore();
-  const [isChartsExpanded, setIsChartsExpanded] = useState(true);
+  const {
+    searchWithFuse,
+    filteredData,
+    isLoading,
+    setShowFilterPanel,
+    showFilterPanel,
+  } = useTableStore();
+  const [isChartsExpanded, setIsChartsExpanded] = useState(false);
 
   useEffect(() => {
     if (keywords) {
@@ -173,29 +173,40 @@ export default function SearchEngine({
     }
   }, [keywords, searchWithFuse, type]);
 
-  const showFilterPanel = useTableStore((state) => state.showFilterPanel);
-
   if (isLoading) {
     return <SearchEngineSkeleton showOverlay={false} />;
   }
 
   return (
     <div className="w-full flex h-[calc(100vh-3.5rem)] overflow-hidden overflow-x-hidden min-w-0">
-      {/* Filter Panel (always rendered, width toggled) */}
-      <div
-        className={
-          showFilterPanel
-            ? "w-[300px] shrink-0 relative h-full transition-all duration-300"
-            : "w-0 shrink-0 relative h-full overflow-hidden opacity-0 transition-all duration-300"
-        }
-        style={{ zIndex: 40 }}
-      >
-        {showFilterPanel && (
-          <div className="w-[300px] h-full">
+      {!showFilterPanel && (
+        <button
+          onClick={() => setShowFilterPanel(true)}
+          className="fixed left-0 top-1/2 z-50 flex items-center gap-2 px-0 py-1 bg-orange-100 shadow-lg rounded-tr-lg rounded-br-lg border border-zinc-200 hover:bg-orange-50 transition-colors duration-200 group"
+        >
+          <div className="p-1 bg-orange-100 rounded-md">
+            <ChevronRight className="h-3.5 w-3.5 text-orange-600" />
+          </div>
+        </button>
+      )}
+
+      {showFilterPanel && (
+        <div
+          className={cn(
+            "shrink-0 relative h-full transition-all duration-300",
+            showFilterPanel ? "w-[300px]" : "w-0"
+          )}
+          style={{ zIndex: 40 }}
+        >
+          <div
+            className={cn(
+              "absolute top-0 left-0 w-[300px] h-full transition-transform duration-300"
+            )}
+          >
             <FilterPanel type={type} />
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <motion.div

@@ -1,6 +1,12 @@
 "use client";
 import CustomLink from "@/app/CustomLink";
 import { motion } from "framer-motion";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Building2, Flame } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -22,12 +28,66 @@ export default function Hero() {
               in one platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-6">
-              <CustomLink
-                href="/search"
-                className="bg-orange-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-orange-700 transition-all duration-300 hover:scale-105 shadow-lg"
-              >
-                Get Started
-              </CustomLink>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="bg-orange-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-orange-700 transition-all duration-300 hover:scale-105 shadow-lg">
+                    Get Started
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-72 p-3" align="center">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 px-2 py-1.5">
+                      <div className="h-8 w-8 rounded-lg bg-orange-100 flex items-center justify-center">
+                        <Flame className="h-4 w-4 text-orange-600" />
+                      </div>
+                      <CustomLink
+                        href="/search"
+                        className="flex-1 text-sm font-medium text-orange-900 hover:text-orange-700 transition-colors"
+                      >
+                        Hot Leads
+                      </CustomLink>
+                      <svg
+                        className="h-4 w-4 text-orange-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                    <div className="h-px bg-orange-100" />
+                    <div className="flex items-center gap-2 px-2 py-1.5">
+                      <div className="h-8 w-8 rounded-lg bg-orange-100 flex items-center justify-center">
+                        <Building2 className="h-4 w-4 text-orange-600" />
+                      </div>
+                      <CustomLink
+                        href="/lmia"
+                        className="flex-1 text-sm font-medium text-orange-900 hover:text-orange-700 transition-colors"
+                      >
+                        LMIA Leads
+                      </CustomLink>
+                      <svg
+                        className="h-4 w-4 text-orange-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
               <button className="border-2 border-orange-600 text-orange-600 px-8 py-4 rounded-full font-semibold hover:bg-orange-600 hover:text-white transition-all duration-300 hover:scale-105">
                 Watch Demo
               </button>

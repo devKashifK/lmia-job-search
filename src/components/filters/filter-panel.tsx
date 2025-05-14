@@ -34,6 +34,7 @@ export default function FilterPanel({ type }: { type: string }) {
     setShowFilterPanel,
     clearSingleFilter,
     clearFilter,
+    showFilterPanel,
   } = useTableStore();
 
   const totalFilters = Object.values(filters || {}).reduce(
@@ -42,7 +43,7 @@ export default function FilterPanel({ type }: { type: string }) {
   );
 
   const columns = useMemo(() => {
-    if (type === "hot-leads") {
+    if (type == "hot_leads") {
       return hotLeadsColumns;
     }
     return lmiaColumns;
