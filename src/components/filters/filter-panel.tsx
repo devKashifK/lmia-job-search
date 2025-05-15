@@ -9,6 +9,8 @@ import {
   CheckCircle,
   Circle,
   SlidersHorizontal,
+  Plus,
+  Minus,
 } from "lucide-react";
 import { useTableStore } from "@/context/store";
 import { cn } from "@/lib/utils";
@@ -28,6 +30,7 @@ type Tab = "filters" | "applied";
 export default function FilterPanel({ type }: { type: string }) {
   const [activeTab, setActiveTab] = useState<Tab>("filters");
   const [searchQuery, setSearchQuery] = useState("");
+  const [openAccordions, setOpenAccordions] = useState<Set<string>>(new Set());
   const {
     filters,
     clearAllFilters,
@@ -63,15 +66,15 @@ export default function FilterPanel({ type }: { type: string }) {
   return (
     <div className="bg-white/95 backdrop-blur-sm shadow-lg border-r border-zinc-200/50 overflow-hidden w-full h-full flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 px-3 py-2.5 border-b border-zinc-100 bg-gradient-to-r from-orange-50/80 to-white">
+      <div className="flex-shrink-0 px-3 py-2.5 border-b border-zinc-100 bg-gradient-to-r from-orange-200 to-white">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-1.5">
-            <div className="p-1 bg-orange-100 rounded-md">
-              <SlidersHorizontal className="h-3.5 w-3.5 text-orange-600" />
+            <div className="p-1 bg-orange-300 rounded-md">
+              <SlidersHorizontal className="h-3.5 w-3.5 text-orange-800" />
             </div>
             <div>
-              <h2 className="font-medium text-zinc-800 text-sm">Filters</h2>
-              <p className="text-[10px] text-zinc-500">
+              <h2 className="font-medium text-black text-sm">Filters</h2>
+              <p className="text-[10px] text-zinc-700">
                 {totalFilters} active filter{totalFilters !== 1 ? "s" : ""}
               </p>
             </div>
@@ -80,7 +83,7 @@ export default function FilterPanel({ type }: { type: string }) {
             {totalFilters > 0 && (
               <button
                 onClick={clearAllFilters}
-                className="text-[10px] font-medium text-zinc-500 hover:text-orange-600 transition-colors duration-200"
+                className="text-[10px] font-medium text-zinc-700 hover:text-orange-800 transition-colors duration-200"
               >
                 Clear all
               </button>
@@ -89,7 +92,7 @@ export default function FilterPanel({ type }: { type: string }) {
               onClick={() => setShowFilterPanel(false)}
               className="p-1 hover:bg-zinc-100 rounded-md transition-colors duration-200"
             >
-              <X className="h-3.5 w-3.5 text-zinc-400" />
+              <X className="h-3.5 w-3.5 text-zinc-600" />
             </button>
           </div>
         </div>
@@ -98,7 +101,7 @@ export default function FilterPanel({ type }: { type: string }) {
       {/* Search */}
       <div className="flex-shrink-0 p-2 border-b border-zinc-100">
         <div className="relative">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-zinc-600" />
           <input
             type="text"
             value={searchQuery}
@@ -116,13 +119,13 @@ export default function FilterPanel({ type }: { type: string }) {
           className={cn(
             "flex-1 px-4 py-2 text-xs font-medium transition-colors relative",
             activeTab === "filters"
-              ? "text-orange-600"
-              : "text-zinc-500 hover:text-zinc-900"
+              ? "text-orange-800"
+              : "text-zinc-700 hover:text-zinc-900"
           )}
         >
           Filters
           {activeTab === "filters" && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-700" />
           )}
         </button>
         <button
@@ -130,18 +133,18 @@ export default function FilterPanel({ type }: { type: string }) {
           className={cn(
             "flex-1 px-4 py-2 text-xs font-medium transition-colors relative",
             activeTab === "applied"
-              ? "text-orange-600"
-              : "text-zinc-500 hover:text-zinc-900"
+              ? "text-orange-800"
+              : "text-zinc-700 hover:text-zinc-900"
           )}
         >
           Applied
           {totalFilters > 0 && (
-            <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-medium bg-orange-100 text-orange-600 rounded-full">
+            <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-medium bg-orange-300 text-orange-800 rounded-full">
               {totalFilters}
             </span>
           )}
           {activeTab === "applied" && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-700" />
           )}
         </button>
       </div>
@@ -149,33 +152,53 @@ export default function FilterPanel({ type }: { type: string }) {
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === "filters" ? (
-          <Accordion
-            type="multiple"
-            className="w-full"
-            defaultValue={defaultOpenValue}
-          >
+          <Accordion type="multiple" className="w-full">
             {filteredColumns.map((column) => (
               <AccordionItem
                 key={column?.accessorKey ?? column?.field ?? String(column)}
                 value={column?.accessorKey ?? column?.field ?? String(column)}
                 className="border-b border-zinc-100"
               >
-                <AccordionTrigger className="px-3 py-2 hover:bg-orange-50/80 transition-all duration-200">
+                <AccordionTrigger
+                  className="px-3 py-2 hover:bg-orange-200/80 transition-all duration-200"
+                  onClick={() => {
+                    const value =
+                      column?.accessorKey ?? column?.field ?? String(column);
+                    setOpenAccordions((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(value)) {
+                        next.delete(value);
+                      } else {
+                        next.add(value);
+                      }
+                      return next;
+                    });
+                  }}
+                >
                   <div className="flex items-center gap-2">
-                    <div className="text-zinc-400 group-hover:text-orange-500 transition-colors duration-200">
+                    <div className="text-zinc-600 group-hover:text-orange-800 transition-colors duration-200">
                       {column?.icon}
                     </div>
                     <div className="flex flex-col items-start">
                       <AttributeName
                         name={column?.accessorKey ?? column?.field ?? ""}
-                        className="text-xs text-zinc-700 group-hover:text-zinc-900"
+                        className="text-xs text-black group-hover:text-zinc-900"
                       />
                       {filters[column?.accessorKey]?.size > 0 && (
-                        <span className="text-[10px] text-orange-500 font-medium">
+                        <span className="text-[10px] text-orange-800 font-medium">
                           {filters[column?.accessorKey].size} selected
                         </span>
                       )}
                     </div>
+                  </div>
+                  <div>
+                    {openAccordions.has(
+                      column?.accessorKey ?? column?.field ?? String(column)
+                    ) ? (
+                      <Minus className="h-4 w-4 shrink-0 text-zinc-600 transition-transform duration-200" />
+                    ) : (
+                      <Plus className="h-4 w-4 shrink-0 text-zinc-600 transition-transform duration-200" />
+                    )}
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-0">
@@ -244,16 +267,16 @@ export default function FilterPanel({ type }: { type: string }) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between gap-2 px-4 py-2 border-t border-zinc-100 bg-gradient-to-r from-orange-50/60 to-white text-xs text-zinc-500">
+      <div className="flex items-center justify-between gap-2 px-4 py-2 border-t border-zinc-100 bg-gradient-to-r from-orange-200 to-white text-xs text-zinc-700">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-4 w-4 text-orange-400" />
+          <SlidersHorizontal className="h-4 w-4 text-orange-700" />
           <span className="hidden sm:inline">
             Tip: Combine multiple filters for precise results.
           </span>
         </div>
         <a
           href="#"
-          className="text-orange-500 hover:underline hover:text-orange-600 font-medium transition-colors text-xs"
+          className="text-orange-800 hover:underline hover:text-orange-900 font-medium transition-colors text-xs"
           tabIndex={0}
         >
           Help
@@ -282,14 +305,14 @@ function FilterAccordionContent({ column }: { column: any }) {
 
   const handleFilterUpdate = (accessorKey: string, value: string) => {
     updateFilter(accessorKey, value);
-    toast({
-      title: "Filter updated",
-      description: `${value} ${
-        filters[accessorKey]?.has(value) ? "added to" : "removed from"
-      } ${snakeCaseToTitleCase(accessorKey)}`,
-      variant: "info",
-      duration: 2000,
-    });
+    // toast({
+    //   title: "Filter updated",
+    //   description: `${value} ${
+    //     filters[accessorKey]?.has(value) ? "removed from" : "added to"
+    //   } ${snakeCaseToTitleCase(accessorKey)}`,
+    //   variant: "info",
+    //   duration: 2000,
+    // });
   };
 
   const handleClearFilter = () => {
@@ -348,7 +371,7 @@ function FilterAccordionContent({ column }: { column: any }) {
                 <Circle className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity duration-200" />
               )}
             </div>
-            <span className="truncate flex-1">{item.value}</span>
+            <span className="truncate flex-1 text-black">{item.value}</span>
             {filters[column.accessorKey]?.has(item.value) && (
               <span className="text-[10px] text-orange-500/50 group-hover:text-orange-500">
                 selected

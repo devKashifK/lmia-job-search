@@ -223,14 +223,14 @@ export default function SearchEngine({
       >
         {/* Charts Section */}
         <div className="flex flex-col min-w-0 overflow-x-hidden">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-gradient-to-r from-orange-50/80 to-white rounded-t-lg">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-gradient-to-r from-orange-200 to-white rounded-t-lg">
             <div className="flex items-center gap-1.5">
-              <div className="p-1 bg-orange-100 rounded-md">
-                <AreaChart className="h-3.5 w-3.5 text-orange-600" />
+              <div className="p-1 bg-orange-300 rounded-md">
+                <AreaChart className="h-3.5 w-3.5 text-orange-800" />
               </div>
               <div>
-                <h2 className="font-medium text-zinc-800 text-sm">Charts</h2>
-                <p className="text-[10px] text-zinc-500">Visualize your data</p>
+                <h2 className="font-medium text-black text-sm">Charts</h2>
+                <p className="text-[10px] text-zinc-700">Visualize your data</p>
               </div>
             </div>
             <button

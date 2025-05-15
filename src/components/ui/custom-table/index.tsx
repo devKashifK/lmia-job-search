@@ -269,7 +269,7 @@ export function DataTable({
       <div className="overflow-x-auto">
         <table className="w-full table-fixed">
           <thead>
-            <tr className="bg-gradient-to-r from-orange-50 via-orange-50/80 to-orange-50/50">
+            <tr className="bg-gradient-to-r from-orange-200 via-orange-200/80 to-orange-200/50">
               {filteredColumns.map((column) => (
                 <th
                   key={column.field}
@@ -282,11 +282,11 @@ export function DataTable({
                 >
                   <div className="flex items-center py-3.5 px-4 group cursor-pointer">
                     <div className="flex items-center gap-1 min-w-0">
-                      <div className="shrink-0 w-5 h-5 flex items-center justify-center rounded-md bg-orange-100/50 text-orange-600">
+                      <div className="shrink-0 w-5 h-5 flex items-center justify-center rounded-md bg-orange-300/50 text-orange-800">
                         {column.headerIcon}
                       </div>
                       <div className="min-w-0">
-                        <span className="text-sm font-medium text-zinc-800 whitespace-nowrap">
+                        <span className="text-sm font-medium text-black whitespace-nowrap">
                           {column.headerName}
                         </span>
                       </div>
@@ -296,9 +296,9 @@ export function DataTable({
                         variant="ghost"
                         size="sm"
                         className={cn(
-                          "h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-orange-100 focus:opacity-100 transition-all rounded-lg",
+                          "h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-orange-200 focus:opacity-100 transition-all rounded-lg",
                           sortConfig.key === column.field &&
-                            "opacity-100 bg-orange-100"
+                            "opacity-100 bg-orange-200"
                         )}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -307,20 +307,20 @@ export function DataTable({
                       >
                         {sortConfig.key === column.field ? (
                           sortConfig.direction === "asc" ? (
-                            <ChevronUp className="h-3 w-3 text-orange-600" />
+                            <ChevronUp className="h-3 w-3 text-orange-800" />
                           ) : sortConfig.direction === "desc" ? (
-                            <ChevronDown className="h-3 w-3 text-orange-600" />
+                            <ChevronDown className="h-3 w-3 text-orange-800" />
                           ) : (
-                            <ArrowUpDown className="h-3 w-3 text-orange-600/70" />
+                            <ArrowUpDown className="h-3 w-3 text-orange-800/70" />
                           )
                         ) : (
-                          <ArrowUpDown className="h-3 w-3 text-orange-600/70" />
+                          <ArrowUpDown className="h-3 w-3 text-orange-800/70" />
                         )}
                       </Button>
                     </div>
                   </div>
                   {column.field !== columns[columns.length - 1].field && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-4 bg-orange-200/50" />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-4 bg-orange-300/50" />
                   )}
                 </th>
               ))}
@@ -357,13 +357,15 @@ export function DataTable({
                             setShowSubscriptionDialog(true);
                           }}
                         >
-                          <div className="truncate">
+                          <div className="truncate text-black">
                             {row[column.field] || "-"}
                           </div>
                         </td>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="text-sm">{row[column.field] || "-"}</p>
+                        <p className="text-sm text-black">
+                          {row[column.field] || "-"}
+                        </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

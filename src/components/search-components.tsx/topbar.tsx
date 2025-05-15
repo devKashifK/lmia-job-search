@@ -15,6 +15,7 @@ import {
   Blend,
   Binoculars,
   BookmarkMinus,
+  Link2Icon,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -45,6 +46,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSheet } from "@/context/sheet-context";
 import { RecentSearches } from "./recent-searches";
 import { SavedSearches } from "./saved-searches";
+import CustomLink from "@/app/CustomLink";
 
 // Navigation Link Component
 function NavLink({
@@ -512,6 +514,43 @@ export default function Topbar({
                 </div>
               </div>
             )}
+
+            {keywords && (
+              <CustomLink
+                className="flex items-center gap-2 pr-3 border-r border-zinc-200 h-5"
+                href={
+                  type == "hot_leads"
+                    ? `/lmia/${keywords}`
+                    : `/search/${keywords}`
+                }
+              >
+                <div className="p-1 bg-orange-50 rounded-md">
+                  <SearchCheck className="w-3 h-3 text-orange-600" />
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-medium text-zinc-900">
+                    {decodeURIComponent(keywords)}
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-zinc-100 text-zinc-600 rounded-md font-medium">
+                    Search With {type == "hot_leads" ? "Lmia" : "Hot Leads"}
+                  </span>
+                </div>
+              </CustomLink>
+            )}
+
+            <CustomLink
+              className="flex items-center gap-2 pr-3 border-r border-zinc-200 h-5"
+              href={type == "hot_leads" ? "/lmia" : "/search"}
+            >
+              <div className="p-1 bg-orange-50 rounded-md">
+                <Link2Icon className="w-3 h-3 text-orange-600" />
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-medium text-zinc-900">
+                  {type == "hot_leads" ? "LMIA" : "Hot Leads"}
+                </span>
+              </div>
+            </CustomLink>
           </div>
 
           {/* Right side - Search, Actions & Notifications */}
