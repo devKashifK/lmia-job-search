@@ -223,10 +223,10 @@ export default function SearchEngine({
       >
         {/* Charts Section */}
         <div className="flex flex-col min-w-0 overflow-x-hidden">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-gradient-to-r from-orange-200 to-white rounded-t-lg">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-gradient-to-r from-orange-100 via-orange-50 to-white rounded-t-lg">
             <div className="flex items-center gap-1.5">
-              <div className="p-1 bg-orange-300 rounded-md">
-                <AreaChart className="h-3.5 w-3.5 text-orange-800" />
+              <div className="p-1 bg-orange-200 rounded-md">
+                <AreaChart className="h-3.5 w-3.5 text-orange-700" />
               </div>
               <div>
                 <h2 className="font-medium text-black text-sm">Charts</h2>
@@ -235,12 +235,12 @@ export default function SearchEngine({
             </div>
             <button
               onClick={() => setIsChartsExpanded(!isChartsExpanded)}
-              className="p-1.5 hover:bg-zinc-100 rounded-md transition-colors duration-200"
+              className="p-1.5 hover:bg-orange-50 rounded-md transition-colors duration-200"
             >
               {isChartsExpanded ? (
-                <ChevronUp className="h-3.5 w-3.5 text-zinc-400" />
+                <ChevronUp className="h-3.5 w-3.5 text-zinc-500" />
               ) : (
-                <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
+                <ChevronDown className="h-3.5 w-3.5 text-zinc-500" />
               )}
             </button>
           </div>
