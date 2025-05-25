@@ -307,14 +307,14 @@ export default function SignUpPage() {
                       I agree to the{" "}
                       <CustomLink
                         href="/terms"
-                        className="text-orange-600 hover:text-orange-500"
+                        className="text-brand-600 hover:text-brand-500"
                       >
                         Terms of Service
                       </CustomLink>{" "}
                       and{" "}
                       <CustomLink
                         href="/privacy"
-                        className="text-orange-600 hover:text-orange-500"
+                        className="text-brand-600 hover:text-brand-500"
                       >
                         Privacy Policy
                       </CustomLink>
@@ -323,7 +323,7 @@ export default function SignUpPage() {
 
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white flex items-center gap-2"
+                    className="w-full h-12 bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-2"
                     disabled={isLoading}
                   >
                     {isLoading ? (
@@ -341,7 +341,7 @@ export default function SignUpPage() {
                   Already have an account?{" "}
                   <CustomLink
                     href="/sign-in"
-                    className="font-medium text-orange-600 hover:text-orange-500"
+                    className="font-medium text-brand-600 hover:text-brand-500"
                   >
                     Sign in
                   </CustomLink>
@@ -353,14 +353,14 @@ export default function SignUpPage() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
-                className="hidden lg:block bg-gradient-to-br from-orange-500 to-red-600 p-8 text-white rounded-xl"
+                className="hidden lg:block bg-gradient-to-br from-brand-500 to-brand-600 p-8 text-white rounded-xl"
               >
                 <div className="h-full flex flex-col justify-between">
                   <div>
                     <h2 className="text-3xl font-bold mb-6">
                       Start Your Journey Today
                     </h2>
-                    <p className="text-lg text-orange-50 mb-8">
+                    <p className="text-lg text-brand-50 mb-8">
                       Join thousands of users who are finding their perfect
                       opportunities with Job Maze.
                     </p>
@@ -380,7 +380,7 @@ export default function SignUpPage() {
 
                   {/* Benefits */}
                   <div className="mt-8">
-                    <p className="text-orange-100 mb-6 text-sm font-medium">
+                    <p className="text-brand-100 mb-6 text-sm font-medium">
                       What you'll get
                     </p>
                     <div className="grid grid-cols-2 gap-4">

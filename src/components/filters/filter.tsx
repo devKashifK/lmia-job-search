@@ -29,14 +29,14 @@ export const Filter = () => {
         className={cn(
           "flex items-center gap-1.5 px-2 py-1.5 rounded-md text-xs transition-all duration-200",
           isOpen
-            ? "bg-orange-50 text-orange-600 shadow-sm font-medium"
+            ? "bg-brand-50 text-brand-600 shadow-sm font-medium"
             : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
         )}
       >
         <FilterX className="w-3.5 h-3.5" />
         <span className="font-medium">Advanced</span>
         {totalFiltersApplied > 0 && (
-          <span className="px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded-full text-[10px] font-medium">
+          <span className="px-1.5 py-0.5 bg-brand-100 text-brand-600 rounded-full text-[10px] font-medium">
             {totalFiltersApplied}
           </span>
         )}
@@ -59,7 +59,7 @@ export const Filter = () => {
                 className={cn(
                   "py-1.5 text-xs font-medium rounded transition-colors",
                   activeTab === "filters"
-                    ? "bg-white text-orange-600 shadow-sm"
+                    ? "bg-white text-brand-600 shadow-sm"
                     : "text-zinc-600 hover:bg-white/60"
                 )}
               >
@@ -70,13 +70,13 @@ export const Filter = () => {
                 className={cn(
                   "py-1.5 text-xs font-medium rounded transition-colors flex items-center justify-center gap-1.5",
                   activeTab === "applied"
-                    ? "bg-white text-orange-600 shadow-sm"
+                    ? "bg-white text-brand-600 shadow-sm"
                     : "text-zinc-600 hover:bg-white/60"
                 )}
               >
                 Applied
                 {totalFiltersApplied > 0 && (
-                  <span className="px-1.5 bg-orange-100 rounded-full text-[10px]">
+                  <span className="px-1.5 bg-brand-100 rounded-full text-[10px]">
                     {totalFiltersApplied}
                   </span>
                 )}
@@ -138,7 +138,7 @@ const FilterAttribute = ({ column, isOpen, onToggle }) => {
             {snakeCaseToTitleCase(column.accessorKey)}
           </span>
           {selectedCount > 0 && (
-            <span className="px-1.5 py-0.5 bg-orange-50 rounded-full text-[10px] font-medium text-orange-600 min-w-[18px] text-center">
+            <span className="px-1.5 py-0.5 bg-brand-50 rounded-full text-[10px] font-medium text-brand-600 min-w-[18px] text-center">
               {selectedCount}
             </span>
           )}
@@ -168,7 +168,7 @@ const FilterAttribute = ({ column, isOpen, onToggle }) => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search..."
-                  className="w-full h-7 pl-7 pr-2 text-xs bg-white border border-zinc-200 rounded focus:outline-none focus:border-orange-500/30 focus:ring-1 focus:ring-orange-500/20"
+                  className="w-full h-7 pl-7 pr-2 text-xs bg-white border border-zinc-200 rounded focus:outline-none focus:border-brand-500/30 focus:ring-1 focus:ring-brand-500/20"
                 />
               </div>
 
@@ -180,7 +180,7 @@ const FilterAttribute = ({ column, isOpen, onToggle }) => {
                     className={cn(
                       "w-full flex items-center justify-between px-2 py-1.5 rounded text-xs transition-colors",
                       filters[column.accessorKey]?.has(item.value)
-                        ? "bg-white text-orange-600 shadow-sm font-medium"
+                        ? "bg-white text-brand-600 shadow-sm font-medium"
                         : "hover:bg-white text-zinc-600"
                     )}
                   >
@@ -236,7 +236,7 @@ const AppliedFilters = () => {
                 <span className="text-[11px] font-medium text-zinc-700 truncate">
                   {snakeCaseToTitleCase(key)}
                 </span>
-                <span className="shrink-0 px-1.5 py-0.5 bg-orange-50 rounded-full text-[10px] font-medium text-orange-600 min-w-[18px] text-center">
+                <span className="shrink-0 px-1.5 py-0.5 bg-brand-50 rounded-full text-[10px] font-medium text-brand-600 min-w-[18px] text-center">
                   {values.size}
                 </span>
               </div>

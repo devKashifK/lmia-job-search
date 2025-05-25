@@ -42,14 +42,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-9 w-9 p-0 hover:bg-orange-50"
+                  className="h-9 w-9 p-0 hover:bg-brand-50"
                   onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 >
                   <Menu className="h-5 w-5 text-gray-600" />
                   <span className="sr-only">Toggle sidebar</span>
                 </Button>
                 <Link href="/" className="flex items-center">
-                  <span className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 text-transparent bg-clip-text">
+                  <span className="text-xl font-bold bg-gradient-to-r from-brand-600 to-brand-500 text-transparent bg-clip-text">
                     Job Maze
                   </span>
                 </Link>

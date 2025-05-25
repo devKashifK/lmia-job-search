@@ -14,7 +14,7 @@ const useCases = [
         {/* Mock search interface */}
         <div className="flex gap-3 mb-4">
           <div className="flex-1 h-10 bg-gray-100 rounded-md" />
-          <div className="w-20 h-10 bg-orange-500 rounded-md" />
+          <div className="w-20 h-10 bg-brand-500 rounded-md" />
         </div>
         <div className="space-y-3">
           <div className="h-16 bg-gray-50 rounded-md border border-gray-200 p-3">
@@ -38,23 +38,23 @@ const useCases = [
         {/* Mock chart interface */}
         <div className="flex items-end h-32 gap-3 mb-4 pt-8">
           <div
-            className="flex-1 bg-orange-200 rounded-t"
+            className="flex-1 bg-brand-200 rounded-t"
             style={{ height: "60%" }}
           />
           <div
-            className="flex-1 bg-orange-300 rounded-t"
+            className="flex-1 bg-brand-300 rounded-t"
             style={{ height: "80%" }}
           />
           <div
-            className="flex-1 bg-orange-400 rounded-t"
+            className="flex-1 bg-brand-400 rounded-t"
             style={{ height: "40%" }}
           />
           <div
-            className="flex-1 bg-orange-500 rounded-t"
+            className="flex-1 bg-brand-500 rounded-t"
             style={{ height: "90%" }}
           />
           <div
-            className="flex-1 bg-orange-600 rounded-t"
+            className="flex-1 bg-brand-600 rounded-t"
             style={{ height: "70%" }}
           />
         </div>
@@ -77,15 +77,15 @@ const useCases = [
         {/* Mock filter interface */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-orange-500" />
+            <div className="w-4 h-4 rounded bg-brand-500" />
             <div className="flex-1 h-8 bg-gray-100 rounded" />
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-orange-400" />
+            <div className="w-4 h-4 rounded bg-brand-400" />
             <div className="flex-1 h-8 bg-gray-100 rounded" />
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-orange-300" />
+            <div className="w-4 h-4 rounded bg-brand-300" />
             <div className="flex-1 h-8 bg-gray-100 rounded" />
           </div>
         </div>
@@ -101,11 +101,11 @@ const useCases = [
         {/* Mock export interface */}
         <div className="grid grid-cols-2 gap-3">
           <div className="h-20 bg-gray-50 rounded border border-gray-200 p-3 flex flex-col items-center justify-center">
-            <div className="w-8 h-8 bg-orange-500 rounded mb-2" />
+            <div className="w-8 h-8 bg-brand-500 rounded mb-2" />
             <div className="w-16 h-3 bg-gray-200 rounded" />
           </div>
           <div className="h-20 bg-gray-50 rounded border border-gray-200 p-3 flex flex-col items-center justify-center">
-            <div className="w-8 h-8 bg-orange-400 rounded mb-2" />
+            <div className="w-8 h-8 bg-brand-400 rounded mb-2" />
             <div className="w-16 h-3 bg-gray-200 rounded" />
           </div>
         </div>
@@ -131,7 +131,7 @@ const item = {
 
 export default function UseCases() {
   return (
-    <section className="py-16">
+    <section className="py-16 relative">
       <div className="max-w-6xl mx-auto px-4">
         <SectionTitle
           title="Use Cases"
@@ -151,8 +151,8 @@ export default function UseCases() {
               variants={item}
               className="group relative"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-red-500/5 rounded-xl transform rotate-1 transition-transform duration-300 group-hover:rotate-0" />
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-red-500/5 rounded-xl transform -rotate-1 transition-transform duration-300 group-hover:rotate-0" />
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-red-500/5 rounded-xl transform rotate-1 transition-transform duration-300 group-hover:rotate-0" />
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-red-500/5 rounded-xl transform -rotate-1 transition-transform duration-300 group-hover:rotate-0" />
 
               <div className="relative bg-white rounded-xl overflow-hidden transition-all duration-300 group-hover:-translate-y-1">
                 {/* Visual Example */}
@@ -160,7 +160,7 @@ export default function UseCases() {
 
                 {/* Description */}
                 <div className="p-6 bg-gradient-to-b from-white to-gray-50">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-brand-600 transition-colors duration-300">
                     {uc.title}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">

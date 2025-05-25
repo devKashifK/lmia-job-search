@@ -1,117 +1,154 @@
-import * as React from "react"
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
+import React from "react";
 
-import { cn } from "@/lib/utils"
-import { ButtonProps, buttonVariants } from "@/components/ui/button"
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  className?: string;
+}
 
-const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
-  <nav
-    role="navigation"
-    aria-label="pagination"
-    className={cn("mx-auto flex w-full justify-center", className)}
-    {...props}
-  />
-)
-Pagination.displayName = "Pagination"
+export default function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+  className = "",
+}: PaginationProps) {
+  const handlePageChange = (page: number) => {
+    onPageChange(page);
+    // Use setTimeout to ensure the scroll happens after the page update
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "instant", // Use instant scroll for better reliability
+      });
+    }, 100);
+  };
 
-const PaginationContent = React.forwardRef<
-  HTMLUListElement,
-  React.ComponentProps<"ul">
->(({ className, ...props }, ref) => (
-  <ul
-    ref={ref}
-    className={cn("flex flex-row items-center gap-1", className)}
-    {...props}
-  />
-))
-PaginationContent.displayName = "PaginationContent"
+  const renderPageNumbers = () => {
+    const pages = [];
+    let start = 1;
+    let end = totalPages;
+    if (totalPages > 7) {
+      if (currentPage <= 4) {
+        end = 7;
+      } else if (currentPage + 3 >= totalPages) {
+        start = totalPages - 6;
+      } else {
+        start = currentPage - 3;
+        end = currentPage + 3;
+      }
+    }
 
-const PaginationItem = React.forwardRef<
-  HTMLLIElement,
-  React.ComponentProps<"li">
->(({ className, ...props }, ref) => (
-  <li ref={ref} className={cn("", className)} {...props} />
-))
-PaginationItem.displayName = "PaginationItem"
+    // First page
+    if (start > 1) {
+      pages.push(
+        <button
+          key={1}
+          onClick={() => handlePageChange(1)}
+          className="px-3 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+        >
+          1
+        </button>
+      );
+      if (start > 2) {
+        pages.push(
+          <span key="start-ellipsis" className="px-2 text-gray-400">
+            •••
+          </span>
+        );
+      }
+    }
 
-type PaginationLinkProps = {
-  isActive?: boolean
-} & Pick<ButtonProps, "size"> &
-  React.ComponentProps<"a">
+    // Page numbers
+    for (let i = start; i <= end; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            i === currentPage
+              ? "bg-brand-600 text-white hover:bg-brand-700"
+              : "text-gray-600 hover:bg-gray-50"
+          }`}
+          disabled={i === currentPage}
+        >
+          {i}
+        </button>
+      );
+    }
 
-const PaginationLink = ({
-  className,
-  isActive,
-  size = "icon",
-  ...props
-}: PaginationLinkProps) => (
-  <a
-    aria-current={isActive ? "page" : undefined}
-    className={cn(
-      buttonVariants({
-        variant: isActive ? "outline" : "ghost",
-        size,
-      }),
-      className
-    )}
-    {...props}
-  />
-)
-PaginationLink.displayName = "PaginationLink"
+    // Last page
+    if (end < totalPages) {
+      if (end < totalPages - 1) {
+        pages.push(
+          <span key="end-ellipsis" className="px-2 text-gray-400">
+            •••
+          </span>
+        );
+      }
+      pages.push(
+        <button
+          key={totalPages}
+          onClick={() => handlePageChange(totalPages)}
+          className="px-3 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+        >
+          {totalPages}
+        </button>
+      );
+    }
+    return pages;
+  };
 
-const PaginationPrevious = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to previous page"
-    size="default"
-    className={cn("gap-1 pl-2.5", className)}
-    {...props}
-  >
-    <ChevronLeft className="h-4 w-4" />
-    <span>Previous</span>
-  </PaginationLink>
-)
-PaginationPrevious.displayName = "PaginationPrevious"
-
-const PaginationNext = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to next page"
-    size="default"
-    className={cn("gap-1 pr-2.5", className)}
-    {...props}
-  >
-    <span>Next</span>
-    <ChevronRight className="h-4 w-4" />
-  </PaginationLink>
-)
-PaginationNext.displayName = "PaginationNext"
-
-const PaginationEllipsis = ({
-  className,
-  ...props
-}: React.ComponentProps<"span">) => (
-  <span
-    aria-hidden
-    className={cn("flex h-9 w-9 items-center justify-center", className)}
-    {...props}
-  >
-    <MoreHorizontal className="h-4 w-4" />
-    <span className="sr-only">More pages</span>
-  </span>
-)
-PaginationEllipsis.displayName = "PaginationEllipsis"
-
-export {
-  Pagination,
-  PaginationContent,
-  PaginationLink,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationEllipsis,
+  return (
+    <div className={`flex items-center justify-center gap-1 ${className}`}>
+      <div className="flex items-center gap-1 bg-white rounded-lg border border-gray-200 px-2 py-1">
+        <button
+          onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage === 1}
+          className="p-1.5 rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          aria-label="Previous page"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
+        {renderPageNumbers()}
+        <button
+          onClick={() =>
+            handlePageChange(Math.min(totalPages, currentPage + 1))
+          }
+          disabled={currentPage === totalPages || totalPages === 0}
+          className="p-1.5 rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          aria-label="Next page"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+      <span className="text-sm text-gray-500 ml-4">
+        Page {currentPage} of {totalPages || 1}
+      </span>
+    </div>
+  );
 }

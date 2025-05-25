@@ -130,16 +130,16 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
   // Custom color themes
   const themes = {
     light: {
-      primary: "#f97316",
-      secondary: "#fed7aa",
-      gradient: ["#f97316", "#fdba74", "#fed7aa"],
+      primary: "#4ade80",
+      secondary: "#bbf7d0",
+      gradient: ["#4ade80", "#22c55e", "#bbf7d0"],
       background: "white",
       text: "#334155",
     },
     dark: {
-      primary: "#fb923c",
-      secondary: "#fed7aa",
-      gradient: ["#fb923c", "#fdba74", "#fed7aa"],
+      primary: "#4ade80",
+      secondary: "#bbf7d0",
+      gradient: ["#4ade80", "#22c55e", "#bbf7d0"],
       background: "#1f2937",
       text: "#f3f4f6",
     },
@@ -217,7 +217,7 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
         },
         tooltip: {
           backgroundColor: "rgba(255, 255, 255, 0.95)",
-          borderColor: "#fed7aa",
+          borderColor: "#bbf7d0",
           borderWidth: 1,
           textStyle: {
             color: "#334155",
@@ -362,8 +362,8 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
                   x2: 0,
                   y2: 1,
                   colorStops: [
-                    { offset: 0, color: "#f97316" },
-                    { offset: 1, color: "#fed7aa" },
+                    { offset: 0, color: "rgba(74, 222, 128, 0.2)" },
+                    { offset: 1, color: "rgba(74, 222, 128, 0.02)" },
                   ],
                 },
                 shadowColor: "rgba(0,0,0,0.05)",
@@ -413,12 +413,12 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
               symbol: "circle",
               lineStyle: {
                 width: 2,
-                color: "#f97316",
+                color: "#4ade80",
                 shadowColor: "rgba(249,115,22,0.2)",
                 shadowBlur: 4,
               },
               itemStyle: {
-                color: "#f97316",
+                color: "#4ade80",
                 borderWidth: 2,
                 borderColor: "#fff",
                 shadowColor: "rgba(249,115,22,0.2)",
@@ -439,8 +439,8 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
                   x2: 0,
                   y2: 1,
                   colorStops: [
-                    { offset: 0, color: "rgba(249,115,22,0.2)" },
-                    { offset: 1, color: "rgba(249,115,22,0.02)" },
+                    { offset: 0, color: "rgba(74, 222, 128, 0.2)" },
+                    { offset: 1, color: "rgba(74, 222, 128, 0.02)" },
                   ],
                 },
               },
@@ -688,12 +688,12 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
         )}
       >
         {/* Header */}
-        <div className="px-3 py-2 border-b border-zinc-100 bg-gradient-to-r from-orange-50/50 to-white flex justify-between items-center">
+        <div className="px-3 py-2 border-b border-zinc-100 bg-gradient-to-r from-brand-50/50 to-white flex justify-between items-center">
           <div className="flex items-center gap-1.5">
-            <div className="p-1 bg-orange-100 rounded-md">
+            <div className="p-1 bg-brand-100 rounded-md">
               <Icon
                 icon="material-symbols:area-chart-rounded"
-                className="text-orange-500 h-3 w-3"
+                className="text-brand-500 h-3 w-3"
               />
             </div>
             <div>
@@ -731,7 +731,7 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
                         className={cn(
                           "p-1 rounded transition-all duration-200",
                           activeChartType === id
-                            ? "text-orange-600 bg-orange-100 shadow-sm"
+                            ? "text-brand-600 bg-brand-100 shadow-sm"
                             : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100"
                         )}
                       >
@@ -851,14 +851,14 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-0">
           <div className="flex flex-col">
             {/* Header with gradient background - Fixed position */}
-            <div className="sticky top-0 z-10 border-b border-zinc-100 bg-gradient-to-r from-orange-50 to-white p-4 backdrop-blur-sm">
+            <div className="sticky top-0 z-10 border-b border-zinc-100 bg-gradient-to-r from-brand-50 to-white p-4 backdrop-blur-sm">
               <DialogHeader className="mb-2">
                 <div className="flex items-center justify-between">
                   <DialogTitle className="flex items-center gap-3">
-                    <div className="p-2 bg-orange-100 rounded-xl">
+                    <div className="p-2 bg-brand-100 rounded-xl">
                       <Icon
                         icon="material-symbols:area-chart-rounded"
-                        className="text-orange-500 h-5 w-5"
+                        className="text-brand-500 h-5 w-5"
                       />
                     </div>
                     <div>
@@ -948,7 +948,7 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
                     className={cn(
                       "px-2.5 py-1.5 rounded-lg transition-all duration-200 flex items-center gap-2",
                       activeChartType === id
-                        ? "text-orange-600 bg-orange-100 shadow-sm"
+                        ? "text-brand-600 bg-brand-100 shadow-sm"
                         : "text-zinc-600 hover:text-zinc-800 hover:bg-zinc-100"
                     )}
                   >
@@ -1069,14 +1069,14 @@ const DynamicChart = ({ data, keyName, active, theme = "light" }) => {
                             <div
                               className={cn(
                                 "w-6 h-6 rounded-full flex items-center justify-center",
-                                type === "Top" ? "bg-orange-100" : "bg-zinc-100"
+                                type === "Top" ? "bg-brand-100" : "bg-zinc-100"
                               )}
                             >
                               <span
                                 className={cn(
                                   "text-xs font-semibold",
                                   type === "Top"
-                                    ? "text-orange-600"
+                                    ? "text-brand-600"
                                     : "text-zinc-600"
                                 )}
                               >

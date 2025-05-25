@@ -106,7 +106,7 @@ export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
           <div className="p-4 border-b border-gray-200">
             <Button
               variant="outline"
-              className="w-full justify-start text-gray-500 gap-2 hover:bg-orange-50 hover:text-gray-700 hover:border-orange-200"
+              className="w-full justify-start text-gray-500 gap-2 hover:bg-brand-50 hover:text-gray-700 hover:border-brand-200"
               onClick={() => router.push("/search")}
             >
               <Search className="w-4 h-4" />
@@ -143,10 +143,10 @@ export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="w-full justify-between px-3 hover:bg-orange-50"
+                  className="w-full justify-between px-3 hover:bg-brand-50"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-100 to-orange-50 text-sm font-medium text-orange-600 border border-orange-200/50">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-100 to-brand-50 text-sm font-medium text-brand-600 border border-brand-200/50">
                       {session?.user?.email?.[0].toUpperCase()}
                     </div>
                     <div className="flex flex-col items-start">
@@ -162,14 +162,14 @@ export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem className="flex items-center gap-2 hover:bg-orange-50">
+                <DropdownMenuItem className="flex items-center gap-2 hover:bg-brand-50">
                   <Bell className="w-4 h-4" />
                   <span>Notifications</span>
-                  <span className="ml-auto bg-orange-100 text-orange-600 text-xs font-medium px-1.5 py-0.5 rounded-full">
+                  <span className="ml-auto bg-brand-100 text-brand-600 text-xs font-medium px-1.5 py-0.5 rounded-full">
                     3
                   </span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2 hover:bg-orange-50">
+                <DropdownMenuItem className="flex items-center gap-2 hover:bg-brand-50">
                   <Settings className="w-4 h-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>

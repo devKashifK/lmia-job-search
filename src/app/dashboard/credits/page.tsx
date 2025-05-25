@@ -55,7 +55,7 @@ export default function Credits() {
     tooltip: {
       trigger: "axis",
       backgroundColor: "rgba(255, 255, 255, 0.95)",
-      borderColor: "#f97316",
+      borderColor: "#4ade80",
       borderWidth: 1,
       padding: [8, 12],
       textStyle: {
@@ -66,7 +66,7 @@ export default function Credits() {
         const date = params[0].axisValue;
         const value = params[0].value;
         return `<div class="text-xs font-medium">${date}</div>
-                <div class="text-sm text-orange-600">${value} credits</div>`;
+                <div class="text-sm text-brand-600">${value} credits</div>`;
       },
     },
     grid: {
@@ -147,7 +147,7 @@ export default function Credits() {
     tooltip: {
       trigger: "item",
       backgroundColor: "rgba(255, 255, 255, 0.95)",
-      borderColor: "#f97316",
+      borderColor: "#4ade80",
       borderWidth: 1,
       padding: [8, 12],
       textStyle: {
@@ -158,7 +158,7 @@ export default function Credits() {
         const value = params.value;
         const percent = params.percent;
         return `<div class="text-xs font-medium">${params.name}</div>
-                <div class="text-sm text-orange-600">${value} credits (${percent}%)</div>`;
+                <div class="text-sm text-brand-600">${value} credits (${percent}%)</div>`;
       },
     },
     legend: {
@@ -226,8 +226,8 @@ export default function Credits() {
         transition={{ duration: 0.5 }}
         className="flex items-center gap-3 mb-6"
       >
-        <div className="p-2.5 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-xl shadow-sm">
-          <CreditCard className="w-5 h-5 text-orange-600" />
+        <div className="p-2.5 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-xl shadow-sm">
+          <CreditCard className="w-5 h-5 text-brand-600" />
         </div>
         <div>
           <h1 className="text-xl font-semibold text-zinc-900">
@@ -246,12 +246,12 @@ export default function Credits() {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
-            <div className="p-6 bg-gradient-to-br from-orange-50/90 to-white">
+            <div className="p-6 bg-gradient-to-br from-brand-50/90 to-white">
               <div className="flex items-center justify-between mb-4">
                 <div className="p-2 bg-white rounded-lg shadow-sm">
-                  <Coins className="w-5 h-5 text-orange-600" />
+                  <Coins className="w-5 h-5 text-brand-600" />
                 </div>
-                <span className="text-xs font-medium text-orange-600 bg-orange-100/50 px-2.5 py-0.5 rounded-full">
+                <span className="text-xs font-medium text-brand-600 bg-brand-100/50 px-2.5 py-0.5 rounded-full">
                   Total
                 </span>
               </div>
@@ -323,10 +323,10 @@ export default function Credits() {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
-            <CardHeader className="p-6 bg-gradient-to-r from-orange-50/90 via-orange-50/80 to-white border-b shadow-sm">
+            <CardHeader className="p-6 bg-gradient-to-r from-brand-50/90 via-brand-50/80 to-white border-b shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="p-2 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-lg shadow-md">
-                  <BarChart2 className="w-4 h-4 text-orange-600" />
+                <div className="p-2 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-lg shadow-md">
+                  <BarChart2 className="w-4 h-4 text-brand-600" />
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-base font-semibold text-zinc-900">
@@ -354,10 +354,10 @@ export default function Credits() {
           transition={{ duration: 0.5, delay: 0.5 }}
         >
           <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
-            <CardHeader className="p-6 bg-gradient-to-r from-orange-50/90 via-orange-50/80 to-white border-b shadow-sm">
+            <CardHeader className="p-6 bg-gradient-to-r from-brand-50/90 via-brand-50/80 to-white border-b shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="p-2 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-lg shadow-md">
-                  <PieChart className="w-4 h-4 text-orange-600" />
+                <div className="p-2 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-lg shadow-md">
+                  <PieChart className="w-4 h-4 text-brand-600" />
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-base font-semibold text-zinc-900">
@@ -386,10 +386,10 @@ export default function Credits() {
         transition={{ duration: 0.5, delay: 0.6 }}
       >
         <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
-          <CardHeader className="p-6 bg-gradient-to-r from-orange-50/90 via-orange-50/80 to-white border-b shadow-sm">
+          <CardHeader className="p-6 bg-gradient-to-r from-brand-50/90 via-brand-50/80 to-white border-b shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="p-2 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-lg shadow-md">
-                <TrendingUp className="w-4 h-4 text-orange-600" />
+              <div className="p-2 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-lg shadow-md">
+                <TrendingUp className="w-4 h-4 text-brand-600" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-semibold text-zinc-900">
@@ -408,7 +408,7 @@ export default function Credits() {
                   <span className="text-sm font-medium text-zinc-700">
                     Credit Usage
                   </span>
-                  <span className="text-sm font-medium text-orange-600">
+                  <span className="text-sm font-medium text-brand-600">
                     {usagePercentage.toFixed(1)}%
                   </span>
                 </div>
@@ -422,8 +422,8 @@ export default function Credits() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-orange-100 rounded-lg">
-                      <TrendingUp className="w-3.5 h-3.5 text-orange-600" />
+                    <div className="p-1.5 bg-brand-100 rounded-lg">
+                      <TrendingUp className="w-3.5 h-3.5 text-brand-600" />
                     </div>
                     <span className="text-sm font-medium text-zinc-700">
                       Credits Used

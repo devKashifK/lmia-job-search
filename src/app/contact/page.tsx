@@ -29,7 +29,7 @@ export default function ContactPage() {
   const { session } = useSession();
 
   return (
-    <div className="min-h-screen bg-orange-50/80 flex flex-col">
+    <div className="min-h-screen bg-brand-50/80 flex flex-col">
       <Navbar />
 
       {/* Unified Hero + Get in Touch Section */}
@@ -58,16 +58,16 @@ export default function ContactPage() {
               y2="400"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stopColor="#fb923c" />
-              <stop offset="1" stopColor="#f59e42" />
+              <stop stopColor="#bbf7d0" />
+              <stop offset="1" stopColor="#4ade80" />
             </linearGradient>
           </defs>
         </svg>
         <div className="relative z-10 flex flex-col items-center justify-center">
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl px-8 py-12 max-w-xl mx-auto text-center border border-orange-100 mb-12">
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl px-8 py-12 max-w-xl mx-auto text-center border border-brand-100 mb-12">
             <span className="inline-flex items-center gap-2 mb-4">
-              <span className="w-3 h-3 rounded-full bg-orange-500" />
-              <span className="uppercase text-xs font-semibold text-orange-600 tracking-widest">
+              <span className="w-3 h-3 rounded-full bg-brand-500" />
+              <span className="uppercase text-xs font-semibold text-brand-600 tracking-widest">
                 Contact
               </span>
             </span>
@@ -82,24 +82,24 @@ export default function ContactPage() {
           <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Phone Card */}
             <HoverCard>
-              <div className="bg-white/90 border border-orange-100 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
-                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
-                  <Phone className="w-7 h-7 text-orange-600" />
+              <div className="bg-white/90 border border-brand-100 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
+                <div className="w-14 h-14 bg-brand-100 rounded-xl flex items-center justify-center mb-4">
+                  <Phone className="w-7 h-7 text-brand-600" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Phone</h3>
                 <p className="text-gray-600 mb-2">
                   Call us for immediate assistance.
                 </p>
-                <span className="text-orange-600 font-semibold">
+                <span className="text-brand-600 font-semibold">
                   +1 234 567 8901
                 </span>
               </div>
             </HoverCard>
             {/* Email Card */}
             <HoverCard>
-              <div className="bg-white/90 border border-orange-100 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
-                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
-                  <Mail className="w-7 h-7 text-orange-600" />
+              <div className="bg-white/90 border border-brand-100 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
+                <div className="w-14 h-14 bg-brand-100 rounded-xl flex items-center justify-center mb-4">
+                  <Mail className="w-7 h-7 text-brand-600" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Email</h3>
                 <p className="text-gray-600 mb-2">
@@ -108,19 +108,19 @@ export default function ContactPage() {
                 <div className="flex flex-col gap-1">
                   <a
                     href="mailto:hello@jobmaze.ca"
-                    className="text-orange-600 hover:underline font-medium"
+                    className="text-brand-600 hover:underline font-medium"
                   >
                     hello@jobmaze.ca
                   </a>
                   <a
                     href="mailto:business@jobmaze.ca"
-                    className="text-orange-600 hover:underline font-medium"
+                    className="text-brand-600 hover:underline font-medium"
                   >
                     business@jobmaze.ca
                   </a>
                   <a
                     href="mailto:support@jobmaze.ca"
-                    className="text-orange-600 hover:underline font-medium"
+                    className="text-brand-600 hover:underline font-medium"
                   >
                     support@jobmaze.ca
                   </a>
@@ -129,13 +129,13 @@ export default function ContactPage() {
             </HoverCard>
             {/* Office Card */}
             <HoverCard>
-              <div className="bg-white/90 border border-orange-100 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
-                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
-                  <Building2 className="w-7 h-7 text-orange-600" />
+              <div className="bg-white/90 border border-brand-100 rounded-2xl shadow-lg p-8 flex flex-col items-center text-center group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300">
+                <div className="w-14 h-14 bg-brand-100 rounded-xl flex items-center justify-center mb-4">
+                  <Building2 className="w-7 h-7 text-brand-600" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Office</h3>
                 <p className="text-gray-600 mb-2">Visit our London office.</p>
-                <span className="text-orange-600 font-semibold">
+                <span className="text-brand-600 font-semibold">
                   123 Business Street, London, SW1A 1AA
                 </span>
               </div>
@@ -148,7 +148,7 @@ export default function ContactPage() {
       <section className="bg-white py-16">
         <div className="max-w-5xl mx-auto px-4">
           <Card className="border-none shadow-lg overflow-hidden rounded-2xl">
-            <CardHeader className="bg-gradient-to-r from-orange-500 to-red-600 border-b flex items-center gap-2">
+            <CardHeader className="bg-gradient-to-r from-brand-500 to-red-600 border-b flex items-center gap-2">
               <MapPin className="w-5 h-5 text-white mr-2" />
               <CardTitle className="text-lg font-semibold text-white">
                 Our Location

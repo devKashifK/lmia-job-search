@@ -11,8 +11,8 @@ interface HoverCardProps {
 export function HoverCard({ children, className }: HoverCardProps) {
   return (
     <motion.div className={cn("group relative", className)}>
-      <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-red-500/5 rounded-xl transform rotate-1 transition-transform duration-300 group-hover:rotate-0" />
-      <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-red-500/5 rounded-xl transform -rotate-1 transition-transform duration-300 group-hover:rotate-0" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-brand-500/5 rounded-xl transform rotate-1 transition-transform duration-300 group-hover:rotate-0" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-brand-500/5 rounded-xl transform -rotate-1 transition-transform duration-300 group-hover:rotate-0" />
       <div className="relative transition-all duration-300 group-hover:-translate-y-1">
         {children}
       </div>

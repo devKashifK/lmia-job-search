@@ -15,7 +15,6 @@
     "@ag-grid-community/styles": "^33.0.3",
     "@hookform/resolvers": "^3.9.1",
     "@iconify/react": "^5.2.0",
-    "@midudev/tailwind-animations": "^0.1.0",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-aspect-ratio": "^1.1.1",
@@ -62,7 +61,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.469.0",
     "next": "^15.1.6",
-    "next-themes": "^0.4.4",
+    "next-themes": "^0.4.6",
     "nprogress": "^0.2.0",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",
@@ -75,13 +74,14 @@
     "recharts": "^2.15.0",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
     "zod": "^3.24.1",
     "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@midudev/tailwind-animations": "^0.2.0",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20",
     "@types/nprogress": "^0.2.3",
     "@types/react": "^19",
@@ -90,6 +90,7 @@
     "eslint-config-next": "15.1.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5"
   }
 }

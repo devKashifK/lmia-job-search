@@ -126,7 +126,7 @@ function Pagination({
             className={cn(
               "h-8 w-8 p-0",
               currentPage === page &&
-                "bg-orange-100 hover:bg-orange-200 text-orange-600"
+                "bg-brand-100 hover:bg-brand-200 text-brand-600"
             )}
             onClick={() => onPageChange(page as number)}
           >
@@ -155,7 +155,7 @@ export function DataTable({
   isLoading,
   onRowClick,
   selectedRow,
-  pageSize = 10,
+  pageSize = 12,
 }: DataTableProps) {
   const router = useRouter();
   const [sortConfig, setSortConfig] = useState<SortConfig>({
@@ -239,7 +239,7 @@ export function DataTable({
       <div className="h-full border rounded-lg bg-white">
         <div className="flex items-center justify-center h-full">
           <div className="flex flex-col items-center gap-2">
-            <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+            <Loader2 className="h-8 w-8 animate-spin text-brand-500" />
             <p className="text-sm text-zinc-500">Loading data...</p>
           </div>
         </div>
@@ -269,7 +269,7 @@ export function DataTable({
       <div className="overflow-x-auto">
         <table className="w-full table-fixed">
           <thead>
-            <tr className="bg-gradient-to-r from-orange-200 via-orange-200/80 to-orange-200/50">
+            <tr className="bg-gradient-to-r from-brand-200 via-brand-200/80 to-brand-200/50">
               {filteredColumns.map((column) => (
                 <th
                   key={column.field}
@@ -282,7 +282,7 @@ export function DataTable({
                 >
                   <div className="flex items-center py-3.5 px-4 group cursor-pointer">
                     <div className="flex items-center gap-1 min-w-0">
-                      <div className="shrink-0 w-5 h-5 flex items-center justify-center rounded-md bg-orange-300/50 text-orange-800">
+                      <div className="shrink-0 w-5 h-5 flex items-center justify-center rounded-md bg-brand-300/50 text-brand-800">
                         {column.headerIcon}
                       </div>
                       <div className="min-w-0">
@@ -296,9 +296,9 @@ export function DataTable({
                         variant="ghost"
                         size="sm"
                         className={cn(
-                          "h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-orange-200 focus:opacity-100 transition-all rounded-lg",
+                          "h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-brand-200 focus:opacity-100 transition-all rounded-lg",
                           sortConfig.key === column.field &&
-                            "opacity-100 bg-orange-200"
+                            "opacity-100 bg-brand-200"
                         )}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -307,20 +307,20 @@ export function DataTable({
                       >
                         {sortConfig.key === column.field ? (
                           sortConfig.direction === "asc" ? (
-                            <ChevronUp className="h-3 w-3 text-orange-800" />
+                            <ChevronUp className="h-3 w-3 text-brand-800" />
                           ) : sortConfig.direction === "desc" ? (
-                            <ChevronDown className="h-3 w-3 text-orange-800" />
+                            <ChevronDown className="h-3 w-3 text-brand-800" />
                           ) : (
-                            <ArrowUpDown className="h-3 w-3 text-orange-800/70" />
+                            <ArrowUpDown className="h-3 w-3 text-brand-800/70" />
                           )
                         ) : (
-                          <ArrowUpDown className="h-3 w-3 text-orange-800/70" />
+                          <ArrowUpDown className="h-3 w-3 text-brand-800/70" />
                         )}
                       </Button>
                     </div>
                   </div>
                   {column.field !== columns[columns.length - 1].field && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-4 bg-orange-300/50" />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-4 bg-brand-300/50" />
                   )}
                 </th>
               ))}
@@ -382,7 +382,7 @@ export function DataTable({
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-orange-600">
+            <DialogTitle className="flex items-center gap-2 text-brand-600">
               <Lock className="h-5 w-5" />
               Premium Content
             </DialogTitle>
@@ -394,10 +394,10 @@ export function DataTable({
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-lg border border-zinc-200">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 rounded-md">
+                  <div className="p-2 bg-brand-100 rounded-md">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-orange-600"
+                      className="h-4 w-4 text-brand-600"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -416,15 +416,15 @@ export function DataTable({
                     <p className="text-xs text-zinc-500">Contact information</p>
                   </div>
                 </div>
-                <Lock className="h-4 w-4 text-orange-600" />
+                <Lock className="h-4 w-4 text-brand-600" />
               </div>
 
               <div className="flex items-center justify-between p-3 bg-zinc-50 rounded-lg border border-zinc-200">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-orange-100 rounded-md">
+                  <div className="p-2 bg-brand-100 rounded-md">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-orange-600"
+                      className="h-4 w-4 text-brand-600"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -442,7 +442,7 @@ export function DataTable({
                     <p className="text-xs text-zinc-500">Direct contact</p>
                   </div>
                 </div>
-                <Lock className="h-4 w-4 text-orange-600" />
+                <Lock className="h-4 w-4 text-brand-600" />
               </div>
             </div>
 
@@ -450,7 +450,7 @@ export function DataTable({
               <div className="flex items-center gap-2 text-sm text-zinc-600">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-orange-600"
+                  className="h-4 w-4 text-brand-600"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -465,7 +465,7 @@ export function DataTable({
               <div className="flex items-center gap-2 text-sm text-zinc-600">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-orange-600"
+                  className="h-4 w-4 text-brand-600"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -480,7 +480,7 @@ export function DataTable({
             </div>
 
             <Button
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium"
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium"
               onClick={handleSubscribe}
             >
               Subscribe Now
@@ -508,7 +508,7 @@ export function DataTable({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 hover:bg-orange-50"
+                  className="h-8 w-8 p-0 hover:bg-brand-50"
                 >
                   <Settings className="h-4 w-4 text-zinc-500" />
                 </Button>

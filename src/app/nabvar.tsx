@@ -58,16 +58,21 @@ export default function Navbar({ className }: { className?: string }) {
         <div className="flex items-center justify-between w-full pt-6 gap-4">
           {/* Logo on the left */}
           <CustomLink href="/" className="flex items-center min-w-[120px]">
-            <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 text-transparent bg-clip-text">
-              Job Maze
-            </span>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 text-white flex items-center justify-center text-sm font-medium shadow-sm">
+                J
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-brand-600 to-brand-700 text-transparent bg-clip-text">
+                Job Maze
+              </span>
+            </div>
           </CustomLink>
           {/* Centered Navigation - Hidden on mobile */}
           <div className="hidden md:flex flex-1 justify-center">
             <NavigationMenu>
               <NavigationMenuList className="flex flex-row items-center gap-2 md:gap-4">
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="h-9 px-4 bg-transparent hover:bg-orange-100/60 data-[state=open]:bg-orange-100/60 text-orange-700 font-medium">
+                  <NavigationMenuTrigger className="h-9 px-4 bg-transparent hover:bg-brand-100/60 data-[state=open]:bg-brand-100/60 text-brand-700 font-medium">
                     Solutions
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
@@ -76,12 +81,12 @@ export default function Navbar({ className }: { className?: string }) {
                         <NavigationMenuLink
                           key={item.title}
                           href={item.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-orange-50"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-brand-50"
                         >
-                          <div className="text-sm font-medium text-orange-900">
+                          <div className="text-sm font-medium text-brand-900">
                             {item.title}
                           </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-orange-500">
+                          <p className="line-clamp-2 text-sm leading-snug text-brand-500">
                             {item.description}
                           </p>
                         </NavigationMenuLink>
@@ -89,9 +94,9 @@ export default function Navbar({ className }: { className?: string }) {
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
-
+                {/* 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="h-9 px-4 bg-transparent hover:bg-orange-100/60 data-[state=open]:bg-orange-100/60 text-orange-700 font-medium">
+                  <NavigationMenuTrigger className="h-9 px-4 bg-transparent hover:bg-brand-100/60 data-[state=open]:bg-brand-100/60 text-brand-700 font-medium">
                     Search
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
@@ -100,24 +105,33 @@ export default function Navbar({ className }: { className?: string }) {
                         <NavigationMenuLink
                           key={item.title}
                           href={item.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-orange-50"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-brand-50"
                         >
-                          <div className="text-sm font-medium text-orange-900">
+                          <div className="text-sm font-medium text-brand-900">
                             {item.title}
                           </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-orange-500">
+                          <p className="line-clamp-2 text-sm leading-snug text-brand-500">
                             {item.description}
                           </p>
                         </NavigationMenuLink>
                       ))}
                     </div>
                   </NavigationMenuContent>
+                </NavigationMenuItem> */}
+
+                <NavigationMenuItem>
+                  <CustomLink
+                    href="/search"
+                    className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100/60 transition-colors"
+                  >
+                    Search
+                  </CustomLink>
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
                   <CustomLink
                     href="/pricing"
-                    className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-orange-700 hover:bg-orange-100/60 transition-colors"
+                    className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100/60 transition-colors"
                   >
                     Pricing
                   </CustomLink>
@@ -125,7 +139,7 @@ export default function Navbar({ className }: { className?: string }) {
                 <NavigationMenuItem>
                   <CustomLink
                     href="/contact"
-                    className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-orange-700 hover:bg-orange-100/60 transition-colors"
+                    className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-brand-700 hover:bg-brand-100/60 transition-colors"
                   >
                     Contact
                   </CustomLink>
@@ -136,12 +150,12 @@ export default function Navbar({ className }: { className?: string }) {
           {/* Right Section (auth) - Hidden on mobile */}
           <div className="hidden md:flex items-center gap-2 md:gap-4 min-w-[120px] justify-end">
             {loading ? (
-              <div className="h-9 w-24 bg-orange-100/50 rounded-md animate-pulse" />
+              <div className="h-9 w-24 bg-brand-100/50 rounded-md animate-pulse" />
             ) : session ? (
               <>
                 <Button
                   variant="ghost"
-                  className="h-9 px-4 text-orange-700 hover:bg-orange-100/60"
+                  className="h-9 px-4 text-brand-700 hover:bg-brand-100/60"
                   asChild
                 >
                   <CustomLink href="/dashboard">Dashboard</CustomLink>
@@ -150,7 +164,7 @@ export default function Navbar({ className }: { className?: string }) {
               </>
             ) : (
               <Button
-                className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white"
+                className="h-9 px-4 bg-brand-600 hover:bg-brand-700 text-white"
                 asChild
               >
                 <CustomLink href="/sign-in">Get Started</CustomLink>

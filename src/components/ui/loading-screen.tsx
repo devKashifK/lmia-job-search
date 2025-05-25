@@ -55,7 +55,7 @@ export default function LoadingScreen({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "fixed inset-0 bg-gradient-to-br from-orange-500 to-red-600 flex flex-col items-center justify-center",
+        "fixed inset-0 bg-gradient-to-br from-brand-500 to-brand-600 flex flex-col items-center justify-center",
         className
       )}
     >
@@ -145,7 +145,7 @@ export default function LoadingScreen({ className }: { className?: string }) {
                 damping: 15,
                 stiffness: 200,
               }}
-              className="text-gradient text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 text-transparent bg-clip-text"
+              className="text-gradient text-4xl font-bold bg-gradient-to-r from-brand-600 to-brand-700 text-transparent bg-clip-text"
             >
               Welcome to Job Maze!
             </motion.div>

@@ -42,7 +42,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
       <>
         <SheetHeader
           title={
-            <span className="font-bold text-lg text-orange-600">
+            <span className="font-bold text-lg text-brand-600">
               Recent Searches
             </span>
           }
@@ -51,8 +51,8 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
         />
         <div className="flex items-center justify-center h-[300px]">
           <div className="animate-pulse flex flex-col items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-xl" />
-            <div className="h-4 w-24 bg-orange-100/70 rounded-lg" />
+            <div className="w-10 h-10 bg-brand-100 rounded-xl" />
+            <div className="h-4 w-24 bg-brand-100/70 rounded-lg" />
           </div>
         </div>
       </>
@@ -64,7 +64,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
       <>
         <SheetHeader
           title={
-            <span className="font-bold text-lg text-orange-600">
+            <span className="font-bold text-lg text-brand-600">
               Recent Searches
             </span>
           }
@@ -72,8 +72,8 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
           onClose={onClose}
         />
         <div className="flex flex-col items-center justify-center h-[300px] px-6 text-center">
-          <div className="p-4 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-2xl mb-4 shadow-[0_2px_8px_rgba(251,146,60,0.12)]">
-            <SearchIcon className="w-8 h-8 text-orange-500" />
+          <div className="p-4 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-2xl mb-4 shadow-[0_2px_8px_rgba(34,197,94,0.12)]">
+            <SearchIcon className="w-8 h-8 text-brand-500" />
           </div>
           <p className="text-base font-semibold text-zinc-800">
             No recent searches
@@ -90,14 +90,14 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
     <div className="flex flex-col h-full">
       <SheetHeader
         title={
-          <span className="font-bold text-lg text-orange-600">
+          <span className="font-bold text-lg text-brand-600">
             Recent Searches
           </span>
         }
         description="Quick access to your previous searches"
         onClose={onClose}
       />
-      <div className="border-b border-orange-100 mb-2" />
+      <div className="border-b border-brand-100 mb-2" />
       <ScrollArea className="flex-1">
         <div className="p-3">
           <TooltipProvider>
@@ -108,8 +108,8 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
                 onClick={() => handleSearchSelect(search)}
                 className="group block mb-2"
               >
-                <div className="group flex items-center gap-3 p-3 rounded-xl bg-white shadow-sm hover:shadow-md border border-zinc-100 hover:border-orange-200 transition-all cursor-pointer">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 via-orange-50 to-white text-orange-600 shadow group-hover:shadow-md">
+                <div className="group flex items-center gap-3 p-3 rounded-xl bg-white shadow-sm hover:shadow-md border border-zinc-100 hover:border-brand-200 transition-all cursor-pointer">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-brand-100 via-brand-50 to-white text-brand-600 shadow group-hover:shadow-md">
                     <Clock className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -131,7 +131,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
                             .map(([key, value]) => (
                               <span
                                 key={key}
-                                className="px-2 py-0.5 bg-orange-50 text-orange-700 rounded-full text-xs font-medium border border-orange-200"
+                                className="px-2 py-0.5 bg-brand-50 text-brand-700 rounded-full text-xs font-medium border border-brand-200"
                               >
                                 {key}: {value}
                               </span>
@@ -160,7 +160,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
                         </div>
                       )}
                   </div>
-                  <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-orange-500 transition-colors" />
+                  <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-brand-500 transition-colors" />
                 </div>
               </CustomLink>
             ))}

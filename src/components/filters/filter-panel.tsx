@@ -66,11 +66,11 @@ export default function FilterPanel({ type }: { type: string }) {
   return (
     <div className="bg-white/95 backdrop-blur-sm shadow-lg border-r border-zinc-200/50 overflow-hidden w-full h-full flex flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 px-3 py-2.5 border-b border-zinc-100 bg-gradient-to-r from-orange-100 via-orange-50 to-white">
+      <div className="flex-shrink-0 px-3 py-2.5 border-b border-zinc-100 bg-gradient-to-r from-brand-100 via-brand-50 to-white">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-1.5">
-            <div className="p-1 bg-orange-200 rounded-md">
-              <SlidersHorizontal className="h-3.5 w-3.5 text-orange-700" />
+            <div className="p-1 bg-brand-200 rounded-md">
+              <SlidersHorizontal className="h-3.5 w-3.5 text-brand-700" />
             </div>
             <div>
               <h2 className="font-medium text-black text-sm">Filters</h2>
@@ -83,14 +83,14 @@ export default function FilterPanel({ type }: { type: string }) {
             {totalFilters > 0 && (
               <button
                 onClick={clearAllFilters}
-                className="text-[10px] font-medium text-zinc-800 hover:text-orange-800 transition-colors duration-200"
+                className="text-[10px] font-medium text-zinc-800 hover:text-brand-800 transition-colors duration-200"
               >
                 Clear all
               </button>
             )}
             <button
               onClick={() => setShowFilterPanel(false)}
-              className="p-1 hover:bg-orange-100 rounded-md transition-colors duration-200"
+              className="p-1 hover:bg-brand-100 rounded-md transition-colors duration-200"
             >
               <X className="h-3.5 w-3.5 text-zinc-700" />
             </button>
@@ -107,7 +107,7 @@ export default function FilterPanel({ type }: { type: string }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search filters..."
-            className="w-full pl-7 pr-3 py-1.5 text-xs bg-zinc-50/80 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500/40 transition-all duration-200"
+            className="w-full pl-7 pr-3 py-1.5 text-xs bg-zinc-50/80 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/40 transition-all duration-200"
           />
         </div>
       </div>
@@ -119,13 +119,13 @@ export default function FilterPanel({ type }: { type: string }) {
           className={cn(
             "flex-1 px-4 py-2 text-xs font-medium transition-colors relative",
             activeTab === "filters"
-              ? "text-orange-800"
+              ? "text-brand-800"
               : "text-zinc-700 hover:text-zinc-900"
           )}
         >
           Filters
           {activeTab === "filters" && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600" />
           )}
         </button>
         <button
@@ -133,18 +133,18 @@ export default function FilterPanel({ type }: { type: string }) {
           className={cn(
             "flex-1 px-4 py-2 text-xs font-medium transition-colors relative",
             activeTab === "applied"
-              ? "text-orange-800"
+              ? "text-brand-800"
               : "text-zinc-700 hover:text-zinc-900"
           )}
         >
           Applied
           {totalFilters > 0 && (
-            <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-medium bg-orange-400 text-white rounded-full">
+            <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-medium bg-brand-400 text-white rounded-full">
               {totalFilters}
             </span>
           )}
           {activeTab === "applied" && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-600" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600" />
           )}
         </button>
       </div>
@@ -160,7 +160,7 @@ export default function FilterPanel({ type }: { type: string }) {
                 className="border-b border-zinc-100"
               >
                 <AccordionTrigger
-                  className="px-3 py-2 hover:bg-orange-100/80 transition-all duration-200"
+                  className="px-3 py-2 hover:bg-brand-100/80 transition-all duration-200"
                   onClick={() => {
                     const value =
                       column?.accessorKey ?? column?.field ?? String(column);
@@ -176,7 +176,7 @@ export default function FilterPanel({ type }: { type: string }) {
                   }}
                 >
                   <div className="flex items-center gap-2">
-                    <div className="text-zinc-600 group-hover:text-orange-800 transition-colors duration-200">
+                    <div className="text-zinc-600 group-hover:text-brand-800 transition-colors duration-200">
                       {column?.icon}
                     </div>
                     <div className="flex flex-col items-start">
@@ -185,7 +185,7 @@ export default function FilterPanel({ type }: { type: string }) {
                         className="text-xs text-black group-hover:text-zinc-900"
                       />
                       {filters[column?.accessorKey]?.size > 0 && (
-                        <span className="text-[10px] text-orange-800 font-medium">
+                        <span className="text-[10px] text-brand-800 font-medium">
                           {filters[column?.accessorKey].size} selected
                         </span>
                       )}
@@ -195,7 +195,7 @@ export default function FilterPanel({ type }: { type: string }) {
                     {openAccordions.has(
                       column?.accessorKey ?? column?.field ?? String(column)
                     ) ? (
-                      <Minus className="h-4 w-4 shrink-0 text-orange-600 transition-transform duration-200" />
+                      <Minus className="h-4 w-4 shrink-0 text-brand-600 transition-transform duration-200" />
                     ) : (
                       <Plus className="h-4 w-4 shrink-0 text-zinc-500 transition-transform duration-200" />
                     )}
@@ -216,7 +216,7 @@ export default function FilterPanel({ type }: { type: string }) {
                     values.size > 0 && (
                       <div
                         key={key}
-                        className="bg-gradient-to-r from-orange-100 to-white rounded-lg p-2"
+                        className="bg-gradient-to-r from-brand-100 to-white rounded-lg p-2"
                       >
                         <div className="flex items-center justify-between mb-1.5">
                           <span className="text-xs font-medium text-zinc-800">
@@ -256,7 +256,7 @@ export default function FilterPanel({ type }: { type: string }) {
                 <span className="text-sm">No filters applied</span>
                 <button
                   onClick={() => setActiveTab("filters")}
-                  className="text-xs text-orange-600 hover:text-orange-700 mt-1"
+                  className="text-xs text-brand-600 hover:text-brand-700 mt-1"
                 >
                   Add filters
                 </button>
@@ -267,16 +267,16 @@ export default function FilterPanel({ type }: { type: string }) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between gap-2 px-4 py-2 border-t border-zinc-100 bg-gradient-to-r from-orange-100 via-orange-50 to-white text-xs text-zinc-700">
+      <div className="flex items-center justify-between gap-2 px-4 py-2 border-t border-zinc-100 bg-gradient-to-r from-brand-100 via-brand-50 to-white text-xs text-zinc-700">
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-4 w-4 text-orange-700" />
+          <SlidersHorizontal className="h-4 w-4 text-brand-700" />
           <span className="hidden sm:inline">
             Tip: Combine multiple filters for precise results.
           </span>
         </div>
         <a
           href="#"
-          className="text-orange-800 hover:underline hover:text-orange-900 font-medium transition-colors text-xs"
+          className="text-brand-800 hover:underline hover:text-brand-900 font-medium transition-colors text-xs"
           tabIndex={0}
         >
           Help
@@ -338,7 +338,7 @@ function FilterAccordionContent({ column }: { column: any }) {
             placeholder="Search values..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-7 pr-3 py-1.5 text-xs bg-zinc-50/80 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500/40 transition-all duration-200"
+            className="w-full pl-7 pr-3 py-1.5 text-xs bg-zinc-50/80 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500/40 transition-all duration-200"
           />
         </div>
       </div>
@@ -358,22 +358,22 @@ function FilterAccordionContent({ column }: { column: any }) {
             }}
             className={cn(
               "group flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-200 cursor-pointer",
-              "hover:bg-orange-100/80 active:bg-orange-200",
+              "hover:bg-brand-100/80 active:bg-brand-200",
               filters[column.accessorKey]?.has(item.value)
-                ? "bg-orange-100 text-orange-700"
+                ? "bg-brand-100 text-brand-700"
                 : "text-zinc-700"
             )}
           >
             <div className="w-3.5 h-3.5 flex-shrink-0">
               {filters[column.accessorKey]?.has(item.value) ? (
-                <CheckCircle className="h-3.5 w-3.5 text-orange-600" />
+                <CheckCircle className="h-3.5 w-3.5 text-brand-600" />
               ) : (
                 <Circle className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity duration-200" />
               )}
             </div>
             <span className="truncate flex-1 text-black">{item.value}</span>
             {filters[column.accessorKey]?.has(item.value) && (
-              <span className="text-[10px] text-orange-600/70 group-hover:text-orange-600">
+              <span className="text-[10px] text-brand-600/70 group-hover:text-brand-600">
                 selected
               </span>
             )}
@@ -388,7 +388,7 @@ function FilterAccordionContent({ column }: { column: any }) {
       </div>
 
       {/* Footer */}
-      <div className="p-2 border-t border-zinc-100 bg-gradient-to-b from-orange-50 to-white">
+      <div className="p-2 border-t border-zinc-100 bg-gradient-to-b from-brand-50 to-white">
         <div className="flex items-center justify-between">
           <span className="text-[10px] text-zinc-600">
             {filteredAttributes.length} total values

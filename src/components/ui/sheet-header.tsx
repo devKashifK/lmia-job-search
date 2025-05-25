@@ -9,7 +9,7 @@ interface SheetHeaderProps {
 
 export function SheetHeader({ title, description, onClose }: SheetHeaderProps) {
   return (
-    <div className="flex flex-col bg-gradient-to-r from-orange-50 via-orange-50/50 to-white border-b border-orange-100/50">
+    <div className="flex flex-col bg-gradient-to-r from-brand-50 via-brand-50/50 to-white border-b border-brand-100/50">
       <div className="flex items-center justify-between px-6 py-5">
         <div className="flex-1">
           <h2 className="text-[15px] font-semibold text-zinc-900 flex items-center gap-2">

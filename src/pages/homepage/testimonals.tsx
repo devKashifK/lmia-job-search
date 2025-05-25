@@ -48,7 +48,7 @@ const item = {
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="py-16">
+    <section id="testimonials" className="py-16 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle
           title="What Our Users Say"
@@ -68,19 +68,19 @@ export default function Testimonials() {
                 <Card className="h-full">
                   <CardContent className="p-8">
                     <div className="flex items-center mb-6">
-                      <Avatar className="h-14 w-14 bg-orange-100 group-hover:bg-orange-200 transition-colors duration-300">
-                        <AvatarFallback className="text-orange-600 text-lg font-semibold">
+                      <Avatar className="h-14 w-14 bg-brand-100 group-hover:bg-brand-200 transition-colors duration-300">
+                        <AvatarFallback className="text-brand-600 text-lg font-semibold">
                           {testimonial.initials}
                         </AvatarFallback>
                       </Avatar>
                       <div className="ml-4">
-                        <h4 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600 transition-colors duration-300">
+                        <h4 className="text-lg font-semibold text-gray-900 group-hover:text-brand-600 transition-colors duration-300">
                           {testimonial.name}
                         </h4>
                         <p className="text-gray-600">{testimonial.role}</p>
                       </div>
                     </div>
-                    <div className="flex text-orange-500 mb-6">
+                    <div className="flex text-brand-500 mb-6">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className="w-5 h-5 fill-current" />
                       ))}

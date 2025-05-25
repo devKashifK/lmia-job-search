@@ -64,7 +64,7 @@ const PricingPage = () => {
 
   return (
     <BackgroundWrapper>
-      <div className="bg-orange-50/80">
+      <div className="bg-brand-50/80">
         <Navbar />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
@@ -74,8 +74,8 @@ const PricingPage = () => {
               animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-2 mb-3 sm:mb-4"
             >
-              <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-orange-500" />
-              <span className="uppercase text-[10px] sm:text-xs font-semibold text-orange-600 tracking-widest">
+              <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-brand-500" />
+              <span className="uppercase text-[10px] sm:text-xs font-semibold text-brand-600 tracking-widest">
                 Pricing
               </span>
             </motion.div>
@@ -112,8 +112,8 @@ const PricingPage = () => {
                   <div
                     className={`rounded-2xl p-6 sm:p-8 h-full flex flex-col ${
                       tier.highlighted
-                        ? "bg-white border-2 border-orange-500 shadow-xl scale-105"
-                        : "bg-white/80 backdrop-blur-sm border border-orange-100 shadow-md hover:shadow-lg transition-all duration-300"
+                        ? "bg-white border-2 border-brand-500 shadow-xl scale-105"
+                        : "bg-white/80 backdrop-blur-sm border border-brand-100 shadow-md hover:shadow-lg transition-all duration-300"
                     }`}
                   >
                     {tier.badge && (
@@ -121,8 +121,8 @@ const PricingPage = () => {
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                             tier.highlighted
-                              ? "bg-orange-500 text-white"
-                              : "bg-orange-100 text-orange-600"
+                              ? "bg-brand-500 text-white"
+                              : "bg-brand-100 text-brand-600"
                           }`}
                         >
                           {tier.badge}
@@ -157,8 +157,8 @@ const PricingPage = () => {
                           <Check
                             className={`h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 flex-shrink-0 ${
                               tier.highlighted
-                                ? "text-orange-500"
-                                : "text-orange-400"
+                                ? "text-brand-500"
+                                : "text-brand-400"
                             }`}
                           />
                           <span>{feature}</span>
@@ -170,8 +170,8 @@ const PricingPage = () => {
                       <Button
                         className={`w-full h-11 sm:h-12 ${
                           tier.highlighted
-                            ? "bg-orange-500 hover:bg-orange-600 text-white"
-                            : "bg-orange-100 hover:bg-orange-200 text-orange-600"
+                            ? "bg-brand-500 hover:bg-brand-600 text-white"
+                            : "bg-brand-100 hover:bg-brand-200 text-brand-600"
                         }`}
                       >
                         {tier.name === "Enterprise" ? (
@@ -196,10 +196,10 @@ const PricingPage = () => {
             transition={{ delay: 0.5 }}
             className="mt-16 sm:mt-20 text-center"
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-orange-100 shadow-lg">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-brand-100 shadow-lg">
               <div className="inline-flex items-center gap-2 mb-3 sm:mb-4">
-                <Zap className="h-4 w-4 text-orange-500" />
-                <span className="uppercase text-[10px] sm:text-xs font-semibold text-orange-600 tracking-widest">
+                <Zap className="h-4 w-4 text-brand-500" />
+                <span className="uppercase text-[10px] sm:text-xs font-semibold text-brand-600 tracking-widest">
                   Enterprise Solutions
                 </span>
               </div>
@@ -215,14 +215,14 @@ const PricingPage = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full sm:w-auto border-orange-200 text-orange-600 hover:bg-orange-50"
+                  className="w-full sm:w-auto border-brand-200 text-brand-600 hover:bg-brand-50"
                 >
                   Schedule Demo
                 </Button>
                 <Button
                   variant="default"
                   size="lg"
-                  className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600"
+                  className="w-full sm:w-auto bg-brand-500 hover:bg-brand-600"
                 >
                   Contact Sales
                 </Button>

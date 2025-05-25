@@ -29,56 +29,56 @@ const hotLeadsColumns = [
   {
     field: "noc_code",
     headerName: "Noc Code",
-    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    headerIcon: <Satellite className="w-4 h-4 text-brand-600" />,
     width: 100,
     minWidth: 80,
   },
   {
     field: "job_title",
     headerName: "Job Title",
-    headerIcon: <Map className="w-4 h-4 text-orange-600" />,
+    headerIcon: <Map className="w-4 h-4 text-brand-600" />,
     width: 180,
     minWidth: 150,
   },
   {
     field: "noc_priority",
     headerName: "Industry",
-    headerIcon: <PowerSquare className="w-4 h-4 text-orange-600" />,
+    headerIcon: <PowerSquare className="w-4 h-4 text-brand-600" />,
     width: 100,
     minWidth: 80,
   },
   {
     field: "operating_name",
     headerName: "Company",
-    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
+    headerIcon: <AreaChart className="w-4 h-4 text-brand-600" />,
     width: 180,
     minWidth: 150,
   },
   {
     field: "date_of_job_posting",
     headerName: "Posted On",
-    headerIcon: <DatabaseIcon className="w-4 h-4 text-orange-600" />,
+    headerIcon: <DatabaseIcon className="w-4 h-4 text-brand-600" />,
     width: 120,
     minWidth: 100,
   },
   {
     field: "state",
     headerName: "State",
-    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
+    headerIcon: <AreaChart className="w-4 h-4 text-brand-600" />,
     width: 120,
     minWidth: 100,
   },
   {
     field: "city",
     headerName: "City",
-    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    headerIcon: <Satellite className="w-4 h-4 text-brand-600" />,
     width: 120,
     minWidth: 100,
   },
   {
     field: "year",
     headerName: "Year",
-    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    headerIcon: <Satellite className="w-4 h-4 text-brand-600" />,
     width: 100,
     minWidth: 80,
   },
@@ -88,28 +88,28 @@ const lmiaColumns = [
   {
     field: "territory",
     headerName: "Province",
-    headerIcon: <PersonStanding className="w-4 h-4 text-orange-600" />,
+    headerIcon: <PersonStanding className="w-4 h-4 text-brand-600" />,
     width: 100,
     minWidth: 80,
   },
   {
     field: "program",
     headerName: "Program",
-    headerIcon: <PersonStanding className="w-4 h-4 text-orange-600" />,
+    headerIcon: <PersonStanding className="w-4 h-4 text-brand-600" />,
     width: 100,
     minWidth: 80,
   },
   {
     field: "city",
     headerName: "City",
-    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    headerIcon: <Satellite className="w-4 h-4 text-brand-600" />,
     width: 120,
     minWidth: 100,
   },
   {
     field: "lmia_year",
     headerName: "Year",
-    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    headerIcon: <Satellite className="w-4 h-4 text-brand-600" />,
     width: 100,
     minWidth: 80,
   },
@@ -117,35 +117,35 @@ const lmiaColumns = [
   {
     field: "noc_code",
     headerName: "Noc Code",
-    headerIcon: <Satellite className="w-4 h-4 text-orange-600" />,
+    headerIcon: <Satellite className="w-4 h-4 text-brand-600" />,
     width: 100,
     minWidth: 80,
   },
   {
     field: "job_title",
     headerName: "Job Title",
-    headerIcon: <DatabaseIcon className="w-4 h-4 text-orange-600" />,
+    headerIcon: <DatabaseIcon className="w-4 h-4 text-brand-600" />,
     width: 120,
     minWidth: 100,
   },
   {
     field: "priority_occupation",
     headerName: "Occupation",
-    headerIcon: <PowerSquare className="w-4 h-4 text-orange-600" />,
+    headerIcon: <PowerSquare className="w-4 h-4 text-brand-600" />,
     width: 100,
     minWidth: 80,
   },
   {
     field: "approved_positions",
     headerName: "Positions",
-    headerIcon: <PowerSquare className="w-4 h-4 text-orange-600" />,
+    headerIcon: <PowerSquare className="w-4 h-4 text-brand-600" />,
     width: 100,
     minWidth: 80,
   },
   {
     field: "operating_name",
     headerName: "Operating",
-    headerIcon: <AreaChart className="w-4 h-4 text-orange-600" />,
+    headerIcon: <AreaChart className="w-4 h-4 text-brand-600" />,
     width: 180,
     minWidth: 150,
   },
@@ -182,10 +182,10 @@ export default function SearchEngine({
       {!showFilterPanel && (
         <button
           onClick={() => setShowFilterPanel(true)}
-          className="fixed left-0 top-1/2 z-50 flex items-center gap-2 px-0 py-1 bg-orange-100 shadow-lg rounded-tr-lg rounded-br-lg border border-zinc-200 hover:bg-orange-50 transition-colors duration-200 group"
+          className="fixed left-0 top-1/2 z-50 flex items-center gap-2 px-0 py-1 bg-brand-100 shadow-lg rounded-tr-lg rounded-br-lg border border-zinc-200 hover:bg-brand-50 transition-colors duration-200 group"
         >
-          <div className="p-1 bg-orange-100 rounded-md">
-            <ChevronRight className="h-3.5 w-3.5 text-orange-600" />
+          <div className="p-1 bg-brand-100 rounded-md">
+            <ChevronRight className="h-3.5 w-3.5 text-brand-600" />
           </div>
         </button>
       )}
@@ -222,11 +222,11 @@ export default function SearchEngine({
         }}
       >
         {/* Charts Section */}
-        <div className="flex flex-col min-w-0 overflow-x-hidden">
-          <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-gradient-to-r from-orange-100 via-orange-50 to-white rounded-t-lg">
+        {/* <div className="flex flex-col min-w-0 overflow-x-hidden">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-gradient-to-r from-brand-100 via-brand-50 to-white rounded-t-lg">
             <div className="flex items-center gap-1.5">
-              <div className="p-1 bg-orange-200 rounded-md">
-                <AreaChart className="h-3.5 w-3.5 text-orange-700" />
+              <div className="p-1 bg-brand-200 rounded-md">
+                <AreaChart className="h-3.5 w-3.5 text-brand-700" />
               </div>
               <div>
                 <h2 className="font-medium text-black text-sm">Charts</h2>
@@ -235,7 +235,7 @@ export default function SearchEngine({
             </div>
             <button
               onClick={() => setIsChartsExpanded(!isChartsExpanded)}
-              className="p-1.5 hover:bg-orange-50 rounded-md transition-colors duration-200"
+              className="p-1.5 hover:bg-brand-50 rounded-md transition-colors duration-200"
             >
               {isChartsExpanded ? (
                 <ChevronUp className="h-3.5 w-3.5 text-zinc-500" />
@@ -271,7 +271,7 @@ export default function SearchEngine({
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </div> */}
 
         {/* Table Section */}
         <div

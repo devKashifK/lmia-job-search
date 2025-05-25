@@ -16,6 +16,14 @@ import { SearchFeatures } from "@/components/search/features";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Category from "@/components/ui/category";
 
 export default function Page() {
   const [input, setInput] = useState("");
@@ -23,6 +31,9 @@ export default function Page() {
   const [suggestions, setSuggestions] = useState<{ suggestion: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [searchType, setSearchType] = useState<"hot_leads" | "lmia">(
+    "hot_leads"
+  );
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { updateCreditsAndSearch } = useUpdateCredits();
@@ -52,13 +63,22 @@ export default function Page() {
 
     setIsLoadingSuggestions(true);
     try {
-      const { data, error } = await db.rpc("rpc_suggest_hot_leads_new", {
-        term: query,
-        p_limit: 10,
-      });
+      if (searchType === "hot_leads") {
+        const { data, error } = await db.rpc("rpc_suggest_hot_leads_new", {
+          term: query,
+          p_limit: 10,
+        });
 
-      if (error) throw error;
-      setSuggestions(data || []);
+        if (error) throw error;
+        setSuggestions(data || []);
+      } else if (searchType === "lmia") {
+        const { data, error } = await db.rpc("rpc_suggest_lmia", {
+          term: query,
+          p_limit: 10,
+        });
+        if (error) throw error;
+        setSuggestions(data || []);
+      }
     } catch (error) {
       console.error("Error fetching suggestions:", error);
       setSuggestions([]);
@@ -76,7 +96,11 @@ export default function Page() {
 
   const handleSuggestionClick = async (suggestion: string) => {
     if (!session?.session) {
-      navigate.push(`/search/${encodeURIComponent(suggestion)}`);
+      if (searchType === "hot_leads") {
+        navigate.push(`/search/hot-leads/${encodeURIComponent(suggestion)}`);
+      } else if (searchType === "lmia") {
+        navigate.push(`/search/lmia/${encodeURIComponent(suggestion)}`);
+      }
       return;
     }
     setInput(suggestion);
@@ -86,7 +110,11 @@ export default function Page() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(suggestion);
-      navigate.push(`/search/${encodeURIComponent(suggestion)}`);
+      if (searchType === "hot_leads") {
+        navigate.push(`/search/hot-leads/${encodeURIComponent(suggestion)}`);
+      } else if (searchType === "lmia") {
+        navigate.push(`/search/lmia/${encodeURIComponent(suggestion)}`);
+      }
     } finally {
       setIsChecking(false);
     }
@@ -162,7 +190,11 @@ export default function Page() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(input);
-      navigate.push(`/search/${encodeURIComponent(input)}`);
+      if (searchType === "hot_leads") {
+        navigate.push(`/search/hot-leads/${encodeURIComponent(input)}`);
+      } else if (searchType === "lmia") {
+        navigate.push(`/search/lmia/${encodeURIComponent(input)}`);
+      }
     } finally {
       setIsChecking(false);
     }
@@ -180,7 +212,11 @@ export default function Page() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(term);
-      navigate.push(`/search/${encodeURIComponent(term)}`);
+      if (searchType === "hot_leads") {
+        navigate.push(`/search/hot-leads/${encodeURIComponent(term)}`);
+      } else if (searchType === "lmia") {
+        navigate.push(`/search/lmia/${encodeURIComponent(term)}`);
+      }
     } finally {
       setIsChecking(false);
     }
@@ -202,16 +238,16 @@ export default function Page() {
   ];
 
   return (
-    <div className="bg-gradient-to-b from-orange-50 to-white min-h-screen">
+    <div className="bg-gradient-to-b from-brand-50 to-white min-h-screen">
       <Navbar className="" />
 
       <main className="pt-24 pb-16">
         {/* Hero section with animated background */}
         <div className="relative ">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-orange-300/5 to-transparent rounded-b-[50%] h-[500px] -z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-500/10 via-brand-300/5 to-transparent rounded-b-[50%] h-[500px] -z-10"></div>
 
           <motion.div
-            className="absolute top-20 right-20 w-72 h-72 bg-orange-300/20 rounded-full blur-3xl"
+            className="absolute top-20 right-20 w-72 h-72 bg-brand-300/20 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.1, 0.2, 0.1],
@@ -223,7 +259,7 @@ export default function Page() {
             }}
           />
           <motion.div
-            className="absolute bottom-0 left-48 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl"
+            className="absolute bottom-0 left-48 w-96 h-96 bg-brand-400/10 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.3, 1],
               opacity: [0.1, 0.15, 0.1],
@@ -237,7 +273,7 @@ export default function Page() {
 
           <div className="max-w-7xl mx-auto px-6 pt-12 pb-20">
             <div className="text-center space-y-6 max-w-4xl mx-auto">
-              <Badge className="px-4 py-1.5 text-sm font-medium bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-200 mb-4">
+              <Badge className="px-4 py-1.5 text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 border-brand-200 mb-4">
                 Find Top Opportunities
               </Badge>
 
@@ -248,7 +284,7 @@ export default function Page() {
                 className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight"
               >
                 Discover{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-700">
                   Perfect{" "}
                 </span>
                 <span>Career</span>
@@ -273,116 +309,138 @@ export default function Page() {
             </div>
 
             {/* Search Input with surrounding glow */}
-            <div className="w-full max-w-3xl mx-auto mt-8 relative">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <div className="relative group mb-16">
-                  {/* Remove the gradient glow effect */}
-                  <div className="relative flex items-center bg-white rounded-full shadow-xl">
-                    <div className="pl-5 pr-3 py-2 text-orange-500">
-                      <Search className="w-6 h-6" />
+            <div className="w-full max-w-7xl mx-auto mt-8 relative flex flex-col gap-14">
+              <div className="w-full max-w-3xl mx-auto ">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                >
+                  <div className="relative group ">
+                    {/* Remove the gradient glow effect */}
+                    <div className="relative flex items-center bg-white rounded-full shadow-xl">
+                      <div className="pl-5 pr-3 py-2 text-brand-500">
+                        <Search className="w-6 h-6" />
+                      </div>
+
+                      <Input
+                        ref={searchInputRef}
+                        className="flex-1 border-0 bg-transparent text-lg py-6 h-16 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400"
+                        placeholder="Job title, company, or keyword..."
+                        value={input}
+                        onChange={handleChange}
+                        onKeyDown={handleKeyPress}
+                        onFocus={() => setShowSuggestions(true)}
+                      />
+
+                      <div className="flex items-center gap-2 mr-2">
+                        <span className="h-8 border-l border-gray-300 mx-2" />
+                        <Select
+                          value={searchType}
+                          onValueChange={(value: "hot_leads" | "lmia") =>
+                            setSearchType(value)
+                          }
+                        >
+                          <SelectTrigger className="w-[160px] bg-transparent border-none shadow-none text-gray-500 font-medium focus:ring-0 focus:ring-offset-0 px-2">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="hot_leads">Hot Leads</SelectItem>
+                            <SelectItem value="lmia">LMIA</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <span className="h-8 border-l border-gray-300 mx-2" />
+
+                        <motion.button
+                          className="bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium px-6 py-3 rounded-full hover:shadow-lg hover:shadow-brand-500/25 transition-all duration-300"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={startSearch}
+                        >
+                          {isChecking ? (
+                            <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            "Search"
+                          )}
+                        </motion.button>
+                      </div>
                     </div>
 
-                    <Input
-                      ref={searchInputRef}
-                      className="flex-1 border-0 bg-transparent text-lg py-6 h-16 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400"
-                      placeholder="Job title, company, or keyword..."
-                      value={input}
-                      onChange={handleChange}
-                      onKeyDown={handleKeyPress}
-                      onFocus={() => setShowSuggestions(true)}
-                    />
+                    {/* Trending searches */}
+                    <div className="mt-4 flex flex-wrap justify-center gap-2">
+                      <span className="text-sm text-gray-500 pt-1">
+                        Trending:
+                      </span>
+                      {trendingSearches.map((term, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          className="bg-white/70 border-brand-100 text-gray-700 hover:bg-brand-50 hover:text-brand-700"
+                          onClick={() => handleTrendingClick(term)}
+                        >
+                          {term}
+                        </Button>
+                      ))}
+                    </div>
 
-                    <motion.button
-                      className="mr-2 bg-gradient-to-r from-orange-500 to-red-500 text-white font-medium px-6 py-3 rounded-full hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={startSearch}
-                    >
-                      {isChecking ? (
-                        <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        "Search"
-                      )}
-                    </motion.button>
-                  </div>
-
-                  {/* Trending searches */}
-                  <div className="mt-4 flex flex-wrap justify-center gap-2">
-                    <span className="text-sm text-gray-500 pt-1">
-                      Trending:
-                    </span>
-                    {trendingSearches.map((term, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        size="sm"
-                        className="bg-white/70 border-orange-100 text-gray-700 hover:bg-orange-50 hover:text-orange-700"
-                        onClick={() => handleTrendingClick(term)}
-                      >
-                        {term}
-                      </Button>
-                    ))}
-                  </div>
-
-                  {/* Suggestions Dropdown - Put here directly where visible */}
-                  {showSuggestions &&
-                    (input.trim() || isLoadingSuggestions) && (
-                      <div
-                        ref={suggestionsRef}
-                        className="absolute left-0 right-0 bg-white rounded-2xl shadow-2xl border border-orange-100  mt-4"
-                        style={{ top: "46%", zIndex: 1000 }}
-                      >
-                        <ScrollArea className="max-h-[300px] z-[10000]">
-                          {isLoadingSuggestions ? (
-                            <div className="p-4 space-y-3">
-                              {[...Array(4)].map((_, index) => (
+                    {/* Suggestions Dropdown - Put here directly where visible */}
+                    {showSuggestions &&
+                      (input.trim() || isLoadingSuggestions) && (
+                        <div
+                          ref={suggestionsRef}
+                          className="absolute left-0 right-0 bg-white rounded-2xl shadow-2xl border border-brand-100  mt-4"
+                          style={{ top: "46%", zIndex: 1000 }}
+                        >
+                          <ScrollArea className="max-h-[300px] z-[10000]">
+                            {isLoadingSuggestions ? (
+                              <div className="p-4 space-y-3">
+                                {[...Array(4)].map((_, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-3 p-2"
+                                  >
+                                    <div className="p-2 rounded-full bg-brand-100">
+                                      <Skeleton className="w-4 h-4 rounded-full" />
+                                    </div>
+                                    <Skeleton className="h-4 w-48" />
+                                  </div>
+                                ))}
+                              </div>
+                            ) : suggestions.length > 0 ? (
+                              suggestions.map((suggestion, index) => (
                                 <div
                                   key={index}
-                                  className="flex items-center gap-3 p-2"
+                                  className="group px-5 py-3 hover:bg-brand-50 cursor-pointer transition-all duration-300 border-b border-gray-100 last:border-b-0"
+                                  onClick={() =>
+                                    handleSuggestionClick(suggestion.suggestion)
+                                  }
                                 >
-                                  <div className="p-2 rounded-full bg-orange-100">
-                                    <Skeleton className="w-4 h-4 rounded-full" />
+                                  <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-full bg-brand-100 group-hover:bg-brand-200 transition-colors">
+                                      <Search className="w-4 h-4 text-brand-600" />
+                                    </div>
+                                    <span className="text-gray-800 group-hover:text-brand-600 transition-colors font-medium">
+                                      {suggestion.suggestion}
+                                    </span>
                                   </div>
-                                  <Skeleton className="h-4 w-48" />
-                                </div>
-                              ))}
-                            </div>
-                          ) : suggestions.length > 0 ? (
-                            suggestions.map((suggestion, index) => (
-                              <div
-                                key={index}
-                                className="group px-5 py-3 hover:bg-orange-50 cursor-pointer transition-all duration-300 border-b border-gray-100 last:border-b-0"
-                                onClick={() =>
-                                  handleSuggestionClick(suggestion.suggestion)
-                                }
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="p-2 rounded-full bg-orange-100 group-hover:bg-orange-200 transition-colors">
-                                    <Search className="w-4 h-4 text-orange-600" />
+                                  <div className="ml-11 text-sm text-gray-500 mt-1">
+                                    Find jobs related to {suggestion.suggestion}
                                   </div>
-                                  <span className="text-gray-800 group-hover:text-orange-600 transition-colors font-medium">
-                                    {suggestion.suggestion}
-                                  </span>
                                 </div>
-                                <div className="ml-11 text-sm text-gray-500 mt-1">
-                                  Find jobs related to {suggestion.suggestion}
-                                </div>
+                              ))
+                            ) : (
+                              <div className="p-6 text-center text-gray-500">
+                                No suggestions found
                               </div>
-                            ))
-                          ) : (
-                            <div className="p-6 text-center text-gray-500">
-                              No suggestions found
-                            </div>
-                          )}
-                        </ScrollArea>
-                      </div>
-                    )}
-                </div>
-              </motion.div>
+                            )}
+                          </ScrollArea>
+                        </div>
+                      )}
+                  </div>
+                </motion.div>
+              </div>
+              <Category />
             </div>
           </div>
         </div>
@@ -404,30 +462,6 @@ export default function Page() {
           </div>
 
           <SearchFeatures />
-
-          {/* Stats section */}
-          {/* <div className="mt-20 bg-white rounded-2xl shadow-xl border border-orange-100 p-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center p-6 border-b md:border-b-0 md:border-r border-gray-100">
-                <div className="text-4xl font-bold text-orange-600 mb-2">
-                  30,000+
-                </div>
-                <div className="text-gray-600">Available Jobs</div>
-              </div>
-              <div className="text-center p-6 border-b md:border-b-0 md:border-r border-gray-100">
-                <div className="text-4xl font-bold text-orange-600 mb-2">
-                  15,000+
-                </div>
-                <div className="text-gray-600">Companies</div>
-              </div>
-              <div className="text-center p-6">
-                <div className="text-4xl font-bold text-orange-600 mb-2">
-                  5,000+
-                </div>
-                <div className="text-gray-600">Successful Placements</div>
-              </div>
-            </div>
-          </div> */}
         </motion.div>
       </main>
 

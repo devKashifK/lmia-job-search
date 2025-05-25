@@ -29,8 +29,8 @@ export default function Header({ keywords }: { keywords: string }) {
         <div className="flex items-center justify-between px-4 h-full">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 pr-3 border-r border-zinc-200 h-5">
-              <div className="p-1 bg-orange-50 rounded-md">
-                <SearchCheck className="w-3 h-3 text-orange-600" />
+              <div className="p-1 bg-brand-50 rounded-md">
+                <SearchCheck className="w-3 h-3 text-brand-600" />
               </div>
               <div className="flex items-center gap-1">
                 <span className="text-xs font-medium text-zinc-900">
@@ -106,7 +106,7 @@ function NavItem({ icon, label, isActive, onClick }: NavItemProps) {
       className={cn(
         "flex items-center gap-1 px-2 py-1 rounded-md text-[10px] transition-all duration-200 h-5",
         isActive
-          ? "text-orange-600 bg-orange-50 shadow-sm font-medium"
+          ? "text-brand-600 bg-brand-50 shadow-sm font-medium"
           : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
       )}
     >
@@ -130,7 +130,7 @@ const ActionButton = ({ icon, label, onClick, primary }: ActionButtonProps) => {
       className={cn(
         "flex items-center gap-1.5 px-2 py-1.5 text-xs transition-colors rounded-md",
         primary
-          ? "text-orange-600 bg-orange-50 hover:bg-orange-100"
+          ? "text-brand-600 bg-brand-50 hover:bg-brand-100"
           : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
       )}
     >

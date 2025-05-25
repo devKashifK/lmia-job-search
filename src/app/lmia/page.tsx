@@ -213,9 +213,9 @@ export default function Page() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-br from-orange-500 to-red-500 rounded-full blur opacity-25 group-hover:opacity-40 transition duration-300" />
+                <div className="absolute -inset-1 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full blur opacity-25 group-hover:opacity-40 transition duration-300" />
                 <Input
-                  className="w-full rounded-full py-6 text-xl h-16 focus-visible:ring-orange-600 pl-6 pr-16 shadow-lg bg-white/90 backdrop-blur-sm border-orange-100 group-hover:border-orange-200 transition duration-300"
+                  className="w-full rounded-full py-6 text-xl h-16 focus-visible:ring-brand-600 pl-6 pr-16 shadow-lg bg-white/90 backdrop-blur-sm border-brand-100 group-hover:border-brand-200 transition duration-300"
                   placeholder="Start Your Search ..."
                   value={input}
                   onChange={handleChange}
@@ -223,7 +223,7 @@ export default function Page() {
                   onFocus={() => setShowSuggestions(true)}
                 />
                 <motion.button
-                  className="absolute top-2 right-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-full p-3 cursor-pointer shadow-lg hover:shadow-orange-500/25 transition duration-300"
+                  className="absolute top-2 right-2 bg-gradient-to-br from-brand-500 to-brand-600 rounded-full p-3 cursor-pointer shadow-lg hover:shadow-brand-500/25 transition duration-300"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={startSearch}
@@ -245,7 +245,7 @@ export default function Page() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 right-0 mt-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-orange-100 overflow-hidden z-50"
+                    className="absolute top-full left-0 right-0 mt-4 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-brand-100 overflow-hidden z-50"
                   >
                     <ScrollArea className="max-h-[300px]">
                       {isLoadingSuggestions ? (
@@ -258,7 +258,7 @@ export default function Page() {
                               transition={{ delay: index * 0.1 }}
                               className="flex items-center gap-3 p-2"
                             >
-                              <div className="p-2 rounded-full bg-orange-100">
+                              <div className="p-2 rounded-full bg-brand-100">
                                 <Skeleton className="w-4 h-4 rounded-full" />
                               </div>
                               <Skeleton className="h-4 w-48" />
@@ -272,16 +272,16 @@ export default function Page() {
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="group p-4 hover:bg-orange-50 cursor-pointer transition-all duration-300"
+                            className="group p-4 hover:bg-brand-50 cursor-pointer transition-all duration-300"
                             onClick={() =>
                               handleSuggestionClick(suggestion.suggestion)
                             }
                           >
                             <div className="flex items-center gap-3">
-                              <div className="p-2 rounded-full bg-orange-100 group-hover:bg-orange-200 transition-colors">
-                                <Search className="w-4 h-4 text-orange-600" />
+                              <div className="p-2 rounded-full bg-brand-100 group-hover:bg-brand-200 transition-colors">
+                                <Search className="w-4 h-4 text-brand-600" />
                               </div>
-                              <span className="text-gray-800 group-hover:text-orange-600 transition-colors">
+                              <span className="text-gray-800 group-hover:text-brand-600 transition-colors">
                                 {suggestion.suggestion}
                               </span>
                             </div>

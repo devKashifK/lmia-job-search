@@ -19,9 +19,9 @@ export function generatePlaceholder(
 
   // Theme colors
   const themes = {
-    search: { bg: "#FFF7ED", accent: "#EA580C" },
+    search: { bg: "#f0fdf4", accent: "#22c55e" },
     analytics: { bg: "#FEF2F2", accent: "#DC2626" },
-    export: { bg: "#FFF7ED", accent: "#EA580C" },
+    export: { bg: "#f0fdf4", accent: "#22c55e" },
     premium: { bg: "#FEF2F2", accent: "#DC2626" },
   };
 

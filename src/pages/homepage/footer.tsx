@@ -2,12 +2,12 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-orange-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="bg-brand-50">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-orange-600">Job Maze</h3>
+            <h3 className="text-2xl font-bold text-brand-600">Job Maze</h3>
             <p className="text-gray-600">
               Empowering your search experience with advanced insights and
               analytics.
@@ -15,7 +15,7 @@ export default function Footer() {
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="text-gray-600 hover:text-orange-600 transition-colors"
+                className="text-gray-600 hover:text-brand-600 transition-colors"
               >
                 <svg
                   className="w-6 h-6"
@@ -27,7 +27,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="text-gray-600 hover:text-orange-600 transition-colors"
+                className="text-gray-600 hover:text-brand-600 transition-colors"
               >
                 <svg
                   className="w-6 h-6"
@@ -39,7 +39,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="text-gray-600 hover:text-orange-600 transition-colors"
+                className="text-gray-600 hover:text-brand-600 transition-colors"
               >
                 <svg
                   className="w-6 h-6"
@@ -54,14 +54,14 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-orange-600">
+            <h4 className="text-lg font-semibold mb-4 text-brand-600">
               Quick Links
             </h4>
             <ul className="space-y-2">
               <li>
                 <Link
                   href="#features"
-                  className="text-gray-600 hover:text-orange-600 transition-colors"
+                  className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Features
                 </Link>
@@ -69,7 +69,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="#pricing"
-                  className="text-gray-600 hover:text-orange-600 transition-colors"
+                  className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Pricing
                 </Link>
@@ -77,7 +77,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="#demo"
-                  className="text-gray-600 hover:text-orange-600 transition-colors"
+                  className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Demo
                 </Link>
@@ -85,7 +85,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="#testimonials"
-                  className="text-gray-600 hover:text-orange-600 transition-colors"
+                  className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Testimonials
                 </Link>
@@ -95,14 +95,14 @@ export default function Footer() {
 
           {/* Support */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-orange-600">
+            <h4 className="text-lg font-semibold mb-4 text-brand-600">
               Support
             </h4>
             <ul className="space-y-2">
               <li>
                 <a
                   href="#"
-                  className="text-gray-600 hover:text-orange-600 transition-colors"
+                  className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Help Center
                 </a>
@@ -110,7 +110,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-gray-600 hover:text-orange-600 transition-colors"
+                  className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Documentation
                 </a>
@@ -118,7 +118,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-gray-600 hover:text-orange-600 transition-colors"
+                  className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   API Status
                 </a>
@@ -126,7 +126,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-gray-600 hover:text-orange-600 transition-colors"
+                  className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Contact Us
                 </a>
@@ -136,14 +136,14 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-orange-600">
+            <h4 className="text-lg font-semibold mb-4 text-brand-600">
               Contact Us
             </h4>
             <ul className="space-y-2">
               <li>
                 <a
                   href="mailto:support@jobmaze.ca"
-                  className="text-gray-600 hover:text-orange-600 transition-colors"
+                  className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   support@jobmaze.ca
                 </a>
@@ -158,7 +158,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-orange-200 mt-12 pt-8">
+        <div className="border-t border-brand-200 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-600 text-sm mb-4 md:mb-0">
               © {new Date().getFullYear()} Job Maze. All rights reserved.
@@ -166,19 +166,19 @@ export default function Footer() {
             <div className="flex space-x-6">
               <a
                 href="#"
-                className="text-gray-600 hover:text-orange-600 transition-colors text-sm"
+                className="text-gray-600 hover:text-brand-600 transition-colors text-sm"
               >
                 Privacy Policy
               </a>
               <a
                 href="#"
-                className="text-gray-600 hover:text-orange-600 transition-colors text-sm"
+                className="text-gray-600 hover:text-brand-600 transition-colors text-sm"
               >
                 Terms of Service
               </a>
               <a
                 href="#"
-                className="text-gray-600 hover:text-orange-600 transition-colors text-sm"
+                className="text-gray-600 hover:text-brand-600 transition-colors text-sm"
               >
                 Cookie Policy
               </a>

@@ -66,7 +66,7 @@ function NavLink({
       className={cn(
         "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm transition-all duration-200",
         isActive
-          ? "text-orange-600 bg-orange-50 shadow-sm font-medium"
+          ? "text-brand-600 bg-brand-50 shadow-sm font-medium"
           : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
       )}
     >
@@ -111,7 +111,7 @@ function UserMenu() {
               {session?.user?.user_metadata?.avatar_url ? (
                 <AvatarImage src={session.user.user_metadata.avatar_url} />
               ) : (
-                <AvatarFallback className="bg-gradient-to-br from-orange-500 to-red-600 text-white">
+                <AvatarFallback className="bg-gradient-to-br from-brand-500 to-brand-600 text-white">
                   {session?.user?.email?.[0].toUpperCase()}
                 </AvatarFallback>
               )}
@@ -220,7 +220,7 @@ function NavItem({
       className={cn(
         "flex items-center gap-1 px-2 py-1 rounded-md text-[10px] transition-all duration-200 h-5",
         isActive
-          ? "text-orange-600 bg-orange-50 shadow-sm font-medium"
+          ? "text-brand-600 bg-brand-50 shadow-sm font-medium"
           : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
       )}
     >
@@ -325,12 +325,12 @@ function SearchActions({
     <div className="flex items-center gap-2">
       <div className="flex items-center gap-2">
         <div className="flex items-center h-5 gap-1">
-          <NavItem
+          {/* <NavItem
             icon={<Blend className="w-3 h-3" />}
             label="Filters"
             isActive={showFilterPanel}
             onClick={() => setShowFilterPanel(true)}
-          />
+          /> */}
           <NavItem
             icon={<Binoculars className="w-3 h-3" />}
             label="Recent"
@@ -341,7 +341,7 @@ function SearchActions({
               });
             }}
           />
-          <NavItem
+          {/* <NavItem
             icon={<BookmarkMinus className="w-3 h-3" />}
             label="Saved"
             onClick={() => {
@@ -350,11 +350,11 @@ function SearchActions({
                 className: "w-[400px] sm:w-[540px]",
               });
             }}
-          />
+          /> */}
         </div>
         <div className="h-4 w-px bg-zinc-200" />
         <SearchBar type={type} />
-        <div className="h-4 w-px bg-zinc-200" />
+        {/* <div className="h-4 w-px bg-zinc-200" /> */}
         <div className="flex items-center gap-1">
           {/* <Filter /> */}
           {/* <Button
@@ -366,7 +366,7 @@ function SearchActions({
             <FileDown className="w-3 h-3 mr-1" />
             Export
           </Button> */}
-          <Button
+          {/* <Button
             variant="ghost"
             size="sm"
             className="h-8 px-2"
@@ -374,7 +374,7 @@ function SearchActions({
           >
             <Save className="w-3 h-3 mr-1" />
             Save
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>
@@ -480,7 +480,7 @@ export default function Topbar({
             >
               {type == "hot_leads" ? (
                 <>
-                  <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 text-white flex items-center justify-center text-sm font-medium shadow-sm">
+                  <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 text-white flex items-center justify-center text-sm font-medium shadow-sm">
                     H
                   </div>
                   <span className="text-sm font-semibold text-zinc-800">
@@ -489,7 +489,7 @@ export default function Topbar({
                 </>
               ) : (
                 <>
-                  <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 text-white flex items-center justify-center text-sm font-medium shadow-sm">
+                  <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 text-white flex items-center justify-center text-sm font-medium shadow-sm">
                     L
                   </div>
                   <span className="text-sm font-semibold text-zinc-800">
@@ -501,16 +501,16 @@ export default function Topbar({
 
             {keywords && (
               <div className="flex items-center gap-2 pr-3 border-r border-zinc-200 h-5">
-                <div className="p-1 bg-orange-50 rounded-md">
-                  <SearchCheck className="w-3 h-3 text-orange-600" />
+                <div className="p-1 bg-brand-50 rounded-md">
+                  <SearchCheck className="w-3 h-3 text-brand-600" />
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-medium text-zinc-900">
                     {decodeURIComponent(keywords)}
                   </span>
-                  <span className="text-[10px] px-1.5 py-0.5 bg-zinc-100 text-zinc-600 rounded-md font-medium">
+                  {/* <span className="text-[10px] px-1.5 py-0.5 bg-zinc-100 text-zinc-600 rounded-md font-medium">
                     {filteredData.length}
-                  </span>
+                  </span> */}
                 </div>
               </div>
             )}
@@ -524,33 +524,33 @@ export default function Topbar({
                     : `/search/${keywords}`
                 }
               >
-                <div className="p-1 bg-orange-50 rounded-md">
-                  <SearchCheck className="w-3 h-3 text-orange-600" />
+                <div className="p-1 bg-brand-50 rounded-md">
+                  <SearchCheck className="w-3 h-3 text-brand-600" />
                 </div>
                 <div className="flex items-center gap-1">
+                  <span className="text-[10px] px-1.5 py-0.5 bg-zinc-100 text-zinc-600 rounded-md font-medium">
+                    Search In {type == "hot_leads" ? "Lmia" : "Hot Leads"}
+                  </span>
                   <span className="text-xs font-medium text-zinc-900">
                     {decodeURIComponent(keywords)}
-                  </span>
-                  <span className="text-[10px] px-1.5 py-0.5 bg-zinc-100 text-zinc-600 rounded-md font-medium">
-                    Search With {type == "hot_leads" ? "Lmia" : "Hot Leads"}
                   </span>
                 </div>
               </CustomLink>
             )}
 
-            <CustomLink
+            {/* <CustomLink
               className="flex items-center gap-2 pr-3 border-r border-zinc-200 h-5"
               href={type == "hot_leads" ? "/lmia" : "/search"}
             >
-              <div className="p-1 bg-orange-50 rounded-md">
-                <Link2Icon className="w-3 h-3 text-orange-600" />
+              <div className="p-1 bg-brand-50 rounded-md">
+                <Link2Icon className="w-3 h-3 text-brand-600" />
               </div>
               <div className="flex items-center gap-1">
                 <span className="text-xs font-medium text-zinc-900">
-                  {type == "hot_leads" ? "LMIA" : "Hot Leads"}
+                  {type == "hot_leads" ? "Go to LMIA" : "Go to Hot Leads"}
                 </span>
               </div>
-            </CustomLink>
+            </CustomLink> */}
           </div>
 
           {/* Right side - Search, Actions & Notifications */}

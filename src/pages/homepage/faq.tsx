@@ -49,7 +49,7 @@ const item = {
 
 export default function FAQ() {
   return (
-    <section className="py-16">
+    <section className="py-16 relative">
       <div className="w-full max-w-4xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -70,15 +70,15 @@ export default function FAQ() {
           viewport={{ once: true }}
         >
           <HoverCard>
-            <div className="bg-white/80 border border-orange-100 rounded-2xl shadow-lg p-8">
+            <div className="bg-white/80 border border-brand-100 rounded-2xl shadow-lg p-8">
               <Accordion type="single" collapsible className="space-y-4">
                 {faqs.map((faq, index) => (
                   <motion.div key={index} variants={item}>
                     <AccordionItem
                       value={`item-${index}`}
-                      className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-orange-50 hover:-translate-y-0.5"
+                      className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-brand-50 hover:-translate-y-0.5"
                     >
-                      <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-gray-900 hover:no-underline group-hover:text-orange-600 transition-colors duration-300">
+                      <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-gray-900 hover:no-underline group-hover:text-brand-600 transition-colors duration-300">
                         {faq.question}
                       </AccordionTrigger>
                       <AccordionContent className="px-6 pb-4 text-gray-600 leading-relaxed">

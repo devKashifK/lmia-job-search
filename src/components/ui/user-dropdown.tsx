@@ -34,11 +34,12 @@ export default function UserDropdown({ className }: { className?: string }) {
         });
         window.location.reload();
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Unexpected error during sign-out:", err);
       toast({
         title: "Error Signing Out: ",
-        description: err.message,
+        description:
+          err instanceof Error ? err.message : "An unknown error occurred",
       });
     }
   };
@@ -51,7 +52,7 @@ export default function UserDropdown({ className }: { className?: string }) {
           ) : (
             <AvatarFallback
               className={cn(
-                "bg-gradient-to-br from-orange-500 to-red-600  text-white",
+                "bg-gradient-to-br from-brand-500 to-brand-600 text-white",
                 className
               )}
             >
@@ -63,7 +64,7 @@ export default function UserDropdown({ className }: { className?: string }) {
       <DropdownMenuContent
         side="bottom"
         align="end"
-        className="w-48 bg-orange-50/80"
+        className="w-48 bg-brand-50/80"
       >
         <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
           <User className="w-1 h-1 " />

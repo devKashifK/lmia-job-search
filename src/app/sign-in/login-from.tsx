@@ -21,7 +21,7 @@ export default function LoginForm() {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams?.get("redirect") || "/dashboard";
+  const redirect = searchParams?.get("redirect") || "/search";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,7 +101,7 @@ export default function LoginForm() {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-12 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 pl-10"
+                      className="h-12 border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 pl-10"
                       placeholder="name@example.com"
                       autoComplete="email"
                       required
@@ -119,7 +119,7 @@ export default function LoginForm() {
                       </Label>
                       <CustomLink
                         href="/forgot-password"
-                        className="text-xs font-medium text-orange-600 hover:text-orange-500"
+                        className="text-xs font-medium text-brand-600 hover:text-brand-500"
                       >
                         Forgot password?
                       </CustomLink>
@@ -130,7 +130,7 @@ export default function LoginForm() {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="h-12 border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 pl-10 pr-10"
+                        className="h-12 border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 pl-10 pr-10"
                         placeholder="Enter your password"
                         autoComplete="current-password"
                         required
@@ -147,7 +147,7 @@ export default function LoginForm() {
 
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white"
+                    className="w-full h-12 bg-brand-500 hover:bg-brand-600 text-white"
                     disabled={isLoading}
                   >
                     {isLoading ? "Signing in..." : "Sign in"}
@@ -160,13 +160,13 @@ export default function LoginForm() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
-                className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-8 text-white"
+                className="bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl p-8 text-white"
               >
                 <div className="space-y-4">
                   <h2 className="text-3xl font-bold mb-6">
                     The simplest way to search and analyze data
                   </h2>
-                  <p className="text-lg text-orange-50 mb-8">
+                  <p className="text-lg text-brand-50 mb-8">
                     Powerful, self-serve product and growth analytics to help
                     you convert, engage, and retain more users.
                   </p>
@@ -186,7 +186,7 @@ export default function LoginForm() {
 
                 {/* Client Logos */}
                 <div className="mt-8">
-                  <p className="text-orange-100 mb-6 text-sm font-medium">
+                  <p className="text-brand-100 mb-6 text-sm font-medium">
                     Trusted by leading companies
                   </p>
                   <div className="grid grid-cols-4 gap-6">

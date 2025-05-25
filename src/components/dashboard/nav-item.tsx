@@ -24,7 +24,7 @@ export function NavItem({
       className={cn(
         "w-full justify-start gap-3 px-3 h-11 relative group",
         isActive
-          ? "bg-orange-50 text-orange-600 hover:bg-orange-50/80"
+          ? "bg-brand-50 text-brand-600 hover:bg-brand-50/80"
           : "text-zinc-600 hover:bg-zinc-50"
       )}
       onClick={onClick}
@@ -34,7 +34,7 @@ export function NavItem({
           className={cn(
             "w-4 h-4 transition-colors",
             isActive
-              ? "text-orange-600"
+              ? "text-brand-600"
               : "text-zinc-500 group-hover:text-zinc-800"
           )}
         />
@@ -45,7 +45,7 @@ export function NavItem({
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="h-5 min-w-[20px] rounded-full bg-orange-100 text-orange-600 text-xs font-medium flex items-center justify-center px-1.5"
+            className="h-5 min-w-[20px] rounded-full bg-brand-100 text-brand-600 text-xs font-medium flex items-center justify-center px-1.5"
           >
             {badge}
           </motion.div>
@@ -54,7 +54,7 @@ export function NavItem({
       {isActive && (
         <motion.div
           layoutId="activeNav"
-          className="absolute left-0 top-0 bottom-0 w-1 bg-orange-500 rounded-r-full"
+          className="absolute left-0 top-0 bottom-0 w-1 bg-brand-500 rounded-r-full"
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
       )}

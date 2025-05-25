@@ -99,7 +99,7 @@ function EditableField({
       <Card className="group overflow-hidden bg-white hover:bg-zinc-50/50 transition-all duration-300 hover:shadow-md">
         <div className="flex items-center justify-between px-5 py-4 bg-white border-b border-zinc-100">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-orange-50 to-white rounded-lg text-orange-500 shadow-sm">
+            <div className="p-2 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-lg text-brand-500 shadow-sm">
               {icon}
             </div>
             <div>
@@ -133,7 +133,7 @@ function EditableField({
                 size="sm"
                 onClick={handleUpdate}
                 disabled={isLoading}
-                className="h-8 w-8 p-0 text-orange-500 hover:text-orange-600 hover:bg-orange-50"
+                className="h-8 w-8 p-0 text-brand-500 hover:text-brand-600 hover:bg-brand-50"
               >
                 <Check className="h-4 w-4" />
               </Button>
@@ -147,7 +147,7 @@ function EditableField({
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
                 placeholder={placeholder}
-                className="min-h-[120px] resize-none bg-white border-zinc-200 focus:border-orange-500 focus:ring-orange-500/20"
+                className="min-h-[120px] resize-none bg-white border-zinc-200 focus:border-brand-500 focus:ring-brand-500/20"
               />
             ) : (
               <Input
@@ -155,7 +155,7 @@ function EditableField({
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
                 placeholder={placeholder}
-                className="bg-white border-zinc-200 focus:border-orange-500 focus:ring-orange-500/20"
+                className="bg-white border-zinc-200 focus:border-brand-500 focus:ring-brand-500/20"
               />
             )
           ) : (
@@ -193,8 +193,8 @@ export default function UserProfile() {
         className="mb-8"
       >
         <div className="flex items-center gap-3 mb-3">
-          <div className="p-2.5 bg-gradient-to-br from-orange-100 via-orange-50 to-white rounded-xl shadow-sm">
-            <User className="w-5 h-5 text-orange-600" />
+          <div className="p-2.5 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-xl shadow-sm">
+            <User className="w-5 h-5 text-brand-600" />
           </div>
           <div>
             <h1 className="text-xl font-semibold text-zinc-900">
@@ -205,10 +205,10 @@ export default function UserProfile() {
             </p>
           </div>
         </div>
-        <div className="p-4 bg-gradient-to-r from-orange-50/50 to-orange-100/30 rounded-lg border border-orange-100/50">
+        <div className="p-4 bg-gradient-to-r from-brand-50/50 to-brand-100/30 rounded-lg border border-brand-100/50">
           <div className="flex items-start gap-3">
             <div className="p-2 bg-white rounded-lg shadow-sm">
-              <Shield className="w-4 h-4 text-orange-500" />
+              <Shield className="w-4 h-4 text-brand-500" />
             </div>
             <div>
               <p className="text-sm font-medium text-zinc-900">

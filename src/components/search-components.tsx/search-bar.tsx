@@ -9,6 +9,13 @@ import { useUpdateCredits } from "@/hooks/use-credits";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function SearchBar({ type }: { type: string }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,6 +23,7 @@ export function SearchBar({ type }: { type: string }) {
   const [suggestions, setSuggestions] = useState<{ suggestion: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [searchType, setSearchType] = useState<string>(type || "hot_leads");
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const { searchWithFuse } = useTableStore();
   const { updateCreditsAndSearch } = useUpdateCredits();
@@ -44,21 +52,19 @@ export function SearchBar({ type }: { type: string }) {
 
     setIsLoadingSuggestions(true);
     try {
-      if (type == "hot_leads") {
-        const { data, error } = await db.rpc("rpc_suggest_hot_leads_new", {
+      if (searchType === "hot_leads") {
+        const { data } = await db.rpc("rpc_suggest_hot_leads_new", {
           term: query,
           p_limit: 10,
         });
 
-        if (error) throw error;
         setSuggestions(data || []);
       } else {
-        const { data, error } = await db.rpc("rpc_suggest_lmia", {
+        const { data } = await db.rpc("rpc_suggest_lmia", {
           term: query,
           p_limit: 10,
         });
 
-        if (error) throw error;
         setSuggestions(data || []);
       }
     } catch (error) {
@@ -84,12 +90,10 @@ export function SearchBar({ type }: { type: string }) {
 
   const checkCredits = async () => {
     try {
-      const { data: credits, error } = await db
+      const { data: credits } = await db
         .from("credits")
         .select("total_credit, used_credit")
         .single();
-
-      if (error) throw error;
 
       if (!credits) {
         toast({
@@ -142,7 +146,7 @@ export function SearchBar({ type }: { type: string }) {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(query);
-      searchWithFuse(query, type);
+      searchWithFuse(query, searchType);
 
       const { data: updatedCredits } = await db
         .from("credits")
@@ -159,10 +163,10 @@ export function SearchBar({ type }: { type: string }) {
         variant: "success",
       });
 
-      if (type == "hot_leads") {
-        navigate.push(`/search/${query}`);
+      if (searchType === "hot_leads") {
+        navigate.push(`/search/hot-leads/${query}`);
       } else {
-        navigate.push(`/lmia/${query}`);
+        navigate.push(`/search/lmia/${query}`);
       }
     } catch (error) {
       toast({
@@ -185,7 +189,7 @@ export function SearchBar({ type }: { type: string }) {
     setSearchQuery("");
     setSuggestions([]);
     setShowSuggestions(false);
-    searchWithFuse("", type);
+    searchWithFuse("", searchType);
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -193,19 +197,13 @@ export function SearchBar({ type }: { type: string }) {
 
   return (
     <motion.div
-      className="relative w-64"
+      className="relative w-full max-w-md"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="relative flex items-center gap-2">
-        <motion.div
-          className="relative flex-1"
-          whileFocus={{ scale: 1.02 }}
-          transition={{ duration: 0.2 }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-md blur-sm group-hover:opacity-40 transition duration-300" />
-          {/* <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black" /> */}
+      <div className="flex w-full">
+        <div className="relative flex-grow flex items-center">
           <input
             ref={inputRef}
             type="text"
@@ -214,7 +212,7 @@ export function SearchBar({ type }: { type: string }) {
             onKeyDown={handleKeyPress}
             onFocus={() => setShowSuggestions(true)}
             placeholder="Search..."
-            className="relative w-full h-8 pl-4 pr-8 text-xs bg-white/90 backdrop-blur-sm border border-orange-100 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500/20 focus:border-orange-500/30 transition-all duration-200"
+            className="w-full h-8 pl-3 pr-8 text-sm bg-white border border-brand-100 border-r-0 rounded-l-md focus:outline-none focus:ring-1 focus:ring-brand-500/20 focus:border-brand-500/30 transition-all duration-200"
           />
           <AnimatePresence>
             {searchQuery && (
@@ -226,17 +224,30 @@ export function SearchBar({ type }: { type: string }) {
                 onClick={handleClear}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-4 w-4" />
               </motion.button>
             )}
           </AnimatePresence>
-        </motion.div>
+        </div>
+        <span className="h-8 border-l border-brand-100 mx-0" />
+        <Select
+          value={searchType}
+          onValueChange={(value) => setSearchType(value)}
+        >
+          <SelectTrigger className="w-[110px] h-8 bg-white border border-brand-100 rounded-l-none border-l-0 rounded-r-md text-gray-500 font-medium focus:ring-0 focus:ring-offset-0 px-2 flex items-center shadow-none">
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="hot_leads">Hot Leads</SelectItem>
+            <SelectItem value="lmia">LMIA</SelectItem>
+          </SelectContent>
+        </Select>
         <motion.button
           onClick={() => handleSearch()}
           disabled={isChecking}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="h-7 px-2 bg-gradient-to-br from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:opacity-50 rounded-md flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md"
+          className="ml-2 h-8 px-3 bg-gradient-to-br from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 disabled:opacity-50 rounded-md flex items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md"
         >
           <AnimatePresence mode="wait">
             {isChecking ? (
@@ -246,7 +257,7 @@ export function SearchBar({ type }: { type: string }) {
                 animate={{ opacity: 1, rotate: 360 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"
+                className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"
               />
             ) : (
               <motion.div
@@ -256,7 +267,7 @@ export function SearchBar({ type }: { type: string }) {
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.2 }}
               >
-                <Search className="h-3.5 w-3.5 text-white" />
+                <Search className="h-4 w-4 text-white" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -272,7 +283,7 @@ export function SearchBar({ type }: { type: string }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-xl border border-orange-100 overflow-hidden z-50"
+            className="absolute top-full left-0 right-0 mt-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-xl border border-brand-100 overflow-hidden z-50"
           >
             <ScrollArea className="max-h-[200px]">
               {isLoadingSuggestions ? (
@@ -285,7 +296,7 @@ export function SearchBar({ type }: { type: string }) {
                       transition={{ delay: index * 0.1 }}
                       className="flex items-center gap-2 p-2"
                     >
-                      <div className="p-1.5 rounded-full bg-orange-100">
+                      <div className="p-1.5 rounded-full bg-brand-100">
                         <Skeleton className="w-3 h-3 rounded-full" />
                       </div>
                       <Skeleton className="h-3 w-32" />
@@ -299,14 +310,14 @@ export function SearchBar({ type }: { type: string }) {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="group p-2 hover:bg-orange-50 cursor-pointer transition-all duration-300"
+                    className="group p-2 hover:bg-brand-50 cursor-pointer transition-all duration-300"
                     onClick={() => handleSuggestionClick(suggestion.suggestion)}
                   >
                     <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-full bg-orange-100 group-hover:bg-orange-200 transition-colors">
-                        <Search className="w-3 h-3 text-orange-600" />
+                      <div className="p-1.5 rounded-full bg-brand-100 group-hover:bg-brand-200 transition-colors">
+                        <Search className="w-3 h-3 text-brand-600" />
                       </div>
-                      <span className="text-xs text-zinc-600 group-hover:text-orange-600 transition-colors">
+                      <span className="text-xs text-zinc-600 group-hover:text-brand-600 transition-colors">
                         {suggestion.suggestion}
                       </span>
                     </div>
