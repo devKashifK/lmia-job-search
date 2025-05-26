@@ -9,6 +9,9 @@ import Loader from "@/components/ui/loader";
 import PageTitle from "@/components/ui/page-title";
 import Pagination from "@/components/ui/pagination";
 import JobCard from "@/components/ui/job-card";
+import SortButton, { SortOption } from "@/components/ui/sort-button";
+import { useMinimumLoading } from "@/hooks/use-minimum-loading";
+import Newfilterpanel from "@/components/ui/new-filterpanel";
 
 // Define a Job type for job objects
 interface Job {
@@ -35,6 +38,13 @@ export default function CompanyPage() {
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [sortBy, setSortBy] = useState("latest");
+
+  const sortOptions: SortOption[] = [
+    { label: "Latest", value: "latest" },
+    { label: "Oldest", value: "oldest" },
+    { label: "Job Title", value: "title" },
+  ];
 
   if (!keyword) {
     return <div>No keyword found</div>;
@@ -45,38 +55,54 @@ export default function CompanyPage() {
   return (
     <div className="container mx-auto px-20 py-8">
       <div className="p-4">
-        <PageTitle title={keyword} count={totalCount} />
-        <div>
-          <Suspense fallback={<div>Loading...</div>}>
-            <TopCompany
-              keyword={keyword}
-              page={page}
-              pageSize={pageSize}
-              setTotalCount={setTotalCount}
-              savedSet={savedSet}
-              toggleSaved={(idx: number) =>
-                setSavedSet((prev) => {
-                  const next = new Set(prev);
-                  if (next.has(idx)) next.delete(idx);
-                  else next.add(idx);
-                  return next;
-                })
-              }
-              onKnowMore={(job: Job) => {
-                setSelectedJob(job);
-                setShowPremiumDialog(true);
-              }}
-            />
-          </Suspense>
+        <div className="flex justify-between items-start mb-6">
+          <PageTitle title={keyword} count={totalCount} />
+          <SortButton
+            options={sortOptions}
+            currentSort={sortBy}
+            onSortChange={setSortBy}
+            className="mt-2"
+          />
         </div>
       </div>
-      {/* Pagination Controls */}
-      <div className="mt-8 py-4">
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
+      <div className="relative flex gap-4">
+        <div className="w-1/5">
+          <Newfilterpanel />
+        </div>
+        <div className="w-4/5">
+          <div>
+            <Suspense fallback={<div>Loading...</div>}>
+              <TopCompany
+                keyword={keyword}
+                page={page}
+                pageSize={pageSize}
+                setTotalCount={setTotalCount}
+                savedSet={savedSet}
+                sortBy={sortBy}
+                toggleSaved={(idx: number) =>
+                  setSavedSet((prev) => {
+                    const next = new Set(prev);
+                    if (next.has(idx)) next.delete(idx);
+                    else next.add(idx);
+                    return next;
+                  })
+                }
+                onKnowMore={(job: Job) => {
+                  setSelectedJob(job);
+                  setShowPremiumDialog(true);
+                }}
+              />
+            </Suspense>
+          </div>
+          {/* Pagination Controls */}
+          <div className="mt-8 py-4">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </div>
+        </div>
       </div>
       <PremiumDialog
         open={showPremiumDialog}
@@ -96,6 +122,7 @@ const TopCompany = ({
   pageSize,
   setTotalCount,
   savedSet,
+  sortBy,
   toggleSaved,
   onKnowMore,
 }: {
@@ -104,13 +131,16 @@ const TopCompany = ({
   pageSize: number;
   setTotalCount: React.Dispatch<React.SetStateAction<number>>;
   savedSet: Set<number>;
+  sortBy: string;
   toggleSaved: (idx: number) => void;
   onKnowMore: (job: Job) => void;
 }) => {
   const { data, error, isFetching } = useQuery({
-    queryKey: ["company", keyword, page],
-    queryFn: async () => await getCompany(keyword, page, pageSize),
+    queryKey: ["company", keyword, page, sortBy],
+    queryFn: async () => await getCompany(keyword, page, pageSize, sortBy),
   });
+
+  const showLoader = useMinimumLoading(isFetching);
 
   const { data: countData } = useQuery({
     queryKey: ["company-count", keyword],
@@ -128,11 +158,15 @@ const TopCompany = ({
   }
 
   return (
-    <div>
-      {isFetching && <Loader />}
+    <div className="relative">
+      {showLoader && (
+        <div className="fixed w-screen h-screen inset-0 flex justify-center items-center bg-white  z-50">
+          <Loader />
+        </div>
+      )}
       <div>
         {Array.isArray(data) && data.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {data.map(
               (
                 item: {
@@ -182,14 +216,35 @@ const TopCompany = ({
   );
 };
 
-const getCompany = async (keyword: string, page: number, pageSize: number) => {
+const getCompany = async (
+  keyword: string,
+  page: number,
+  pageSize: number,
+  sortBy: string
+) => {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  const { data, error } = await db
+  let query = db
     .from("hot_leads_new")
     .select("*")
-    .eq("operating_name", keyword)
-    .range(from, to);
+    .eq("operating_name", keyword);
+
+  // Apply sorting
+  switch (sortBy) {
+    case "latest":
+      query = query.order("date_of_job_posting", { ascending: false });
+      break;
+    case "oldest":
+      query = query.order("date_of_job_posting", { ascending: true });
+      break;
+    case "title":
+      query = query.order("job_title", { ascending: true });
+      break;
+    default:
+      query = query.order("date_of_job_posting", { ascending: false });
+  }
+
+  const { data, error } = await query.range(from, to);
 
   if (error) throw error;
   return data;

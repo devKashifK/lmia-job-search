@@ -9,6 +9,7 @@ interface TableState {
   showFilterPanel: boolean;
   currentSearchId: string | null;
   isLoading: boolean;
+  filterPanelConfig: Record<string, string>;
   updateSearchSaved: (searchId: string, saved: boolean) => Promise<void>;
 
   setShowFilterPanel: (value: boolean) => void;
@@ -20,6 +21,7 @@ interface TableState {
   clearSingleFilter: (columnKey: string, value: string) => void;
   searchWithFuse: (keywords: string, type: string) => void;
   setCurrentSearchId: (id: string) => void;
+  setFilterPanelConfig: (config: Record<string, string>) => void;
 }
 
 export const useTableStore = create<TableState>((set, get) => ({
@@ -29,6 +31,7 @@ export const useTableStore = create<TableState>((set, get) => ({
   showFilterPanel: true,
   currentSearchId: null,
   isLoading: false,
+  filterPanelConfig: {},
 
   setShowFilterPanel: (value) => {
     const currentValue = get().showFilterPanel;
@@ -189,4 +192,5 @@ export const useTableStore = create<TableState>((set, get) => ({
       throw error;
     }
   },
+  setFilterPanelConfig: (config) => set({ filterPanelConfig: config }),
 }));

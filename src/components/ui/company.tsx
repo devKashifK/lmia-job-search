@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import SectionTitle from "./section-title";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTableStore } from "@/context/store";
 
 const companyGroups = [
   {
@@ -65,9 +66,15 @@ const companyGroups = [
 
 export default function Company() {
   const router = useRouter();
-
+  const { setFilterPanelConfig } = useTableStore();
   const handleViewDetails = (company: string) => {
     router.push(`/company/${company}`);
+    setFilterPanelConfig({
+      column: "operating_name",
+      table: "hot_leads_new",
+      keyword: company,
+      type: "hot_leads",
+    });
   };
 
   return (
