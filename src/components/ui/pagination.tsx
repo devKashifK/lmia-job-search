@@ -1,3 +1,4 @@
+import { useTableStore } from "@/context/store";
 import React from "react";
 
 interface PaginationProps {
@@ -13,8 +14,15 @@ export default function Pagination({
   onPageChange,
   className = "",
 }: PaginationProps) {
+
+  const {dataConfig , setDataConfig} = useTableStore()
   const handlePageChange = (page: number) => {
     onPageChange(page);
+
+    setDataConfig({
+  ...(dataConfig || {}),
+  page : page,
+});
     // Use setTimeout to ensure the scroll happens after the page update
     setTimeout(() => {
       window.scrollTo({
@@ -24,6 +32,13 @@ export default function Pagination({
     }, 100);
   };
 
+
+  const handlePagination = (newPage : number) => {
+    setDataConfig(prevConfig => ({
+      ...(prevConfig || {}), 
+      page: newPage,         
+    } ))
+  }
   const renderPageNumbers = () => {
     const pages = [];
     let start = 1;
@@ -126,6 +141,7 @@ export default function Pagination({
         <button
           onClick={() =>
             handlePageChange(Math.min(totalPages, currentPage + 1))
+            
           }
           disabled={currentPage === totalPages || totalPages === 0}
           className="p-1.5 rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"

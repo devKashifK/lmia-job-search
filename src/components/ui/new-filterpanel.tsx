@@ -4,15 +4,14 @@ import { CheckCircle, ChevronLeft, Circle } from "lucide-react";
 import React from "react";
 import { hotLeadsColumns, lmiaColumns } from "@/components/filters/column-def";
 import { AttributeName } from "@/helpers/attribute";
-import { Accordion, AccordionItem, AccordionTrigger } from "./accordion";
-import { AccordionContent } from "@radix-ui/react-accordion";
 import db from "@/db";
 import { cn } from "@/lib/utils";
+import { Vidaloka } from "next/font/google";
 
 export default function Newfilterpanel() {
   const columns = useFilterPanelColumns();
   return (
-    <div className="border-r-2 border-brand-200 pr-8 flex flex-col gap-8">
+    <div className="border-r-2 border-brand-200 pr-8 flex flex-col gap-4">
       <div className="flex justify-between items-center">
         <div className="text-lg font-bold">Filters</div>
         <div className="text-sm w-3 h-3">
@@ -52,10 +51,49 @@ export default function Newfilterpanel() {
 
 const FilterAttributes = ({ column }) => {
   const { data, isLoading, error } = useFilterColumnAttributes(column)
-  const { filters } = useTableStore() // or however your store provides these
-  const handleFilterUpdate = () => {
+  const { updateFilter, filters, clearFilter , dataConfig , setDataConfig } = useTableStore();
 
+const handleFilterUpdate = (accessorKey: string, value: string) => {
+  updateFilter(accessorKey, value);
+
+  let previousFilters: Record<string, string[]>[] = [];
+
+  if (dataConfig.columns && typeof dataConfig.columns === "string") {
+    try {
+      previousFilters = JSON.parse(dataConfig.columns);
+    } catch (e) {
+      console.error("Failed to parse columns:", e);
+    }
   }
+
+  let found = false;
+
+  const updatedFilters = previousFilters.map((filter) => {
+    if (filter.hasOwnProperty(accessorKey)) {
+      found = true;
+
+      const existingValues = filter[accessorKey] || [];
+      const updatedValues = Array.from(new Set([...existingValues, value])); // remove duplicates
+
+      return { [accessorKey]: updatedValues };
+    }
+    return filter;
+  });
+
+  // If no filter existed for this accessorKey, add it
+  if (!found) {
+    updatedFilters.push({ [accessorKey]: [value] });
+  }
+
+  setDataConfig({
+    ...(dataConfig || {}),
+    columns: JSON.stringify(updatedFilters),
+    page: 1, // optional: reset page when filter changes
+  });
+};
+
+
+
 
 
   if (isLoading) return <div>Loading...</div>
@@ -69,26 +107,26 @@ const FilterAttributes = ({ column }) => {
           key={value}
           role="button"
           tabIndex={0}
-          onClick={() => handleFilterUpdate(column.accessorKey, value)}
+          onClick={() => handleFilterUpdate(column, value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
-              handleFilterUpdate(column.accessorKey, value)
+              handleFilterUpdate(column, value)
             }
           }}
           className={cn(
-            "group flex items-center gap-2 px-0 py-1.5 rounded-md text-xs transition-all duration-200 cursor-pointer",
+            "group flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-200 cursor-pointer",
             "hover:bg-brand-100/80 active:bg-brand-200",
           )}
         >
           <div className="w-3.5 h-3.5 flex-shrink-0">
-            {filters[column.accessorKey]?.has(value) ? (
+            {filters[column]?.has(value) ? (
               <CheckCircle className="h-3.5 w-3.5 text-brand-600" />
             ) : (
               <Circle className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity duration-200" />
             )}
           </div>
           <span className="truncate flex-1 text-black">{value}</span>
-          {filters[column.accessorKey]?.has(value) && (
+          {filters[column]?.has(value) && (
             <span className="text-[10px] text-brand-600/70 group-hover:text-brand-600">
               selected
             </span>
@@ -119,9 +157,6 @@ const useFilterColumnAttributes = (column) => {
 
       // remove duplicate values manually if needed
       const uniqueValues = [...new Set(data.map((item) => item[column]))]
-
-      console.log(uniqueValues , "checkUni")
-
       return uniqueValues
     },
   })

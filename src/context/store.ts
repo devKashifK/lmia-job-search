@@ -10,6 +10,7 @@ interface TableState {
   currentSearchId: string | null;
   isLoading: boolean;
   filterPanelConfig: Record<string, string>;
+  dataConfig : Record<string, string>;
   updateSearchSaved: (searchId: string, saved: boolean) => Promise<void>;
 
   setShowFilterPanel: (value: boolean) => void;
@@ -21,6 +22,7 @@ interface TableState {
   clearSingleFilter: (columnKey: string, value: string) => void;
   searchWithFuse: (keywords: string, type: string) => void;
   setCurrentSearchId: (id: string) => void;
+  setDataConfig : (config : Record<string , string>) => void;
   setFilterPanelConfig: (config: Record<string, string>) => void;
 }
 
@@ -32,6 +34,7 @@ export const useTableStore = create<TableState>((set, get) => ({
   currentSearchId: null,
   isLoading: false,
   filterPanelConfig: {},
+  dataConfig : {},
 
   setShowFilterPanel: (value) => {
     const currentValue = get().showFilterPanel;
@@ -193,4 +196,5 @@ export const useTableStore = create<TableState>((set, get) => ({
     }
   },
   setFilterPanelConfig: (config) => set({ filterPanelConfig: config }),
+  setDataConfig : (config) => set({dataConfig : config})
 }));

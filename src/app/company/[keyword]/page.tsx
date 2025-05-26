@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense, useState } from "react";
+import React, { Suspense,  useState } from "react";
 import { useParams } from "next/navigation";
 import db from "@/db";
 import { useQuery } from "@tanstack/react-query";
@@ -12,6 +12,9 @@ import JobCard from "@/components/ui/job-card";
 import SortButton, { SortOption } from "@/components/ui/sort-button";
 import { useMinimumLoading } from "@/hooks/use-minimum-loading";
 import Newfilterpanel from "@/components/ui/new-filterpanel";
+import { useTableStore } from "@/context/store";
+import { Select } from "@/components/ui/select";
+import { SelectContent, SelectItem, SelectTrigger } from "@radix-ui/react-select";
 
 // Define a Job type for job objects
 interface Job {
@@ -57,12 +60,14 @@ export default function CompanyPage() {
       <div className="p-4">
         <div className="flex justify-between items-start mb-6">
           <PageTitle title={keyword} count={totalCount} />
+          <div>
           <SortButton
             options={sortOptions}
             currentSort={sortBy}
             onSortChange={setSortBy}
             className="mt-2"
           />
+          </div>
         </div>
       </div>
       <div className="relative flex gap-4">
@@ -117,12 +122,8 @@ export default function CompanyPage() {
 }
 
 const TopCompany = ({
-  keyword,
-  page,
-  pageSize,
   setTotalCount,
   savedSet,
-  sortBy,
   toggleSaved,
   onKnowMore,
 }: {
@@ -135,23 +136,25 @@ const TopCompany = ({
   toggleSaved: (idx: number) => void;
   onKnowMore: (job: Job) => void;
 }) => {
-  const { data, error, isFetching } = useQuery({
-    queryKey: ["company", keyword, page, sortBy],
-    queryFn: async () => await getCompany(keyword, page, pageSize, sortBy),
-  });
 
-  const showLoader = useMinimumLoading(isFetching);
+  const { data , error  , isLoading} = useData()
+  // const { data, error, isFetching } = useQuery({
+  //   queryKey: ["company", keyword, page, sortBy],
+  //   queryFn: async () => await getCompany(keyword, page, pageSize, sortBy),
+  // });
+   
+  const showLoader = useMinimumLoading(isLoading);
 
-  const { data: countData } = useQuery({
-    queryKey: ["company-count", keyword],
-    queryFn: async () => await getCompanyCount(keyword),
-  });
+  // const { data: countData } = useQuery({
+  //   queryKey: ["company-count", keyword],
+  //   queryFn: async () => await getCompanyCount(keyword),
+  // });
 
   React.useEffect(() => {
-    if (typeof countData === "number") {
-      setTotalCount(countData);
+    if (typeof data?.count === "number") {
+      setTotalCount(data?.count);
     }
-  }, [countData, setTotalCount]);
+  }, [data , data?.count, setTotalCount]);
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -165,9 +168,9 @@ const TopCompany = ({
         </div>
       )}
       <div>
-        {Array.isArray(data) && data.length > 0 ? (
+        {Array.isArray(data?.data) && data?.data.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {data.map(
+            {data?.data.map(
               (
                 item: {
                   id?: string | number;
@@ -216,39 +219,6 @@ const TopCompany = ({
   );
 };
 
-const getCompany = async (
-  keyword: string,
-  page: number,
-  pageSize: number,
-  sortBy: string
-) => {
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-  let query = db
-    .from("hot_leads_new")
-    .select("*")
-    .eq("operating_name", keyword);
-
-  // Apply sorting
-  switch (sortBy) {
-    case "latest":
-      query = query.order("date_of_job_posting", { ascending: false });
-      break;
-    case "oldest":
-      query = query.order("date_of_job_posting", { ascending: true });
-      break;
-    case "title":
-      query = query.order("job_title", { ascending: true });
-      break;
-    default:
-      query = query.order("date_of_job_posting", { ascending: false });
-  }
-
-  const { data, error } = await query.range(from, to);
-
-  if (error) throw error;
-  return data;
-};
 
 const getCompanyCount = async (keyword: string): Promise<number> => {
   const { count, error } = await db
@@ -258,3 +228,103 @@ const getCompanyCount = async (keyword: string): Promise<number> => {
   if (error) throw error;
   return count || 0;
 };
+
+
+
+
+
+
+const useData = () => {
+  const { dataConfig } = useTableStore();
+  const {
+    table,
+    method,
+    columns: filterJsonString, 
+    type,
+    page, 
+    pageSize
+  } = dataConfig || {};
+
+
+  console.log(dataConfig , "checkData")
+
+
+  const isQueryEnabled = method === "query" && typeof table === 'string' && table.trim() !== '';
+
+  const selectProjection = type == "lmia" ? selectProjectionLMIA : selectProjectionHotLeads
+
+
+  let parsedFilterArray: Array<{ [key: string]: any }> = [];
+
+    if (isQueryEnabled && typeof filterJsonString === 'string' && filterJsonString.trim() !== '') {
+    try {
+      const parsed = JSON.parse(filterJsonString);
+      if (Array.isArray(parsed)) {
+        parsedFilterArray = parsed;
+      } else {
+        console.warn("dataConfig.columns (filterJsonString) parsed into a non-array. Defaulting to empty array for filtering.");
+      }
+    } catch (e) {
+      console.error("Failed to parse dataConfig.columns (filterJsonString):", e);
+    }
+  } else if (isQueryEnabled && Array.isArray(filterJsonString)) {
+    parsedFilterArray = filterJsonString;
+  }
+
+
+  const stableFiltersKeyPart = JSON.stringify(parsedFilterArray);
+
+  return useQuery<any[] | null, Error>({
+    queryKey: ['tableData', table, type, selectProjection, stableFiltersKeyPart, page, pageSize],
+
+    queryFn: async () => {
+
+
+      let query = db.from(table).select(selectProjection || '*' , {count : "exact"});
+
+     parsedFilterArray.forEach((filterObject) => {
+    if (typeof filterObject === "object" && filterObject !== null) {
+      for (const key in filterObject) {
+        if (Object.prototype.hasOwnProperty.call(filterObject, key)) {
+          const value = filterObject[key];
+
+          if (Array.isArray(value)) {
+            query = query.in(key, value);
+          } else {
+            query = query.eq(key, value);
+          }
+        }
+      }
+    }
+  });
+
+
+      
+     
+
+
+
+      const currentPage = page && page > 0 ? page : 1;
+      const currentPSize = pageSize && pageSize > 0 ? pageSize : 10; // Default page size
+      const from = (currentPage - 1) * currentPSize;
+      const to = from + currentPSize - 1;
+
+      query = query.range(from, to);
+      const { data, error , count } = await query;
+
+
+      if (error) {
+        console.error(`Error fetching data from Supabase table "${table}":`, error);
+        throw new Error(error.message || `Failed to fetch data from Supabase table "${table}".`);
+      }
+
+      return {data , error , count};
+    },
+    enabled: isQueryEnabled,
+  });
+};
+
+
+const selectProjectionLMIA = "territory , program , city , lmia_year , job_title, noc_code, priority_occupation, approved_positions, operating_name";
+
+const selectProjectionHotLeads = "state , city , date_of_job_posting , noc_code , noc_priority , job_title , operating_name  , year"
