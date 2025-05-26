@@ -8,6 +8,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { Badge } from "@/components/ui/badge";
+import { LMIA } from "@/components/filters/column-def";
 
 const BG_COLORS = [
   "bg-orange-100",
@@ -35,6 +37,29 @@ const BG_COLORS = [
   "bg-brand-100",
 ];
 
+interface JobCardProps {
+  logoIcon: React.ElementType;
+  saved: boolean;
+  onToggleSaved: () => void;
+  employerName?: string;
+  jobTitle?: string;
+  city?: string;
+  state?: string;
+  noc?: string;
+  jobStatus?: string;
+  employerType?: string;
+  datePosted?: string;
+  onKnowMore: () => void;
+  salary?: string;
+  type?: 'lmia' | 'hotLeads';
+  // Additional LMIA specific fields
+  program?: string;
+  lmiaYear?: string;
+  priorityOccupation?: string;
+  approvedPositions?: string;
+  territory?: string;
+}
+
 export default function JobCard({
   logoIcon: LogoIcon,
   saved,
@@ -49,29 +74,38 @@ export default function JobCard({
   datePosted,
   onKnowMore,
   salary,
-}: {
-  logoIcon: React.ElementType;
-  saved: boolean;
-  onToggleSaved: () => void;
-  employerName?: string;
-  jobTitle?: string;
-  city?: string;
-  state?: string;
-  noc?: string;
-  jobStatus?: string;
-  employerType?: string;
-  datePosted?: string;
-  onKnowMore: () => void;
-  salary?: string;
-}) {
-  // Collect tags
-  const tags = [employerType, jobStatus, noc && `NOC: ${noc}`].filter(Boolean);
+  type = 'hotLeads',
+  program,
+  lmiaYear,
+  priorityOccupation,
+  approvedPositions,
+  territory,
+}: JobCardProps) {
+  // Collect tags based on type
+  const tags = type === 'lmia' 
+    ? [
+        program,
+        priorityOccupation,
+        noc && `NOC: ${noc}`,
+        approvedPositions && `Positions: ${approvedPositions}`,
+        lmiaYear
+      ].filter(Boolean)
+    : [
+        employerType,
+        jobStatus,
+        noc && `NOC: ${noc}`
+      ].filter(Boolean);
 
   // Pick a random color for the top section, stable for this card instance
   const randomBg = useMemo(
     () => BG_COLORS[Math.floor(Math.random() * BG_COLORS.length)],
     []
   );
+
+  // Get location display based on type
+  const location = type === 'lmia'
+    ? [city, territory].filter(Boolean).join(", ")
+    : [city, state].filter(Boolean).join(", ");
 
   return (
     <div className="rounded-2xl shadow-lg w-full max-w-md bg-transparent px-2 py-2 border border-gray-200">
@@ -135,12 +169,13 @@ export default function JobCard({
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-1">
           {tags.map((tag) => (
-            <span
+            <Badge
               key={tag}
-              className="bg-white text-gray-700 px-3 py-1 rounded-full text-xs font-medium border border-gray-200 shadow-sm"
+              variant="secondary"
+              className="bg-white/80 hover:bg-white text-gray-700 border border-gray-200/50"
             >
               {tag}
-            </span>
+            </Badge>
           ))}
         </div>
       </div>
@@ -152,16 +187,14 @@ export default function JobCard({
               {salary}
             </div>
           )}
-          <div className="text-xs text-gray-600">
-            {city || state ? (
+          {location && (
+            <div className="text-xs text-gray-600">
               <span className="flex items-center gap-1">
                 <MapPin className="w-4 h-4 text-gray-400" />
-                {city}
-                {city && state ? ", " : ""}
-                {state}
+                {location}
               </span>
-            ) : null}
-          </div>
+            </div>
+          )}
         </div>
         <button
           className="bg-black text-white px-5 py-1.5 rounded-full font-semibold text-sm shadow hover:bg-gray-800 transition-colors duration-200"

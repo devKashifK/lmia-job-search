@@ -1,12 +1,12 @@
 import { useTableStore } from "@/context/store";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, ChevronLeft, Circle } from "lucide-react";
+import { CheckCircle,  Circle } from "lucide-react";
 import React from "react";
 import { hotLeadsColumns, lmiaColumns } from "@/components/filters/column-def";
 import { AttributeName } from "@/helpers/attribute";
 import db from "@/db";
 import { cn } from "@/lib/utils";
-import { Vidaloka } from "next/font/google";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Newfilterpanel() {
   const columns = useFilterPanelColumns();
@@ -14,9 +14,9 @@ export default function Newfilterpanel() {
     <div className="border-r-2 border-brand-200 pr-8 flex flex-col gap-4">
       <div className="flex justify-between items-center">
         <div className="text-lg font-bold">Filters</div>
-        <div className="text-sm w-3 h-3">
+        {/* <div className="text-sm w-3 h-3">
           <ChevronLeft />
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -54,6 +54,7 @@ const FilterAttributes = ({ column }) => {
   const { updateFilter, filters, clearFilter , dataConfig , setDataConfig } = useTableStore();
 
 const handleFilterUpdate = (accessorKey: string, value: string) => {
+  // Toggle the filter value
   updateFilter(accessorKey, value);
 
   let previousFilters: Record<string, string[]>[] = [];
@@ -73,22 +74,34 @@ const handleFilterUpdate = (accessorKey: string, value: string) => {
       found = true;
 
       const existingValues = filter[accessorKey] || [];
-      const updatedValues = Array.from(new Set([...existingValues, value])); // remove duplicates
+      let updatedValues;
+      
+      // If value exists, remove it (deselect). If it doesn't exist, add it (select)
+      if (existingValues.includes(value)) {
+        updatedValues = existingValues.filter(v => v !== value);
+      } else {
+        updatedValues = [...existingValues, value];
+      }
+
+      // If no values left after deselection, remove the filter entirely
+      if (updatedValues.length === 0) {
+        return null;
+      }
 
       return { [accessorKey]: updatedValues };
     }
     return filter;
-  });
+  }).filter(Boolean); // Remove null entries
 
-  // If no filter existed for this accessorKey, add it
-  if (!found) {
+  // If no filter existed for this accessorKey and we're selecting (not deselecting)
+  if (!found && !filters[accessorKey]?.has(value)) {
     updatedFilters.push({ [accessorKey]: [value] });
   }
 
   setDataConfig({
     ...(dataConfig || {}),
     columns: JSON.stringify(updatedFilters),
-    page: 1, // optional: reset page when filter changes
+    page: "1", // Convert to string to fix type error
   });
 };
 
@@ -96,7 +109,20 @@ const handleFilterUpdate = (accessorKey: string, value: string) => {
 
 
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return (
+    <div className="flex flex-col gap-2">
+      {[...Array(5)].map((_, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-2 px-2 py-1.5"
+        >
+          <Skeleton className="h-3.5 w-3.5 rounded-full" />
+          <Skeleton className="h-4 w-[100px]" />
+        </div>
+      ))}
+    </div>
+  );
+  
   if (error) return <div>Error loading attributes.</div>
   if (!data) return null
 

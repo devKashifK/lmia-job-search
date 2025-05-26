@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
+import { Button } from "./button";
 
 export interface SortOption {
   label: string;
@@ -25,18 +26,20 @@ export default function SortButton({
     options.find((opt) => opt.value === currentSort) || options[0];
 
   return (
-    <div className={`flex items-center ${className}`}>
-      <button
+    <div className={`relative ${className}`}>
+      <Button
+        variant="outline"
+        size="sm"
         onClick={() => setShowOptions(!showOptions)}
-        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+        className="h-9 font-normal"
       >
-        <span>Sort by: {currentOption.label}</span>
+        Sort: {currentOption.label}
         <ChevronDown
-          className={`w-4 h-4 transition-transform duration-200 ${
+          className={`ml-2 h-4 w-4 transition-transform duration-200 ${
             showOptions ? "rotate-180" : ""
           }`}
         />
-      </button>
+      </Button>
       {showOptions && (
         <>
           <div

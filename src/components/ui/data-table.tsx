@@ -5,6 +5,8 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  VisibilityState,
+  OnChangeFn,
 } from "@tanstack/react-table";
 
 import {
@@ -19,20 +21,28 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  columnVisibility?: VisibilityState;
+  onColumnVisibilityChange?: OnChangeFn<VisibilityState>;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  columnVisibility,
+  onColumnVisibilityChange,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
+    state: {
+      columnVisibility: columnVisibility,
+    },
+    onColumnVisibilityChange: onColumnVisibilityChange,
     getCoreRowModel: getCoreRowModel(),
   });
 
   return (
-    <div className="rounded-md relative border max-h-[37rem] pretty-scroll  overflow-auto">
+    <div className="rounded-md relative border max-h-max ">
       <Table className="">
         <TableHeader className="bg-gray-100 sticky top-0">
           {table.getHeaderGroups().map((headerGroup) => (
