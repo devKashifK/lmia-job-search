@@ -23,7 +23,7 @@ export default function CompanyPage() {
   const [page, setPage] = useState(1);
   const pageSize = 60;
   const { dataConfig } = useTableStore();
-  const type = dataConfig?.type || 'hotLeads';
+  const type = dataConfig?.type || "hotLeads";
   const { data, error, isLoading } = useData();
 
   if (!keyword) {
@@ -36,7 +36,7 @@ export default function CompanyPage() {
 
   return (
     <DynamicDataView
-      title={keyword}
+      title={decodeURIComponent(keyword)}
       type={type}
       data={data}
       isLoading={isLoading}
@@ -55,22 +55,31 @@ const useData = () => {
     columns: filterJsonString,
     type,
     page,
-    pageSize
+    pageSize,
   } = dataConfig || {};
 
-  const isQueryEnabled = method === "query" && typeof table === 'string' && table.trim() !== '';
-  const selectProjection = type == "lmia" ? selectProjectionLMIA : selectProjectionHotLeads;
+  const isQueryEnabled =
+    method === "query" && typeof table === "string" && table.trim() !== "";
+  const selectProjection =
+    type == "lmia" ? selectProjectionLMIA : selectProjectionHotLeads;
 
   let parsedFilterArray: FilterObject[] = [];
 
-  if (isQueryEnabled && typeof filterJsonString === 'string' && filterJsonString.trim() !== '') {
+  if (
+    isQueryEnabled &&
+    typeof filterJsonString === "string" &&
+    filterJsonString.trim() !== ""
+  ) {
     try {
       const parsed = JSON.parse(filterJsonString);
       if (Array.isArray(parsed)) {
         parsedFilterArray = parsed;
       }
     } catch (e) {
-      console.error("Failed to parse dataConfig.columns (filterJsonString):", e);
+      console.error(
+        "Failed to parse dataConfig.columns (filterJsonString):",
+        e
+      );
     }
   } else if (isQueryEnabled && Array.isArray(filterJsonString)) {
     parsedFilterArray = filterJsonString;
@@ -79,9 +88,19 @@ const useData = () => {
   const stableFiltersKeyPart = JSON.stringify(parsedFilterArray);
 
   return useQuery<SupabaseResponse, Error>({
-    queryKey: ['tableData', table, type, selectProjection, stableFiltersKeyPart, page, pageSize],
+    queryKey: [
+      "tableData",
+      table,
+      type,
+      selectProjection,
+      stableFiltersKeyPart,
+      page,
+      pageSize,
+    ],
     queryFn: async () => {
-      let query = db.from(table).select(selectProjection || '*', { count: "exact" });
+      let query = db
+        .from(table)
+        .select(selectProjection || "*", { count: "exact" });
 
       parsedFilterArray.forEach((filterObject) => {
         if (typeof filterObject === "object" && filterObject !== null) {
@@ -98,8 +117,9 @@ const useData = () => {
         }
       });
 
-      const currentPage = typeof page === 'number' && page > 0 ? page : 1;
-      const currentPSize = typeof pageSize === 'number' && pageSize > 0 ? pageSize : 10;
+      const currentPage = typeof page === "number" && page > 0 ? page : 1;
+      const currentPSize =
+        typeof pageSize === "number" && pageSize > 0 ? pageSize : 10;
       const from = (currentPage - 1) * currentPSize;
       const to = from + currentPSize - 1;
 
@@ -107,7 +127,10 @@ const useData = () => {
       const { data, error, count } = await query;
 
       if (error) {
-        throw new Error(error.message || `Failed to fetch data from Supabase table "${table}".`);
+        throw new Error(
+          error.message ||
+            `Failed to fetch data from Supabase table "${table}".`
+        );
       }
 
       // Ensure the data matches our LMIA type
@@ -119,5 +142,7 @@ const useData = () => {
   });
 };
 
-const selectProjectionLMIA = "territory, program, city, lmia_year, job_title, noc_code, priority_occupation, approved_positions, operating_name";
-const selectProjectionHotLeads = "state, city, date_of_job_posting, noc_code, noc_priority, job_title, operating_name, year, occupation_title, job_status, employer_type, 2021_noc";
+const selectProjectionLMIA =
+  "territory, program, city, lmia_year, job_title, noc_code, priority_occupation, approved_positions, operating_name";
+const selectProjectionHotLeads =
+  "state, city, date_of_job_posting, noc_code, noc_priority, job_title, operating_name, year, occupation_title, job_status, employer_type, 2021_noc";
