@@ -21,7 +21,10 @@ export default function PageTitle({
     <div className={`flex flex-col gap-2 mb-8 ${className}`}>
       <div className="flex items-center gap-3">
         <div className="w-1 h-6 bg-brand-600 rounded-full"></div>
-        <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+        <AttributeName
+          className="text-2xl font-bold text-gray-900"
+          name={title}
+        />
         <Badge variant="outline">
           <AttributeName name={dataConfig?.type} />
         </Badge>

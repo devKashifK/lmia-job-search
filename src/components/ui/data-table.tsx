@@ -6,7 +6,6 @@ import {
   getCoreRowModel,
   useReactTable,
   VisibilityState,
-  OnChangeFn,
 } from "@tanstack/react-table";
 
 import {
@@ -22,7 +21,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   columnVisibility?: VisibilityState;
-  onColumnVisibilityChange?: OnChangeFn<VisibilityState>;
+  onColumnVisibilityChange?: (visibility: VisibilityState) => void;
 }
 
 export function DataTable<TData, TValue>({
