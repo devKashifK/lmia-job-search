@@ -66,28 +66,30 @@ const companyGroups = [
 
 export default function Company() {
   const router = useRouter();
-  const { setFilterPanelConfig , setDataConfig } = useTableStore();
+  const { setFilterPanelConfig, setDataConfig } = useTableStore();
   const handleViewDetails = (company: string) => {
-    router.push(`/company/${company}`);
+    router.push(`/company/${encodeURIComponent(company)}`);
     setFilterPanelConfig({
       column: "operating_name",
       table: "hot_leads_new",
       keyword: company,
       type: "hot_leads",
-      method : "query"
+      method: "query",
     });
-    setDataConfig ({
-      type : "hot_leads",
-  table : "hot_leads_new",
-  columns :JSON.stringify([{
-    "operating_name" : company
-  }]),
-  keyword : company,
-  method : "query",
-  year: "",
-  page : 1,
-  pageSize : 100
-    })
+    setDataConfig({
+      type: "hot_leads",
+      table: "hot_leads_new",
+      columns: JSON.stringify([
+        {
+          operating_name: company,
+        },
+      ]),
+      keyword: company,
+      method: "query",
+      year: "",
+      page: 1,
+      pageSize: 100,
+    });
   };
 
   return (
