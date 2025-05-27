@@ -49,8 +49,7 @@ export default function Newfilterpanel() {
 
 const FilterAttributes = ({ column }) => {
   const { data, isLoading, error } = useFilterColumnAttributes(column);
-  const { updateFilter, filters, clearFilter, dataConfig, setDataConfig } =
-    useTableStore();
+  const { updateFilter, filters, dataConfig, setDataConfig } = useTableStore();
   const [searchQuery, setSearchQuery] = React.useState("");
 
   const filteredData = React.useMemo(() => {

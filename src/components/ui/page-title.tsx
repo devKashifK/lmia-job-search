@@ -1,4 +1,7 @@
+import { useTableStore } from "@/context/store";
+import { AttributeName } from "@/helpers/attribute";
 import React from "react";
+import { Badge } from "./badge";
 
 interface PageTitleProps {
   title: string;
@@ -13,11 +16,15 @@ export default function PageTitle({
   showVerified = true,
   className = "",
 }: PageTitleProps) {
+  const { dataConfig } = useTableStore();
   return (
     <div className={`flex flex-col gap-2 mb-8 ${className}`}>
       <div className="flex items-center gap-3">
         <div className="w-1 h-6 bg-brand-600 rounded-full"></div>
         <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+        <Badge variant="outline">
+          <AttributeName name={dataConfig?.type} />
+        </Badge>
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-500">
         {count !== undefined && (
