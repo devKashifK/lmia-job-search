@@ -29,7 +29,6 @@ import {
   applyDataConfig,
   applyFilterPanelConfig,
 } from "@/components/ui/dynamic-data-view";
-import { group } from "console";
 
 export default function Page() {
   const [input, setInput] = useState("");

@@ -12,19 +12,13 @@ import {
   PowerSquare,
   Map,
   AreaChart,
-  ChevronDown,
-  ChevronUp,
-  SlidersHorizontal,
-  ChevronLeft,
   ChevronRight,
 } from "lucide-react";
 import FilterPanel from "@/components/filters/filter-panel";
-import { AnimatePresence, motion } from "framer-motion";
-import DynamicChart from "@/components/charts/chart";
 import { DataTable } from "@/components/ui/custom-table";
 import { SearchEngineSkeleton } from "@/components/search-components.tsx/search-engine-skeleton";
 import { cn } from "@/lib/utils";
-import { useData } from "@/components/ui/dynamic-data-view";
+import { motion } from "framer-motion";
 
 const hotLeadsColumns = [
   {
@@ -167,8 +161,6 @@ export default function SearchEngine({
     showFilterPanel,
   } = useTableStore();
   const [isChartsExpanded, setIsChartsExpanded] = useState(false);
-
-  const { data : dummyData, isLoading : dummyLoading } = useData();
 
   useEffect(() => {
     if (keywords) {
