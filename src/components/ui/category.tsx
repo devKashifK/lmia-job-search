@@ -91,7 +91,30 @@ export default function Category({ type }: { type: string }) {
                 `/search/hot-leads/${encodeURIComponent(category.noc_priority)}`
               );
             } else if (type === "lmia") {
-              toast.error("Not implemented");
+              setDataConfig({
+                type: "lmia",
+                table: "lmia",
+                columns: JSON.stringify([
+                  {
+                    priority_occupation: category.noc_priority,
+                  },
+                ]),
+                keyword: category.noc_priority,
+                method: "query",
+                page: 1,
+                pageSize: 100,
+              });
+
+              setFilterPanelConfig({
+                column: "priority_occupation",
+                table: "lmia",
+                keyword: category.noc_priority,
+                type: "lmia",
+                method: "query",
+              });
+              router.push(
+                `/search/lmia/${encodeURIComponent(category.noc_priority)}`
+              );
             }
           }}
           key={category.noc_priority}

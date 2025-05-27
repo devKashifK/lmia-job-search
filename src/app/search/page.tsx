@@ -322,13 +322,22 @@ export default function Page() {
   };
 
   // Updated trending searches - added Cook, removed Remote Positions
-  const trendingSearches = [
-    "Software Engineer",
-    "Cook",
-    "Marketing Manager",
-    "Data Analyst",
-    "Healthcare",
-  ];
+  const trendingSearches =
+    searchType === "hot_leads"
+      ? [
+          "Bookkeeper",
+          "Cook",
+          "Kitchen Helper",
+          "Truck Driver",
+          "Carpenter",
+          "Baker",
+        ]
+      : [
+          "Food Service Supervisors",
+          "Cooks",
+          "Retail Sales Supervisors",
+          "Transport Truck Drivers",
+        ];
 
   return (
     <div className="bg-gradient-to-b from-brand-50 to-white min-h-screen">

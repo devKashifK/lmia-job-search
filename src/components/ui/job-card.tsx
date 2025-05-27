@@ -187,7 +187,7 @@ export default function JobCard({
               <TooltipProvider delayDuration={50}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="line-clamp-2">{jobTitle || "-"}</div>
+                    <div className="line-clamp-1">{jobTitle || "-"}</div>
                   </TooltipTrigger>
                   <TooltipContent
                     side="top"
