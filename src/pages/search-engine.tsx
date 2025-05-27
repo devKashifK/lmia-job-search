@@ -24,6 +24,7 @@ import DynamicChart from "@/components/charts/chart";
 import { DataTable } from "@/components/ui/custom-table";
 import { SearchEngineSkeleton } from "@/components/search-components.tsx/search-engine-skeleton";
 import { cn } from "@/lib/utils";
+import { useData } from "@/components/ui/dynamic-data-view";
 
 const hotLeadsColumns = [
   {
@@ -166,6 +167,8 @@ export default function SearchEngine({
     showFilterPanel,
   } = useTableStore();
   const [isChartsExpanded, setIsChartsExpanded] = useState(false);
+
+  const { data : dummyData, isLoading : dummyLoading } = useData();
 
   useEffect(() => {
     if (keywords) {

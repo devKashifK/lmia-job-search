@@ -24,6 +24,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Category from "@/components/ui/category";
+import { useTableStore } from "@/context/store";
+import {
+  applyDataConfig,
+  applyFilterPanelConfig,
+} from "@/components/ui/dynamic-data-view";
+import { group } from "console";
 
 export default function Page() {
   const [input, setInput] = useState("");
@@ -40,6 +46,7 @@ export default function Page() {
   const navigate = useRouter();
   const { toast } = useToast();
   const { session } = useSession();
+  const { setFilterPanelConfig, setDataConfig } = useTableStore();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -97,27 +104,41 @@ export default function Page() {
   const handleSuggestionClick = async (suggestion: string) => {
     if (!session?.session) {
       if (searchType === "hot_leads") {
+        applyDataConfig(
+          searchType,
+          "hot_leads_new",
+          suggestion,
+          "rpc",
+          setDataConfig
+        );
+
+        applyFilterPanelConfig(
+          "job_title",
+          searchType,
+          "hot_leads_new",
+          suggestion,
+          "rpc",
+          setFilterPanelConfig
+        );
         navigate.push(`/search/hot-leads/${encodeURIComponent(suggestion)}`);
       } else if (searchType === "lmia") {
+        applyDataConfig(searchType, "lmia", suggestion, "rpc", setDataConfig);
+
+        applyFilterPanelConfig(
+          "job_title",
+          searchType,
+          "lmia",
+          suggestion,
+          "rpc",
+          setFilterPanelConfig
+        );
+
         navigate.push(`/search/lmia/${encodeURIComponent(suggestion)}`);
       }
       return;
     }
     setInput(suggestion);
     setShowSuggestions(false);
-    try {
-      const hasCredits = await checkCredits();
-      if (!hasCredits) return;
-
-      await updateCreditsAndSearch(suggestion);
-      if (searchType === "hot_leads") {
-        navigate.push(`/search/hot-leads/${encodeURIComponent(suggestion)}`);
-      } else if (searchType === "lmia") {
-        navigate.push(`/search/lmia/${encodeURIComponent(suggestion)}`);
-      }
-    } finally {
-      setIsChecking(false);
-    }
   };
 
   const checkCredits = async () => {
@@ -191,8 +212,36 @@ export default function Page() {
 
       await updateCreditsAndSearch(input);
       if (searchType === "hot_leads") {
+        applyDataConfig(
+          searchType,
+          "hot_leads_new",
+          input,
+          "rpc",
+          setDataConfig
+        );
+
+        applyFilterPanelConfig(
+          "job_title",
+          searchType,
+          "hot_leads_new",
+          input,
+          "rpc",
+          setFilterPanelConfig
+        );
+
         navigate.push(`/search/hot-leads/${encodeURIComponent(input)}`);
       } else if (searchType === "lmia") {
+        applyDataConfig(searchType, "lmia", input, "rpc", setDataConfig);
+
+        applyFilterPanelConfig(
+          "job_title",
+          searchType,
+          "lmia",
+          input,
+          "rpc",
+          setFilterPanelConfig
+        );
+
         navigate.push(`/search/lmia/${encodeURIComponent(input)}`);
       }
     } finally {
@@ -213,8 +262,52 @@ export default function Page() {
 
       await updateCreditsAndSearch(term);
       if (searchType === "hot_leads") {
+        setDataConfig({
+          type: "hot_leads",
+          table: "hot_leads_new",
+          columns: JSON.stringify([
+            {
+              job_title: term,
+            },
+          ]),
+          keyword: term,
+          method: "query",
+          year: "",
+          page: 1,
+          pageSize: 100,
+        });
+
+        setFilterPanelConfig({
+          column: "job_title",
+          table: "hot_leads_new",
+          keyword: term,
+          type: "hot_leads",
+          method: "query",
+        });
+
         navigate.push(`/search/hot-leads/${encodeURIComponent(term)}`);
       } else if (searchType === "lmia") {
+        setDataConfig({
+          type: "lmia",
+          table: "lmia",
+          columns: JSON.stringify([
+            {
+              job_title: term,
+            },
+          ]),
+          keyword: term,
+          method: "query",
+          year: "",
+          page: 1,
+          pageSize: 100,
+        });
+        setFilterPanelConfig({
+          column: "job_title",
+          table: "lmia",
+          keyword: term,
+          type: "lmia",
+          method: "query",
+        });
         navigate.push(`/search/lmia/${encodeURIComponent(term)}`);
       }
     } finally {
@@ -440,7 +533,7 @@ export default function Page() {
                   </div>
                 </motion.div>
               </div>
-              <Category />
+              <Category type={searchType} />
             </div>
           </div>
         </div>

@@ -157,6 +157,7 @@ export default function PopularProfile() {
                             table: "hot_leads_new",
                             keyword: group.job_title,
                             type: "hot_leads",
+                            method : "query"
                           });
                           setDataConfig ({
                             type : "hot_leads",

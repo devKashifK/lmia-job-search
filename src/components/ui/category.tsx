@@ -8,7 +8,9 @@ import {
   Store,
   ChevronRight,
 } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTableStore } from "@/context/store";
+import { toast } from "sonner";
 
 const categories = [
   {
@@ -55,12 +57,43 @@ const categories = [
   },
 ];
 
-export default function Category() {
+export default function Category({ type }: { type: string }) {
+  const router = useRouter();
+  const { setDataConfig, setFilterPanelConfig } = useTableStore();
   return (
     <div className="flex flex-wrap gap-4 max-w-7xl mx-auto justify-center items-center p-4">
       {categories.map((category) => (
-        <Link
-          href={`/jobs?category=${category.noc_priority}`}
+        <div
+          onClick={() => {
+            if (type === "hot_leads") {
+              setDataConfig({
+                type: "hot_leads",
+                table: "hot_leads_new",
+                columns: JSON.stringify([
+                  {
+                    noc_priority: category.noc_priority,
+                  },
+                ]),
+                keyword: category.noc_priority,
+                method: "query",
+                page: 1,
+                pageSize: 100,
+              });
+
+              setFilterPanelConfig({
+                column: "noc_priority",
+                table: "hot_leads_new",
+                keyword: category.noc_priority,
+                type: "hot_leads",
+                method: "query",
+              });
+              router.push(
+                `/search/hot-leads/${encodeURIComponent(category.noc_priority)}`
+              );
+            } else if (type === "lmia") {
+              toast.error("Not implemented");
+            }
+          }}
           key={category.noc_priority}
           className="min-w-[150px] max-w-[240px] w-full"
         >
@@ -80,7 +113,7 @@ export default function Category() {
             </span>
             <ChevronRight className="h-4 w-4 text-zinc-400" />
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   );

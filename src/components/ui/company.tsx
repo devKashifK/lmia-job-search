@@ -74,6 +74,7 @@ export default function Company() {
       table: "hot_leads_new",
       keyword: company,
       type: "hot_leads",
+      method : "query"
     });
     setDataConfig ({
       type : "hot_leads",

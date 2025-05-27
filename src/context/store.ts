@@ -146,6 +146,8 @@ export const useTableStore = create<TableState>((set, get) => ({
           term: keywords,
         });
 
+
+        console.log(result.length , "checkResult");
         if (error) {
           console.error("Error searching:", error);
           throw error;
@@ -165,6 +167,9 @@ export const useTableStore = create<TableState>((set, get) => ({
             term: keywords,
           }
         );
+
+        console.log(result.length , "checkResult");
+
 
         if (error) {
           console.error("Error searching:", error);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export function useMinimumLoading(isLoading: boolean, minimumTime = 1000) {
+export function useMinimumLoading(isLoading: boolean, minimumTime = 2000) {
   const [showLoader, setShowLoader] = useState(false);
   const [loadingStartTime, setLoadingStartTime] = useState<number | null>(null);
 

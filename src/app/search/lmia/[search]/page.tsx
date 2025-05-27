@@ -1,5 +1,7 @@
 import React from "react";
-import Search from "./search-engine";
+import Navbar from "@/app/nabvar";
+import DynamicDataView from "@/components/ui/dynamic-data-view";
+import Footer from "@/pages/homepage/footer";
 
 export default async function Engine({
   params,
@@ -8,5 +10,13 @@ export default async function Engine({
 }) {
   const searchKey = (await params).search;
 
-  return <Search searchKey={searchKey} />;
+  return (
+    <>
+      <Navbar className="border-b border-brand-200 pb-4" />
+      <div className="mt-14">
+        <DynamicDataView title={decodeURIComponent(searchKey)} />
+      </div>
+      <Footer />
+    </>
+  );
 }
