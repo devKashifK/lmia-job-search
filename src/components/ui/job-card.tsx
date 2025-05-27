@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/tooltip";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { Badge } from "@/components/ui/badge";
-import { LMIA } from "@/components/filters/column-def";
 
 const BG_COLORS = [
   "bg-orange-100",
@@ -35,6 +34,24 @@ const BG_COLORS = [
   "bg-zinc-100",
   "bg-red-100",
   "bg-brand-100",
+  "bg-brand-200",
+  "bg-teal-200",
+  "bg-red-200",
+  "bg-indigo-200",
+  "bg-lime-200",
+  "bg-cyan-200",
+  "bg-fuchsia-200",
+  "bg-rose-200",
+  "bg-violet-200",
+  "bg-amber-200",
+  "bg-emerald-200",
+  "bg-sky-200",
+  "bg-slate-200",
+  "bg-stone-200",
+  "bg-gray-200",
+  "bg-zinc-200",
+  "bg-red-200",
+  "bg-brand-200",
 ];
 
 interface JobCardProps {
@@ -51,7 +68,7 @@ interface JobCardProps {
   datePosted?: string;
   onKnowMore: () => void;
   salary?: string;
-  type?: 'lmia' | 'hotLeads';
+  type?: "lmia" | "hotLeads";
   // Additional LMIA specific fields
   program?: string;
   lmiaYear?: string;
@@ -74,7 +91,7 @@ export default function JobCard({
   datePosted,
   onKnowMore,
   salary,
-  type = 'hotLeads',
+  type = "hotLeads",
   program,
   lmiaYear,
   priorityOccupation,
@@ -82,19 +99,19 @@ export default function JobCard({
   territory,
 }: JobCardProps) {
   // Collect tags based on type
-  const tags = type === 'lmia' 
-    ? [
-        program,
-        priorityOccupation,
-        noc && `NOC: ${noc}`,
-        approvedPositions && `Positions: ${approvedPositions}`,
-        lmiaYear
-      ].filter(Boolean)
-    : [
-        employerType,
-        jobStatus,
-        noc && `NOC: ${noc}`
-      ].filter(Boolean);
+  const tags =
+    type === "lmia"
+      ? [
+          `Program: ${program}`,
+          `Priority Occupation: ${priorityOccupation}`,
+          `NOC: ${noc}`,
+          `Positions: ${approvedPositions}`,
+        ].filter(Boolean)
+      : [
+          `Employer Type: ${employerType}`,
+          `Job Status: ${jobStatus}`,
+          `NOC: ${noc}`,
+        ].filter(Boolean);
 
   // Pick a random color for the top section, stable for this card instance
   const randomBg = useMemo(
@@ -103,9 +120,10 @@ export default function JobCard({
   );
 
   // Get location display based on type
-  const location = type === 'lmia'
-    ? [city, territory].filter(Boolean).join(", ")
-    : [city, state].filter(Boolean).join(", ");
+  const location =
+    type === "lmia"
+      ? [city, territory].filter(Boolean).join(", ")
+      : [city, state].filter(Boolean).join(", ");
 
   return (
     <div className="rounded-2xl shadow-lg w-full max-w-md bg-transparent px-2 py-2 border border-gray-200">
@@ -120,7 +138,9 @@ export default function JobCard({
               {datePosted}
             </span>
           ) : (
-            <span />
+            <span className="bg-white text-gray-700 text-xs px-3 py-1 rounded-full shadow-sm font-medium">
+              {lmiaYear}
+            </span>
           )}
           <TooltipProvider>
             <Tooltip delayDuration={50}>
@@ -147,11 +167,37 @@ export default function JobCard({
         {/* Employer, Job Title, Logo */}
         <div className="flex items-start justify-between mb-2">
           <div>
-            <div className="text-xs text-gray-700 font-medium mb-1">
-              {employerName || "-"}
+            <div className="text-xs text-gray-700 font-medium mb-1 line-clamp-1">
+              <TooltipProvider delayDuration={50}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="line-clamp-1">{employerName || "-"}</div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    align="end"
+                    className="max-w-xs bg-black"
+                  >
+                    {employerName || "-"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
-            <div className="text-xl font-bold text-gray-900 leading-tight mb-1">
-              {jobTitle || "-"}
+            <div className="text-xl font-bold text-gray-900 leading-tight mb-1 line-clamp-1">
+              <TooltipProvider delayDuration={50}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="line-clamp-2">{jobTitle || "-"}</div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    align="end"
+                    className="max-w-xs bg-black"
+                  >
+                    {jobTitle || "-"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
           {/* <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 border-2 border-gray-200 shadow ml-2 overflow-hidden">
