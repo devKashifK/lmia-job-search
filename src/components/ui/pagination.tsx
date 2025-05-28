@@ -4,45 +4,38 @@ import React from "react";
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
   className?: string;
 }
 
 export default function Pagination({
   currentPage,
   totalPages,
-  onPageChange,
   className = "",
 }: PaginationProps) {
+  const { dataConfig, setDataConfig } = useTableStore();
 
-  const {dataConfig , setDataConfig} = useTableStore()
+  console.log("dataConfig", dataConfig);
+
   const handlePageChange = (page: number) => {
-    onPageChange(page);
-
     setDataConfig({
-  ...(dataConfig || {}),
-  page : page,
-});
+      ...(dataConfig || {}),
+      page: page,
+    });
     // Use setTimeout to ensure the scroll happens after the page update
     setTimeout(() => {
       window.scrollTo({
         top: 0,
-        behavior: "instant", // Use instant scroll for better reliability
+        behavior: "instant",
       });
     }, 100);
   };
 
-
-  const handlePagination = (newPage : number) => {
-    setDataConfig(prevConfig => ({
-      ...(prevConfig || {}), 
-      page: newPage,         
-    } ))
-  }
   const renderPageNumbers = () => {
     const pages = [];
     let start = 1;
     let end = totalPages;
+
+    // Show maximum 7 pages at a time
     if (totalPages > 7) {
       if (currentPage <= 4) {
         end = 7;
@@ -141,7 +134,6 @@ export default function Pagination({
         <button
           onClick={() =>
             handlePageChange(Math.min(totalPages, currentPage + 1))
-            
           }
           disabled={currentPage === totalPages || totalPages === 0}
           className="p-1.5 rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"

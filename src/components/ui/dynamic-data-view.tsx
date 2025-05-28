@@ -192,48 +192,10 @@ export const useData = () => {
   });
 };
 export default function DynamicDataView({ title }: DynamicDataViewProps) {
-  const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
   const [selectedJob, setSelectedJob] = useState<LMIA | null>(null);
   const [sortBy, setSortBy] = useState("latest");
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
-
-  const { dataConfig, setDataConfig } = useTableStore();
-  const type: DataType = isValidType(dataConfig?.type)
-    ? dataConfig.type
-    : "hotLeads";
-  const columns = type === "lmia" ? lmiaColumns : hotLeadsColumns;
-  const pageSize = dataConfig?.pageSize
-    ? parseInt(dataConfig.pageSize as string)
-    : 60;
-  const currentPage = dataConfig?.page
-    ? parseInt(dataConfig.page as string)
-    : 1;
-
-  // Create initial column visibility state dynamically
-  const initialColumnVisibility = columns.reduce((acc, column) => {
-    if (typeof column.accessorKey === "string") {
-      acc[column.accessorKey] = true;
-    }
-    return acc;
-  }, {} as VisibilityState);
-
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    initialColumnVisibility
-  );
-  const { data, error, isLoading } = useData();
-  const showLoader = useMinimumLoading(isLoading);
-
-  const handlePageChange = (page: number) => {
-    setDataConfig({
-      ...dataConfig,
-      page: page.toString(),
-    });
-  };
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
 
   const sortOptions: SortOption[] = [
     { label: "Latest", value: "latest" },
@@ -241,82 +203,23 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
     { label: "Job Title", value: "title" },
   ];
 
-  const totalPages = Math.ceil((data?.count || 0) / pageSize);
-
-  const handleColumnVisibilityChange: OnChangeFn<VisibilityState> = (
-    updater
-  ) => {
-    setColumnVisibility(updater);
-  };
-
   return (
-    <div className="container mx-auto px-20 py-8">
-      <div className="p-4">
+    <div className="container mx-auto px-24 py-8">
+      <div className="py-4">
         <div className="flex justify-between items-center mb-6">
-          <PageTitle title={title} count={data?.count || 0} />
+          <PageTitle title={title} />
           <div className="flex items-center space-x-3">
-            <div className="flex items-center border rounded-md bg-background">
-              <Button
-                variant={viewMode === "grid" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-                className="h-9 px-3 rounded-r-none"
-              >
-                <LayoutGrid className="h-4 w-4 mr-2" />
-                Grid
-              </Button>
-              <div className="h-9 border-l" />
-              <Button
-                variant={viewMode === "table" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("table")}
-                className="h-9 px-3 rounded-l-none"
-              >
-                <Table2 className="h-4 w-4 mr-2" />
-                Table
-              </Button>
-            </div>
+            <DataPanelViewMode />
 
-            {viewMode === "table" && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9">
-                    <Settings2 className="h-4 w-4 mr-2" />
-                    Columns
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[200px]">
-                  {columns.map((column) => {
-                    const key = column.accessorKey as keyof LMIA;
-                    const headerContent =
-                      typeof column.header === "string" ? column.header : key;
-                    return key ? (
-                      <DropdownMenuCheckboxItem
-                        key={key}
-                        className="capitalize"
-                        checked={columnVisibility[key] ?? true}
-                        onCheckedChange={(value) =>
-                          handleColumnVisibilityChange((prev) => ({
-                            ...prev,
-                            [key]: value,
-                          }))
-                        }
-                      >
-                        {headerContent}
-                      </DropdownMenuCheckboxItem>
-                    ) : null;
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            {/* <DataPanelColumns /> */}
 
-            <div className="flex-shrink-0">
+            {/* <div className="flex-shrink-0">
               <SortButton
                 options={sortOptions}
                 currentSort={sortBy}
                 onSortChange={setSortBy}
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -324,89 +227,12 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
         <div className="w-1/5">
           <Newfilterpanel />
         </div>
-        <div className="w-4/5">
-          <div>
-            {showLoader ? (
-              <div className="fixed w-screen h-screen inset-0 flex justify-center items-center bg-white z-50">
-                <Loader />
-              </div>
-            ) : (
-              <div>
-                {data?.data && data.data.length > 0 ? (
-                  viewMode === "grid" ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {data.data.map((item: LMIA, idx: number) => {
-                        const logoIcons = [Building2, Briefcase, Utensils];
-                        const LogoIcon = logoIcons[idx % logoIcons.length];
-                        const saved = savedSet.has(idx);
-                        return (
-                          <JobCard
-                            key={item.id || idx}
-                            logoIcon={LogoIcon}
-                            saved={saved}
-                            onToggleSaved={() => {
-                              const next = new Set(savedSet);
-                              if (next.has(idx)) next.delete(idx);
-                              else next.add(idx);
-                              setSavedSet(next);
-                            }}
-                            employerName={item.operating_name}
-                            jobTitle={item.job_title || item.occupation_title}
-                            city={item.city}
-                            state={item.state}
-                            noc={item.noc_code || item["2021_noc"]}
-                            jobStatus={item.job_status}
-                            employerType={item.employer_type}
-                            datePosted={item.date_of_job_posting}
-                            onKnowMore={() => {
-                              setSelectedJob(item);
-                              setShowPremiumDialog(true);
-                            }}
-                            type={type}
-                            program={type === "lmia" ? item.program : undefined}
-                            lmiaYear={
-                              type === "lmia" ? item.lmia_year : undefined
-                            }
-                            priorityOccupation={
-                              type === "lmia"
-                                ? item.priority_occupation
-                                : undefined
-                            }
-                            approvedPositions={
-                              type === "lmia"
-                                ? item.approved_positions
-                                : undefined
-                            }
-                            territory={
-                              type === "lmia" ? item.territory : undefined
-                            }
-                          />
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <DataTable
-                      columns={columns}
-                      data={data.data}
-                      columnVisibility={columnVisibility}
-                      onColumnVisibilityChange={handleColumnVisibilityChange}
-                    />
-                  )
-                ) : (
-                  <div className="text-center py-8">No results found</div>
-                )}
-              </div>
-            )}
-          </div>
-          {/* Pagination Controls */}
-          <div className="mt-8 py-4">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        </div>
+        <DataPanel
+          setSelectedJob={setSelectedJob}
+          setShowPremiumDialog={setShowPremiumDialog}
+          savedSet={savedSet}
+          setSavedSet={setSavedSet}
+        />
       </div>
       <PremiumDialog
         open={showPremiumDialog}
@@ -458,3 +284,192 @@ export function applyFilterPanelConfig(
     method: method,
   });
 }
+
+export function DataPanel({
+  savedSet,
+  setSavedSet,
+  setSelectedJob,
+  setShowPremiumDialog,
+}: {
+  setSelectedJob: (job: LMIA) => void;
+  setShowPremiumDialog: (show: boolean) => void;
+  savedSet: Set<number>;
+  setSavedSet: (set: Set<number>) => void;
+}) {
+  const { data, error, isLoading } = useData();
+  const { dataConfig } = useTableStore();
+  const { viewMode } = useTableStore();
+
+  const columns = dataConfig.type === "lmia" ? lmiaColumns : hotLeadsColumns;
+
+  const initialColumnVisibility = columns.reduce((acc, column) => {
+    if (typeof column.accessorKey === "string") {
+      acc[column.accessorKey] = true;
+    }
+    return acc;
+  }, {} as VisibilityState);
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    initialColumnVisibility
+  );
+
+  const handleColumnVisibilityChange: OnChangeFn<VisibilityState> = (
+    updater
+  ) => {
+    setColumnVisibility(updater);
+  };
+
+  const type: DataType = isValidType(dataConfig?.type)
+    ? dataConfig.type
+    : "hotLeads";
+  const pageSize = dataConfig?.pageSize
+    ? parseInt(dataConfig.pageSize as string)
+    : 60;
+  const currentPage = dataConfig?.page
+    ? parseInt(dataConfig.page as string)
+    : 1;
+  const showLoader = useMinimumLoading(isLoading);
+  const totalPages = Math.ceil((data?.count || 0) / pageSize);
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return (
+    <div className="w-4/5">
+      <div>
+        {showLoader ? (
+          <div className="fixed w-screen h-screen inset-0 flex justify-center items-center bg-white z-50">
+            <Loader />
+          </div>
+        ) : (
+          <div>
+            {data?.data && data.data.length > 0 ? (
+              viewMode === "grid" ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {data.data.map((item: LMIA, idx: number) => {
+                    const logoIcons = [Building2, Briefcase, Utensils];
+                    const LogoIcon = logoIcons[idx % logoIcons.length];
+                    const saved = savedSet.has(idx);
+                    return (
+                      <JobCard
+                        key={item.id || idx}
+                        logoIcon={LogoIcon}
+                        saved={saved}
+                        onToggleSaved={() => {
+                          const next = new Set(savedSet);
+                          if (next.has(idx)) next.delete(idx);
+                          else next.add(idx);
+                          setSavedSet(next);
+                        }}
+                        employerName={item.operating_name}
+                        jobTitle={item.job_title || item.occupation_title}
+                        city={item.city}
+                        state={item.state}
+                        noc={item.noc_code || item["2021_noc"]}
+                        jobStatus={item.job_status}
+                        employerType={item.employer_type}
+                        datePosted={item.date_of_job_posting}
+                        onKnowMore={() => {
+                          setSelectedJob(item);
+                          setShowPremiumDialog(true);
+                        }}
+                        type={type}
+                        program={type === "lmia" ? item.program : undefined}
+                        lmiaYear={type === "lmia" ? item.lmia_year : undefined}
+                        priorityOccupation={
+                          type === "lmia" ? item.priority_occupation : undefined
+                        }
+                        approvedPositions={
+                          type === "lmia" ? item.approved_positions : undefined
+                        }
+                        territory={type === "lmia" ? item.territory : undefined}
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <DataTable
+                  columns={columns}
+                  data={data.data}
+                  columnVisibility={columnVisibility}
+                  onColumnVisibilityChange={handleColumnVisibilityChange}
+                />
+              )
+            ) : (
+              <div className="text-center py-8">No results found</div>
+            )}
+          </div>
+        )}
+      </div>
+      {/* Pagination Controls */}
+      <div className="mt-8 py-4">
+        <Pagination currentPage={currentPage} totalPages={totalPages} />
+      </div>
+    </div>
+  );
+}
+
+const DataPanelViewMode = () => {
+  const { viewMode, setViewMode } = useTableStore();
+  return (
+    <div className="flex items-center border rounded-md bg-background">
+      <Button
+        variant={viewMode === "grid" ? "default" : "ghost"}
+        size="sm"
+        onClick={() => setViewMode("grid")}
+        className="h-9 px-3 rounded-r-none"
+      >
+        <LayoutGrid className="h-4 w-4 mr-2" />
+        Grid
+      </Button>
+      <div className="h-9 border-l" />
+      <Button
+        variant={viewMode === "table" ? "default" : "ghost"}
+        size="sm"
+        onClick={() => setViewMode("table")}
+        className="h-9 px-3 rounded-l-none"
+      >
+        <Table2 className="h-4 w-4 mr-2" />
+        Table
+      </Button>
+    </div>
+  );
+};
+
+// const DataPanelColumns = () => {
+//   return (
+//     viewMode === "table" && (
+//       <DropdownMenu>
+//         <DropdownMenuTrigger asChild>
+//           <Button variant="outline" size="sm" className="h-9">
+//             <Settings2 className="h-4 w-4 mr-2" />
+//             Columns
+//           </Button>
+//         </DropdownMenuTrigger>
+//         <DropdownMenuContent align="end" className="w-[200px]">
+//           {columns.map((column) => {
+//             const key = column.accessorKey as keyof LMIA;
+//             const headerContent =
+//               typeof column.header === "string" ? column.header : key;
+//             return key ? (
+//               <DropdownMenuCheckboxItem
+//                 key={key}
+//                 className="capitalize"
+//                 checked={columnVisibility[key] ?? true}
+//                 onCheckedChange={(value) =>
+//                   handleColumnVisibilityChange((prev) => ({
+//                     ...prev,
+//                     [key]: value,
+//                   }))
+//                 }
+//               >
+//                 {headerContent}
+//               </DropdownMenuCheckboxItem>
+//             ) : null;
+//           })}
+//         </DropdownMenuContent>
+//       </DropdownMenu>
+//     )
+//   );
+// };

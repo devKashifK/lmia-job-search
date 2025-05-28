@@ -2,6 +2,7 @@ import { useTableStore } from "@/context/store";
 import { AttributeName } from "@/helpers/attribute";
 import React from "react";
 import { Badge } from "./badge";
+import { useData } from "./dynamic-data-view";
 
 interface PageTitleProps {
   title: string;
@@ -12,11 +13,12 @@ interface PageTitleProps {
 
 export default function PageTitle({
   title,
-  count,
   showVerified = true,
   className = "",
 }: PageTitleProps) {
   const { dataConfig } = useTableStore();
+  const { data } = useData();
+  const count = data?.count;
   return (
     <div className={`flex flex-col gap-2 mb-8 ${className}`}>
       <div className="flex items-center gap-3">

@@ -10,8 +10,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { selectProjectionHotLeads } from "./dynamic-data-view";
 import { selectProjectionLMIA } from "./dynamic-data-view";
 
+interface FilterConfig {
+  [key: string]: string[];
+}
+
 export default function Newfilterpanel() {
   const columns = useFilterPanelColumns();
+  console.log("columnsed", columns);
   return (
     <div className="border-r-2 border-brand-200 pr-8 flex flex-col gap-4">
       <div className="flex justify-between items-center">
@@ -47,10 +52,32 @@ export default function Newfilterpanel() {
   );
 }
 
-const FilterAttributes = ({ column }) => {
+const FilterAttributes = ({ column }: { column: string }) => {
   const { data, isLoading, error } = useFilterColumnAttributes(column);
-  const { updateFilter, filters, dataConfig, setDataConfig } = useTableStore();
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [localFilters, setLocalFilters] = React.useState(new Set<string>());
+
+  // Initialize local filters from dataConfig
+  React.useEffect(() => {
+    const { dataConfig } = useTableStore.getState();
+    let initialSelections = new Set<string>();
+    if (dataConfig.columns && typeof dataConfig.columns === "string") {
+      try {
+        const parsedGlobalFilters = JSON.parse(
+          dataConfig.columns
+        ) as FilterConfig[];
+        const foundFilterConfig = parsedGlobalFilters.find((f) =>
+          f.hasOwnProperty(column)
+        );
+        if (foundFilterConfig) {
+          initialSelections = new Set(foundFilterConfig[column]);
+        }
+      } catch (e) {
+        console.error(`Failed to parse initial columns for ${column}:`, e);
+      }
+    }
+    setLocalFilters(initialSelections);
+  }, [column]);
 
   const filteredData = React.useMemo(() => {
     if (!data) return [];
@@ -60,11 +87,21 @@ const FilterAttributes = ({ column }) => {
   }, [data, searchQuery]);
 
   const handleFilterUpdate = (accessorKey: string, value: string) => {
-    // Toggle the filter value
-    updateFilter(accessorKey, value);
+    const { dataConfig, setDataConfig } = useTableStore.getState();
 
+    // Update local filters first
+    setLocalFilters((prevFilters) => {
+      const newFilters = new Set(prevFilters);
+      if (newFilters.has(value)) {
+        newFilters.delete(value);
+      } else {
+        newFilters.add(value);
+      }
+      return newFilters;
+    });
+
+    // Then update dataConfig
     let previousFilters: Record<string, string[]>[] = [];
-
     if (dataConfig.columns && typeof dataConfig.columns === "string") {
       try {
         previousFilters = JSON.parse(dataConfig.columns);
@@ -74,23 +111,19 @@ const FilterAttributes = ({ column }) => {
     }
 
     let found = false;
-
     const updatedFilters = previousFilters
       .map((filter) => {
         if (filter.hasOwnProperty(accessorKey)) {
           found = true;
-
           const existingValues = filter[accessorKey] || [];
           let updatedValues;
 
-          // If value exists, remove it (deselect). If it doesn't exist, add it (select)
           if (existingValues.includes(value)) {
             updatedValues = existingValues.filter((v) => v !== value);
           } else {
             updatedValues = [...existingValues, value];
           }
 
-          // If no values left after deselection, remove the filter entirely
           if (updatedValues.length === 0) {
             return null;
           }
@@ -99,17 +132,17 @@ const FilterAttributes = ({ column }) => {
         }
         return filter;
       })
-      .filter(Boolean); // Remove null entries
+      .filter(Boolean);
 
     // If no filter existed for this accessorKey and we're selecting (not deselecting)
-    if (!found && !filters[accessorKey]?.has(value)) {
+    if (!found && !localFilters.has(value)) {
       updatedFilters.push({ [accessorKey]: [value] });
     }
 
     setDataConfig({
       ...(dataConfig || {}),
       columns: JSON.stringify(updatedFilters),
-      page: "1", // Convert to string to fix type error
+      page: "1",
     });
   };
 
@@ -157,14 +190,14 @@ const FilterAttributes = ({ column }) => {
             )}
           >
             <div className="w-3.5 h-3.5 flex-shrink-0">
-              {filters[column]?.has(value) ? (
+              {localFilters.has(value) ? (
                 <CheckCircle className="h-3.5 w-3.5 text-brand-600" />
               ) : (
                 <Circle className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity duration-200" />
               )}
             </div>
             <span className="truncate flex-1 text-black">{value}</span>
-            {filters[column]?.has(value) && (
+            {localFilters.has(value) && (
               <span className="text-[10px] text-brand-600/70 group-hover:text-brand-600">
                 selected
               </span>
@@ -177,7 +210,7 @@ const FilterAttributes = ({ column }) => {
 };
 
 const useFilterColumnAttributes = (column) => {
-  const { filterPanelConfig } = useTableStore();
+  const { filterPanelConfig } = useTableStore.getState();
 
   const {
     table,
@@ -236,7 +269,7 @@ const useFilterColumnAttributes = (column) => {
 };
 
 const useFilterPanelColumns = () => {
-  const { filterPanelConfig } = useTableStore();
+  const { filterPanelConfig } = useTableStore.getState();
 
   if (filterPanelConfig.type === "hot_leads") {
     return hotLeadsColumns;
