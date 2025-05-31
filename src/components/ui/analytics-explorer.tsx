@@ -44,6 +44,7 @@ import { Label } from "./label";
 import { Button } from "./button";
 import { useQuery } from "@tanstack/react-query";
 import ReactMarkdown from "react-markdown";
+import { useFilterColumnAttributes } from "./new-filterpanel";
 
 const TABLES = ["hot_leads_new", "lmia"];
 const METRICS = [
@@ -472,7 +473,7 @@ export default function AnalyticsExplorer({
 
                       <div className="space-y-2">
                         <Label className="text-xs text-gray-500">Value</Label>
-                        <Input
+                        {/* <Input
                           className="w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm placeholder:text-gray-400 bg-white"
                           placeholder="Enter value"
                           value={f.value}
@@ -483,6 +484,11 @@ export default function AnalyticsExplorer({
                               )
                             )
                           }
+                        /> */}
+                        <FilterBy
+                          columnName={f.column}
+                          setFilters={setFilters}
+                          index={i}
                         />
                       </div>
                     </div>
@@ -687,6 +693,41 @@ export default function AnalyticsExplorer({
     </div>
   );
 }
+
+const FilterBy = ({
+  columnName,
+  setFilters,
+  index,
+}: {
+  columnName: string;
+  setFilters: (filter: Filter) => void;
+  index: number;
+}) => {
+  const { data, isLoading, error } = useFilterColumnAttributes(columnName);
+
+  return (
+    <div>
+      <Select
+        onValueChange={(value) =>
+          setFilters((fs) =>
+            fs.map((x, j) => (j === index ? { ...x, value: value } : x))
+          )
+        }
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select field" />
+        </SelectTrigger>
+        <SelectContent>
+          {data?.map((item) => (
+            <SelectItem key={item} value={item}>
+              {item}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+};
 
 const SummaryView = ({
   table,

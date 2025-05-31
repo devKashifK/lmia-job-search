@@ -208,7 +208,7 @@ const FilterAttributes = ({ column }: { column: string }) => {
   );
 };
 
-const useFilterColumnAttributes = (column) => {
+export const useFilterColumnAttributes = (column: string) => {
   const { filterPanelConfig } = useTableStore.getState();
 
   const {
