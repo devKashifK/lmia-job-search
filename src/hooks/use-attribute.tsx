@@ -4,8 +4,6 @@ import { useMemo } from "react";
 export const useFilterAttributes = (key) => {
   const data = useTableStore((state) => state.data);
 
-  console.log(data, "CheckData");
-
   const attributes = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) {
       // Return an empty array if data is not valid or empty
@@ -24,6 +22,5 @@ export const useFilterAttributes = (key) => {
     }));
   }, [key, data]);
 
-  console.log(attributes, "CheckAttr");
   return attributes;
 };

@@ -68,6 +68,7 @@ export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
       description: "You have been logged out",
       variant: "success",
     });
+    localStorage.removeItem("brandColor");
     await db.auth.signOut();
     router.push("/");
   };

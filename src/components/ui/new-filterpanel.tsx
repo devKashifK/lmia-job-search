@@ -16,7 +16,6 @@ interface FilterConfig {
 
 export default function Newfilterpanel() {
   const columns = useFilterPanelColumns();
-  console.log("columnsed", columns);
   return (
     <div className="border-r-2 border-brand-200 pr-8 flex flex-col gap-4">
       <div className="flex justify-between items-center">

@@ -87,6 +87,7 @@ function UserMenu() {
     try {
       const { error } = await db.auth.signOut();
       if (error) throw error;
+      localStorage.removeItem("brandColor");
 
       toast({
         title: "Signed out",
@@ -274,7 +275,6 @@ function SearchActions({
 
   const exportToCSV = () => {
     if (!filteredData || filteredData.length === 0) {
-      console.log("No data to export");
       return;
     }
 

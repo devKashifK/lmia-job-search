@@ -7,7 +7,6 @@ import SearchEngine from "@/pages/search-engine";
 
 export default function Search({ searchKey }: { searchKey: string }) {
   const session = useSession();
-  console.log(session, "checkSession");
 
   if (!session.session && !session.loading) {
     return (

@@ -12,6 +12,7 @@ interface TableState {
   filterPanelConfig: Record<string, string>;
   dataConfig: Record<string, string>;
   viewMode: "grid" | "table";
+  selectedRecordID: string | null;
   updateSearchSaved: (searchId: string, saved: boolean) => Promise<void>;
 
   setShowFilterPanel: (value: boolean) => void;
@@ -26,6 +27,7 @@ interface TableState {
   setDataConfig: (config: Record<string, string>) => void;
   setFilterPanelConfig: (config: Record<string, string>) => void;
   setViewMode: (value: "grid" | "table") => void;
+  setSelectedRecordID: (id: string) => void;
 }
 
 export const useTableStore = create<TableState>((set, get) => ({
@@ -155,7 +157,6 @@ export const useTableStore = create<TableState>((set, get) => ({
           term: keywords,
         });
 
-        console.log(result.length, "checkResult");
         if (error) {
           console.error("Error searching:", error);
           throw error;
@@ -175,8 +176,6 @@ export const useTableStore = create<TableState>((set, get) => ({
             term: keywords,
           }
         );
-
-        console.log(result.length, "checkResult");
 
         if (error) {
           console.error("Error searching:", error);
@@ -209,4 +208,5 @@ export const useTableStore = create<TableState>((set, get) => ({
   },
   setFilterPanelConfig: (config) => set({ filterPanelConfig: config }),
   setDataConfig: (config) => set({ dataConfig: config }),
+  setSelectedRecordID: (id) => set({ selectedRecordID: id }),
 }));

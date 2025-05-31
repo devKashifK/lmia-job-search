@@ -1,3 +1,4 @@
+import { useSession } from "@/hooks/use-session";
 import { ColorScale } from "@/types/colors";
 
 // Convert hex to HSL
@@ -120,9 +121,15 @@ export function updateThemeColor(color: string) {
   window.dispatchEvent(new CustomEvent("themeColorUpdated", { detail: color }));
 }
 
-export function initializeThemeColor() {
-  const savedColor = localStorage.getItem("brandColor");
-  if (savedColor) {
-    updateThemeColor(savedColor);
+export function initializeThemeColor(session: any) {
+  if (session?.session?.user?.user_metadata?.brandColor) {
+    // Use the user's saved preference from their profile
+    updateThemeColor(session.session.user.user_metadata.brandColor);
+  } else {
+    // Fall back to localStorage only if no user preference exists
+    const savedColor = localStorage.getItem("brandColor");
+    if (savedColor) {
+      updateThemeColor(savedColor);
+    }
   }
 }

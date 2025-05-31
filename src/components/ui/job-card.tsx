@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { Badge } from "@/components/ui/badge";
+import { useTableStore } from "@/context/store";
 
 const BG_COLORS = [
   "bg-orange-100",
@@ -75,6 +76,7 @@ interface JobCardProps {
   priorityOccupation?: string;
   approvedPositions?: string;
   territory?: string;
+  recordID?: string;
 }
 
 export default function JobCard({
@@ -90,6 +92,7 @@ export default function JobCard({
   employerType,
   datePosted,
   onKnowMore,
+  recordID,
   salary,
   type = "hotLeads",
   program,
@@ -99,6 +102,8 @@ export default function JobCard({
   territory,
 }: JobCardProps) {
   // Collect tags based on type
+
+  const { setSelectedRecordID } = useTableStore();
   const tags =
     type === "lmia"
       ? [
@@ -126,7 +131,7 @@ export default function JobCard({
       : [city, state].filter(Boolean).join(", ");
 
   return (
-    <div className="rounded-2xl shadow-lg w-full max-w-md bg-transparent px-2 py-2 border border-gray-200">
+    <div className="rounded-2xl  w-full max-w-md bg-transparent px-2 py-2 border border-gray-200">
       {/* Top Section */}
       <div
         className={`${randomBg} rounded-2xl px-5 pt-4 pb-3 flex flex-col relative`}
@@ -244,7 +249,10 @@ export default function JobCard({
         </div>
         <button
           className="bg-black text-white px-5 py-1.5 rounded-full font-semibold text-sm shadow hover:bg-gray-800 transition-colors duration-200"
-          onClick={onKnowMore}
+          onClick={() => {
+            setSelectedRecordID(recordID);
+            onKnowMore();
+          }}
         >
           Details
         </button>

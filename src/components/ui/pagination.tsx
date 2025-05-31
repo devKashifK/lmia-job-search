@@ -14,8 +14,6 @@ export default function Pagination({
 }: PaginationProps) {
   const { dataConfig, setDataConfig } = useTableStore();
 
-  console.log("dataConfig", dataConfig);
-
   const handlePageChange = (page: number) => {
     setDataConfig({
       ...(dataConfig || {}),

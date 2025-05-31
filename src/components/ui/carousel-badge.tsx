@@ -14,7 +14,6 @@ export function CarouselBadge({
   return (
     <button
       onClick={() => {
-        console.log(`Clicked on ${province}`);
         onClick();
       }}
       className={`

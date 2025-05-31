@@ -144,10 +144,7 @@ export function Export() {
   const filteredData = useTableStore((state) => state.filteredData);
 
   const exportToCSV = () => {
-    console.log("Export clicked", filteredData);
-
     if (!filteredData || filteredData.length === 0) {
-      console.log("No data to export");
       return;
     }
 
@@ -189,8 +186,6 @@ export function Export() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-
-      console.log("Export completed");
     } catch (error) {
       console.error("Export failed:", error);
     }

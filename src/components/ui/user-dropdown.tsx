@@ -9,17 +9,16 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { User, Settings, LogOut } from "lucide-react";
 import db from "@/db";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 export default function UserDropdown({ className }: { className?: string }) {
   const { session } = useSession();
-  const router = useRouter();
   const { toast } = useToast();
 
   const handleSignOut = async () => {
     try {
+      localStorage.removeItem("brandColor");
       const { error } = await db.auth.signOut();
       if (error) {
         console.error("Sign-out error:", error.message);

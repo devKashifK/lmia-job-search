@@ -240,6 +240,7 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
         selectedColumn={
           selectedJob?.job_title || selectedJob?.occupation_title || "Job"
         }
+        selectedValue={selectedJob}
         handleSubscribe={() => setShowPremiumDialog(false)}
       />
     </div>
@@ -247,9 +248,9 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
 }
 
 export const selectProjectionLMIA =
-  "territory, program, city, lmia_year, job_title, noc_code, priority_occupation, approved_positions, operating_name";
+  "RecordID, territory, program, city, lmia_year, job_title, noc_code, priority_occupation, approved_positions, operating_name";
 export const selectProjectionHotLeads =
-  "state, city, date_of_job_posting, noc_code, noc_priority, job_title, operating_name, year, occupation_title, job_status, employer_type, 2021_noc";
+  "RecordID , state, city, date_of_job_posting, noc_code, noc_priority, job_title, operating_name, year, occupation_title, job_status, employer_type, 2021_noc";
 
 export function applyDataConfig(
   type: "lmia" | "hot_leads",
@@ -370,6 +371,7 @@ export function DataPanel({
                         jobStatus={item.job_status}
                         employerType={item.employer_type}
                         datePosted={item.date_of_job_posting}
+                        recordID={item.RecordID}
                         onKnowMore={() => {
                           setSelectedJob(item);
                           setShowPremiumDialog(true);
@@ -473,3 +475,32 @@ const DataPanelViewMode = () => {
 //     )
 //   );
 // };
+
+export const useSelectedColumnRecord = () => {
+  const { selectedRecordID, dataConfig } = useTableStore.getState();
+
+  const selectProjection =
+    dataConfig.type === "lmia"
+      ? selectProjectionLMIA
+      : selectProjectionHotLeads;
+
+  const { data, error } = useQuery({
+    queryKey: ["selectedColumnRecord", selectedRecordID, dataConfig.type],
+    queryFn: async () => {
+      const { data, error } = await db
+        .from(dataConfig.table)
+        .select(selectProjection.split(",").join(" , "))
+        .eq("RecordID", selectedRecordID)
+        .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return data;
+    },
+    enabled: !!selectedRecordID,
+  });
+
+  return { data, error };
+};
