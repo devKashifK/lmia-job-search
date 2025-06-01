@@ -176,22 +176,6 @@ export default function JobCard({
               <TooltipProvider delayDuration={50}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="line-clamp-1">{employerName || "-"}</div>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="top"
-                    align="end"
-                    className="max-w-xs bg-black"
-                  >
-                    {employerName || "-"}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <div className="text-xl font-bold text-gray-900 leading-tight mb-1 line-clamp-1">
-              <TooltipProvider delayDuration={50}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
                     <div className="line-clamp-1">{jobTitle || "-"}</div>
                   </TooltipTrigger>
                   <TooltipContent
@@ -200,6 +184,22 @@ export default function JobCard({
                     className="max-w-xs bg-black"
                   >
                     {jobTitle || "-"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+            <div className="text-xl font-bold text-gray-900 leading-tight mb-1 line-clamp-1">
+              <TooltipProvider delayDuration={50}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="line-clamp-1">{employerName || "-"}</div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="top"
+                    align="end"
+                    className="max-w-xs bg-black"
+                  >
+                    {employerName || "-"}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
