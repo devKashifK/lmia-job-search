@@ -250,7 +250,7 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
 export const selectProjectionLMIA =
   "RecordID, territory, program, city, lmia_year, job_title, noc_code, priority_occupation, approved_positions, operating_name";
 export const selectProjectionHotLeads =
-  "RecordID , state, city, date_of_job_posting, noc_code, noc_priority, job_title, operating_name, year, occupation_title, job_status, employer_type, 2021_noc";
+  "RecordID, state, city, date_of_job_posting, noc_code, noc_priority, job_title, operating_name, year, occupation_title, job_status, employer_type, 2021_noc";
 
 export function applyDataConfig(
   type: "lmia" | "hot_leads",

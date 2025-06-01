@@ -246,6 +246,7 @@ export const useFilterColumnAttributes = (column: string) => {
       } else if (method === "rpc") {
         const orClause = selectProjection
           .split(",")
+          .filter((col) => col !== "RecordID")
           .map((col) => `${col}.ilike.%${keyword}%`)
           .join(",");
 
