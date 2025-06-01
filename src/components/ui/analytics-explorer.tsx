@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -28,6 +28,8 @@ import {
   PieChart as PieChartIcon,
   LineChart as LineChartIcon,
   Settings,
+  VariableIcon,
+  AppWindow,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -39,12 +41,11 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { AttributeName } from "@/helpers/attribute";
-import { Input } from "./input";
 import { Label } from "./label";
 import { Button } from "./button";
 import { useQuery } from "@tanstack/react-query";
-import ReactMarkdown from "react-markdown";
 import { useFilterColumnAttributes } from "./new-filterpanel";
+import { BG_COLORS } from "./job-card";
 
 const TABLES = ["hot_leads_new", "lmia"];
 const METRICS = [
@@ -127,19 +128,25 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-interface UseAiSummarizeParams {
-  table: string;
-  groupCols: string[];
-  selectedMetric: string;
-  metricCol: string;
-  yearsBack: number;
-  data: ChartDataInput[];
-}
-
-interface UseAiSummarizeResult {
-  summary: string | undefined;
-  isLoading: boolean;
-  error: Error | null;
+export interface AiSummary {
+  topFive: Array<{
+    label: string;
+    value: number;
+    pctOfTotal: number;
+  }>;
+  distribution: {
+    shapeDescription: string;
+    median: number;
+    q1: number;
+    q3: number;
+  };
+  cumulativeShareTop3: number;
+  outliers: string[];
+  buckets: {
+    high: { count: number; entries: string[] };
+    mid: { count: number; entries: string[] };
+    low: { count: number; entries: string[] };
+  };
 }
 
 export function useAiSummarize({
@@ -149,17 +156,21 @@ export function useAiSummarize({
   metricCol,
   yearsBack,
   data,
-}: UseAiSummarizeParams): UseAiSummarizeResult {
-  // 1) Derive metricExpr from METRICS + metricCol
-  const metricCfg = METRICS.find((m) => m.label === selectedMetric);
-  if (!metricCfg) {
-    throw new Error(`useAiSummarize: Unknown metric "${selectedMetric}"`);
-  }
+}: {
+  table: string;
+  groupCols: string[];
+  selectedMetric: string;
+  metricCol: string;
+  yearsBack: number;
+  data: Array<{ group_keys: Record<string, string>; value: number }>;
+}) {
+  // Build the metric expression from your METRICS list:
+  const metricCfg = METRICS.find((m) => m.label === selectedMetric)!;
   const metricExpr = metricCfg.requiresCol
     ? `${metricCfg.expr}(${metricCol.trim()})`
     : metricCfg.expr;
 
-  // 2) Build a human‐readable "grouping" description
+  // Same groupingDesc logic we used in the API:
   let groupingDesc: string;
   if (groupCols.length === 0) {
     groupingDesc = "no grouping (entire table)";
@@ -171,12 +182,11 @@ export function useAiSummarize({
     groupingDesc = `grouped by ${allButLast} and ${last}`;
   }
 
-  // 3) Use React Query for data fetching
   const {
     data: summary,
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<AiSummary>({
     queryKey: [
       "ai-summarize",
       table,
@@ -185,66 +195,78 @@ export function useAiSummarize({
       yearsBack,
       JSON.stringify(data),
     ],
-    queryFn: async (): Promise<string> => {
-      let topFiveDescriptor;
-      if (groupCols.length === 1) {
-        topFiveDescriptor = `top 5 ${groupCols[0]} values`;
-      } else {
-        const combo = groupCols.join(" + ");
-        topFiveDescriptor = `top 5 combinations of (${combo})`;
-      }
-      // Build the prompt for the API
+    queryFn: async (): Promise<AiSummary> => {
       const prompt = `
-You are a data‐analysis AI. Below is an aggregation for table "${table}"
-over the last ${yearsBack} year${yearsBack > 1 ? "s" : ""}, ${groupingDesc},
-where "value" = ${metricExpr}. Each JSON entry has ${groupCols
+        You are a data‐analysis AI. Below is an aggregation for table "${table}"
+        over the last ${yearsBack} year${
+        yearsBack > 1 ? "s" : ""
+      }, ${groupingDesc},
+        where "value" = ${metricExpr}. Each JSON entry has ${groupCols
         .map((c) => `"group_keys.${c}"`)
         .join(groupCols.length > 1 ? " and " : "")} plus its numeric "value".
+        
+        Please produce a thorough, structured summary that includes:
+          1. Top 5 ${groupCols.join(
+            " + "
+          )} by ${metricExpr}, with raw counts and percentage of total.
+          2. Overall distribution shape (long‐tail, drop‐off, any clustering). 
+          3. Median, 25th percentile, and 75th percentile values of “value”.  
+          4. Cumulative share of the top 3 entries (e.g. “Top 3 account for X% of the total”).  
+          5. Any entries that deviate significantly from the pattern (“City X is unusually high/low”).  
+          6. Buckets: high (≥ 500), mid (100–499), low (< 100) – list the cities in each bucket.
+        
+        Respond with **a single JSON object** following this expanded schema:
+        
+        \`\`\`json
+        {
+          "topFive": [
+            { "label": string, "value": number, "pctOfTotal": number }
+          ],
+          "distribution": {
+            "shapeDescription": string,
+            "median": number,
+            "q1": number,
+            "q3": number
+          },
+          "cumulativeShareTop3": number,   // e.g. 0.45 means 45%
+          "outliers": string[],           // labels of any “significant deviance”
+          "buckets": {
+            "high": { "count": number, "entries": string[] },
+            "mid":  { "count": number, "entries": string[] },
+            "low":  { "count": number, "entries": string[] }
+          }
+        }
+        \`\`\`
+        
+        JSON data:
+        \`\`\`json
+        ${JSON.stringify(data, null, 2)}
+        \`\`\`
+          `.trim();
 
-Please produce a thorough, detailed summary that includes:
-  1. A listing of the ${topFiveDescriptor} by ${metricExpr}, showing each item's raw count and its percentage of the total. Provide enough context so a reader understands how you computed those percentages.
-  2. A discussion of the overall distribution shape (e.g. whether it's long‐tailed, how quickly counts drop off, any clustering). Provide concrete numbers/illustrations from the data where helpful.
-  3. Identification of any entries (single values or combined group‐keys) that deviate significantly from the general pattern, with an explanation of why they stand out ("<Entity> is unusually high/low compared to its peers").
-  4. A count of how many distinct ${groupCols.join(
-    ", "
-  )} entries fall into the following buckets:
-     • High bucket (value ≥ 500)  
-     • Mid bucket (100 ≤ value < 500)  
-     • Low bucket (value < 100) 
-     List the names of the entries in the high, mid, and low buckets.
-
-Respond with plain text only—no business/marketing advice, no JSON, no extraneous commentary—just factual observations about the data.
-
-JSON data:
-${JSON.stringify(data, null, 2)}
-`.trim();
-
+      // We already built “prompt” in the API; here we only need to POST:
       const response = await fetch("/api/summary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt,
           table,
           groupCols,
           metricExpr,
           yearsBack,
           data,
+          prompt,
         }),
       });
-
       const payload = await response.json();
       if (!response.ok) {
         throw new Error(payload.error || "Unknown API error");
       }
-      return payload.summary as string;
+      // Now payload is already shaped like AiSummary
+      return JSON.parse(payload.summary) as AiSummary;
     },
   });
 
-  return {
-    summary,
-    isLoading,
-    error: error as Error | null,
-  };
+  return { summary, isLoading, error: error as Error | null };
 }
 
 export default function AnalyticsExplorer({
@@ -364,7 +386,7 @@ export default function AnalyticsExplorer({
             </div>
             <div className="p-6 space-y-6 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent hover:scrollbar-thumb-gray-300">
               {/* Table */}
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
                   Table
                 </label>
@@ -380,7 +402,7 @@ export default function AnalyticsExplorer({
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
 
               {/* Filters */}
               <div className="space-y-3">
@@ -729,7 +751,7 @@ const FilterBy = ({
   );
 };
 
-const SummaryView = ({
+export const SummaryView = ({
   table,
   groupCols,
   selectedMetric,
@@ -753,21 +775,26 @@ const SummaryView = ({
     data,
   });
 
+  const randomBg = useMemo(
+    () => BG_COLORS[Math.floor(Math.random() * BG_COLORS.length)],
+    []
+  );
+
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center h-full bg-white/50">
         <div className="flex flex-col items-center gap-4">
           <div className="relative w-16 h-16">
-            <div className="absolute inset-0 rounded-full border-4 border-brand-100 border-opacity-20"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-t-brand-500 animate-spin"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-gray-200 border-opacity-20"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-t-blue-500 animate-spin"></div>
           </div>
-          <p className="text-gray-500 animate-pulse">Analyzing data...</p>
+          <p className="text-gray-500 animate-pulse">Analyzing data…</p>
         </div>
       </div>
     );
   }
 
-  if (error) {
+  if (error || !summary) {
     return (
       <div className="flex-1 flex items-center justify-center h-full bg-white/50">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-2xl mx-auto">
@@ -777,7 +804,9 @@ const SummaryView = ({
             </div>
             <div>
               <h3 className="text-red-800 font-semibold">Analysis Error</h3>
-              <p className="text-red-600 mt-1">{error.message}</p>
+              <p className="text-red-600 mt-1">
+                {error?.message ?? "Unknown error."}
+              </p>
             </div>
           </div>
         </div>
@@ -785,16 +814,27 @@ const SummaryView = ({
     );
   }
 
+  console.log(summary, "checkSummary");
+
+  // At this point, `summary` is guaranteed to be typed AiSummary
+  const {
+    topFive,
+    distribution: { shapeDescription, median, q1, q3 },
+    cumulativeShareTop3,
+    outliers,
+    buckets: { high, mid, low },
+  } = summary!;
+
   return (
     <div className="flex-1 h-[300px] bg-white/50">
       <div className="h-full max-w-full mx-auto px-4 py-2">
         <div className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-100">
-          {/* Header - Fixed height */}
+          {/* Header */}
           <div className="flex-none px-6 py-2 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-brand-50 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
                 <svg
-                  className="w-5 h-5 text-brand-600"
+                  className="w-5 h-5 text-blue-600"
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -813,69 +853,173 @@ const SummaryView = ({
                   AI Summary
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  Analysis of {groupCols.join(", ")} data over {yearsBack} year
-                  {yearsBack > 1 ? "s" : ""}
+                  Analysis of {groupCols.join(", ")} over the last {yearsBack}{" "}
+                  year{yearsBack > 1 ? "s" : ""}
                 </p>
               </div>
             </div>
           </div>
-          {/* Content - Scrollable */}
+
+          {/* Content */}
           <div className="flex-1 overflow-y-auto min-h-0">
-            <div className="p-6">
-              <article className="prose prose-indigo max-w-none">
-                <ReactMarkdown
-                  components={{
-                    h1: ({ children }) => (
-                      <h1 className="text-3xl font-bold text-gray-900 mb-6 pb-2 border-b border-gray-100">
-                        {children}
-                      </h1>
-                    ),
-                    h2: ({ children }) => (
-                      <h2 className="text-2xl font-semibold text-gray-800 mb-4 mt-8">
-                        {children}
-                      </h2>
-                    ),
-                    h3: ({ children }) => (
-                      <h3 className="text-xl font-medium text-gray-700 mb-3 mt-6">
-                        {children}
-                      </h3>
-                    ),
-                    p: ({ children }) => (
-                      <p className="text-gray-600 leading-relaxed mb-4 hover:text-gray-900 transition-colors duration-200">
-                        {children}
-                      </p>
-                    ),
-                    ul: ({ children }) => (
-                      <ul className="space-y-2 mb-6 ml-4">{children}</ul>
-                    ),
-                    li: ({ children }) => (
-                      <li className="flex items-start space-x-2 group">
-                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-brand-400 mt-2.5 flex-shrink-0 group-hover:bg-brand-600 transition-colors duration-200"></span>
-                        <span className="text-gray-600 group-hover:text-gray-900 transition-colors duration-200">
-                          {children}
-                        </span>
-                      </li>
-                    ),
-                    strong: ({ children }) => (
-                      <strong className="font-semibold text-brand-700 hover:text-brand-800 transition-colors duration-200 bg-brand-50 px-1 py-0.5 rounded">
-                        {children}
-                      </strong>
-                    ),
-                    blockquote: ({ children }) => (
-                      <blockquote className="border-l-4 border-brand-200 pl-4 my-4 italic bg-brand-50 py-2 pr-4 rounded-r-lg hover:bg-gray-100 transition-colors duration-200">
-                        {children}
-                      </blockquote>
-                    ),
-                    code: ({ children }) => (
-                      <code className="bg-brand-100 text-brand-600 px-1.5 py-0.5 rounded font-mono text-sm hover:bg-gray-200 transition-colors duration-200">
-                        {children}
-                      </code>
-                    ),
-                  }}
-                >
-                  {summary || ""}
-                </ReactMarkdown>
-              </article>
+            <div className="p-6 space-y-6">
+              {/* 1) Top Five */}
+              <section>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Top 5 {groupCols.join(" + ")} by {selectedMetric}
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full table-auto border-collapse">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                          {groupCols.join(" + ")}
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                          Count
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                          % of Total
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topFive.map((item, idx) => (
+                        <tr
+                          key={idx}
+                          className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                        >
+                          <td className="px-4 py-2 text-gray-800">
+                            {item.label}
+                          </td>
+                          <td className="px-4 py-2 text-gray-800">
+                            {item.value.toLocaleString()}
+                          </td>
+                          <td className="px-4 py-2 text-gray-800">
+                            {(item.pctOfTotal * 100).toFixed(1)}%
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              {/* 2) Distribution Description */}
+              <section>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Distribution Shape &amp; Quartiles
+                </h3>
+                <p className="text-gray-600 mb-2">{shapeDescription}</p>
+                <ul className="list-disc list-inside ml-4 text-gray-600">
+                  <li>
+                    Median: <strong>{median.toLocaleString()}</strong>
+                  </li>
+                  <li>
+                    25th percentile (Q1): <strong>{q1.toLocaleString()}</strong>
+                  </li>
+                  <li>
+                    75th percentile (Q3): <strong>{q3.toLocaleString()}</strong>
+                  </li>
+                </ul>
+              </section>
+
+              <section>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Cumulative Share of Top 3
+                </h3>
+                <p className="text-gray-600">
+                  The top 3 {groupCols.join(" + ")} account for{" "}
+                  <strong>{(cumulativeShareTop3 * 100).toFixed(1)}%</strong> of
+                  the total.
+                </p>
+              </section>
+              {/* 3) Outliers */}
+              {outliers.length > 0 && (
+                <section>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                    Notable Outliers
+                  </h3>
+                  <ul className="list-disc list-inside text-gray-600">
+                    {outliers.map((o, i) => (
+                      <li key={i}>{o}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {/* 4) Buckets */}
+              <section>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  Buckets
+                </h3>
+
+                {/* High */}
+                <div className="flex flex-col gap-4 ">
+                  <h4 className="text-lg font-medium text-green-700 underline">
+                    High bucket (value ≥ 500): {high.count}{" "}
+                    {high.count === 1 ? "entry" : "entries"}
+                  </h4>
+                  <div className="grid grid-cols-4 gap-3 text-gray-600 ">
+                    {high.entries.map((e) => (
+                      <div
+                        className={cn(
+                          "grid-cols-4 px-2 py-2 rounded-md flex gap-2 justify-start items-center",
+                          randomBg
+                        )}
+                        key={e}
+                      >
+                        <AppWindow className="w-4 h-4" />
+                        {e}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mid */}
+                <div className="flex flex-col gap-4 py-10">
+                  <h4 className="text-lg font-medium text-yellow-700 underline">
+                    Mid bucket (100 ≤ value ≤ 500): {mid.count}{" "}
+                    {mid.count === 1 ? "entry" : "entries"}
+                  </h4>
+                  <div className="grid grid-cols-4 gap-3 text-gray-600 ">
+                    {mid.entries.map((e) => (
+                      <div
+                        className={cn(
+                          "grid-cols-4 px-2 py-2 rounded-md flex gap-2 justify-start items-center",
+                          randomBg
+                        )}
+                        key={e}
+                      >
+                        <AppWindow className="w-4 h-4" />
+                        {e}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Low */}
+                <div className="flex flex-col gap-4">
+                  <h4 className="text-lg font-medium text-red-700 underline">
+                    Low bucket (value ≤ 100): {low.count}{" "}
+                    {low.count === 1 ? "entry" : "entries"}
+                  </h4>
+                  <div className="grid grid-cols-4 gap-3 text-gray-600 ">
+                    {low.entries.map((e) => (
+                      <div
+                        className={cn(
+                          "grid-cols-4 px-2 py-2 rounded-md flex gap-2 justify-start items-center",
+                          randomBg
+                        )}
+                        key={e}
+                      >
+                        <AppWindow className="w-4 h-4" />
+                        {e}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         </div>

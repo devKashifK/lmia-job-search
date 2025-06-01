@@ -11,7 +11,7 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { useTableStore } from "@/context/store";
 
-const BG_COLORS = [
+export const BG_COLORS = [
   "bg-orange-100",
   "bg-blue-100",
   "bg-green-100",
