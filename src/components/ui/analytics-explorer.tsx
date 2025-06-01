@@ -806,9 +806,9 @@ export const SummaryView = ({
         <div className="flex flex-col items-center gap-6">
           <div className="relative">
             <div className="w-20 h-20 rounded-xl border-4 border-gray-200"></div>
-            <div className="absolute inset-0 rounded-xl border-4 border-t-indigo-600 border-r-indigo-400 animate-spin"></div>
+            <div className="absolute inset-0 rounded-xl border-4 border-t-brand-600 border-r-brand-400 animate-spin"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <Sparkles className="h-8 w-8 text-indigo-600 animate-pulse" />
+              <Sparkles className="h-8 w-8 text-brand-600 animate-pulse" />
             </div>
           </div>
           <div className="space-y-2 text-center">
@@ -818,9 +818,9 @@ export const SummaryView = ({
             </p>
           </div>
           <div className="flex gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.3s]"></div>
-            <div className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-bounce [animation-delay:-0.15s]"></div>
-            <div className="w-2.5 h-2.5 rounded-full bg-indigo-600 animate-bounce"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-brand-600 animate-bounce [animation-delay:-0.3s]"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-brand-600 animate-bounce [animation-delay:-0.15s]"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-brand-600 animate-bounce"></div>
           </div>
         </div>
       </div>
