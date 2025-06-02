@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { MapPin } from "lucide-react";
 import { Bookmark } from "lucide-react";
 import {
@@ -10,6 +10,11 @@ import {
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { Badge } from "@/components/ui/badge";
 import { useTableStore } from "@/context/store";
+import db from "@/db/index";
+import { useSession } from "@/hooks/use-session";
+import { useToast } from "@/hooks/use-toast";
+import { Toast } from "./toast";
+import { toast } from "sonner";
 
 export const BG_COLORS = [
   "bg-orange-100",
@@ -81,7 +86,6 @@ interface JobCardProps {
 
 export default function JobCard({
   logoIcon: LogoIcon,
-  saved,
   onToggleSaved,
   employerName,
   jobTitle,
@@ -103,6 +107,15 @@ export default function JobCard({
 }: JobCardProps) {
   // Collect tags based on type
 
+  const { session } = useSession();
+  const { toast } = useToast();
+
+  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    if (recordID && session) {
+      checkIfSaved(recordID, session).then((isSaved) => setSaved(isSaved));
+    }
+  }, [recordID, session, saved]);
   const { setSelectedRecordID } = useTableStore();
   const tags =
     type === "lmia"
@@ -152,7 +165,14 @@ export default function JobCard({
               <TooltipTrigger asChild>
                 <button
                   className="px-2 h-8 flex gap-2 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors"
-                  onClick={onToggleSaved}
+                  onClick={async () => {
+                    if (recordID && session) {
+                      await handleSave(recordID, session);
+                    }
+                    onToggleSaved();
+                    const isSaved = await checkIfSaved(recordID, session);
+                    setSaved(isSaved);
+                  }}
                   type="button"
                 >
                   <Bookmark
@@ -260,3 +280,56 @@ export default function JobCard({
     </div>
   );
 }
+
+const handleSave = async (recordID: string, session: any) => {
+  if (!recordID || !session) {
+    return;
+  }
+
+  const isSaved = await checkIfSaved(recordID, session);
+  if (isSaved) {
+    const { data, error } = await db
+      .from("saved_jobs")
+      .delete()
+      .eq("record_id", recordID)
+      .eq("user_id", session.user.id);
+
+    if (error) {
+      console.error("Error deleting job:", error);
+
+      return;
+    }
+
+    toast.success("Job removed from your saved jobs");
+
+    return data;
+  }
+
+  const { data, error } = await db.from("saved_jobs").insert({
+    record_id: recordID,
+    user_id: session.user.id,
+  });
+
+  if (error) {
+    console.error("Error saving job:", error);
+  }
+
+  toast.success("Job saved to your saved jobs");
+  return data;
+};
+
+const checkIfSaved = async (recordID: string, session: any) => {
+  const { data, error } = await db
+    .from("saved_jobs")
+    .select("record_id")
+    .eq("record_id", recordID)
+    .eq("user_id", session.user.id);
+
+  if (error) {
+    console.error("Error checking if job is saved:", error);
+  }
+  if (data && data.length > 0 && data[0].record_id === recordID) {
+    return true;
+  }
+  return false;
+};
