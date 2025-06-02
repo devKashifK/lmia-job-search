@@ -12,8 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { useTableStore } from "@/context/store";
 import db from "@/db/index";
 import { useSession } from "@/hooks/use-session";
-import { useToast } from "@/hooks/use-toast";
-import { Toast } from "./toast";
 import { toast } from "sonner";
 
 export const BG_COLORS = [
@@ -108,7 +106,6 @@ export default function JobCard({
   // Collect tags based on type
 
   const { session } = useSession();
-  const { toast } = useToast();
 
   const [saved, setSaved] = useState(false);
   useEffect(() => {
@@ -184,7 +181,7 @@ export default function JobCard({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" align="end">
-                Save this job
+                {saved ? "Remove from saved jobs" : "Save this job"}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

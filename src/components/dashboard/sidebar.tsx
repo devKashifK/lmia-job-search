@@ -55,6 +55,12 @@ const navigation = [
     icon: Bookmark,
     badge: 2,
   },
+  {
+    name: "Saved Jobs",
+    href: "/dashboard/saved-jobs",
+    icon: Bookmark,
+    badge: 0,
+  },
 ];
 
 export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
