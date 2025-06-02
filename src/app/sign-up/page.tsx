@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
@@ -40,6 +41,7 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,26 +101,29 @@ export default function SignUpPage() {
 
       toast({
         title: "Success!",
-        description: "Please check your email to verify your account",
+        description: "We have added 10 free credits to your account",
         variant: "default",
       });
-      const userId = data.user?.id;
 
-      const { error: profileError } = await db.from("credits").insert({
-        id: userId,
-        total_credit: 5,
-        used_credit: 0,
-      });
+      router.push("/search");
+      return;
+      //   const userId = data.user?.id;
 
-      if (profileError) throw profileError;
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Something went wrong";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      //   const { error: profileError } = await db.from("credits").insert({
+      //     id: userId,
+      //     total_credit: 5,
+      //     used_credit: 0,
+      //   });
+
+      //   if (profileError) throw profileError;
+      // } catch (error: unknown) {
+      //   const errorMessage =
+      //     error instanceof Error ? error.message : "Something went wrong";
+      //   toast({
+      //     title: "Error",
+      //     description: errorMessage,
+      //     variant: "destructive",
+      // });
     } finally {
       setIsLoading(false);
     }
