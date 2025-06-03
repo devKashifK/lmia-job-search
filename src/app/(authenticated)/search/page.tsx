@@ -102,6 +102,7 @@ export default function Page() {
 
   const handleSuggestionClick = async (suggestion: string) => {
     if (!session?.session) {
+      updateCreditsAndSearch(suggestion);
       if (searchType === "hot_leads") {
         applyDataConfig(
           searchType,

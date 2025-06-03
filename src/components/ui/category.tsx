@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTableStore } from "@/context/store";
-import { toast } from "sonner";
+import { useUpdateCredits } from "@/hooks/use-credits";
 
 const categories = [
   {
@@ -59,12 +59,14 @@ const categories = [
 
 export default function Category({ type }: { type: string }) {
   const router = useRouter();
+  const { updateCreditsAndSearch } = useUpdateCredits();
   const { setDataConfig, setFilterPanelConfig } = useTableStore();
   return (
     <div className="flex flex-wrap gap-4 max-w-7xl mx-auto justify-center items-center p-4">
       {categories.map((category) => (
         <div
           onClick={() => {
+            updateCreditsAndSearch(category.noc_priority);
             if (type === "hot_leads") {
               setDataConfig({
                 type: "hot_leads",

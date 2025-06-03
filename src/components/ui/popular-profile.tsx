@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTableStore } from "@/context/store";
+import { useUpdateCredits } from "@/hooks/use-credits";
 const popularProfiles = [
   {
     job_title: "Food Service Supervisor",
@@ -84,7 +85,8 @@ const popularProfiles = [
 
 export default function PopularProfile() {
   const router = useRouter();
-  const { setFilterPanelConfig , setDataConfig } = useTableStore();
+  const { updateCreditsAndSearch } = useUpdateCredits();
+  const { setFilterPanelConfig, setDataConfig } = useTableStore();
   return (
     <section className="w-full flex flex-col items-center py-16 relative bg-gradient-to-b from-white to-gray-50/50">
       <SectionTitle
@@ -149,31 +151,33 @@ export default function PopularProfile() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 transition-colors duration-300"
-                        onClick={() => {                          router.push(
+                        onClick={() => {
+                          updateCreditsAndSearch(group.job_title);
+                          router.push(
                             `/roles/${encodeURIComponent(group.job_title)}`
-                          )
+                          );
                           setFilterPanelConfig({
                             column: "job_title",
                             table: "hot_leads_new",
                             keyword: group.job_title,
                             type: "hot_leads",
-                            method : "query"
+                            method: "query",
                           });
-                          setDataConfig ({
-                            type : "hot_leads",
-                        table : "hot_leads_new",
-                        columns :JSON.stringify([{
-                          "job_title" : group.job_title
-                        }]),
-                        keyword : group.job_title,
-                        method : "query",
-                        year: "",
-                        page : 1,
-                        pageSize : 100
-                          })
-                        }
-                      }
-                        
+                          setDataConfig({
+                            type: "hot_leads",
+                            table: "hot_leads_new",
+                            columns: JSON.stringify([
+                              {
+                                job_title: group.job_title,
+                              },
+                            ]),
+                            keyword: group.job_title,
+                            method: "query",
+                            year: "",
+                            page: 1,
+                            pageSize: 100,
+                          });
+                        }}
                       >
                         View Details
                         <ArrowRight className="w-4 h-4" />

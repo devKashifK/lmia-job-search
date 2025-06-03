@@ -5,6 +5,7 @@ import SectionTitle from "./section-title";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTableStore } from "@/context/store";
+import { useUpdateCredits } from "@/hooks/use-credits";
 
 const companyGroups = [
   {
@@ -67,6 +68,7 @@ const companyGroups = [
 export default function Company() {
   const router = useRouter();
   const { setFilterPanelConfig, setDataConfig } = useTableStore();
+  const { updateCreditsAndSearch } = useUpdateCredits();
   const handleViewDetails = (company: string) => {
     router.push(`/company/${encodeURIComponent(company)}`);
     setFilterPanelConfig({
@@ -142,7 +144,10 @@ export default function Company() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 transition-colors duration-300"
-                      onClick={() => handleViewDetails(group.title)}
+                      onClick={() => {
+                        updateCreditsAndSearch(group.title);
+                        handleViewDetails(group.title);
+                      }}
                     >
                       View Details
                       <ArrowRight className="w-4 h-4" />
