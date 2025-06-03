@@ -6,7 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { fetchSavedSearches } from "@/lib/queries";
 import { Search } from "@/types/search";
 import { useSession } from "@/hooks/use-session";
-import CustomLink from "@/app/CustomLink";
+import CustomLink from "@/components/ui/CustomLink";
 import {
   Bookmark,
   Search as SearchIcon,

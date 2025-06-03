@@ -46,7 +46,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSheet } from "@/context/sheet-context";
 import { RecentSearches } from "./recent-searches";
 import { SavedSearches } from "./saved-searches";
-import CustomLink from "@/app/CustomLink";
+import CustomLink from "@/components/ui/CustomLink";
 
 // Navigation Link Component
 function NavLink({

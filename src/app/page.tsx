@@ -6,7 +6,7 @@ import Footer from "@/pages/homepage/footer";
 import Hero from "@/pages/homepage/hero";
 import Pricing from "@/pages/homepage/pricing";
 import Testimonials from "@/pages/homepage/testimonals";
-import Navbar from "./nabvar";
+import Navbar from "../components/ui/nabvar";
 import HowItWorks from "@/pages/homepage/how-it-works";
 import BackgroundWrapper from "@/components/ui/background-wrapper";
 import Company from "@/components/ui/company";

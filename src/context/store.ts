@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { DATA } from "@/data/data";
 import db from "@/db";
 
 interface TableState {

@@ -1,5 +1,5 @@
 "use client";
-import CustomLink from "@/app/CustomLink";
+import CustomLink from "@/components/ui/CustomLink";
 import { motion } from "framer-motion";
 import {
   Popover,
