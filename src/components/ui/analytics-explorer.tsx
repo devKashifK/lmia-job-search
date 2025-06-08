@@ -51,6 +51,7 @@ import { Label } from "./label";
 import { Button } from "./button";
 import { useQuery } from "@tanstack/react-query";
 import { useFilterColumnAttributes } from "./new-filterpanel";
+import { Badge } from "./badge";
 
 const TABLES = ["hot_leads_new", "lmia"];
 const METRICS = [
@@ -282,10 +283,14 @@ export default function AnalyticsExplorer({
   const [schema, setSchema] = useState<Record<string, string[]>>({});
   const [table, setTable] = useState<string>(TABLES[0]);
   const { dataConfig } = useTableStore.getState();
+  const parsedColumns = JSON.parse(dataConfig.columns)[0];
+  const [[k, v]] = Object.entries(parsedColumns);
+  console.log(k, v, "checkDataConfig");
+
   const columns =
     dataConfig.type === "hot_leads" ? hotLeadsColumns : lmiaColumns;
   const [filters, setFilters] = useState<Filter[]>([
-    { column: "job_title", operator: "ilike", value: "cook" },
+    { column: k, operator: "ilike", value: v },
   ]);
   const [groupCols, setGroupCols] = useState<string[]>(["city"]);
   const [selectedMetric, setSelectedMetric] = useState<string>(
@@ -353,7 +358,12 @@ export default function AnalyticsExplorer({
             <BarChartIcon className="h-5 w-5 text-brand-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Analytics</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-gray-800">Analytics</h1>
+              <Badge variant="outline">
+                <span className="text-xs font-medium">{v}</span>
+              </Badge>
+            </div>
             <p className="text-sm text-gray-600 mt-1">
               Slice &amp; dice your data in real time
             </p>
