@@ -71,7 +71,7 @@ export default function Navbar({ className }: { className?: string }) {
           <div className="hidden md:flex flex-1 justify-center">
             <NavigationMenu>
               <NavigationMenuList className="flex flex-row items-center gap-2 md:gap-4">
-                <NavigationMenuItem>
+                {/* <NavigationMenuItem>
                   <NavigationMenuTrigger className="h-9 px-4 bg-transparent hover:bg-brand-100/60 data-[state=open]:bg-brand-100/60 text-brand-700 font-medium">
                     Solutions
                   </NavigationMenuTrigger>
@@ -93,7 +93,7 @@ export default function Navbar({ className }: { className?: string }) {
                       ))}
                     </div>
                   </NavigationMenuContent>
-                </NavigationMenuItem>
+                </NavigationMenuItem> */}
                 {/* 
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="h-9 px-4 bg-transparent hover:bg-brand-100/60 data-[state=open]:bg-brand-100/60 text-brand-700 font-medium">

@@ -126,7 +126,7 @@
 /* Custom Scrollbar Styles */
 @layer base {
   ::-webkit-scrollbar {
-    width: 2px;
+    width: 5px;
     height: 4px;
   }
 

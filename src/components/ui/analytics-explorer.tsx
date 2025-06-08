@@ -1162,7 +1162,7 @@ const Charts = ({ chartType, data }: ChartProps) => {
       {chartType === "bar" && <BarChartContainer chartData={chartData} />}
       {chartType === "line" && <LineChartContainer chartData={chartData} />}
       {chartType === "pie" && (
-        <div className="w-full h-[500px] flex items-center justify-center">
+        <div className="w-full min-h-[300px] flex items-center justify-center">
           <PieChart width={800} height={500}>
             <Pie
               data={chartData}
