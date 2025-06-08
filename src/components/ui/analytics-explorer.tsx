@@ -283,9 +283,14 @@ export default function AnalyticsExplorer({
   const [schema, setSchema] = useState<Record<string, string[]>>({});
   const [table, setTable] = useState<string>(TABLES[0]);
   const { dataConfig } = useTableStore.getState();
-  const parsedColumns = JSON.parse(dataConfig.columns)[0];
+  const parsedColumns = dataConfig.columns
+    ? JSON.parse(dataConfig.columns)[0]
+    : {
+        job_title: dataConfig.keyword,
+      };
+
+  console.log(parsedColumns, dataConfig, "parsedColumns");
   const [[k, v]] = Object.entries(parsedColumns);
-  console.log(k, v, "checkDataConfig");
 
   const columns =
     dataConfig.type === "hot_leads" ? hotLeadsColumns : lmiaColumns;
