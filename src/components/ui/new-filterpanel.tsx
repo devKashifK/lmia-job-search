@@ -16,6 +16,7 @@ interface FilterConfig {
 
 export default function Newfilterpanel() {
   const columns = useFilterPanelColumns();
+  const allowedKeys = ["date_of_job_posting"];
   return (
     <div className="border-r-2 border-brand-200 pr-8 flex flex-col gap-4">
       <div className="flex justify-between items-center">
@@ -28,22 +29,24 @@ export default function Newfilterpanel() {
       <div className="flex flex-col gap-2">
         {columns && (
           <div className="w-full">
-            {columns.map((column, idx) => (
-              <div
-                key={column?.accessorKey}
-                className="border-b border-zinc-100 flex flex-col gap-2 mb-4 pb-4"
-              >
-                <div key={idx} className="text-sm font-medium">
-                  <AttributeName
-                    name={column?.accessorKey}
-                    className="w-4 h-4 text-gray-400"
-                  />
+            {columns
+              .filter((column) => !allowedKeys.includes(column.accessorKey))
+              .map((column, idx) => (
+                <div
+                  key={column?.accessorKey}
+                  className="border-b border-zinc-100 flex flex-col gap-2 mb-4 pb-4"
+                >
+                  <div key={idx} className="text-sm font-medium">
+                    <AttributeName
+                      name={column?.accessorKey}
+                      className="w-4 h-4 text-gray-400"
+                    />
+                  </div>
+                  <div className="">
+                    <FilterAttributes column={column?.accessorKey} />
+                  </div>
                 </div>
-                <div className="">
-                  <FilterAttributes column={column?.accessorKey} />
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </div>
@@ -242,7 +245,7 @@ export const useFilterColumnAttributes = (column: string) => {
         if (error) throw new Error(error.message);
 
         const uniqueValues = [...new Set(data.map((item) => item[column]))];
-        return uniqueValues;
+        return uniqueValues.sort((b, a) => a.localeCompare(b));
       } else if (method === "rpc") {
         const orClause = selectProjection
           .split(",")
@@ -262,7 +265,7 @@ export const useFilterColumnAttributes = (column: string) => {
         const uniqueValues = [
           ...new Set(data.map((item) => item[column])),
         ].filter(Boolean);
-        return uniqueValues;
+        return uniqueValues.sort((b, a) => a.localeCompare(b));
       }
     },
   });
