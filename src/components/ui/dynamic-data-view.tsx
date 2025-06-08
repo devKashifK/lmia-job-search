@@ -6,17 +6,11 @@ import {
   Utensils,
   LayoutGrid,
   Table2,
-  Settings2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { VisibilityState, OnChangeFn } from "@tanstack/react-table";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   LMIA,
   hotLeadsColumns,
@@ -27,7 +21,7 @@ import Loader from "@/components/ui/loader";
 import PageTitle from "@/components/ui/page-title";
 import Pagination from "@/components/ui/pagination";
 import JobCard from "@/components/ui/job-card";
-import SortButton, { SortOption } from "@/components/ui/sort-button";
+import { SortOption } from "@/components/ui/sort-button";
 import { useMinimumLoading } from "@/hooks/use-minimum-loading";
 import Newfilterpanel from "@/components/ui/new-filterpanel";
 import { useTableStore } from "@/context/store";

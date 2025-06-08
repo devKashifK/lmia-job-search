@@ -275,8 +275,20 @@ const useFilterPanelColumns = () => {
   const { filterPanelConfig } = useTableStore.getState();
 
   if (filterPanelConfig.type === "hot_leads") {
+    if (filterPanelConfig.column === "job_title") {
+      const filteredColumn = hotLeadsColumns.filter(
+        (f) => f.accessorKey !== "noc_code"
+      );
+      return filteredColumn;
+    }
     return hotLeadsColumns;
   } else if (filterPanelConfig.type === "hot_leads_new") {
+    if (filterPanelConfig.column === "job_title") {
+      const filteredColumn = hotLeadsColumns.filter(
+        (f) => f.accessorKey !== "noc_code"
+      );
+      return filteredColumn;
+    }
     return hotLeadsColumns;
   } else if (filterPanelConfig.type === "lmia") {
     return lmiaColumns;
