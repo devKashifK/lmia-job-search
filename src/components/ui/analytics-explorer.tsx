@@ -376,6 +376,52 @@ export default function AnalyticsExplorer({
         </div>
       </header>
 
+      {/* Current Configuration Panel */}
+      <div className="px-6 py-3 bg-white border-b border-gray-200">
+        <div className="flex flex-wrap gap-2">
+          {filters.map((filter, index) => (
+            <div
+              key={index}
+              className="bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200 flex items-center gap-2"
+            >
+              <div className="flex items-center gap-1.5">
+                <Filter className="h-3.5 w-3.5 text-gray-500" />
+                <span className="text-sm text-gray-600 font-medium">
+                  <AttributeName name={filter.column} />
+                </span>
+              </div>
+              <span className="text-sm text-gray-500">
+                {filter.operator === "ilike" ? "equals" : filter.operator}
+              </span>
+              <span className="text-sm text-gray-900">{filter.value}</span>
+            </div>
+          ))}
+          {groupCols.map((col, index) => (
+            <div
+              key={index}
+              className="bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100 flex items-center gap-1.5"
+            >
+              <Layers className="h-3.5 w-3.5 text-indigo-500" />
+              <span className="text-sm text-indigo-700 font-medium">
+                <AttributeName name={col} />
+              </span>
+            </div>
+          ))}
+          <div className="bg-green-50 px-3 py-1.5 rounded-lg border border-green-100 flex items-center gap-1.5">
+            <Calculator className="h-3.5 w-3.5 text-green-500" />
+            <span className="text-sm text-green-700 font-medium">
+              {selectedMetric}
+            </span>
+          </div>
+          <div className="bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5 text-amber-500" />
+            <span className="text-sm text-amber-700 font-medium">
+              Last {range} years
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Summary Cards */}
       <div className="px-6 py-2 bg-gray-50">
         <div className="grid grid-cols-3 gap-2">
@@ -410,7 +456,7 @@ export default function AnalyticsExplorer({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 px-6 py-2 rounded-lg overflow-hidden h-[calc(100vh-14rem)]">
+      <div className="flex-1 px-6 py-2 rounded-lg overflow-hidden h-[calc(100vh-18rem)]">
         <div className="grid grid-cols-4 gap-2 h-full">
           {/* Controls Panel */}
           <aside className="col-span-1 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden flex flex-col">
