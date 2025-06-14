@@ -17,6 +17,17 @@ interface FilterConfig {
 export default function Newfilterpanel() {
   const columns = useFilterPanelColumns();
   const allowedKeys = ["date_of_job_posting"];
+  const [selectedFiters, setSelectedFiters] = React.useState<
+    {
+      column: string;
+      value: string;
+    }[]
+  >([]);
+
+  const handleSelectedFilters = (column: string, value: string) => {
+    setSelectedFiters((prev) => [...prev, { column, value }]);
+  };
+
   return (
     <div className="border-r-2 border-brand-200 pr-8 flex flex-col gap-4">
       <div className="flex justify-between items-center">
@@ -43,7 +54,11 @@ export default function Newfilterpanel() {
                     />
                   </div>
                   <div className="">
-                    <FilterAttributes column={column?.accessorKey} />
+                    <FilterAttributes
+                      column={column?.accessorKey}
+                      handleSelectedFilters={handleSelectedFilters}
+                      selectedFilters={selectedFiters}
+                    />
                   </div>
                 </div>
               ))}
@@ -54,11 +69,38 @@ export default function Newfilterpanel() {
   );
 }
 
-const FilterAttributes = ({ column }: { column: string }) => {
+const FilterAttributes = ({
+  column,
+  selectedFilters,
+  handleSelectedFilters,
+}: {
+  column: string;
+  selectedFilters: {
+    column: string;
+    value: string;
+  }[];
+  handleSelectedFilters: (column: string, value: string) => void;
+}) => {
   const { data, isLoading, error } = useFilterColumnAttributes(column);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [localFilters, setLocalFilters] = React.useState(new Set<string>());
 
+  const { data: filterAvailability } = useQuery({
+    queryKey: ["filter-availability", column, selectedFilters],
+    queryFn: () =>
+      selectedFilters.length > 0
+        ? checkFilterAvailibity(selectedFilters, column)
+        : [],
+  });
+
+  console.log("filterAvailability", filterAvailability);
+
+  const availableSet = React.useMemo(
+    () => new Set<string>(filterAvailability),
+    [filterAvailability]
+  );
+
+  console.log("availableSet", availableSet);
   // Initialize local filters from dataConfig
   React.useEffect(() => {
     const { dataConfig } = useTableStore.getState();
@@ -79,6 +121,7 @@ const FilterAttributes = ({ column }: { column: string }) => {
       }
     }
     setLocalFilters(initialSelections);
+    console.log("initialSelections", initialSelections, localFilters);
   }, [column]);
 
   const filteredData = React.useMemo(() => {
@@ -88,8 +131,23 @@ const FilterAttributes = ({ column }: { column: string }) => {
     );
   }, [data, searchQuery]);
 
+  const sortedData = React.useMemo(() => {
+    // copy so we don’t mutate the original
+    return filteredData.slice().sort((a, b) => {
+      const aAvail = selectedFilters.length === 0 || availableSet.has(a);
+      const bAvail = selectedFilters.length === 0 || availableSet.has(b);
+
+      // if one is available and the other isn’t, the available one comes first
+      if (aAvail !== bAvail) return aAvail ? -1 : 1;
+
+      // otherwise keep them alphabetically (or your default order)
+      return a.localeCompare(b);
+    });
+  }, [filteredData, availableSet, selectedFilters.length]);
+
   const handleFilterUpdate = (accessorKey: string, value: string) => {
     const { dataConfig, setDataConfig } = useTableStore.getState();
+    handleSelectedFilters(accessorKey, value);
 
     // Update local filters first
     setLocalFilters((prevFilters) => {
@@ -111,6 +169,8 @@ const FilterAttributes = ({ column }: { column: string }) => {
         console.error("Failed to parse columns:", e);
       }
     }
+
+    console.log("localFilters", localFilters);
 
     let found = false;
     const updatedFilters = previousFilters
@@ -173,39 +233,48 @@ const FilterAttributes = ({ column }: { column: string }) => {
         className="w-full px-2 py-1 h-7 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600"
       />
       <div className="max-h-[300px] overflow-y-auto pretty-scroll">
-        {filteredData.map((value) => (
-          <div
-            key={value}
-            role="button"
-            tabIndex={0}
-            onClick={() =>
-              startTransition(() => handleFilterUpdate(column, value))
-            }
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                startTransition(() => handleFilterUpdate(column, value));
+        {sortedData.map((value) => {
+          const isAvailable =
+            selectedFilters.length === 0 || availableSet.has(value);
+          return (
+            <div
+              key={value}
+              role="button"
+              tabIndex={0}
+              onClick={() =>
+                isAvailable &&
+                startTransition(() => handleFilterUpdate(column, value))
               }
-            }}
-            className={cn(
-              "group flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-200 cursor-pointer",
-              "hover:bg-brand-100/80 active:bg-brand-200"
-            )}
-          >
-            <div className="w-3.5 h-3.5 flex-shrink-0">
-              {localFilters.has(value) ? (
-                <CheckCircle className="h-3.5 w-3.5 text-brand-600" />
-              ) : (
-                <Circle className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity duration-200" />
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  if (!isAvailable) return;
+                  startTransition(() => handleFilterUpdate(column, value));
+                }
+              }}
+              className={cn(
+                "group flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-200 cursor-pointer",
+                "hover:bg-brand-100/80 active:bg-brand-200",
+                isAvailable
+                  ? "cursor-pointer hover:bg-brand-100/80 active:bg-brand-200"
+                  : "cursor-not-allowed opacity-50"
+              )}
+            >
+              <div className="w-3.5 h-3.5 flex-shrink-0">
+                {localFilters.has(value) ? (
+                  <CheckCircle className="h-3.5 w-3.5 text-brand-600" />
+                ) : (
+                  <Circle className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity duration-200" />
+                )}
+              </div>
+              <span className="truncate flex-1 text-black">{value}</span>
+              {localFilters.has(value) && (
+                <span className="text-[10px] text-brand-600/70 group-hover:text-brand-600">
+                  selected
+                </span>
               )}
             </div>
-            <span className="truncate flex-1 text-black">{value}</span>
-            {localFilters.has(value) && (
-              <span className="text-[10px] text-brand-600/70 group-hover:text-brand-600">
-                selected
-              </span>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -294,3 +363,43 @@ const useFilterPanelColumns = () => {
     return lmiaColumns;
   }
 };
+
+const checkFilterAvailibity = async (
+  selectedFilters: {
+    column: string;
+    value: string;
+  }[],
+  targetColumn: string
+) => {
+  const { filterPanelConfig } = useTableStore.getState();
+
+  const { table, column: filterColumn, method, type } = filterPanelConfig || {};
+
+  const filterPayload =
+    selectedFilters.length > 0 ? toFilterObject(selectedFilters) : {};
+
+  const { data, error } = await db.rpc("check_filter_availability", {
+    p_table: table,
+    p_column: targetColumn,
+    p_filters: filterPayload,
+  });
+
+  if (error) throw error;
+
+  return data?.map((row) => row.value) ?? [];
+
+  // 2. Group filters by column so we can .in() for multi‑select
+};
+
+function toFilterObject(
+  selectedFilters: { column: string; value: string }[]
+): Record<string, string[]> {
+  return selectedFilters.reduce<Record<string, string[]>>(
+    (acc, { column, value }) => {
+      if (!acc[column]) acc[column] = [];
+      acc[column].push(value);
+      return acc;
+    },
+    {}
+  );
+}
