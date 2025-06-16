@@ -25,7 +25,16 @@ export default function Newfilterpanel() {
   >([]);
 
   const handleSelectedFilters = (column: string, value: string) => {
-    setSelectedFiters((prev) => [...prev, { column, value }]);
+    setSelectedFiters((prev) => {
+      const exists = prev.some((f) => f.column === column && f.value === value);
+      if (exists) {
+        // remove that exact filter
+        return prev.filter((f) => !(f.column === column && f.value === value));
+      } else {
+        // add it
+        return [...prev, { column, value }];
+      }
+    });
   };
 
   return (
