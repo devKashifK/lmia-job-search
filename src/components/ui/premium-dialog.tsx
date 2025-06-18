@@ -21,6 +21,8 @@ import {
 } from "recharts";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import { Skeleton } from "./skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
 dayjs.extend(localizedFormat);
 // No large icons, keep it clean
 
@@ -118,15 +120,7 @@ export function PremiumDialogContent({
     "Manitoba Rural West-Cen...",
     "In-demand Jobs",
   ];
-  const filters = [
-    { label: "NOC Code - Level ...", options: ["All"] },
-    { label: "Job Category", options: ["All"] },
-    { label: "State", options: ["All"] },
-    { label: "City", options: ["All"] },
-    { label: "Company", options: ["All"] },
-    { label: "Operation As", options: ["- Select -"] },
-    { label: "Job Position", options: ["All"] },
-  ];
+  
 
   // Helper to get top N + 'Other' for pie charts
   function getTopNWithOther(data: Breakdown[], n = 8) {
@@ -248,18 +242,7 @@ export function PremiumDialogContent({
       </div>
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-4 bg-blue-50 p-4 rounded-lg mb-8">
-        {filters.map((filter) => (
-          <div key={filter.label} className="flex flex-col min-w-[140px]">
-            <label className="text-xs text-gray-500 mb-1 font-medium">
-              {filter.label}:
-            </label>
-            <select className="rounded-md border border-gray-300 px-2 py-1 text-sm bg-white focus:ring-2 focus:ring-blue-200">
-              {filter.options.map((opt) => (
-                <option key={opt}>{opt}</option>
-              ))}
-            </select>
-          </div>
-        ))}
+        <DialogContentFilters companyName={selectedValue.operating_name} />
       </div>
       {/* Charts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full py-10 pb-20">
@@ -603,4 +586,61 @@ function MonthlyJobTrendsChart({ data }: MonthlyJobTrendsChartProps) {
       </ResponsiveContainer>
     </div>
   );
+}
+
+
+const DialogContentFilters = ({companyName}: {companyName: string}) => {
+
+  const filters = [
+    { label: "NOC Code" , name: "noc_code" },
+    { label: "Job Category" , name: "job_title" },
+    { label: "State"  , name: "state" },
+    { label: "City" , name: "city" },
+  ];
+
+  return (
+    filters.map((filter , idx) => (
+      <div key={filter.label + idx} className="flex flex-col min-w-[140px]">
+        <label className="text-xs text-gray-500 mb-1 font-medium">
+          {filter.label}:
+        </label>
+       <DialogContentFiltersItem item={filter.name} label={filter.label} companyName={companyName} />
+      </div>
+    ))
+  )
+}
+
+
+const DialogContentFiltersItem = ({item, label, companyName} : {item : string, label: string, companyName: string}) => {
+
+  const {data, isLoading} = useFilterOptions(item, companyName)
+
+  console.log(data , "CheckFilterOptionData")
+  if (isLoading) return <Skeleton className="w-full h-10" />
+  return (
+    <Select >
+      <SelectTrigger className="rounded-md w-48 border border-gray-300 px-2 py-1 text-sm bg-white focus:ring-2 focus:ring-blue-200">
+        <SelectValue placeholder={`Select ${label}...`} className="text-sm" />
+      </SelectTrigger>
+      <SelectContent>
+        {data?.map((opt , idx) => (
+          <SelectItem key={idx} value={opt}>{opt}</SelectItem>
+        ))}
+      </SelectContent>
+  </Select>
+  )
+}
+
+const useFilterOptions = (item: string, companyName: string) => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["filter-options", item],
+    queryFn: async () => {
+      const { data, error } = await db.from("hot_leads_new").select(item).eq("operating_name", companyName);
+      if (error) throw error;
+
+      const unique = Array.from(new Set(data.map((row) => row[item])));
+      return  unique ;
+    },
+  });
+  return {data, isLoading}
 }
