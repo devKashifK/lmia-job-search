@@ -1,6 +1,6 @@
 import { useTableStore } from "@/context/store";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, Circle } from "lucide-react";
+import { CheckCircle, Circle, X, ChevronDown } from "lucide-react";
 import React, { startTransition } from "react";
 import { hotLeadsColumns, lmiaColumns } from "@/components/filters/column-def";
 import { AttributeName } from "@/helpers/attribute";
@@ -23,6 +23,24 @@ export default function Newfilterpanel() {
       value: string;
     }[]
   >([]);
+  const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
+
+  // Set initial collapsed state: only 'state' and 'city' open, others closed
+  React.useEffect(() => {
+    if (!columns) return;
+    // Only set initial state if collapsedSections is empty
+    if (Object.keys(collapsedSections).length === 0) {
+      const initial: Record<string, boolean> = {};
+      columns.forEach((col) => {
+        if (col.accessorKey === "state" || col.accessorKey === "city") {
+          initial[col.accessorKey] = false; // open
+        } else {
+          initial[col.accessorKey] = true; // collapsed
+        }
+      });
+      setCollapsedSections(initial);
+    }
+  }, [columns]);
 
   const handleSelectedFilters = (column: string, value: string) => {
     setSelectedFiters((prev) => {
@@ -37,6 +55,54 @@ export default function Newfilterpanel() {
     });
   };
 
+  const handleRemoveFilter = (column: string, value: string) => {
+    // First update the selected filters state
+    setSelectedFiters((prev) => 
+      prev.filter((f) => !(f.column === column && f.value === value))
+    );
+
+    // Then update the dataConfig to trigger a rerun
+    const { dataConfig, setDataConfig } = useTableStore.getState();
+    let previousFilters: Record<string, string[]>[] = [];
+    
+    if (dataConfig.columns && typeof dataConfig.columns === "string") {
+      try {
+        previousFilters = JSON.parse(dataConfig.columns);
+      } catch (e) {
+        console.error("Failed to parse columns:", e);
+      }
+    }
+
+    const updatedFilters = previousFilters
+      .map((filter) => {
+        if (filter.hasOwnProperty(column)) {
+          const existingValues = filter[column] || [];
+          const updatedValues = existingValues.filter((v) => v !== value);
+
+          if (updatedValues.length === 0) {
+            return null;
+          }
+
+          return { [column]: updatedValues };
+        }
+        return filter;
+      })
+      .filter(Boolean);
+
+    setDataConfig({
+      ...(dataConfig || {}),
+      columns: JSON.stringify(updatedFilters),
+      page: "1",
+    });
+  };
+
+  const toggleSection = (column: string) => {
+    setCollapsedSections((prev) => ({
+      ...prev,
+      [column]: !prev[column],
+    }));
+  };
+
   return (
     <div className="border-r-2 border-brand-200 pr-8 flex flex-col gap-4">
       <div className="flex justify-between items-center">
@@ -46,31 +112,68 @@ export default function Newfilterpanel() {
         </div> */}
       </div>
 
+      {selectedFiters.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-2">
+          {selectedFiters.map((filter) => (
+            <div
+              key={`${filter.column}-${filter.value}`}
+              className="flex items-center gap-1 px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs"
+            >
+              <span className="font-medium">
+                <AttributeName name={filter.column} className="w-3 h-3 text-brand-600" />
+              </span>
+              <span className="mx-1">:</span>
+              <span>{filter.value}</span>
+              <button
+                onClick={() => handleRemoveFilter(filter.column, filter.value)}
+                className="ml-1 hover:bg-brand-200 rounded-full p-0.5 transition-colors"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-col gap-2">
         {columns && (
           <div className="w-full">
             {columns
               .filter((column) => !allowedKeys.includes(column.accessorKey))
-              .map((column, idx) => (
-                <div
-                  key={column?.accessorKey}
-                  className="border-b border-zinc-100 flex flex-col gap-2 mb-4 pb-4"
-                >
-                  <div key={idx} className="text-sm font-medium">
-                    <AttributeName
-                      name={column?.accessorKey}
-                      className="w-4 h-4 text-gray-400"
-                    />
+              .map((column, idx) => {
+                const isCollapsed = collapsedSections[column.accessorKey] || false;
+                return (
+                  <div
+                    key={column?.accessorKey}
+                    className="border-b border-zinc-100 flex flex-col gap-2 mb-4 pb-4"
+                  >
+                    <div
+                      key={idx}
+                      className="text-sm font-medium flex items-center justify-between cursor-pointer select-none"
+                      onClick={() => toggleSection(column.accessorKey)}
+                    >
+                      <span>
+                        <AttributeName
+                          name={column?.accessorKey}
+                          className="w-4 h-4 text-gray-400"
+                        />
+                      </span>
+                      <ChevronDown
+                        className={`w-4 h-4 ml-2 transition-transform duration-200 ${isCollapsed ? "rotate-0" : "rotate-180"}`}
+                      />
+                    </div>
+                    {!isCollapsed && (
+                      <div className="">
+                        <FilterAttributes
+                          column={column?.accessorKey}
+                          handleSelectedFilters={handleSelectedFilters}
+                          selectedFilters={selectedFiters}
+                        />
+                      </div>
+                    )}
                   </div>
-                  <div className="">
-                    <FilterAttributes
-                      column={column?.accessorKey}
-                      handleSelectedFilters={handleSelectedFilters}
-                      selectedFilters={selectedFiters}
-                    />
-                  </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         )}
       </div>
@@ -102,17 +205,9 @@ const FilterAttributes = ({
         : [],
   });
 
-  console.log("filterAvailability", filterAvailability);
+  const { dataConfig } = useTableStore.getState();
 
-  const availableSet = React.useMemo(
-    () => new Set<string>(filterAvailability),
-    [filterAvailability]
-  );
-
-  console.log("availableSet", availableSet);
-  // Initialize local filters from dataConfig
   React.useEffect(() => {
-    const { dataConfig } = useTableStore.getState();
     let initialSelections = new Set<string>();
     if (dataConfig.columns && typeof dataConfig.columns === "string") {
       try {
@@ -130,8 +225,14 @@ const FilterAttributes = ({
       }
     }
     setLocalFilters(initialSelections);
-    console.log("initialSelections", initialSelections, localFilters);
-  }, [column]);
+  }, [column, dataConfig.columns]);
+
+  const availableSet = React.useMemo(
+    () => new Set<string>(filterAvailability),
+    [filterAvailability]
+  );
+
+  console.log("availableSet", availableSet);
 
   const filteredData = React.useMemo(() => {
     if (!data) return [];
@@ -141,12 +242,12 @@ const FilterAttributes = ({
   }, [data, searchQuery]);
 
   const sortedData = React.useMemo(() => {
-    // copy so we don’t mutate the original
+    // copy so we don't mutate the original
     return filteredData.slice().sort((a, b) => {
       const aAvail = selectedFilters.length === 0 || availableSet.has(a);
       const bAvail = selectedFilters.length === 0 || availableSet.has(b);
 
-      // if one is available and the other isn’t, the available one comes first
+      // if one is available and the other isn't, the available one comes first
       if (aAvail !== bAvail) return aAvail ? -1 : 1;
 
       // otherwise keep them alphabetically (or your default order)
