@@ -41,14 +41,18 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="rounded-md relative border max-h-max ">
-      <Table className="">
-        <TableHeader className="bg-gray-100 sticky top-0">
+    <div className="rounded-md relative border max-h-max overflow-x-auto">
+      <Table className="min-w-full text-sm">
+        <TableHeader className="bg-gray-100 sticky top-0 z-10">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className="border-r h-12">
+                  <TableHead
+                    key={header.id}
+                    className="border-r h-10 px-2 py-1 whitespace-nowrap font-medium text-gray-700"
+                    style={{ width: header.getSize() }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -67,11 +71,14 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                // className="even:bg-gray-50"
-                className=""
+                className="hover:bg-gray-50 transition-colors"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="border-r px-3">
+                  <TableCell
+                    key={cell.id}
+                    className="border-r px-2 py-1 text-xs whitespace-nowrap"
+                    style={{ width: cell.column.getSize() }}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -79,7 +86,7 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+              <TableCell colSpan={columns.length} className="h-16 text-center text-gray-500">
                 No results.
               </TableCell>
             </TableRow>

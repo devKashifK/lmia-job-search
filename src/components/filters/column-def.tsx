@@ -46,174 +46,183 @@ type ColumnWithIcon = ColumnDef<LMIA> & {
 export const hotLeadsColumns: ColumnWithIcon[] = [
   {
     accessorKey: "state",
-    meta: { icon: <PersonStanding className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <PersonStanding className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <PersonStanding className="h-5 w-5 text-black/50" />
-        State
+        <PersonStanding className="h-3 w-3 text-black/50" />
+        <span className="text-xs">State </span>
       </div>
     ),
   },
   {
     accessorKey: "city",
-    meta: { icon: <Satellite className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <Satellite className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <Satellite className="h-5 w-5 text-black/50" />
-        City
+        <Satellite className="h-3 w-3 text-black/50" />
+        <span className="text-xs">City </span>
       </div>
     ),
   },
   {
     accessorKey: "date_of_job_posting",
-    meta: { icon: <DatabaseIcon className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <DatabaseIcon className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <DatabaseIcon className="h-5 w-5 text-black/50" />
-        Posted On
+        <DatabaseIcon className="h-3 w-3 text-black/50" />
+        <span className="text-xs">   Posted On </span>
       </div>
     ),
+    size: 160,
   },
   {
     accessorKey: "noc_code",
-    meta: { icon: <DatabaseIcon className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <DatabaseIcon className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <DatabaseIcon className="h-5 w-5 text-black/50" />
-        NOC Code
+        <DatabaseIcon className="h-3 w-3 text-black/50" />
+        <span className="text-xs">   NOC Code </span>
       </div>
     ),
+    size: 160,
   },
   {
     accessorKey: "noc_priority",
-    meta: { icon: <PowerSquare className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <PowerSquare className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <PowerSquare className="h-5 w-5 text-black/50" />
-        Industry
+        <PowerSquare className="h-3 w-3 text-black/50" />
+        <span className="text-xs">   Industry </span>
       </div>
     ),
+    size: 160,
   },
   {
     accessorKey: "job_title",
-    meta: { icon: <Map className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <Map className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <Map className="h-5 w-5 text-black/50" />
-        Job Title
+        <Map className="h-3 w-3 text-black/50" />
+      <span className="text-xs">Job Title</span>
       </div>
     ),
+    size: 200,
   },
   {
     accessorKey: "operating_name",
-    meta: { icon: <AreaChart className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <AreaChart className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <AreaChart className="h-5 w-5 text-black/50" />
-        Operating Name
+        <AreaChart className="h-3 w-3 text-black/50" />
+        <span className="text-xs">Operating Name </span>
       </div>
     ),
   },
   {
     accessorKey: "year",
-    meta: { icon: <AreaChart className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <AreaChart className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <AreaChart className="h-5 w-5 text-black/50" />
-        Year
+        <AreaChart className="h-3 w-3 text-black/50" />
+        <span className="text-xs">Year </span>
       </div>
     ),
+    size: 120,
   },
 ];
 
 export const lmiaColumns: ColumnWithIcon[] = [
   {
     accessorKey: "territory",
-    meta: { icon: <PersonStanding className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <PersonStanding className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <PersonStanding className="h-5 w-5 text-black/50" />
-        Province
+        <PersonStanding className="h-3 w-3 text-black/50" />
+        <span className="text-xs">Province </span>
       </div>
     ),
   },
   {
     accessorKey: "program",
-    meta: { icon: <Satellite className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <Satellite className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <Satellite className="h-5 w-5 text-black/50" />
-        Program
+        <Satellite className="h-3 w-3 text-black/50" />
+        <span className="text-xs">Program </span>
       </div>
     ),
   },
   {
     accessorKey: "city",
-    meta: { icon: <DatabaseIcon className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <DatabaseIcon className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <DatabaseIcon className="h-5 w-5 text-black/50" />
-        City
+        <DatabaseIcon className="h-3 w-3 text-black/50" />
+        <span className="text-xs">City </span>
       </div>
     ),
   },
   {
     accessorKey: "lmia_year",
-    meta: { icon: <Briefcase className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <Briefcase className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <Briefcase className="h-5 w-5 text-black/50" />
-        Year
+        <Briefcase className="h-3 w-3 text-black/50" />
+        <span className="text-xs">Year </span>
       </div>
     ),
+    size: 120,
   },
   {
     accessorKey: "job_title",
-    meta: { icon: <Building className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <Building className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <Building className="h-5 w-5 text-black/50" />
-        Job Title
+        <Building className="h-3 w-3 text-black/50" />
+       <span className="text-xs">Job Title </span>
       </div>
     ),
+    size: 200,
   },
   {
     accessorKey: "noc_code",
-    meta: { icon: <Building className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <Building className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <Building className="h-5 w-5 text-black/50" />
-        Job Title
+        <Building className="h-3 w-3 text-black/50" />
+        <span className="text-xs">NOC Code </span>
       </div>
     ),
+    size: 160,
   },
   {
     accessorKey: "priority_occupation",
-    meta: { icon: <PowerSquare className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <PowerSquare className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <PowerSquare className="h-5 w-5 text-black/50" />
-        Occupation
+        <PowerSquare className="h-3 w-3 text-black/50" />
+        <span className="text-xs">Industry </span>
       </div>
     ),
+    size: 160,
   },
   {
     accessorKey: "approved_positions",
-    meta: { icon: <Map className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <Map className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <Map className="h-5 w-5 text-black/50" />
-        Positions
+        <Map className="h-3 w-3 text-black/50" />
+        <span className="text-xs">Positions </span>
       </div>
     ),
   },
   {
     accessorKey: "operating_name",
-    meta: { icon: <AreaChart className="h-5 w-5 text-black/50" /> },
+    meta: { icon: <AreaChart className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">
-        <AreaChart className="h-5 w-5 text-black/50" />
-        Operating Name
+        <AreaChart className="h-3 w-3 text-black/50" />
+        <span className="text-xs">Operating Name </span>
       </div>
     ),
   },

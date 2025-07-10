@@ -142,7 +142,6 @@ const useData = () => {
   });
 };
 
-const selectProjectionLMIA =
-  "territory, program, city, lmia_year, job_title, noc_code, priority_occupation, approved_positions, operating_name";
+const selectProjectionLMIA ="territory, program, city, lmia_year, job_title, noc_code, priority_occupation, approved_positions, operating_name";
 const selectProjectionHotLeads =
   "state, city, date_of_job_posting, noc_code, noc_priority, job_title, operating_name, year, occupation_title, job_status, employer_type, 2021_noc";
