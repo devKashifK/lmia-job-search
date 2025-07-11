@@ -6,43 +6,10 @@ import { useSession } from "@/hooks/use-session";
 import UserDropdown from "@/components/ui/user-dropdown";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-
-const solutions = [
-  {
-    title: "Analytics",
-    href: "/analytics",
-    description: "Measure and optimize your search performance",
-  },
-  {
-    title: "Engagement",
-    href: "/engagement",
-    description: "Connect with users through powerful search features",
-  },
-  {
-    title: "Security",
-    href: "/security",
-    description: "Protect your data with enterprise-grade security",
-  },
-];
-
-const searchPages = [
-  {
-    title: "Hot Leads",
-    href: "/search",
-    description: "Search for Hot Leads",
-  },
-  {
-    title: "LMIA",
-    href: "/lmia",
-    description: "Search for LMIA jobs and candidates",
-  },
-];
+import Logo from "@/components/ui/logo";
 
 export default function Navbar({ className }: { className?: string }) {
   const { session, loading } = useSession();
@@ -59,10 +26,8 @@ export default function Navbar({ className }: { className?: string }) {
           {/* Logo on the left */}
           <CustomLink href="/" className="flex items-center min-w-[120px]">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 text-white flex items-center justify-center text-sm font-medium shadow-sm">
-                J
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-brand-600 to-brand-700 text-transparent bg-clip-text">
+              <Logo className="h-12 w-12 rounded-lg text-brand-600" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-brand-600 to-brand-700 text-transparent bg-clip-text leading-none">
                 Job Maze
               </span>
             </div>

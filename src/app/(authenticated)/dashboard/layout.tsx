@@ -11,6 +11,7 @@ import BackgroundWrapper from "@/components/ui/background-wrapper";
 import { Notifications } from "@/components/search-components.tsx/topbar";
 import Link from "next/link";
 import UserDropdown from "@/components/ui/user-dropdown";
+import Logo from "@/components/ui/logo";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -47,7 +48,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <span className="sr-only">Toggle sidebar</span>
               </Button>
               <Link href="/" className="flex items-center">
-                <span className="text-xl font-bold bg-gradient-to-r from-brand-600 to-brand-500 text-transparent bg-clip-text">
+                <Logo className="h-12 w-12 rounded-lg text-brand-600" />
+                <span className="text-xl font-bold bg-gradient-to-r from-brand-600 to-brand-500 text-transparent bg-clip-text leading-none">
                   Job Maze
                 </span>
               </Link>
