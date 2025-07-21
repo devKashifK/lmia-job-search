@@ -1,5 +1,5 @@
-import { create } from "zustand";
-import db from "@/db";
+import { create } from 'zustand';
+import db from '@/db';
 
 interface TableState {
   data: any[];
@@ -10,7 +10,7 @@ interface TableState {
   isLoading: boolean;
   filterPanelConfig: Record<string, string>;
   dataConfig: Record<string, string>;
-  viewMode: "grid" | "table";
+  viewMode: 'grid' | 'table';
   selectedRecordID: string | null;
   updateSearchSaved: (searchId: string, saved: boolean) => Promise<void>;
 
@@ -25,7 +25,7 @@ interface TableState {
   setCurrentSearchId: (id: string) => void;
   setDataConfig: (config: Record<string, string>) => void;
   setFilterPanelConfig: (config: Record<string, string>) => void;
-  setViewMode: (value: "grid" | "table") => void;
+  setViewMode: (value: 'grid' | 'table') => void;
   setSelectedRecordID: (id: string) => void;
 }
 
@@ -38,16 +38,16 @@ export const useTableStore = create<TableState>((set, get) => ({
   isLoading: false,
   filterPanelConfig: {},
   dataConfig: {},
-  viewMode: "grid",
+  viewMode: 'grid',
 
   setShowFilterPanel: (value) => {
     const currentValue = get().showFilterPanel;
     set({
-      showFilterPanel: typeof value === "boolean" ? value : !currentValue,
+      showFilterPanel: typeof value === 'boolean' ? value : !currentValue,
     });
   },
 
-  setViewMode: (value: "grid" | "table") => {
+  setViewMode: (value: 'grid' | 'table') => {
     set({
       viewMode: value,
     });
@@ -140,8 +140,8 @@ export const useTableStore = create<TableState>((set, get) => ({
       filteredData,
     });
   },
-  searchWithFuse: async (keywords, type = "hot_leads") => {
-    const safeKeywords = keywords || "";
+  searchWithFuse: async (keywords, type = 'hot_leads') => {
+    const safeKeywords = keywords || '';
 
     if (!safeKeywords.trim()) {
       set({ data: DATA, filteredData: DATA });
@@ -150,40 +150,40 @@ export const useTableStore = create<TableState>((set, get) => ({
 
     set({ isLoading: true });
 
-    if (type !== "hot_leads") {
+    if (type !== 'hot_leads') {
       try {
-        const { data: result, error } = await db.rpc("rpc_search_lmia", {
+        const { data: result, error } = await db.rpc('rpc_search_lmia', {
           term: keywords,
         });
 
         if (error) {
-          console.error("Error searching:", error);
+          console.error('Error searching:', error);
           throw error;
         }
 
         set({ data: result, filteredData: result });
       } catch (error) {
-        console.error("Error in search:", error);
+        console.error('Error in search:', error);
       } finally {
         set({ isLoading: false });
       }
     } else {
       try {
         const { data: result, error } = await db.rpc(
-          "rpc_search_hot_leads_new",
+          'rpc_search_hot_leads_new',
           {
             term: keywords,
           }
         );
 
         if (error) {
-          console.error("Error searching:", error);
+          console.error('Error searching:', error);
           throw error;
         }
 
         set({ data: result, filteredData: result });
       } catch (error) {
-        console.error("Error in search:", error);
+        console.error('Error in search:', error);
       } finally {
         set({ isLoading: false });
       }
@@ -193,15 +193,15 @@ export const useTableStore = create<TableState>((set, get) => ({
   updateSearchSaved: async (searchId, saved) => {
     try {
       const { error } = await db
-        .from("searches")
+        .from('searches')
         .update({ save: saved })
-        .eq("search_id", searchId);
+        .eq('search_id', searchId);
 
       if (error) {
         throw error;
       }
     } catch (error) {
-      console.error("Error updating search:", error);
+      console.error('Error updating search:', error);
       throw error;
     }
   },

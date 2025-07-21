@@ -1,37 +1,38 @@
-"use client";
-import React, { useState } from "react";
+'use client';
+import React, { useState } from 'react';
 import {
   Building2,
   Briefcase,
   Utensils,
   LayoutGrid,
   Table2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
-import { VisibilityState, OnChangeFn } from "@tanstack/react-table";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
+import { VisibilityState, OnChangeFn } from '@tanstack/react-table';
 
 import {
   LMIA,
   hotLeadsColumns,
   lmiaColumns,
-} from "@/components/filters/column-def";
-import { PremiumDialog } from "@/components/ui/premium-dialog";
-import Loader from "@/components/ui/loader";
-import PageTitle from "@/components/ui/page-title";
-import Pagination from "@/components/ui/pagination";
-import JobCard from "@/components/ui/job-card";
-import { SortOption } from "@/components/ui/sort-button";
-import { useMinimumLoading } from "@/hooks/use-minimum-loading";
-import Newfilterpanel from "@/components/ui/new-filterpanel";
-import { useTableStore } from "@/context/store";
-import db from "@/db";
-import { useQuery } from "@tanstack/react-query";
+} from '@/components/filters/column-def';
+import { PremiumDialog } from '@/components/ui/premium-dialog';
+import Loader from '@/components/ui/loader';
+import PageTitle from '@/components/ui/page-title';
+import Pagination from '@/components/ui/pagination';
+import JobCard from '@/components/ui/job-card';
+import { SortOption } from '@/components/ui/sort-button';
+import { useMinimumLoading } from '@/hooks/use-minimum-loading';
+import Newfilterpanel from '@/components/ui/new-filterpanel';
+import { useTableStore } from '@/context/store';
+import db from '@/db';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
-type DataType = "lmia" | "hotLeads";
+type DataType = 'lmia' | 'hotLeads';
 
 function isValidType(type: string | undefined): type is DataType {
-  return type === "lmia" || type === "hotLeads";
+  return type === 'lmia' || type === 'hotLeads';
 }
 
 interface FilterObject {
@@ -54,13 +55,13 @@ export const useData = () => {
     keyword,
   } = dataConfig || {};
 
-  const isQueryEnabled = typeof table === "string" && table.trim() !== "";
+  const isQueryEnabled = typeof table === 'string' && table.trim() !== '';
   const selectProjection =
-    type == "lmia" ? selectProjectionLMIA : selectProjectionHotLeads;
+    type == 'lmia' ? selectProjectionLMIA : selectProjectionHotLeads;
 
   let parsedFilterArray: FilterObject[] = [];
 
-  if (isQueryEnabled && filterJsonString && filterJsonString !== "null") {
+  if (isQueryEnabled && filterJsonString && filterJsonString !== 'null') {
     try {
       const parsed = JSON.parse(filterJsonString);
       if (Array.isArray(parsed)) {
@@ -68,7 +69,7 @@ export const useData = () => {
       }
     } catch (e) {
       console.error(
-        "Failed to parse dataConfig.columns (filterJsonString):",
+        'Failed to parse dataConfig.columns (filterJsonString):',
         e
       );
     }
@@ -80,7 +81,7 @@ export const useData = () => {
 
   return useQuery({
     queryKey: [
-      "tableData",
+      'tableData',
       table,
       type,
       method,
@@ -90,13 +91,13 @@ export const useData = () => {
       pageSize,
     ],
     queryFn: async () => {
-      if (method === "query") {
+      if (method === 'query') {
         let query = db
           .from(table)
-          .select(selectProjection || "*", { count: "exact" });
+          .select(selectProjection || '*', { count: 'exact' });
 
         parsedFilterArray.forEach((filterObject) => {
-          if (typeof filterObject === "object" && filterObject !== null) {
+          if (typeof filterObject === 'object' && filterObject !== null) {
             for (const key in filterObject) {
               if (Object.prototype.hasOwnProperty.call(filterObject, key)) {
                 const value = filterObject[key];
@@ -110,9 +111,9 @@ export const useData = () => {
           }
         });
 
-        const currentPage = typeof page === "number" && page > 0 ? page : 1;
+        const currentPage = typeof page === 'number' && page > 0 ? page : 1;
         const currentPSize =
-          typeof pageSize === "number" && pageSize > 0 ? pageSize : 10;
+          typeof pageSize === 'number' && pageSize > 0 ? pageSize : 10;
         const from = (currentPage - 1) * currentPSize;
         const to = from + currentPSize - 1;
 
@@ -131,25 +132,25 @@ export const useData = () => {
           error: null,
           count: count || 0,
         };
-      } else if (method === "rpc") {
+      } else if (method === 'rpc') {
         const orFilter = selectProjection
-          .split(",")
+          .split(',')
           .map((col) => `${col}.ilike.%${keyword}%`)
-          .join(",");
-        const currentPage = typeof page === "number" && page > 0 ? page : 1;
+          .join(',');
+        const currentPage = typeof page === 'number' && page > 0 ? page : 1;
         const currentPSize =
-          typeof pageSize === "number" && pageSize > 0 ? pageSize : 10;
+          typeof pageSize === 'number' && pageSize > 0 ? pageSize : 10;
         const from = (currentPage - 1) * currentPSize;
         const to = from + currentPSize - 1;
 
         let query = db
           .from(table)
-          .select(selectProjection || "*", { count: "exact" })
+          .select(selectProjection || '*', { count: 'exact' })
           .or(orFilter);
 
         // ✅ Apply filters from filterJsonString
         parsedFilterArray.forEach((filterObject) => {
-          if (typeof filterObject === "object" && filterObject !== null) {
+          if (typeof filterObject === 'object' && filterObject !== null) {
             for (const key in filterObject) {
               if (Object.prototype.hasOwnProperty.call(filterObject, key)) {
                 const value = filterObject[key];
@@ -188,13 +189,13 @@ export const useData = () => {
 export default function DynamicDataView({ title }: DynamicDataViewProps) {
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
   const [selectedJob, setSelectedJob] = useState<LMIA | null>(null);
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState('latest');
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
 
   const sortOptions: SortOption[] = [
-    { label: "Latest", value: "latest" },
-    { label: "Oldest", value: "oldest" },
-    { label: "Job Title", value: "title" },
+    { label: 'Latest', value: 'latest' },
+    { label: 'Oldest', value: 'oldest' },
+    { label: 'Job Title', value: 'title' },
   ];
 
   return (
@@ -232,7 +233,7 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
         open={showPremiumDialog}
         onOpenChange={setShowPremiumDialog}
         selectedColumn={
-          selectedJob?.job_title || selectedJob?.occupation_title || "Job"
+          selectedJob?.job_title || selectedJob?.occupation_title || 'Job'
         }
         selectedValue={selectedJob}
         handleSubscribe={() => setShowPremiumDialog(false)}
@@ -242,12 +243,12 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
 }
 
 export const selectProjectionLMIA =
-  "RecordID, territory, program, city, lmia_year, job_title, noc_code, priority_occupation, approved_positions, operating_name";
+  'RecordID, territory, program, city, lmia_year, job_title, noc_code, priority_occupation, approved_positions, operating_name';
 export const selectProjectionHotLeads =
-  "RecordID, state, city, date_of_job_posting, noc_code, noc_priority, job_title, operating_name, year, occupation_title, job_status, employer_type, 2021_noc";
+  'RecordID, state, city, date_of_job_posting, noc_code, noc_priority, job_title, operating_name, year, occupation_title, job_status, employer_type, 2021_noc';
 
 export function applyDataConfig(
-  type: "lmia" | "hot_leads",
+  type: 'lmia' | 'hot_leads',
   table: string,
   keyword: string,
   method: string,
@@ -265,7 +266,7 @@ export function applyDataConfig(
 
 export function applyFilterPanelConfig(
   column: string,
-  type: "lmia" | "hot_leads",
+  type: 'lmia' | 'hot_leads',
   table: string,
   keyword: string,
   method: string,
@@ -295,10 +296,12 @@ export function DataPanel({
   const { dataConfig } = useTableStore();
   const { viewMode } = useTableStore();
 
-  const columns = dataConfig.type === "lmia" ? lmiaColumns : hotLeadsColumns;
+  const navigate = useRouter();
+
+  const columns = dataConfig.type === 'lmia' ? lmiaColumns : hotLeadsColumns;
 
   const initialColumnVisibility = columns.reduce((acc, column) => {
-    if (typeof column.accessorKey === "string") {
+    if (typeof column.accessorKey === 'string') {
       acc[column.accessorKey] = true;
     }
     return acc;
@@ -316,7 +319,7 @@ export function DataPanel({
 
   const type: DataType = isValidType(dataConfig?.type)
     ? dataConfig.type
-    : "hotLeads";
+    : 'hotLeads';
   const pageSize = dataConfig?.pageSize
     ? parseInt(dataConfig.pageSize as string)
     : 60;
@@ -340,7 +343,7 @@ export function DataPanel({
         ) : (
           <div>
             {data?.data && data.data.length > 0 ? (
-              viewMode === "grid" ? (
+              viewMode === 'grid' ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {data.data.map((item: LMIA, idx: number) => {
                     const logoIcons = [Building2, Briefcase, Utensils];
@@ -361,25 +364,26 @@ export function DataPanel({
                         jobTitle={item.job_title || item.occupation_title}
                         city={item.city}
                         state={item.state}
-                        noc={item.noc_code || item["2021_noc"]}
+                        noc={item.noc_code || item['2021_noc']}
                         jobStatus={item.job_status}
                         employerType={item.employer_type}
                         datePosted={item.date_of_job_posting}
                         recordID={item.RecordID}
                         onKnowMore={() => {
                           setSelectedJob(item);
-                          setShowPremiumDialog(true);
+                          navigate.push(`/search/noc-profile/${item.noc_code}`);
+                          // setShowPremiumDialog(true);
                         }}
                         type={type}
-                        program={type === "lmia" ? item.program : undefined}
-                        lmiaYear={type === "lmia" ? item.lmia_year : undefined}
+                        program={type === 'lmia' ? item.program : undefined}
+                        lmiaYear={type === 'lmia' ? item.lmia_year : undefined}
                         priorityOccupation={
-                          type === "lmia" ? item.priority_occupation : undefined
+                          type === 'lmia' ? item.priority_occupation : undefined
                         }
                         approvedPositions={
-                          type === "lmia" ? item.approved_positions : undefined
+                          type === 'lmia' ? item.approved_positions : undefined
                         }
-                        territory={type === "lmia" ? item.territory : undefined}
+                        territory={type === 'lmia' ? item.territory : undefined}
                       />
                     );
                   })}
@@ -411,9 +415,9 @@ const DataPanelViewMode = () => {
   return (
     <div className="flex items-center border rounded-md bg-background">
       <Button
-        variant={viewMode === "grid" ? "default" : "ghost"}
+        variant={viewMode === 'grid' ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => setViewMode("grid")}
+        onClick={() => setViewMode('grid')}
         className="h-9 px-3 rounded-r-none"
       >
         <LayoutGrid className="h-4 w-4 mr-2" />
@@ -421,9 +425,9 @@ const DataPanelViewMode = () => {
       </Button>
       <div className="h-9 border-l" />
       <Button
-        variant={viewMode === "table" ? "default" : "ghost"}
+        variant={viewMode === 'table' ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => setViewMode("table")}
+        onClick={() => setViewMode('table')}
         className="h-9 px-3 rounded-l-none"
       >
         <Table2 className="h-4 w-4 mr-2" />
@@ -472,19 +476,20 @@ const DataPanelViewMode = () => {
 
 export const useSelectedColumnRecord = () => {
   const { selectedRecordID, dataConfig } = useTableStore.getState();
+  console.log(selectedRecordID, 'check');
 
   const selectProjection =
-    dataConfig.type === "lmia"
+    dataConfig.type === 'lmia'
       ? selectProjectionLMIA
       : selectProjectionHotLeads;
 
   const { data, error } = useQuery({
-    queryKey: ["selectedColumnRecord", selectedRecordID, dataConfig.type],
+    queryKey: ['selectedColumnRecord', selectedRecordID, dataConfig.type],
     queryFn: async () => {
       const { data, error } = await db
         .from(dataConfig.table)
-        .select(selectProjection.split(",").join(" , "))
-        .eq("RecordID", selectedRecordID)
+        .select(selectProjection.split(',').join(' , '))
+        .eq('RecordID', selectedRecordID)
         .single();
 
       if (error) {
