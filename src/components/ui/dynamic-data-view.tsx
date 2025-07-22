@@ -16,7 +16,6 @@ import {
   hotLeadsColumns,
   lmiaColumns,
 } from '@/components/filters/column-def';
-import { PremiumDialog } from '@/components/ui/premium-dialog';
 import Loader from '@/components/ui/loader';
 import PageTitle from '@/components/ui/page-title';
 import Pagination from '@/components/ui/pagination';
@@ -187,8 +186,6 @@ export const useData = () => {
   });
 };
 export default function DynamicDataView({ title }: DynamicDataViewProps) {
-  const [showPremiumDialog, setShowPremiumDialog] = useState(false);
-  const [selectedJob, setSelectedJob] = useState<LMIA | null>(null);
   const [sortBy, setSortBy] = useState('latest');
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
 
@@ -222,22 +219,8 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
         <div className="w-1/5">
           <Newfilterpanel />
         </div>
-        <DataPanel
-          setSelectedJob={setSelectedJob}
-          setShowPremiumDialog={setShowPremiumDialog}
-          savedSet={savedSet}
-          setSavedSet={setSavedSet}
-        />
+        <DataPanel savedSet={savedSet} setSavedSet={setSavedSet} />
       </div>
-      <PremiumDialog
-        open={showPremiumDialog}
-        onOpenChange={setShowPremiumDialog}
-        selectedColumn={
-          selectedJob?.job_title || selectedJob?.occupation_title || 'Job'
-        }
-        selectedValue={selectedJob}
-        handleSubscribe={() => setShowPremiumDialog(false)}
-      />
     </div>
   );
 }
@@ -284,11 +267,7 @@ export function applyFilterPanelConfig(
 export function DataPanel({
   savedSet,
   setSavedSet,
-  setSelectedJob,
-  setShowPremiumDialog,
 }: {
-  setSelectedJob: (job: LMIA) => void;
-  setShowPremiumDialog: (show: boolean) => void;
   savedSet: Set<number>;
   setSavedSet: (set: Set<number>) => void;
 }) {
@@ -370,9 +349,7 @@ export function DataPanel({
                         datePosted={item.date_of_job_posting}
                         recordID={item.RecordID}
                         onKnowMore={() => {
-                          setSelectedJob(item);
                           navigate.push(`/search/noc-profile/${item.noc_code}`);
-                          // setShowPremiumDialog(true);
                         }}
                         type={type}
                         program={type === 'lmia' ? item.program : undefined}

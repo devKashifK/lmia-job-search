@@ -1,8 +1,9 @@
 'use client';
 import React from 'react';
 import { useSelectedColumnRecord } from './ui/dynamic-data-view';
-import { Info, ArrowRight, Hash, SquareLibrary } from 'lucide-react';
+import { Info, ArrowRight, SquareLibrary } from 'lucide-react';
 import SimilarJobPostings from './similar-job-postings';
+import { useRouter } from 'next/navigation';
 
 interface JobMarketInfoProps {
   id: string;
@@ -16,6 +17,12 @@ function isJobRecord(
 
 export default function JobMarketInfo({ id }: JobMarketInfoProps) {
   const { data: jd } = useSelectedColumnRecord();
+  console.log(jd);
+  const navigate = useRouter();
+
+  const handleClick = () => {
+    navigate.push(`/analysis/${jd?.operating_name}`);
+  };
 
   return (
     <aside className="bg-white border-l pt-6 w-full pl-6 flex flex-col gap-2">
@@ -27,7 +34,10 @@ export default function JobMarketInfo({ id }: JobMarketInfoProps) {
         <h2 className="text-xl font-bold mb-1"></h2>
         <hr className="mb-4" />
         <div className="mb-2">
-          <button className="w-full flex items-center justify-between gap-2 text-xs px-4 py-3 rounded-lg bg-brand-50 hover:bg-brand-100 border border-brand-100 shadow-sm transition group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-brand-500">
+          <button
+            onClick={handleClick}
+            className="w-full flex items-center justify-between gap-2 text-xs px-4 py-3 rounded-lg bg-brand-50 hover:bg-brand-100 border border-brand-100 shadow-sm transition group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-brand-500"
+          >
             <span className="flex items-center gap-2">
               <Info className="w-5 h-5 text-brand-700" />
               <span className="text-brand-700 text-xs font-semibold">

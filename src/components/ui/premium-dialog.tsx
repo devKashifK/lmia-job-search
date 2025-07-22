@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from './select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
+import { useSelectedColumnRecord } from './dynamic-data-view';
 dayjs.extend(localizedFormat);
 
 type SelectedValue = {
@@ -56,25 +57,24 @@ export function PremiumDialog({
   );
 }
 
-export function PremiumDialogContent({
-  selectedValue,
-}: {
-  selectedValue: SelectedValue;
-}) {
-  const [additionalFilter , setAdditionalFilter] = useState({
-    filterCols :  ["operating_name"], 
-    filterVals : [selectedValue.operating_name],
+export function PremiumDialogContent() {
+  const { data: selectedValue } = useSelectedColumnRecord();
+  const [additionalFilter, setAdditionalFilter] = useState({
+    filterCols: ['operating_name'],
+    filterVals: [selectedValue?.operating_name],
   });
 
   // Track selected value for each filter
-  const [selectedFilterValues, setSelectedFilterValues] = useState<{ [key: string]: string }>({});
+  const [selectedFilterValues, setSelectedFilterValues] = useState<{
+    [key: string]: string;
+  }>({});
 
   const addAdditionalFilter = (col: string, val: string) => {
-    setAdditionalFilter(prev => ({
+    setAdditionalFilter((prev) => ({
       filterCols: [...prev.filterCols, col],
       filterVals: [...prev.filterVals, val],
     }));
-    setSelectedFilterValues(prev => ({ ...prev, [col]: val }));
+    setSelectedFilterValues((prev) => ({ ...prev, [col]: val }));
   };
 
   const { data: dashboardData } = useQuery<Snapshot>({
@@ -121,31 +121,39 @@ export function PremiumDialogContent({
       </div>
       {/* Active Filters UI */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 text-xs font-semibold">
+        <span className="px-2 py-1 rounded bg-brand-100 text-brand-700 text-xs font-semibold">
           operating_name: {selectedValue.operating_name}
         </span>
-        {additionalFilter.filterCols.map((col, idx) => (
-          col !== 'operating_name' && (
-            <span key={col + idx} className="flex items-center px-2 py-1 rounded bg-gray-100 text-gray-700 text-xs font-semibold">
-              {col}: {additionalFilter.filterVals[idx]}
-              <button
-                className="ml-1 text-gray-400 hover:text-red-500"
-                onClick={() => {
-                  // Remove this filter
-                  const newCols = additionalFilter.filterCols.filter((_, i) => i !== idx);
-                  const newVals = additionalFilter.filterVals.filter((_, i) => i !== idx);
-                  setAdditionalFilter({
-                    filterCols: newCols,
-                    filterVals: newVals,
-                  });
-                }}
-                aria-label={`Remove filter ${col}`}
+        {additionalFilter.filterCols.map(
+          (col, idx) =>
+            col !== 'operating_name' && (
+              <span
+                key={col + idx}
+                className="flex items-center px-2 py-1 rounded bg-gray-100 text-gray-700 text-xs font-semibold"
               >
-                ×
-              </button>
-            </span>
-          )
-        ))}
+                {col}: {additionalFilter.filterVals[idx]}
+                <button
+                  className="ml-1 text-gray-400 hover:text-red-500"
+                  onClick={() => {
+                    // Remove this filter
+                    const newCols = additionalFilter.filterCols.filter(
+                      (_, i) => i !== idx
+                    );
+                    const newVals = additionalFilter.filterVals.filter(
+                      (_, i) => i !== idx
+                    );
+                    setAdditionalFilter({
+                      filterCols: newCols,
+                      filterVals: newVals,
+                    });
+                  }}
+                  aria-label={`Remove filter ${col}`}
+                >
+                  ×
+                </button>
+              </span>
+            )
+        )}
       </div>
       <div className="flex items-center space-x-2 mb-4 overflow-x-auto scrollbar-hide">
         <Tabs className="w-full" defaultValue={tabs[0]}>
@@ -157,7 +165,7 @@ export function PremiumDialogContent({
             ))}
           </TabsList>
           <TabsContent className="w-full" value={'Hot Leads'}>
-            <div className="flex flex-wrap items-center gap-4 bg-blue-50 p-4 rounded-lg mb-8">
+            <div className="flex flex-wrap items-center gap-4 bg-brand-50 p-4 rounded-lg mb-8">
               <DialogContentFilters
                 companyName={selectedValue.operating_name}
                 addAdditionalFilter={addAdditionalFilter}
@@ -206,8 +214,7 @@ type MonthlyJobTrendsChartProps = {
 };
 
 function MonthlyJobTrendsChart({ data }: MonthlyJobTrendsChartProps) {
-
-  console.log(data , "checkData")
+  console.log(data, 'checkData');
   // Aggregate by month (YYYY-MM)
   const monthlyMap = new Map<string, { cnt: number }>();
   data.forEach((item) => {
@@ -261,7 +268,7 @@ function MonthlyJobTrendsChart({ data }: MonthlyJobTrendsChartProps) {
             ) => [
               <span
                 key={props && props.payload ? props.payload.label : 'month'}
-                className="text-blue-600 font-bold"
+                className="text-brand-600 font-bold"
               >
                 {Number(value)} jobs
               </span>,
@@ -289,11 +296,18 @@ function MonthlyJobTrendsChart({ data }: MonthlyJobTrendsChartProps) {
   );
 }
 
-const DialogContentFilters = ({ companyName, addAdditionalFilter, selectedFilterValues, setSelectedFilterValues }: {
-  companyName: string,
-  addAdditionalFilter: (col: string, val: string) => void,
-  selectedFilterValues: { [key: string]: string },
-  setSelectedFilterValues: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>,
+const DialogContentFilters = ({
+  companyName,
+  addAdditionalFilter,
+  selectedFilterValues,
+  setSelectedFilterValues,
+}: {
+  companyName: string;
+  addAdditionalFilter: (col: string, val: string) => void;
+  selectedFilterValues: { [key: string]: string };
+  setSelectedFilterValues: React.Dispatch<
+    React.SetStateAction<{ [key: string]: string }>
+  >;
 }) => {
   const filters = [
     { label: 'NOC Code', name: 'noc_code' },
@@ -312,7 +326,7 @@ const DialogContentFilters = ({ companyName, addAdditionalFilter, selectedFilter
         label={filter.label}
         companyName={companyName}
         addAdditionalFilter={addAdditionalFilter}
-        value={selectedFilterValues[filter.name] || ""}
+        value={selectedFilterValues[filter.name] || ''}
         setSelectedFilterValues={setSelectedFilterValues}
       />
     </div>
@@ -332,7 +346,9 @@ const DialogContentFiltersItem = ({
   companyName: string;
   addAdditionalFilter: (col: string, val: string) => void;
   value: string;
-  setSelectedFilterValues: React.Dispatch<React.SetStateAction<{ [key: string]: string }>>;
+  setSelectedFilterValues: React.Dispatch<
+    React.SetStateAction<{ [key: string]: string }>
+  >;
 }) => {
   const { data, isLoading } = useFilterOptions(item, companyName);
 
@@ -341,11 +357,11 @@ const DialogContentFiltersItem = ({
     <Select
       value={value}
       onValueChange={(selected: string) => {
-        setSelectedFilterValues(prev => ({ ...prev, [item]: selected }));
+        setSelectedFilterValues((prev) => ({ ...prev, [item]: selected }));
         addAdditionalFilter(item, selected);
       }}
     >
-      <SelectTrigger className="rounded-md w-48 border border-gray-300 px-2 py-1 text-sm bg-white focus:ring-2 focus:ring-blue-200">
+      <SelectTrigger className="rounded-md w-48 border border-gray-300 px-2 py-1 text-sm bg-white focus:ring-2 focus:ring-brand-200">
         <SelectValue placeholder={`Select ${label}...`} className="text-sm" />
       </SelectTrigger>
       <SelectContent>
@@ -378,11 +394,22 @@ const useFilterOptions = (item: string, companyName: string) => {
 
 export function DialogCharts({ dashboardData }: { dashboardData: any }) {
   // Defensive: ensure all chart data is always an array or zero
-  const by_year = Array.isArray(dashboardData.by_year) ? dashboardData.by_year : [];
-  const by_state = Array.isArray(dashboardData.by_state) ? dashboardData.by_state : [];
-  const by_city = Array.isArray(dashboardData.by_city) ? dashboardData.by_city : [];
-  const by_occupation_title = Array.isArray(dashboardData.by_occupation_title) ? dashboardData.by_occupation_title : [];
-  const total_count = typeof dashboardData.total_count === 'number' ? dashboardData.total_count : 0;
+  const by_year = Array.isArray(dashboardData.by_year)
+    ? dashboardData.by_year
+    : [];
+  const by_state = Array.isArray(dashboardData.by_state)
+    ? dashboardData.by_state
+    : [];
+  const by_city = Array.isArray(dashboardData.by_city)
+    ? dashboardData.by_city
+    : [];
+  const by_occupation_title = Array.isArray(dashboardData.by_occupation_title)
+    ? dashboardData.by_occupation_title
+    : [];
+  const total_count =
+    typeof dashboardData.total_count === 'number'
+      ? dashboardData.total_count
+      : 0;
 
   // Fallback: if all arrays are empty, show a cool message
   const noData =
@@ -393,10 +420,26 @@ export function DialogCharts({ dashboardData }: { dashboardData: any }) {
 
   if (noData) {
     return (
-      <div className="flex flex-col items-center justify-center h-[400px] text-gray-400 bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-inner border border-blue-100">
-        <svg width="64" height="64" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mb-4 text-blue-300"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <div className="flex flex-col items-center justify-center h-[400px] text-gray-400 bg-gradient-to-br from-brand-50 to-white rounded-xl shadow-inner border border-brand-100">
+        <svg
+          width="64"
+          height="64"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className="mb-4 text-brand-300"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
         <span className="text-xl font-semibold mb-1">No data available</span>
-        <span className="text-sm">Try adjusting your filters or check back later.</span>
+        <span className="text-sm">
+          Try adjusting your filters or check back later.
+        </span>
       </div>
     );
   }
@@ -441,7 +484,7 @@ export function DialogCharts({ dashboardData }: { dashboardData: any }) {
     '#F59E42', // orange
     '#F87171', // red
     '#34D399', // green
-    '#60A5FA', // blue
+    '#60A5FA', // brand
     '#FBBF24', // yellow
     '#A78BFA', // purple
     '#F472B6', // pink
@@ -526,7 +569,7 @@ export function DialogCharts({ dashboardData }: { dashboardData: any }) {
                 formatter={(value: any, _unused: unknown, props: any) => [
                   <span
                     key={props && props.payload ? props.payload.label : 'year'}
-                    className="text-blue-600 font-bold"
+                    className="text-brand-600 font-bold"
                   >
                     {value} jobs
                   </span>,
@@ -617,7 +660,9 @@ export function DialogCharts({ dashboardData }: { dashboardData: any }) {
         <h2 className="text-xl font-bold text-gray-900 mb-6 tracking-tight">
           Monthly Job Hiring Trends
         </h2>
-        <MonthlyJobTrendsChart data={dashboardData.by_date_of_job_posting ?? []} />
+        <MonthlyJobTrendsChart
+          data={dashboardData.by_date_of_job_posting ?? []}
+        />
       </div>
       {/* Row 3: Two cards */}
       <div className="bg-white rounded-xl p-8 min-h-[480px] flex flex-col shadow-md border border-gray-100 transition-all duration-300 group overflow-hidden py-8">
@@ -768,7 +813,7 @@ export function DialogCharts({ dashboardData }: { dashboardData: any }) {
           </ResponsiveContainer>
           <div className="w-[160px] h-[160px] flex flex-col items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center -mt-14">
             <p className="text-sm font-medium text-gray-500">Total Jobs</p>
-            <p className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+            <p className="text-4xl font-extrabold bg-gradient-to-r from-brand-600 to-brand-400 bg-clip-text text-transparent">
               {(total_count / 1000).toFixed(2)}K
             </p>
           </div>
@@ -816,6 +861,3 @@ function getTopNCitiesWithOther(data: Breakdown[], n = 12) {
   }
   return top;
 }
-
-
-
