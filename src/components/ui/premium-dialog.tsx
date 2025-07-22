@@ -122,7 +122,7 @@ export function PremiumDialogContent() {
       {/* Active Filters UI */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <span className="px-2 py-1 rounded bg-brand-100 text-brand-700 text-xs font-semibold">
-          operating_name: {selectedValue.operating_name}
+          Company: {selectedValue.operating_name}
         </span>
         {additionalFilter.filterCols.map(
           (col, idx) =>
