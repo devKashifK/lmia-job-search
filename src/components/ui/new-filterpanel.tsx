@@ -1,14 +1,14 @@
-import { useTableStore } from "@/context/store";
-import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, Circle, X, ChevronDown } from "lucide-react";
-import React, { startTransition } from "react";
-import { hotLeadsColumns, lmiaColumns } from "@/components/filters/column-def";
-import { AttributeName } from "@/helpers/attribute";
-import db from "@/db";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { selectProjectionHotLeads } from "./dynamic-data-view";
-import { selectProjectionLMIA } from "./dynamic-data-view";
+import { useTableStore } from '@/context/store';
+import { useQuery } from '@tanstack/react-query';
+import { CheckCircle, Circle, X, ChevronDown } from 'lucide-react';
+import React, { startTransition } from 'react';
+import { hotLeadsColumns, lmiaColumns } from '@/components/filters/column-def';
+import { AttributeName } from '@/helpers/attribute';
+import db from '@/db';
+import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { selectProjectionHotLeads } from './dynamic-data-view';
+import { selectProjectionLMIA } from './dynamic-data-view';
 
 interface FilterConfig {
   [key: string]: string[];
@@ -16,14 +16,16 @@ interface FilterConfig {
 
 export default function Newfilterpanel() {
   const columns = useFilterPanelColumns();
-  const allowedKeys = ["date_of_job_posting"];
+  const allowedKeys = ['date_of_job_posting'];
   const [selectedFiters, setSelectedFiters] = React.useState<
     {
       column: string;
       value: string;
     }[]
   >([]);
-  const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
+  const [collapsedSections, setCollapsedSections] = React.useState<
+    Record<string, boolean>
+  >({});
 
   // Set initial collapsed state: only 'state' and 'city' open, others closed
   React.useEffect(() => {
@@ -32,7 +34,7 @@ export default function Newfilterpanel() {
     if (Object.keys(collapsedSections).length === 0) {
       const initial: Record<string, boolean> = {};
       columns.forEach((col) => {
-        if (col.accessorKey === "state" || col.accessorKey === "city") {
+        if (col.accessorKey === 'state' || col.accessorKey === 'city') {
           initial[col.accessorKey] = false; // open
         } else {
           initial[col.accessorKey] = true; // collapsed
@@ -57,19 +59,19 @@ export default function Newfilterpanel() {
 
   const handleRemoveFilter = (column: string, value: string) => {
     // First update the selected filters state
-    setSelectedFiters((prev) => 
+    setSelectedFiters((prev) =>
       prev.filter((f) => !(f.column === column && f.value === value))
     );
 
     // Then update the dataConfig to trigger a rerun
     const { dataConfig, setDataConfig } = useTableStore.getState();
     let previousFilters: Record<string, string[]>[] = [];
-    
-    if (dataConfig.columns && typeof dataConfig.columns === "string") {
+
+    if (dataConfig.columns && typeof dataConfig.columns === 'string') {
       try {
         previousFilters = JSON.parse(dataConfig.columns);
       } catch (e) {
-        console.error("Failed to parse columns:", e);
+        console.error('Failed to parse columns:', e);
       }
     }
 
@@ -92,7 +94,7 @@ export default function Newfilterpanel() {
     setDataConfig({
       ...(dataConfig || {}),
       columns: JSON.stringify(updatedFilters),
-      page: "1",
+      page: '1',
     });
   };
 
@@ -120,7 +122,10 @@ export default function Newfilterpanel() {
               className="flex items-center gap-1 px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs"
             >
               <span className="font-medium">
-                <AttributeName name={filter.column} className="w-3 h-3 text-brand-600" />
+                <AttributeName
+                  name={filter.column}
+                  className="w-3 h-3 text-brand-600"
+                />
               </span>
               <span className="mx-1">:</span>
               <span>{filter.value}</span>
@@ -141,7 +146,8 @@ export default function Newfilterpanel() {
             {columns
               .filter((column) => !allowedKeys.includes(column.accessorKey))
               .map((column, idx) => {
-                const isCollapsed = collapsedSections[column.accessorKey] || false;
+                const isCollapsed =
+                  collapsedSections[column.accessorKey] || false;
                 return (
                   <div
                     key={column?.accessorKey}
@@ -159,7 +165,9 @@ export default function Newfilterpanel() {
                         />
                       </span>
                       <ChevronDown
-                        className={`w-4 h-4 ml-2 transition-transform duration-200 ${isCollapsed ? "rotate-0" : "rotate-180"}`}
+                        className={`w-4 h-4 ml-2 transition-transform duration-200 ${
+                          isCollapsed ? 'rotate-0' : 'rotate-180'
+                        }`}
                       />
                     </div>
                     {!isCollapsed && (
@@ -194,11 +202,12 @@ const FilterAttributes = ({
   handleSelectedFilters: (column: string, value: string) => void;
 }) => {
   const { data, isLoading, error } = useFilterColumnAttributes(column);
-  const [searchQuery, setSearchQuery] = React.useState("");
+  console.log(data, 'checkDataOfColumn');
+  const [searchQuery, setSearchQuery] = React.useState('');
   const [localFilters, setLocalFilters] = React.useState(new Set<string>());
 
   const { data: filterAvailability } = useQuery({
-    queryKey: ["filter-availability", column, selectedFilters],
+    queryKey: ['filter-availability', column, selectedFilters],
     queryFn: () =>
       selectedFilters.length > 0
         ? checkFilterAvailibity(selectedFilters, column)
@@ -209,7 +218,7 @@ const FilterAttributes = ({
 
   React.useEffect(() => {
     let initialSelections = new Set<string>();
-    if (dataConfig.columns && typeof dataConfig.columns === "string") {
+    if (dataConfig.columns && typeof dataConfig.columns === 'string') {
       try {
         const parsedGlobalFilters = JSON.parse(
           dataConfig.columns
@@ -232,7 +241,7 @@ const FilterAttributes = ({
     [filterAvailability]
   );
 
-  console.log("availableSet", availableSet);
+  console.log('availableSet', availableSet);
 
   const filteredData = React.useMemo(() => {
     if (!data) return [];
@@ -272,15 +281,15 @@ const FilterAttributes = ({
 
     // Then update dataConfig
     let previousFilters: Record<string, string[]>[] = [];
-    if (dataConfig.columns && typeof dataConfig.columns === "string") {
+    if (dataConfig.columns && typeof dataConfig.columns === 'string') {
       try {
         previousFilters = JSON.parse(dataConfig.columns);
       } catch (e) {
-        console.error("Failed to parse columns:", e);
+        console.error('Failed to parse columns:', e);
       }
     }
 
-    console.log("localFilters", localFilters);
+    console.log('localFilters', localFilters);
 
     let found = false;
     const updatedFilters = previousFilters
@@ -314,7 +323,7 @@ const FilterAttributes = ({
     setDataConfig({
       ...(dataConfig || {}),
       columns: JSON.stringify(updatedFilters),
-      page: "1",
+      page: '1',
     });
   };
 
@@ -337,7 +346,7 @@ const FilterAttributes = ({
     <div className="flex flex-col gap-2">
       <input
         type="text"
-        placeholder={"Search..."}
+        placeholder={'Search...'}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="w-full px-2 py-1 h-7 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600"
@@ -356,17 +365,17 @@ const FilterAttributes = ({
                 startTransition(() => handleFilterUpdate(column, value))
               }
               onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
+                if (e.key === 'Enter' || e.key === ' ') {
                   if (!isAvailable) return;
                   startTransition(() => handleFilterUpdate(column, value));
                 }
               }}
               className={cn(
-                "group flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-200 cursor-pointer",
-                "hover:bg-brand-100/80 active:bg-brand-200",
+                'group flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-200 cursor-pointer',
+                'hover:bg-brand-100/80 active:bg-brand-200',
                 isAvailable
-                  ? "cursor-pointer hover:bg-brand-100/80 active:bg-brand-200"
-                  : "cursor-not-allowed opacity-50"
+                  ? 'cursor-pointer hover:bg-brand-100/80 active:bg-brand-200'
+                  : 'cursor-not-allowed opacity-50'
               )}
             >
               <div className="w-3.5 h-3.5 flex-shrink-0">
@@ -402,12 +411,12 @@ export const useFilterColumnAttributes = (column: string) => {
   } = filterPanelConfig || {};
 
   const selectProjection =
-    type === "hot_leads" ? selectProjectionHotLeads : selectProjectionLMIA;
+    type === 'hot_leads' ? selectProjectionHotLeads : selectProjectionLMIA;
 
   return useQuery({
     enabled: !!table && !!filterColumn && !!keyword && !!column,
     queryKey: [
-      "filtered-distinct-values",
+      'filtered-distinct-values',
       table,
       filterColumn,
       keyword,
@@ -415,29 +424,31 @@ export const useFilterColumnAttributes = (column: string) => {
       column,
     ],
     queryFn: async () => {
-      if (method === "query") {
+      if (method === 'query') {
         const { data, error } = await db
           .from(table)
-          .select(column, { count: "exact", head: false })
+          .select(column, { count: 'exact', head: false })
           .eq(filterColumn, keyword);
 
         if (error) throw new Error(error.message);
 
-        const uniqueValues = [...new Set(data.map((item) => item[column]))];
+        const uniqueValues = [
+          ...new Set(data.map((item) => item[column].toUpperCase())),
+        ];
         return uniqueValues.sort((b, a) => a.localeCompare(b));
-      } else if (method === "rpc") {
+      } else if (method === 'rpc') {
         const orClause = selectProjection
-          .split(",")
-          .filter((col) => col !== "RecordID")
+          .split(',')
+          .filter((col) => col !== 'RecordID')
           .map((col) => `${col}.ilike.%${keyword}%`)
-          .join(",");
+          .join(',');
 
         const { data, error } = await db
           .from(table)
-          .select(column, { count: "exact", head: false })
+          .select(column, { count: 'exact', head: false })
           .or(orClause);
 
-        if (!data) throw new Error("No data found");
+        if (!data) throw new Error('No data found');
 
         if (error) throw new Error(error.message);
 
@@ -453,23 +464,23 @@ export const useFilterColumnAttributes = (column: string) => {
 const useFilterPanelColumns = () => {
   const { filterPanelConfig } = useTableStore.getState();
 
-  if (filterPanelConfig.type === "hot_leads") {
-    if (filterPanelConfig.column === "job_title") {
+  if (filterPanelConfig.type === 'hot_leads') {
+    if (filterPanelConfig.column === 'job_title') {
       const filteredColumn = hotLeadsColumns.filter(
-        (f) => f.accessorKey !== "noc_code"
+        (f) => f.accessorKey !== 'noc_code'
       );
       return filteredColumn;
     }
     return hotLeadsColumns;
-  } else if (filterPanelConfig.type === "hot_leads_new") {
-    if (filterPanelConfig.column === "job_title") {
+  } else if (filterPanelConfig.type === 'hot_leads_new') {
+    if (filterPanelConfig.column === 'job_title') {
       const filteredColumn = hotLeadsColumns.filter(
-        (f) => f.accessorKey !== "noc_code"
+        (f) => f.accessorKey !== 'noc_code'
       );
       return filteredColumn;
     }
     return hotLeadsColumns;
-  } else if (filterPanelConfig.type === "lmia") {
+  } else if (filterPanelConfig.type === 'lmia') {
     return lmiaColumns;
   }
 };
@@ -488,7 +499,7 @@ const checkFilterAvailibity = async (
   const filterPayload =
     selectedFilters.length > 0 ? toFilterObject(selectedFilters) : {};
 
-  const { data, error } = await db.rpc("check_filter_availability", {
+  const { data, error } = await db.rpc('check_filter_availability', {
     p_table: table,
     p_column: targetColumn,
     p_filters: filterPayload,

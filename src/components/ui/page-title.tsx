@@ -1,8 +1,8 @@
-import { useTableStore } from "@/context/store";
-import { AttributeName } from "@/helpers/attribute";
-import React from "react";
-import { Badge } from "./badge";
-import { useData } from "./dynamic-data-view";
+import { useTableStore } from '@/context/store';
+import { AttributeName } from '@/helpers/attribute';
+import React from 'react';
+import { Badge } from './badge';
+import { useData } from './dynamic-data-view';
 
 interface PageTitleProps {
   title: string;
@@ -14,7 +14,7 @@ interface PageTitleProps {
 export default function PageTitle({
   title,
   showVerified = true,
-  className = "",
+  className = '',
 }: PageTitleProps) {
   const { dataConfig } = useTableStore();
   const { data } = useData();
