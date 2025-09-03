@@ -3,6 +3,7 @@ import { AttributeName } from '@/helpers/attribute';
 import React from 'react';
 import { Badge } from './badge';
 import { useData } from './dynamic-data-view';
+import { useSearchParams } from 'next/navigation';
 
 interface PageTitleProps {
   title: string;
@@ -18,6 +19,10 @@ export default function PageTitle({
 }: PageTitleProps) {
   const { dataConfig } = useTableStore();
   const { data } = useData();
+  const sp = useSearchParams();
+
+  // table from URL (fallback to trending_job)
+  const tableName = (sp.get('t') ?? 'trending_job').trim();
   const count = data?.count;
   return (
     <div className={`flex flex-col gap-2 mb-8 ${className}`}>
@@ -28,7 +33,7 @@ export default function PageTitle({
           name={title}
         />
         <Badge variant="outline">
-          <AttributeName name={dataConfig?.type} />
+          <AttributeName name={tableName} />
         </Badge>
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-500">

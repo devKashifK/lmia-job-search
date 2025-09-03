@@ -26,7 +26,7 @@ import Newfilterpanel from '@/components/ui/new-filterpanel';
 import { useTableStore } from '@/context/store';
 import db from '@/db';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type DataType = 'lmia' | 'hotLeads';
 
@@ -40,160 +40,190 @@ interface FilterObject {
 
 interface DynamicDataViewProps {
   title: string;
+  field: string;
 }
 
-export const useData = () => {
-  const { dataConfig } = useTableStore();
-  const {
-    table,
-    method,
-    columns: filterJsonString,
-    type,
-    page,
-    pageSize,
-    keyword,
-  } = dataConfig || {};
+const ALLOWED_FIELDS = [
+  'state',
+  'city',
+  'category',
+  'job_title',
+  'noc_code',
+  'employer',
+] as const;
+type AllowedField = (typeof ALLOWED_FIELDS)[number];
 
-  const isQueryEnabled = typeof table === 'string' && table.trim() !== '';
-  const selectProjection =
-    type == 'lmia' ? selectProjectionLMIA : selectProjectionHotLeads;
+type FiltersArray = Array<Record<string, string | string[]>>;
 
-  let parsedFilterArray: FilterObject[] = [];
+function toPositiveInt(v: string | null, fallback: number) {
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
+}
 
-  if (isQueryEnabled && filterJsonString && filterJsonString !== 'null') {
-    try {
-      const parsed = JSON.parse(filterJsonString);
-      if (Array.isArray(parsed)) {
-        parsedFilterArray = parsed;
-      }
-    } catch (e) {
-      console.error(
-        'Failed to parse dataConfig.columns (filterJsonString):',
-        e
-      );
-    }
-  } else if (isQueryEnabled && Array.isArray(filterJsonString)) {
-    parsedFilterArray = filterJsonString;
+function stableFiltersKey(sp: URLSearchParams) {
+  // Build a stable JSON key of allowed filter arrays (sorted)
+  const obj: Record<string, string[]> = {};
+  for (const k of ALLOWED_FIELDS) {
+    const vals = sp
+      .getAll(k)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .sort();
+    if (vals.length) obj[k] = vals;
+  }
+  return JSON.stringify(obj);
+}
+
+// if you added normalized columns, map them here
+const NORM_MAP: Partial<Record<AllowedField, string>> = {
+  state: 'state_norm',
+  city: 'city_norm',
+  category: 'category_norm',
+  job_title: 'job_title_norm',
+  noc_code: 'noc_code_norm',
+  employer: 'employer_norm',
+};
+
+export function useData(query: string, fieldFromProp?: string) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const sp = useSearchParams();
+
+  // table from URL (fallback to trending_job)
+  const tableName = (sp.get('t') ?? 'trending_job').trim();
+
+  // from URL
+  const fieldParam = (sp.get('field') ?? 'all').toLowerCase();
+  const field = (fieldFromProp ?? fieldParam).toLowerCase();
+
+  const page = toPositiveInt(sp.get('page'), 1);
+  const pageSize = toPositiveInt(sp.get('pageSize'), 20);
+
+  const filtersKey = stableFiltersKey(sp);
+
+  // 🔹 date range from URL (YYYY-MM-DD)
+  const rawDateFrom = sp.get('date_from') ?? undefined;
+  const rawDateTo = sp.get('date_to') ?? undefined;
+
+  // keep only valid YYYY-MM-DD; if both are present and out of order, swap
+  const isISO = (s?: string) => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
+  let dateFrom = isISO(rawDateFrom) ? rawDateFrom : undefined;
+  let dateTo = isISO(rawDateTo) ? rawDateTo : undefined;
+  if (dateFrom && dateTo && dateFrom > dateTo) {
+    const tmp = dateFrom;
+    dateFrom = dateTo;
+    dateTo = tmp;
   }
 
-  const stableFiltersKeyPart = JSON.stringify(parsedFilterArray);
+  // parse filters from URL → { city: [...], state: [...], ... }
+  const filters: Record<string, string[]> = {};
+  for (const k of ALLOWED_FIELDS) {
+    const vals = sp
+      .getAll(k)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (vals.length) filters[k] = Array.from(new Set(vals)); // dedupe
+  }
 
-  return useQuery({
-    queryKey: [
-      'tableData',
-      table,
-      type,
-      method,
-      selectProjection,
-      stableFiltersKeyPart,
-      page,
-      pageSize,
-    ],
-    queryFn: async () => {
-      if (method === 'query') {
-        let query = db
-          .from(table)
-          .select(selectProjection || '*', { count: 'exact' });
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  const q = (query ?? '').trim();
 
-        parsedFilterArray.forEach((filterObject) => {
-          if (typeof filterObject === 'object' && filterObject !== null) {
-            for (const key in filterObject) {
-              if (Object.prototype.hasOwnProperty.call(filterObject, key)) {
-                const value = filterObject[key];
-                if (Array.isArray(value)) {
-                  query = query.in(key, value);
-                } else {
-                  query = query.eq(key, value);
-                }
-              }
-            }
+  // small helpers to update URL (no Zustand)
+  const setPage = (next: number) => {
+    const nextSp = new URLSearchParams(sp.toString());
+    nextSp.set('page', String(Math.max(1, Math.floor(next))));
+    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
+  };
+
+  const setPageSize = (next: number) => {
+    const nextSp = new URLSearchParams(sp.toString());
+    nextSp.set('pageSize', String(Math.max(1, Math.floor(next))));
+    nextSp.set('page', '1'); // reset to first page
+    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
+  };
+
+  return {
+    ...useQuery({
+      queryKey: [
+        'tableData',
+        tableName,
+        q,
+        field,
+        page,
+        pageSize,
+        filtersKey,
+        // 🔹 include dates so React Query refetches when they change
+        dateFrom ?? null,
+        dateTo ?? null,
+      ],
+      keepPreviousData: true,
+      queryFn: async () => {
+        let builder = db
+          .from(tableName)
+          .select(
+            'id,date_of_job_posting,state,city,category,job_title,noc_code,employer',
+            { count: 'exact' }
+          )
+          .order('id', { ascending: true });
+
+        // free-text search
+        if (q !== '') {
+          if (field === 'all') {
+            const orExpr = (ALLOWED_FIELDS as readonly string[])
+              .map((c) => `${c}.ilike.%${q}%`)
+              .join(',');
+            builder = builder.or(orExpr);
+          } else if ((ALLOWED_FIELDS as readonly string[]).includes(field)) {
+            builder = builder.ilike(field as AllowedField, `%${q}%`);
+          } else {
+            console.warn('Ignored unknown field:', field);
           }
-        });
-
-        const currentPage = typeof page === 'number' && page > 0 ? page : 1;
-        const currentPSize =
-          typeof pageSize === 'number' && pageSize > 0 ? pageSize : 10;
-        const from = (currentPage - 1) * currentPSize;
-        const to = from + currentPSize - 1;
-
-        query = query.range(from, to);
-        const { data, error, count } = await query;
-
-        if (error) {
-          throw new Error(
-            error.message ||
-              `Failed to fetch data from Supabase table "${table}".`
-          );
         }
 
-        return {
-          data: data as unknown as LMIA[],
-          error: null,
-          count: count || 0,
-        };
-      } else if (method === 'rpc') {
-        const orFilter = selectProjection
-          .split(',')
-          .map((col) => `${col}.ilike.%${keyword}%`)
-          .join(',');
-        const currentPage = typeof page === 'number' && page > 0 ? page : 1;
-        const currentPSize =
-          typeof pageSize === 'number' && pageSize > 0 ? pageSize : 10;
-        const from = (currentPage - 1) * currentPSize;
-        const to = from + currentPSize - 1;
+        // 🔹 date range (AND with other filters)
+        if (dateFrom) builder = builder.gte('date_of_job_posting', dateFrom);
+        if (dateTo) builder = builder.lte('date_of_job_posting', dateTo);
 
-        let query = db
-          .from(table)
-          .select(selectProjection || '*', { count: 'exact' })
-          .or(orFilter);
-
-        // ✅ Apply filters from filterJsonString
-        parsedFilterArray.forEach((filterObject) => {
-          if (typeof filterObject === 'object' && filterObject !== null) {
-            for (const key in filterObject) {
-              if (Object.prototype.hasOwnProperty.call(filterObject, key)) {
-                const value = filterObject[key];
-
-                if (Array.isArray(value)) {
-                  query = query.in(key, value);
-                } else {
-                  query = query.eq(key, value);
-                }
-              }
-            }
-          }
-        });
-
-        query = query.range(from, to);
-
-        // ✅ Fetch data
-        const { data, error, count } = await query;
-
-        if (error) {
-          throw new Error(
-            error.message ||
-              `Failed to fetch data from Supabase table "${table}".`
-          );
+        // filters: AND across columns, OR within a column (using normalized columns if present)
+        for (const key of Object.keys(filters)) {
+          const vals =
+            filters[key]?.map((v) => v.trim().toLowerCase()).filter(Boolean) ??
+            [];
+          if (!vals.length) continue;
+          const col = (NORM_MAP as any)[key] ?? key; // key_norm if available
+          builder =
+            vals.length === 1
+              ? builder.eq(col, vals[0])
+              : builder.in(col, vals);
         }
+
+        const { data, error, count } = await builder
+          .order('date_of_job_posting', { ascending: false })
+          .order('id', { ascending: true })
+          .range(from, to);
+        if (error) throw new Error(error.message || 'Failed to fetch');
+
         return {
-          data: data as unknown as LMIA[],
-          error: null,
-          count: count || 0,
+          rows: data ?? [],
+          count: count ?? 0,
+          page,
+          pageSize,
+          totalPages: count ? Math.ceil(count / pageSize) : undefined,
+          hasMore: count ? to + 1 < count : (data?.length ?? 0) === pageSize,
         };
-      }
-    },
-    enabled: isQueryEnabled,
-  });
-};
-export default function DynamicDataView({ title }: DynamicDataViewProps) {
-  const [sortBy, setSortBy] = useState('latest');
+      },
+    }),
+    setPage,
+    setPageSize,
+  };
+}
+
+export default function DynamicDataView({
+  title,
+  field,
+}: DynamicDataViewProps) {
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
-
-  const sortOptions: SortOption[] = [
-    { label: 'Latest', value: 'latest' },
-    { label: 'Oldest', value: 'oldest' },
-    { label: 'Job Title', value: 'title' },
-  ];
 
   return (
     <div className="container mx-auto px-24 py-8">
@@ -201,7 +231,7 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
         <div className="flex justify-between items-center mb-6">
           <PageTitle title={title} />
           <div className="flex items-center space-x-3">
-            <DataPanelViewMode />
+            {/* <DataPanelViewMode /> */}
 
             {/* <DataPanelColumns /> */}
 
@@ -219,7 +249,12 @@ export default function DynamicDataView({ title }: DynamicDataViewProps) {
         <div className="w-1/5">
           <Newfilterpanel />
         </div>
-        <DataPanel savedSet={savedSet} setSavedSet={setSavedSet} />
+        <DataPanel
+          field={field}
+          query={title}
+          savedSet={savedSet}
+          setSavedSet={setSavedSet}
+        />
       </div>
     </div>
   );
@@ -265,13 +300,18 @@ export function applyFilterPanelConfig(
 }
 
 export function DataPanel({
+  query,
+  field,
   savedSet,
   setSavedSet,
 }: {
   savedSet: Set<number>;
+  query: string;
+  field: string;
   setSavedSet: (set: Set<number>) => void;
 }) {
-  const { data, error, isLoading } = useData();
+  const { data, error, isLoading } = useData(query, field);
+  console.log('Data:', data);
   const { dataConfig } = useTableStore();
   const { viewMode } = useTableStore();
 
@@ -321,10 +361,10 @@ export function DataPanel({
           </div>
         ) : (
           <div>
-            {data?.data && data.data.length > 0 ? (
+            {data?.rows && data.rows.length > 0 ? (
               viewMode === 'grid' ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {data.data.map((item: LMIA, idx: number) => {
+                  {data.rows.map((item: LMIA, idx: number) => {
                     const logoIcons = [Building2, Briefcase, Utensils];
                     const LogoIcon = logoIcons[idx % logoIcons.length];
                     const saved = savedSet.has(idx);
@@ -339,12 +379,12 @@ export function DataPanel({
                           else next.add(idx);
                           setSavedSet(next);
                         }}
-                        employerName={item.operating_name}
+                        employerName={item.employer}
                         jobTitle={item.job_title || item.occupation_title}
                         city={item.city}
                         state={item.state}
                         noc={item.noc_code || item['2021_noc']}
-                        jobStatus={item.job_status}
+                        category={item.category}
                         employerType={item.employer_type}
                         datePosted={item.date_of_job_posting}
                         recordID={item.RecordID}

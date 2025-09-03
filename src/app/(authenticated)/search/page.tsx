@@ -1,44 +1,46 @@
-"use client";
-import { Input } from "@/components/ui/input";
-import { TypewriterEffect } from "@/components/ui/type-writter";
-import { Search } from "lucide-react";
-import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import Footer from "@/pages/homepage/footer";
-import { useUpdateCredits } from "@/hooks/use-credits";
-import { useToast } from "@/hooks/use-toast";
-import db from "@/db";
-import { useSession } from "@/hooks/use-session";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { SearchFeatures } from "@/components/search/features";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+'use client';
+import { Input } from '@/components/ui/input';
+import { TypewriterEffect } from '@/components/ui/type-writter';
+import { Search } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Footer from '@/pages/homepage/footer';
+import { useUpdateCredits } from '@/hooks/use-credits';
+import { useToast } from '@/hooks/use-toast';
+import db from '@/db';
+import { useSession } from '@/hooks/use-session';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { SearchFeatures } from '@/components/search/features';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import Category from "@/components/ui/category";
-import { useTableStore } from "@/context/store";
+} from '@/components/ui/select';
+import Category from '@/components/ui/category';
+import { useTableStore } from '@/context/store';
 import {
   applyDataConfig,
   applyFilterPanelConfig,
-} from "@/components/ui/dynamic-data-view";
-import Navbar from "@/components/ui/nabvar";
+} from '@/components/ui/dynamic-data-view';
+import Navbar from '@/components/ui/nabvar';
 
 export default function Page() {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [suggestions, setSuggestions] = useState<{ suggestion: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [searchType, setSearchType] = useState<"hot_leads" | "lmia">(
-    "hot_leads"
+  const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>(
+    'hot_leads'
   );
+  const searchParams = useSearchParams();
+  const sp = new URLSearchParams(searchParams.toString());
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { updateCreditsAndSearch } = useUpdateCredits();
@@ -57,8 +59,8 @@ export default function Page() {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const fetchSuggestions = async (query: string) => {
@@ -69,16 +71,17 @@ export default function Page() {
 
     setIsLoadingSuggestions(true);
     try {
-      if (searchType === "hot_leads") {
-        const { data, error } = await db.rpc("rpc_suggest_hot_leads_new", {
-          term: query,
+      if (searchType === 'hot_leads') {
+        const { data, error } = await db.rpc('suggest_trending_job', {
+          p_field: 'all',
+          p_q: query,
           p_limit: 10,
         });
 
         if (error) throw error;
         setSuggestions(data || []);
-      } else if (searchType === "lmia") {
-        const { data, error } = await db.rpc("rpc_suggest_lmia", {
+      } else if (searchType === 'lmia') {
+        const { data, error } = await db.rpc('rpc_suggest_lmia', {
           term: query,
           p_limit: 10,
         });
@@ -86,7 +89,7 @@ export default function Page() {
         setSuggestions(data || []);
       }
     } catch (error) {
-      console.error("Error fetching suggestions:", error);
+      console.error('Error fetching suggestions:', error);
       setSuggestions([]);
     } finally {
       setIsLoadingSuggestions(false);
@@ -100,36 +103,43 @@ export default function Page() {
     fetchSuggestions(value);
   };
 
-  const handleSuggestionClick = async (suggestion: string) => {
+  const handleSuggestionClick = async (suggestion: object) => {
+    console.log('Suggestion clicked:', suggestion);
     if (!session?.session) {
-      updateCreditsAndSearch(suggestion);
-      if (searchType === "hot_leads") {
-        applyDataConfig(
-          searchType,
-          "hot_leads_new",
-          suggestion,
-          "rpc",
-          setDataConfig
+      updateCreditsAndSearch(suggestion?.suggestion);
+      if (searchType === 'hot_leads') {
+        // applyDataConfig(
+        //   searchType,
+        //   'hot_leads_new',
+        //   suggestion,
+        //   'rpc',
+        //   setDataConfig
+        // );
+
+        // applyFilterPanelConfig(
+        //   'job_title',
+        //   searchType,
+        //   'hot_leads_new',
+        //   suggestion.suggestion,
+        //   'rpc',
+        //   setFilterPanelConfig
+        // );
+        sp.set('field', suggestion.field ?? 'all');
+        sp.set('t', 'trending_job');
+        navigate.push(
+          `/search/hot-leads/${encodeURIComponent(
+            suggestion.suggestion
+          )}?${sp.toString()}`
         );
+      } else if (searchType === 'lmia') {
+        applyDataConfig(searchType, 'lmia', suggestion, 'rpc', setDataConfig);
 
         applyFilterPanelConfig(
-          "job_title",
+          'job_title',
           searchType,
-          "hot_leads_new",
+          'lmia',
           suggestion,
-          "rpc",
-          setFilterPanelConfig
-        );
-        navigate.push(`/search/hot-leads/${encodeURIComponent(suggestion)}`);
-      } else if (searchType === "lmia") {
-        applyDataConfig(searchType, "lmia", suggestion, "rpc", setDataConfig);
-
-        applyFilterPanelConfig(
-          "job_title",
-          searchType,
-          "lmia",
-          suggestion,
-          "rpc",
+          'rpc',
           setFilterPanelConfig
         );
 
@@ -144,27 +154,27 @@ export default function Page() {
   const checkCredits = async () => {
     if (!session?.user?.id) {
       toast({
-        title: "Error",
-        description: "You must be logged in to perform this action",
-        variant: "destructive",
+        title: 'Error',
+        description: 'You must be logged in to perform this action',
+        variant: 'destructive',
       });
       return false;
     }
 
     try {
       const { data: credits, error } = await db
-        .from("credits")
-        .select("total_credit, used_credit")
-        .eq("id", session.user.id)
+        .from('credits')
+        .select('total_credit, used_credit')
+        .eq('id', session.user.id)
         .single();
 
       if (error) throw error;
 
       if (!credits) {
         toast({
-          title: "Error",
-          description: "Unable to fetch credits information",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Unable to fetch credits information',
+          variant: 'destructive',
         });
         return false;
       }
@@ -174,22 +184,22 @@ export default function Page() {
 
       if (remainingCredits <= 0) {
         toast({
-          title: "No Credits Remaining",
+          title: 'No Credits Remaining',
           description:
             "You've used all your credits. Please purchase more to continue searching.",
-          variant: "destructive",
+          variant: 'destructive',
         });
-        navigate.push("/dashboard/credits"); // Redirect to credits page
+        navigate.push('/dashboard/credits'); // Redirect to credits page
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error("Error checking credits:", error);
+      console.error('Error checking credits:', error);
       toast({
-        title: "Error",
-        description: "Unable to verify credits. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Unable to verify credits. Please try again.',
+        variant: 'destructive',
       });
       return false;
     }
@@ -198,9 +208,9 @@ export default function Page() {
   const startSearch = async () => {
     if (!input.trim()) {
       toast({
-        title: "Empty Search",
-        description: "Please enter a search term",
-        variant: "destructive",
+        title: 'Empty Search',
+        description: 'Please enter a search term',
+        variant: 'destructive',
       });
       return;
     }
@@ -211,34 +221,34 @@ export default function Page() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(input);
-      if (searchType === "hot_leads") {
+      if (searchType === 'hot_leads') {
         applyDataConfig(
           searchType,
-          "hot_leads_new",
+          'hot_leads_new',
           input,
-          "rpc",
+          'rpc',
           setDataConfig
         );
 
         applyFilterPanelConfig(
-          "job_title",
+          'job_title',
           searchType,
-          "hot_leads_new",
+          'hot_leads_new',
           input,
-          "rpc",
+          'rpc',
           setFilterPanelConfig
         );
 
         navigate.push(`/search/hot-leads/${encodeURIComponent(input)}`);
-      } else if (searchType === "lmia") {
-        applyDataConfig(searchType, "lmia", input, "rpc", setDataConfig);
+      } else if (searchType === 'lmia') {
+        applyDataConfig(searchType, 'lmia', input, 'rpc', setDataConfig);
 
         applyFilterPanelConfig(
-          "job_title",
+          'job_title',
           searchType,
-          "lmia",
+          'lmia',
           input,
-          "rpc",
+          'rpc',
           setFilterPanelConfig
         );
 
@@ -261,52 +271,52 @@ export default function Page() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(term);
-      if (searchType === "hot_leads") {
+      if (searchType === 'hot_leads') {
         setDataConfig({
-          type: "hot_leads",
-          table: "hot_leads_new",
+          type: 'hot_leads',
+          table: 'hot_leads_new',
           columns: JSON.stringify([
             {
               job_title: term,
             },
           ]),
           keyword: term,
-          method: "query",
-          year: "",
+          method: 'query',
+          year: '',
           page: 1,
           pageSize: 100,
         });
 
         setFilterPanelConfig({
-          column: "job_title",
-          table: "hot_leads_new",
+          column: 'job_title',
+          table: 'hot_leads_new',
           keyword: term,
-          type: "hot_leads",
-          method: "query",
+          type: 'hot_leads',
+          method: 'query',
         });
 
-        navigate.push(`/search/hot-leads/${encodeURIComponent(term)}`);
-      } else if (searchType === "lmia") {
+        navigate.push(`/search/hot-leads/${encodeURIComponent(term)}?`);
+      } else if (searchType === 'lmia') {
         setDataConfig({
-          type: "lmia",
-          table: "lmia",
+          type: 'lmia',
+          table: 'lmia',
           columns: JSON.stringify([
             {
               job_title: term,
             },
           ]),
           keyword: term,
-          method: "query",
-          year: "",
+          method: 'query',
+          year: '',
           page: 1,
           pageSize: 100,
         });
         setFilterPanelConfig({
-          column: "job_title",
-          table: "lmia",
+          column: 'job_title',
+          table: 'lmia',
           keyword: term,
-          type: "lmia",
-          method: "query",
+          type: 'lmia',
+          method: 'query',
         });
         navigate.push(`/search/lmia/${encodeURIComponent(term)}`);
       }
@@ -316,27 +326,27 @@ export default function Page() {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       startSearch();
     }
   };
 
   // Updated trending searches - added Cook, removed Remote Positions
   const trendingSearches =
-    searchType === "hot_leads"
+    searchType === 'hot_leads'
       ? [
-          "Bookkeeper",
-          "Cook",
-          "Kitchen Helper",
-          "Truck Driver",
-          "Carpenter",
-          "Baker",
+          'Bookkeeper',
+          'Cook',
+          'Kitchen Helper',
+          'Truck Driver',
+          'Carpenter',
+          'Baker',
         ]
       : [
-          "Food Service Supervisors",
-          "Cooks",
-          "Retail Sales Supervisors",
-          "Transport Truck Drivers",
+          'Food Service Supervisors',
+          'Cooks',
+          'Retail Sales Supervisors',
+          'Transport Truck Drivers',
         ];
 
   return (
@@ -357,7 +367,7 @@ export default function Page() {
             transition={{
               duration: 15,
               repeat: Infinity,
-              repeatType: "reverse",
+              repeatType: 'reverse',
             }}
           />
           <motion.div
@@ -369,7 +379,7 @@ export default function Page() {
             transition={{
               duration: 20,
               repeat: Infinity,
-              repeatType: "reverse",
+              repeatType: 'reverse',
             }}
           />
 
@@ -385,9 +395,9 @@ export default function Page() {
                 transition={{ duration: 0.6 }}
                 className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight"
               >
-                Discover{" "}
+                Discover{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-700">
-                  Perfect{" "}
+                  Perfect{' '}
                 </span>
                 <span>Career</span>
               </motion.h1>
@@ -396,15 +406,15 @@ export default function Page() {
                 <TypewriterEffect
                   title="Search With"
                   words={[
-                    "Noc Code",
-                    "Program",
-                    "Employer",
-                    "Address",
-                    "Occupation",
-                    "City",
-                    "Employer Name",
-                    "Province Mapping",
-                    "",
+                    'Noc Code',
+                    'Program',
+                    'Employer',
+                    'Address',
+                    'Occupation',
+                    'City',
+                    'Employer Name',
+                    'Province Mapping',
+                    '',
                   ]}
                 />
               </div>
@@ -431,7 +441,7 @@ export default function Page() {
                         placeholder="Job title, company, or keyword..."
                         value={input}
                         onChange={handleChange}
-                        onKeyDown={handleKeyPress}
+                        // onKeyDown={handleKeyPress}
                         onFocus={() => setShowSuggestions(true)}
                       />
 
@@ -439,7 +449,7 @@ export default function Page() {
                         <span className="h-8 border-l border-gray-300 mx-2" />
                         <Select
                           value={searchType}
-                          onValueChange={(value: "hot_leads" | "lmia") =>
+                          onValueChange={(value: 'hot_leads' | 'lmia') =>
                             setSearchType(value)
                           }
                         >
@@ -462,7 +472,7 @@ export default function Page() {
                           {isChecking ? (
                             <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                           ) : (
-                            "Search"
+                            'Search'
                           )}
                         </motion.button>
                       </div>
@@ -492,7 +502,7 @@ export default function Page() {
                         <div
                           ref={suggestionsRef}
                           className="absolute left-0 right-0 bg-white rounded-2xl shadow-2xl border border-brand-100  mt-4"
-                          style={{ top: "46%", zIndex: 1000 }}
+                          style={{ top: '46%', zIndex: 1000 }}
                         >
                           <ScrollArea className="max-h-[300px] z-[10000]">
                             {isLoadingSuggestions ? (
@@ -515,7 +525,7 @@ export default function Page() {
                                   key={index}
                                   className="group px-5 py-3 hover:bg-brand-50 cursor-pointer transition-all duration-300 border-b border-gray-100 last:border-b-0"
                                   onClick={() =>
-                                    handleSuggestionClick(suggestion.suggestion)
+                                    handleSuggestionClick(suggestion)
                                   }
                                 >
                                   <div className="flex items-center gap-3">

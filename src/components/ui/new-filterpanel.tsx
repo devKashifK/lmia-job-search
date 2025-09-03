@@ -1,122 +1,195 @@
-import { useTableStore } from '@/context/store';
+'use client';
+
+import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { CheckCircle, Circle, X, ChevronDown } from 'lucide-react';
-import React, { startTransition } from 'react';
-import { hotLeadsColumns, lmiaColumns } from '@/components/filters/column-def';
-import { AttributeName } from '@/helpers/attribute';
+import {
+  CheckCircle,
+  Circle,
+  X,
+  ChevronDown,
+  Calendar as CalendarIcon,
+} from 'lucide-react';
+import {
+  usePathname,
+  useRouter,
+  useSearchParams,
+  useParams,
+} from 'next/navigation';
 import db from '@/db';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
-import { selectProjectionHotLeads } from './dynamic-data-view';
-import { selectProjectionLMIA } from './dynamic-data-view';
+import { hotLeadsColumns, lmiaColumns } from '@/components/filters/column-def';
+import { AttributeName } from '@/helpers/attribute';
+import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip';
+import { format, parseISO, isValid } from 'date-fns';
 
-interface FilterConfig {
-  [key: string]: string[];
+// ---------------------------
+// Config / helpers
+// ---------------------------
+
+const USE_NORMALIZED = true as const; // flip to false if you DID NOT create *_norm columns
+
+const NORM_MAP = {
+  state: 'state_norm',
+  city: 'city_norm',
+  category: 'category_norm',
+  job_title: 'job_title_norm',
+  noc_code: 'noc_code_norm',
+  employer: 'employer_norm',
+} as const;
+
+type SelectedFilter = { column: string; value: string };
+
+function toPositiveInt(v: string | null, fallback: number) {
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
 }
 
+/** Distinct values for a facet column (lightweight; deduped client-side). */
+export function useFilterColumnAttributes(column: string) {
+  const sp = useSearchParams();
+  const params = useParams<{ search?: string }>();
+  const table = (sp.get('t') ?? 'trending_job').trim();
+  const field = (sp.get('field') ?? 'all').trim().toLowerCase();
+  const searchTerm =
+    typeof params?.search === 'string' ? decodeURIComponent(params.search) : '';
+
+  return useQuery({
+    queryKey: ['facet-values', table, column, field, searchTerm],
+    queryFn: async () => {
+      let q = db.from(table).select(column);
+      if (searchTerm && field && field !== 'all') {
+        q = q.ilike(field as any, `%${searchTerm}%`);
+      }
+      const { data, error } = await q.limit(10000);
+      if (error) throw new Error(error.message);
+
+      const uniq = Array.from(
+        new Set(
+          (data ?? [])
+            .map((row: any) =>
+              row?.[column] == null ? '' : String(row[column]).trim()
+            )
+            .filter(Boolean)
+        )
+      );
+      return uniq.sort((a, b) => a.localeCompare(b));
+    },
+    staleTime: 60_000,
+  });
+}
+
+// ---------------------------
+// Panel
+// ---------------------------
+
 export default function Newfilterpanel() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const sp = useSearchParams();
+
   const columns = useFilterPanelColumns();
-  const allowedKeys = ['date_of_job_posting'];
-  const [selectedFiters, setSelectedFiters] = React.useState<
-    {
-      column: string;
-      value: string;
-    }[]
+
+  // local chips state (derived from URL)
+  const [selectedFilters, setSelectedFilters] = React.useState<
+    SelectedFilter[]
   >([]);
+
+  React.useEffect(() => {
+    const keys = [
+      'state',
+      'city',
+      'category',
+      'job_title',
+      'noc_code',
+      'employer',
+    ];
+    const next: SelectedFilter[] = [];
+    for (const k of keys) {
+      const vals = sp.getAll(k);
+      for (const v of vals) next.push({ column: k, value: v });
+    }
+    setSelectedFilters(next);
+  }, [sp]);
+
+  // read date range chips from URL (optional display)
+  const dateFrom = sp.get('date_from');
+  const dateTo = sp.get('date_to');
+
+  const clearDateRange = () => {
+    const nextSp = new URLSearchParams(sp.toString());
+    nextSp.delete('date_from');
+    nextSp.delete('date_to');
+    nextSp.set('page', '1');
+    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
+  };
+
+  // collapsed sections (state & city open by default)
   const [collapsedSections, setCollapsedSections] = React.useState<
     Record<string, boolean>
   >({});
-
-  // Set initial collapsed state: only 'state' and 'city' open, others closed
   React.useEffect(() => {
     if (!columns) return;
-    // Only set initial state if collapsedSections is empty
-    if (Object.keys(collapsedSections).length === 0) {
-      const initial: Record<string, boolean> = {};
-      columns.forEach((col) => {
-        if (col.accessorKey === 'state' || col.accessorKey === 'city') {
-          initial[col.accessorKey] = false; // open
-        } else {
-          initial[col.accessorKey] = true; // collapsed
-        }
-      });
-      setCollapsedSections(initial);
-    }
-  }, [columns]);
+    if (Object.keys(collapsedSections).length > 0) return;
+    const initial: Record<string, boolean> = {};
+    columns.forEach((col) => {
+      initial[col.accessorKey] = !(
+        col.accessorKey === 'state' || col.accessorKey === 'city'
+      );
+    });
+    setCollapsedSections(initial);
+  }, [columns, collapsedSections]);
+
+  const toggleSection = (column: string) =>
+    setCollapsedSections((prev) => ({ ...prev, [column]: !prev[column] }));
 
   const handleSelectedFilters = (column: string, value: string) => {
-    setSelectedFiters((prev) => {
+    // Only update local chips; URL is updated inside FilterAttributes
+    setSelectedFilters((prev) => {
       const exists = prev.some((f) => f.column === column && f.value === value);
-      if (exists) {
-        // remove that exact filter
-        return prev.filter((f) => !(f.column === column && f.value === value));
-      } else {
-        // add it
-        return [...prev, { column, value }];
-      }
+      return exists
+        ? prev.filter((f) => !(f.column === column && f.value === value))
+        : [...prev, { column, value }];
     });
   };
 
   const handleRemoveFilter = (column: string, value: string) => {
-    // First update the selected filters state
-    setSelectedFiters((prev) =>
+    // 1) Update URL
+    const nextSp = new URLSearchParams(sp.toString());
+    const current = new Set(nextSp.getAll(column));
+    current.delete(value);
+    nextSp.delete(column);
+    for (const v of current) nextSp.append(column, v);
+    nextSp.set('page', '1');
+    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
+
+    // 2) Update local chips
+    setSelectedFilters((prev) =>
       prev.filter((f) => !(f.column === column && f.value === value))
     );
-
-    // Then update the dataConfig to trigger a rerun
-    const { dataConfig, setDataConfig } = useTableStore.getState();
-    let previousFilters: Record<string, string[]>[] = [];
-
-    if (dataConfig.columns && typeof dataConfig.columns === 'string') {
-      try {
-        previousFilters = JSON.parse(dataConfig.columns);
-      } catch (e) {
-        console.error('Failed to parse columns:', e);
-      }
-    }
-
-    const updatedFilters = previousFilters
-      .map((filter) => {
-        if (filter.hasOwnProperty(column)) {
-          const existingValues = filter[column] || [];
-          const updatedValues = existingValues.filter((v) => v !== value);
-
-          if (updatedValues.length === 0) {
-            return null;
-          }
-
-          return { [column]: updatedValues };
-        }
-        return filter;
-      })
-      .filter(Boolean);
-
-    setDataConfig({
-      ...(dataConfig || {}),
-      columns: JSON.stringify(updatedFilters),
-      page: '1',
-    });
-  };
-
-  const toggleSection = (column: string) => {
-    setCollapsedSections((prev) => ({
-      ...prev,
-      [column]: !prev[column],
-    }));
   };
 
   return (
     <div className="border-r-2 border-brand-200 pr-8 flex flex-col gap-4">
       <div className="flex justify-between items-center">
         <div className="text-lg font-bold">Filters</div>
-        {/* <div className="text-sm w-3 h-3">
-          <ChevronLeft />
-        </div> */}
       </div>
 
-      {selectedFiters.length > 0 && (
+      {(selectedFilters.length > 0 || dateFrom || dateTo) && (
         <div className="flex flex-wrap gap-2 mb-2">
-          {selectedFiters.map((filter) => (
+          {selectedFilters.map((filter) => (
             <div
               key={`${filter.column}-${filter.value}`}
               className="flex items-center gap-1 px-2 py-1 bg-brand-100 text-brand-700 rounded-full text-xs"
@@ -137,51 +210,61 @@ export default function Newfilterpanel() {
               </button>
             </div>
           ))}
+          {(dateFrom || dateTo) && (
+            <DateRangeChip
+              from={dateFrom ?? undefined}
+              to={dateTo ?? undefined}
+              onClear={clearDateRange}
+            />
+          )}
         </div>
       )}
 
       <div className="flex flex-col gap-2">
         {columns && (
           <div className="w-full">
-            {columns
-              .filter((column) => !allowedKeys.includes(column.accessorKey))
-              .map((column, idx) => {
-                const isCollapsed =
-                  collapsedSections[column.accessorKey] || false;
-                return (
+            {columns.map((column) => {
+              const isCollapsed = !!collapsedSections[column.accessorKey];
+              const isDate = column.accessorKey === 'date_of_job_posting';
+
+              return (
+                <div
+                  key={column.accessorKey}
+                  className="border-b border-zinc-100 flex flex-col gap-2 mb-4 pb-4"
+                >
                   <div
-                    key={column?.accessorKey}
-                    className="border-b border-zinc-100 flex flex-col gap-2 mb-4 pb-4"
+                    className="text-sm font-medium flex items-center justify-between cursor-pointer select-none"
+                    onClick={() => toggleSection(column.accessorKey)}
                   >
-                    <div
-                      key={idx}
-                      className="text-sm font-medium flex items-center justify-between cursor-pointer select-none"
-                      onClick={() => toggleSection(column.accessorKey)}
-                    >
-                      <span>
-                        <AttributeName
-                          name={column?.accessorKey}
-                          className="w-4 h-4 text-gray-400"
-                        />
-                      </span>
-                      <ChevronDown
-                        className={`w-4 h-4 ml-2 transition-transform duration-200 ${
-                          isCollapsed ? 'rotate-0' : 'rotate-180'
-                        }`}
+                    <span>
+                      <AttributeName
+                        name={column.accessorKey}
+                        className="w-4 h-4 text-gray-400"
                       />
-                    </div>
-                    {!isCollapsed && (
-                      <div className="">
-                        <FilterAttributes
-                          column={column?.accessorKey}
-                          handleSelectedFilters={handleSelectedFilters}
-                          selectedFilters={selectedFiters}
-                        />
-                      </div>
-                    )}
+                    </span>
+                    <ChevronDown
+                      className={`w-4 h-4 ml-2 transition-transform duration-200 ${
+                        isCollapsed ? 'rotate-0' : 'rotate-180'
+                      }`}
+                    />
                   </div>
-                );
-              })}
+
+                  {!isCollapsed && (
+                    <>
+                      {isDate ? (
+                        <DateRangeFilter />
+                      ) : (
+                        <FilterAttributes
+                          column={column.accessorKey}
+                          selectedFilters={selectedFilters}
+                          handleSelectedFilters={handleSelectedFilters}
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -189,145 +272,139 @@ export default function Newfilterpanel() {
   );
 }
 
-const FilterAttributes = ({
+function fmtDate(s?: string) {
+  if (!s) return '…';
+  const d = parseISO(s);
+  return isValid(d) ? format(d, 'MMM d, yyyy') : s; // fallback to raw if not ISO
+}
+
+function DateRangeChip({
+  from,
+  to,
+  onClear,
+}: {
+  from?: string;
+  to?: string;
+  onClear: () => void;
+}) {
+  const pretty = `${fmtDate(from)} — ${fmtDate(to)}`;
+  const raw = `${from ?? '—'} → ${to ?? '—'}`;
+
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            title={raw}
+            className="inline-flex max-w-full sm:max-w-[440px] items-center gap-2
+                       rounded-full border border-brand-200 bg-brand-50/70 text-brand-800
+                       px-3 py-1.5 shadow-sm hover:bg-brand-50 transition-colors"
+          >
+            {/* <CalendarIcon className="h-3.5 w-3.5 flex-none opacity-80" /> */}
+
+            {/* label + dates; no wrap, dates can truncate */}
+            <div className="flex min-w-0 items-center gap-2">
+              {/* short label on small screens */}
+
+              {/* full label on >= sm */}
+
+              <span className="text-xs tabular-nums tracking-tight truncate">
+                {pretty}
+              </span>
+            </div>
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={onClear}
+              aria-label="Clear date range"
+              className="flex-none h-6 w-6 rounded-full text-brand-900 hover:bg-brand-100"
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          <span className="tabular-nums text-[8px]">{raw}</span>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+// ---------------------------
+// Child: one facet (non-date)
+// ---------------------------
+
+function FilterAttributes({
   column,
   selectedFilters,
   handleSelectedFilters,
 }: {
   column: string;
-  selectedFilters: {
-    column: string;
-    value: string;
-  }[];
+  selectedFilters: SelectedFilter[];
   handleSelectedFilters: (column: string, value: string) => void;
-}) => {
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const sp = useSearchParams();
+
+  // facet options
   const { data, isLoading, error } = useFilterColumnAttributes(column);
-  console.log(data, 'checkDataOfColumn');
-  const [searchQuery, setSearchQuery] = React.useState('');
+
+  // initialize selected values from URL (?column=A&column=B)
   const [localFilters, setLocalFilters] = React.useState(new Set<string>());
-
-  const { data: filterAvailability } = useQuery({
-    queryKey: ['filter-availability', column, selectedFilters],
-    queryFn: () =>
-      selectedFilters.length > 0
-        ? checkFilterAvailibity(selectedFilters, column)
-        : [],
-  });
-
-  const { dataConfig } = useTableStore.getState();
-
   React.useEffect(() => {
-    let initialSelections = new Set<string>();
-    if (dataConfig.columns && typeof dataConfig.columns === 'string') {
-      try {
-        const parsedGlobalFilters = JSON.parse(
-          dataConfig.columns
-        ) as FilterConfig[];
-        const foundFilterConfig = parsedGlobalFilters.find((f) =>
-          f.hasOwnProperty(column)
-        );
-        if (foundFilterConfig) {
-          initialSelections = new Set(foundFilterConfig[column]);
-        }
-      } catch (e) {
-        console.error(`Failed to parse initial columns for ${column}:`, e);
-      }
-    }
-    setLocalFilters(initialSelections);
-  }, [column, dataConfig.columns]);
+    setLocalFilters(new Set(sp.getAll(column)));
+  }, [column, sp]);
 
-  const availableSet = React.useMemo(
-    () => new Set<string>(filterAvailability),
-    [filterAvailability]
-  );
+  // 🔕 AVAILABILITY TEMPORARILY DISABLED
+  // const tableName = (sp.get('t') ?? 'trending_job').trim();
+  // const availabilityKey = JSON.stringify(
+  //   [...selectedFilters]
+  //     .filter((f) => f.column !== column)
+  //     .sort((a, b) =>
+  //       a.column === b.column ? a.value.localeCompare(b.value) : a.column.localeCompare(b.column)
+  //     )
+  // );
+  // const { data: availability = [] } = useQuery({
+  //   queryKey: ['filter-availability', tableName, column, availabilityKey, USE_NORMALIZED],
+  //   queryFn: () => Promise.resolve([]),
+  //   keepPreviousData: true,
+  // });
+  // const availableSet = React.useMemo(() => new Set(availability), [availability]);
 
-  console.log('availableSet', availableSet);
-
+  const [searchQuery, setSearchQuery] = React.useState('');
   const filteredData = React.useMemo(() => {
     if (!data) return [];
-    return data.filter((value) =>
-      value.toLowerCase().includes(searchQuery.toLowerCase())
+    return data.filter((v) =>
+      v.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [data, searchQuery]);
 
   const sortedData = React.useMemo(() => {
-    // copy so we don't mutate the original
-    return filteredData.slice().sort((a, b) => {
-      const aAvail = selectedFilters.length === 0 || availableSet.has(a);
-      const bAvail = selectedFilters.length === 0 || availableSet.has(b);
-
-      // if one is available and the other isn't, the available one comes first
-      if (aAvail !== bAvail) return aAvail ? -1 : 1;
-
-      // otherwise keep them alphabetically (or your default order)
-      return a.localeCompare(b);
-    });
-  }, [filteredData, availableSet, selectedFilters.length]);
+    return filteredData.slice().sort((a, b) => a.localeCompare(b));
+  }, [filteredData]);
 
   const handleFilterUpdate = (accessorKey: string, value: string) => {
-    const { dataConfig, setDataConfig } = useTableStore.getState();
+    // derive from URL (single source of truth)
+    const current = new Set(sp.getAll(accessorKey));
+    current.has(value) ? current.delete(value) : current.add(value);
+
+    // write to URL
+    const nextSp = new URLSearchParams(sp.toString());
+    nextSp.delete(accessorKey);
+    for (const v of current) nextSp.append(accessorKey, v);
+    nextSp.set('page', '1');
+    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
+
+    // local + chips
+    setLocalFilters(new Set(current));
     handleSelectedFilters(accessorKey, value);
-
-    // Update local filters first
-    setLocalFilters((prevFilters) => {
-      const newFilters = new Set(prevFilters);
-      if (newFilters.has(value)) {
-        newFilters.delete(value);
-      } else {
-        newFilters.add(value);
-      }
-      return newFilters;
-    });
-
-    // Then update dataConfig
-    let previousFilters: Record<string, string[]>[] = [];
-    if (dataConfig.columns && typeof dataConfig.columns === 'string') {
-      try {
-        previousFilters = JSON.parse(dataConfig.columns);
-      } catch (e) {
-        console.error('Failed to parse columns:', e);
-      }
-    }
-
-    console.log('localFilters', localFilters);
-
-    let found = false;
-    const updatedFilters = previousFilters
-      .map((filter) => {
-        if (filter.hasOwnProperty(accessorKey)) {
-          found = true;
-          const existingValues = filter[accessorKey] || [];
-          let updatedValues;
-
-          if (existingValues.includes(value)) {
-            updatedValues = existingValues.filter((v) => v !== value);
-          } else {
-            updatedValues = [...existingValues, value];
-          }
-
-          if (updatedValues.length === 0) {
-            return null;
-          }
-
-          return { [accessorKey]: updatedValues };
-        }
-        return filter;
-      })
-      .filter(Boolean);
-
-    // If no filter existed for this accessorKey and we're selecting (not deselecting)
-    if (!found && !localFilters.has(value)) {
-      updatedFilters.push({ [accessorKey]: [value] });
-    }
-
-    setDataConfig({
-      ...(dataConfig || {}),
-      columns: JSON.stringify(updatedFilters),
-      page: '1',
-    });
   };
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="flex flex-col gap-2">
         {[...Array(5)].map((_, i) => (
@@ -338,7 +415,7 @@ const FilterAttributes = ({
         ))}
       </div>
     );
-
+  }
   if (error) return <div>Error loading attributes.</div>;
   if (!data) return null;
 
@@ -346,47 +423,38 @@ const FilterAttributes = ({
     <div className="flex flex-col gap-2">
       <input
         type="text"
-        placeholder={'Search...'}
+        placeholder="Search..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="w-full px-2 py-1 h-7 text-sm border rounded-md focus:outline-none focus:ring-1 focus:ring-brand-600"
       />
       <div className="max-h-[300px] overflow-y-auto pretty-scroll">
         {sortedData.map((value) => {
-          const isAvailable =
-            selectedFilters.length === 0 || availableSet.has(value);
+          const isSelected = localFilters.has(value);
           return (
             <div
               key={value}
               role="button"
               tabIndex={0}
-              onClick={() =>
-                isAvailable &&
-                startTransition(() => handleFilterUpdate(column, value))
-              }
+              onClick={() => handleFilterUpdate(column, value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  if (!isAvailable) return;
-                  startTransition(() => handleFilterUpdate(column, value));
-                }
+                if (e.key === 'Enter' || e.key === ' ')
+                  handleFilterUpdate(column, value);
               }}
               className={cn(
-                'group flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-200 cursor-pointer',
-                'hover:bg-brand-100/80 active:bg-brand-200',
-                isAvailable
-                  ? 'cursor-pointer hover:bg-brand-100/80 active:bg-brand-200'
-                  : 'cursor-not-allowed opacity-50'
+                'group flex items-center gap-2 px-2 py-1.5 rounded-md text-xs transition-all duration-200',
+                'cursor-pointer hover:bg-brand-100/80 active:bg-brand-200'
               )}
             >
               <div className="w-3.5 h-3.5 flex-shrink-0">
-                {localFilters.has(value) ? (
+                {isSelected ? (
                   <CheckCircle className="h-3.5 w-3.5 text-brand-600" />
                 ) : (
                   <Circle className="h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity duration-200" />
                 )}
               </div>
               <span className="truncate flex-1 text-black">{value}</span>
-              {localFilters.has(value) && (
+              {isSelected && (
                 <span className="text-[10px] text-brand-600/70 group-hover:text-brand-600">
                   selected
                 </span>
@@ -397,130 +465,108 @@ const FilterAttributes = ({
       </div>
     </div>
   );
-};
+}
 
-export const useFilterColumnAttributes = (column: string) => {
-  const { filterPanelConfig } = useTableStore.getState();
+// ---------------------------
+// Date range facet
+// ---------------------------
 
-  const {
-    table,
-    keyword,
-    column: filterColumn,
-    method,
-    type,
-  } = filterPanelConfig || {};
+function DateRangeFilter() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const sp = useSearchParams();
 
-  const selectProjection =
-    type === 'hot_leads' ? selectProjectionHotLeads : selectProjectionLMIA;
+  const parseISO = (s: string | null) =>
+    s ? new Date(`${s}T00:00:00`) : undefined;
+  const toISO = (d?: Date) => (d ? d.toISOString().slice(0, 10) : undefined);
 
-  return useQuery({
-    enabled: !!table && !!filterColumn && !!keyword && !!column,
-    queryKey: [
-      'filtered-distinct-values',
-      table,
-      filterColumn,
-      keyword,
-      method,
-      column,
-    ],
-    queryFn: async () => {
-      if (method === 'query') {
-        const { data, error } = await db
-          .from(table)
-          .select(column, { count: 'exact', head: false })
-          .eq(filterColumn, keyword);
-
-        if (error) throw new Error(error.message);
-
-        const uniqueValues = [
-          ...new Set(data.map((item) => item[column].toUpperCase())),
-        ];
-        return uniqueValues.sort((b, a) => a.localeCompare(b));
-      } else if (method === 'rpc') {
-        const orClause = selectProjection
-          .split(',')
-          .filter((col) => col !== 'RecordID')
-          .map((col) => `${col}.ilike.%${keyword}%`)
-          .join(',');
-
-        const { data, error } = await db
-          .from(table)
-          .select(column, { count: 'exact', head: false })
-          .or(orClause);
-
-        if (!data) throw new Error('No data found');
-
-        if (error) throw new Error(error.message);
-
-        const uniqueValues = [
-          ...new Set(data.map((item) => item[column])),
-        ].filter(Boolean);
-        return uniqueValues.sort((b, a) => a.localeCompare(b));
-      }
-    },
-  });
-};
-
-const useFilterPanelColumns = () => {
-  const { filterPanelConfig } = useTableStore.getState();
-
-  if (filterPanelConfig.type === 'hot_leads') {
-    if (filterPanelConfig.column === 'job_title') {
-      const filteredColumn = hotLeadsColumns.filter(
-        (f) => f.accessorKey !== 'noc_code'
-      );
-      return filteredColumn;
-    }
-    return hotLeadsColumns;
-  } else if (filterPanelConfig.type === 'hot_leads_new') {
-    if (filterPanelConfig.column === 'job_title') {
-      const filteredColumn = hotLeadsColumns.filter(
-        (f) => f.accessorKey !== 'noc_code'
-      );
-      return filteredColumn;
-    }
-    return hotLeadsColumns;
-  } else if (filterPanelConfig.type === 'lmia') {
-    return lmiaColumns;
-  }
-};
-
-const checkFilterAvailibity = async (
-  selectedFilters: {
-    column: string;
-    value: string;
-  }[],
-  targetColumn: string
-) => {
-  const { filterPanelConfig } = useTableStore.getState();
-
-  const { table, column: filterColumn, method, type } = filterPanelConfig || {};
-
-  const filterPayload =
-    selectedFilters.length > 0 ? toFilterObject(selectedFilters) : {};
-
-  const { data, error } = await db.rpc('check_filter_availability', {
-    p_table: table,
-    p_column: targetColumn,
-    p_filters: filterPayload,
+  const [open, setOpen] = React.useState(false);
+  const [range, setRange] = React.useState<{ from?: Date; to?: Date }>({
+    from: parseISO(sp.get('date_from')),
+    to: parseISO(sp.get('date_to')),
   });
 
-  if (error) throw error;
+  const applyRange = (r?: { from?: Date; to?: Date }) => {
+    const nextSp = new URLSearchParams(sp.toString());
+    // clean first
+    nextSp.delete('date_from');
+    nextSp.delete('date_to');
 
-  return data?.map((row) => row.value) ?? [];
+    if (r?.from) nextSp.set('date_from', toISO(r.from)!);
+    if (r?.to) nextSp.set('date_to', toISO(r.to)!);
 
-  // 2. Group filters by column so we can .in() for multi‑select
-};
+    nextSp.set('page', '1');
+    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
+  };
 
-function toFilterObject(
-  selectedFilters: { column: string; value: string }[]
-): Record<string, string[]> {
-  return selectedFilters.reduce<Record<string, string[]>>(
-    (acc, { column, value }) => {
-      if (!acc[column]) acc[column] = [];
-      acc[column].push(value);
-      return acc;
-    },
-    {}
+  const clear = () => {
+    setRange({ from: undefined, to: undefined });
+    const nextSp = new URLSearchParams(sp.toString());
+    nextSp.delete('date_from');
+    nextSp.delete('date_to');
+    nextSp.set('page', '1');
+    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
+  };
+
+  const label =
+    range.from && range.to
+      ? `${toISO(range.from)} → ${toISO(range.to)}`
+      : range.from
+      ? `${toISO(range.from)} → …`
+      : range.to
+      ? `… → ${toISO(range.to)}`
+      : 'Pick a date range';
+
+  return (
+    <div className="flex items-center gap-2">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className="justify-start text-left font-normal w-full"
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            <span className="text-[10px]"> {label}</span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="range"
+            selected={range}
+            onSelect={(r) => setRange(r || { from: undefined, to: undefined })}
+            numberOfMonths={2}
+          />
+          <div className="flex gap-2 p-2 border-t">
+            <Button
+              variant="secondary"
+              className="w-1/2"
+              onClick={() => {
+                applyRange(range);
+                setOpen(false);
+              }}
+            >
+              Apply
+            </Button>
+            <Button variant="ghost" className="w-1/2" onClick={clear}>
+              Clear
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
+}
+
+function useFilterPanelColumns() {
+  const sp = useSearchParams();
+  const table = (sp.get('t') ?? 'trending_job').trim();
+  const field = (sp.get('field') ?? 'all').trim();
+
+  if (table === 'lmia') return lmiaColumns;
+
+  let cols = hotLeadsColumns;
+  if (field === 'job_title') {
+    cols = cols.filter((f) => f.accessorKey !== 'noc_code');
+  }
+  return cols;
 }
