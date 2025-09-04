@@ -10,13 +10,13 @@ import {
 } from 'lucide-react';
 import { Badge } from './badge';
 import { Button } from './button';
-import { Card, CardContent } from './card';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from './tooltip';
+import Link from 'next/link';
 
 interface Job {
   id?: number;
@@ -224,21 +224,15 @@ export function AllJobsList({
                               </Tooltip>
                             )}
                           </div>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <p className="text-sm text-gray-600 truncate cursor-help">
-                                {job.employer}
-                              </p>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{job.employer}</p>
-                              {job.employer_type && (
-                                <p className="text-xs text-gray-500 mt-1">
-                                  Employer Type: {job.employer_type}
-                                </p>
-                              )}
-                            </TooltipContent>
-                          </Tooltip>
+                          <Link
+                            onClick={(e) => e.stopPropagation()}
+                            href={`/company/${encodeURIComponent(
+                              job.employer
+                            )}?field=employer&t=trending_job`}
+                            className="text-sm text-gray-600 truncate hover:underline"
+                          >
+                            {job.employer}
+                          </Link>
                         </div>
                       </div>
 
