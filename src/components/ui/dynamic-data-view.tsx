@@ -22,7 +22,6 @@ import Pagination from '@/components/ui/pagination';
 import JobCard from '@/components/ui/job-card';
 import { NocJobDescription } from './noc-job-description';
 import { AllJobsList } from './all-jobs-list';
-import { SortOption } from '@/components/ui/sort-button';
 import { useMinimumLoading } from '@/hooks/use-minimum-loading';
 import NewFilterPanel from '@/components/ui/new-filterpanel';
 import { useTableStore } from '@/context/store';

@@ -82,7 +82,10 @@ export function AllJobsList({
                             <>
                               {totalCount.toLocaleString()} total
                               {jobs.length < totalCount && (
-                                <span className="text-gray-400"> (showing {jobs.length})</span>
+                                <span className="text-gray-400">
+                                  {' '}
+                                  (showing {jobs.length})
+                                </span>
                               )}
                             </>
                           ) : (
@@ -93,7 +96,10 @@ export function AllJobsList({
                       <TooltipContent>
                         {totalCount !== undefined ? (
                           <div>
-                            <p>Total jobs matching your criteria: {totalCount.toLocaleString()}</p>
+                            <p>
+                              Total jobs matching your criteria:{' '}
+                              {totalCount.toLocaleString()}
+                            </p>
                             {jobs.length < totalCount && (
                               <p className="text-xs text-gray-500 mt-1">
                                 Currently viewing page with {jobs.length} jobs
@@ -125,7 +131,7 @@ export function AllJobsList({
                 </div>
               </div>
             </div>
-
+            {/* 
             {selectedJobId !== undefined && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -138,7 +144,7 @@ export function AllJobsList({
                   <p>Job selected for detailed view</p>
                 </TooltipContent>
               </Tooltip>
-            )}
+            )} */}
           </div>
         </div>
 
