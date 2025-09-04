@@ -1,29 +1,37 @@
-import { useTableStore } from "@/context/store";
-import React from "react";
+import { useTableStore } from '@/context/store';
+import React from 'react';
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  onPageChange?: (page: number) => void;
   className?: string;
 }
 
 export default function Pagination({
   currentPage,
   totalPages,
-  className = "",
+  onPageChange,
+  className = '',
 }: PaginationProps) {
   const { dataConfig, setDataConfig } = useTableStore();
 
   const handlePageChange = (page: number) => {
-    setDataConfig({
-      ...(dataConfig || {}),
-      page: page,
-    });
+    if (onPageChange) {
+      // Use the provided onPageChange function (for NewDataPanel)
+      onPageChange(page);
+    } else {
+      // Use the store method (for DataPanel)
+      setDataConfig({
+        ...(dataConfig || {}),
+        page: page,
+      });
+    }
     // Use setTimeout to ensure the scroll happens after the page update
     setTimeout(() => {
       window.scrollTo({
         top: 0,
-        behavior: "instant",
+        behavior: 'instant',
       });
     }, 100);
   };
@@ -73,8 +81,8 @@ export default function Pagination({
           onClick={() => handlePageChange(i)}
           className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
             i === currentPage
-              ? "bg-brand-600 text-white hover:bg-brand-700"
-              : "text-gray-600 hover:bg-gray-50"
+              ? 'bg-brand-600 text-white hover:bg-brand-700'
+              : 'text-gray-600 hover:bg-gray-50'
           }`}
           disabled={i === currentPage}
         >
@@ -107,7 +115,7 @@ export default function Pagination({
 
   return (
     <div className={`flex items-center justify-center gap-1 ${className}`}>
-      <div className="flex items-center gap-1 bg-white rounded-lg border border-gray-200 px-2 py-1">
+      <div className="flex items-center gap-1 rounded-lg   px-2 py-1">
         <button
           onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}

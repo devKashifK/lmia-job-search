@@ -1,4 +1,3 @@
-import { useTableStore } from '@/context/store';
 import { AttributeName } from '@/helpers/attribute';
 import React from 'react';
 import { Badge } from './badge';
@@ -17,12 +16,11 @@ export default function PageTitle({
   showVerified = true,
   className = '',
 }: PageTitleProps) {
-  const { dataConfig } = useTableStore();
-  const { data } = useData();
+  const { data } = useData('');
   const sp = useSearchParams();
 
   // table from URL (fallback to trending_job)
-  const tableName = (sp.get('t') ?? 'trending_job').trim();
+  const tableName = (sp?.get('t') ?? 'trending_job').trim();
   const count = data?.count;
   return (
     <div className={`flex flex-col gap-2 mb-8 ${className}`}>

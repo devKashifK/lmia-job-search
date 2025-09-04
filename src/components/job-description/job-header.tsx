@@ -26,7 +26,7 @@ const JobHeader = ({
         <span>{location}</span>
       </div>
     </div>
-    <div className="flex gap-4 items-end justify-end md:items-end space-y-2">
+    {/* <div className="flex gap-4 items-end justify-end md:items-end space-y-2">
       <Button
         variant="outline"
         size={'sm'}
@@ -52,7 +52,7 @@ const JobHeader = ({
           <span>Save this</span>
         </Button>
      
-    </div>
+    </div> */}
   </div>
 );
 

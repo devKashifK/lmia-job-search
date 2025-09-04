@@ -20,9 +20,11 @@ import Loader from '@/components/ui/loader';
 import PageTitle from '@/components/ui/page-title';
 import Pagination from '@/components/ui/pagination';
 import JobCard from '@/components/ui/job-card';
+import { NocJobDescription } from './noc-job-description';
+import { AllJobsList } from './all-jobs-list';
 import { SortOption } from '@/components/ui/sort-button';
 import { useMinimumLoading } from '@/hooks/use-minimum-loading';
-import Newfilterpanel from '@/components/ui/new-filterpanel';
+import NewFilterPanel from '@/components/ui/new-filterpanel';
 import { useTableStore } from '@/context/store';
 import db from '@/db';
 import { useQuery } from '@tanstack/react-query';
@@ -226,30 +228,30 @@ export default function DynamicDataView({
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
 
   return (
-    <div className="container mx-auto px-24 py-8">
+    <div className=" mx-auto px-16 py-8">
       <div className="py-4">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-2">
           <PageTitle title={title} />
-          <div className="flex items-center space-x-3">
-            {/* <DataPanelViewMode /> */}
+          {/* <div className="flex items-center space-x-3"> */}
+          {/* <DataPanelViewMode /> */}
 
-            {/* <DataPanelColumns /> */}
+          {/* <DataPanelColumns /> */}
 
-            {/* <div className="flex-shrink-0">
+          {/* <div className="flex-shrink-0">
               <SortButton
                 options={sortOptions}
                 currentSort={sortBy}
                 onSortChange={setSortBy}
               />
             </div> */}
-          </div>
+          {/* </div> */}
         </div>
       </div>
       <div className="relative flex gap-4">
         <div className="w-1/5">
-          <Newfilterpanel />
+          <NewFilterPanel />
         </div>
-        <DataPanel
+        <NewDataPanel
           field={field}
           query={title}
           savedSet={savedSet}
@@ -422,6 +424,145 @@ export function DataPanel({
       {/* Pagination Controls */}
       <div className="mt-8 py-4">
         <Pagination currentPage={currentPage} totalPages={totalPages} />
+      </div>
+    </div>
+  );
+}
+
+export function NewDataPanel({
+  query,
+  field,
+  savedSet,
+  setSavedSet,
+}: {
+  savedSet: Set<number>;
+  query: string;
+  field: string;
+  setSavedSet: (set: Set<number>) => void;
+}) {
+  const { data, error, isLoading, setPage } = useData(query, field);
+  const [selectedJob, setSelectedJob] = React.useState<any>(null);
+  const [selectedJobId, setSelectedJobId] = React.useState<number | undefined>(
+    undefined
+  );
+  const navigate = useRouter();
+
+  // Set first job as selected by default when data loads
+  React.useEffect(() => {
+    if (data?.rows && data.rows.length > 0 && !selectedJob) {
+      const firstJob = data.rows[0];
+      setSelectedJob(firstJob);
+      setSelectedJobId(firstJob.id || 0);
+    }
+  }, [data?.rows, selectedJob]);
+
+  const handleJobSelect = (job: any) => {
+    setSelectedJob(job);
+    setSelectedJobId(job.id || data?.rows?.indexOf(job));
+  };
+
+  const handleSaveJob = () => {
+    if (selectedJob) {
+      const jobIndex = data?.rows?.indexOf(selectedJob);
+      if (jobIndex !== undefined) {
+        const next = new Set(savedSet);
+        if (next.has(jobIndex)) {
+          next.delete(jobIndex);
+        } else {
+          next.add(jobIndex);
+        }
+        setSavedSet(next);
+      }
+    }
+  };
+
+  const handleViewNOC = () => {
+    if (selectedJob?.noc_code) {
+      navigate.push(`/search/noc-profile/${selectedJob.noc_code}`);
+    }
+  };
+
+  const isJobSaved = selectedJob
+    ? savedSet.has(data?.rows?.indexOf(selectedJob) || -1)
+    : false;
+
+  // Pagination logic - use URL parameters like useData hook
+  const sp = useSearchParams();
+  const page = toPositiveInt(sp?.get('page') ?? null, 1);
+  const pageSize = toPositiveInt(sp?.get('pageSize') ?? null, 60);
+  const currentPage = page;
+  const totalPages = Math.ceil((data?.count || 0) / pageSize);
+
+  if (error) {
+    return <div className="p-4 text-red-600">Error: {error.message}</div>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading jobs...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data?.rows || data.rows.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-gray-600">No jobs found</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col  h-[1200px]">
+      <div className="flex flex-1 min-h-0">
+        {/* Middle Section - NOC Job Description - Fixed width */}
+        <div className="flex-1 min-w-0 max-w-4xl">
+          <NocJobDescription
+            job={selectedJob}
+            onSaveJob={handleSaveJob}
+            onViewNOC={handleViewNOC}
+            isSaved={isJobSaved}
+            className="h-full"
+          />
+        </div>
+
+        {/* Right Sidebar - All Jobs - Fixed width */}
+        <div className="w-96 flex-shrink-0 border-l ml-4 border-gray-200">
+          <AllJobsList
+            jobs={data?.rows || []}
+            selectedJobId={selectedJobId}
+            onJobSelect={handleJobSelect}
+            savedJobs={savedSet}
+            onToggleSaved={(index) => {
+              const next = new Set(savedSet);
+              if (next.has(index)) {
+                next.delete(index);
+              } else {
+                next.add(index);
+              }
+              setSavedSet(next);
+            }}
+            totalCount={data?.count}
+            className="h-full"
+          />
+        </div>
+      </div>
+
+      {/* Pagination Controls - Outside scrollable area */}
+      <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4 shadow-none">
+        <div className="max-w-4xl mx-auto">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </div>
       </div>
     </div>
   );

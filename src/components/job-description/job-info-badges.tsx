@@ -14,13 +14,7 @@ export const JobInfoBadges = ({
   experienceLevel,
   jobType,
 }: JobInfoBadgesProps) => (
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6">
-    <InfoBadge
-      label="Experience Level"
-      value={experienceLevel}
-      icon={<Briefcase size={20} />}
-    />
-    <InfoBadge label="Job Type" value={jobType} icon={<Clock size={20} />} />
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 w-full">
     <Dialog>
       <DialogTrigger>
         <div className="flex items-center text-sm cursor-pointer">
