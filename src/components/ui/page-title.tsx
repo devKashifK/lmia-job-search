@@ -23,7 +23,7 @@ export default function PageTitle({
   const tableName = (sp?.get('t') ?? 'trending_job').trim();
   const count = data?.count;
   return (
-    <div className={`flex flex-col gap-2 mb-8 ${className}`}>
+    <div className={`flex flex-col gap-2 mb-2 ${className}`}>
       <div className="flex items-center gap-3">
         <div className="w-1 h-6 bg-brand-600 rounded-full"></div>
         <AttributeName
@@ -35,7 +35,7 @@ export default function PageTitle({
         </Badge>
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-500">
-        {count !== undefined && (
+        {/* {count !== undefined && (
           <span className="flex items-center gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -54,11 +54,11 @@ export default function PageTitle({
             </svg>
             {count} job opportunities
           </span>
-        )}
-        {count !== undefined && showVerified && (
+        )} */}
+        {/* {count !== undefined && showVerified && (
           <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-        )}
-        {showVerified && (
+        )} */}
+        {/* {showVerified && (
           <span className="flex items-center gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +76,7 @@ export default function PageTitle({
             </svg>
             Verified employers
           </span>
-        )}
+        )} */}
       </div>
     </div>
   );

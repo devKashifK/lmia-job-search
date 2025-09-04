@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Car,
   Building,
@@ -7,53 +7,53 @@ import {
   Wheat,
   Store,
   ChevronRight,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTableStore } from "@/context/store";
-import { useUpdateCredits } from "@/hooks/use-credits";
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useTableStore } from '@/context/store';
+import { useUpdateCredits } from '@/hooks/use-credits';
 
 const categories = [
   {
     icon: <Car className="h-5 w-5" />,
-    noc_priority: "Automotive_Maintenance",
-    description: "Jobs in vehicle maintenance and repair",
-    bg: "bg-violet-50",
+    noc_priority: 'Automotive_Maintenance',
+    description: 'Jobs in vehicle maintenance and repair',
+    bg: 'bg-violet-50',
   },
   {
     icon: <Building className="h-5 w-5" />,
-    noc_priority: "Construction",
-    description: "Construction and building trades",
-    bg: "bg-yellow-50",
+    noc_priority: 'Construction',
+    description: 'Construction and building trades',
+    bg: 'bg-yellow-50',
   },
   {
     icon: <Wheat className="h-5 w-5" />,
-    noc_priority: "Farm",
-    description: "Agricultural and farming positions",
-    bg: "bg-blue-50",
+    noc_priority: 'Farm',
+    description: 'Agricultural and farming positions',
+    bg: 'bg-blue-50',
   },
   {
     icon: <Utensils className="h-5 w-5" />,
-    noc_priority: "F&B",
-    description: "Food and beverage service jobs",
-    bg: "bg-yellow-50",
+    noc_priority: 'F&B',
+    description: 'Food and beverage service jobs',
+    bg: 'bg-yellow-50',
   },
   {
     icon: <Utensils className="h-5 w-5" />,
-    noc_priority: "Food Processing",
-    description: "Food manufacturing and processing",
-    bg: "bg-violet-50",
+    noc_priority: 'Food Processing',
+    description: 'Food manufacturing and processing',
+    bg: 'bg-violet-50',
   },
   {
     icon: <Hospital className="h-5 w-5" />,
-    noc_priority: "Healthcare",
-    description: "Medical and healthcare positions",
-    bg: "bg-blue-50",
+    noc_priority: 'Healthcare',
+    description: 'Medical and healthcare positions',
+    bg: 'bg-blue-50',
   },
   {
     icon: <Store className="h-5 w-5" />,
-    noc_priority: "Office_Retail",
-    description: "Office and retail positions",
-    bg: "bg-yellow-50",
+    noc_priority: 'Office_Retail',
+    description: 'Office and retail positions',
+    bg: 'bg-yellow-50',
   },
 ];
 
@@ -67,52 +67,33 @@ export default function Category({ type }: { type: string }) {
         <div
           onClick={() => {
             updateCreditsAndSearch(category.noc_priority);
-            if (type === "hot_leads") {
-              setDataConfig({
-                type: "hot_leads",
-                table: "hot_leads_new",
-                columns: JSON.stringify([
-                  {
-                    noc_priority: category.noc_priority,
-                  },
-                ]),
-                keyword: category.noc_priority,
-                method: "query",
-                page: 1,
-                pageSize: 100,
-              });
-
-              setFilterPanelConfig({
-                column: "noc_priority",
-                table: "hot_leads_new",
-                keyword: category.noc_priority,
-                type: "hot_leads",
-                method: "query",
-              });
+            if (type === 'hot_leads') {
               router.push(
-                `/search/hot-leads/${encodeURIComponent(category.noc_priority)}`
+                `/search/hot-leads/${encodeURIComponent(
+                  category.noc_priority
+                )}?field=category&t=trending_job`
               );
-            } else if (type === "lmia") {
+            } else if (type === 'lmia') {
               setDataConfig({
-                type: "lmia",
-                table: "lmia",
+                type: 'lmia',
+                table: 'lmia',
                 columns: JSON.stringify([
                   {
                     priority_occupation: category.noc_priority,
                   },
                 ]),
                 keyword: category.noc_priority,
-                method: "query",
+                method: 'query',
                 page: 1,
                 pageSize: 100,
               });
 
               setFilterPanelConfig({
-                column: "priority_occupation",
-                table: "lmia",
+                column: 'priority_occupation',
+                table: 'lmia',
                 keyword: category.noc_priority,
-                type: "lmia",
-                method: "query",
+                type: 'lmia',
+                method: 'query',
               });
               router.push(
                 `/search/lmia/${encodeURIComponent(category.noc_priority)}`
@@ -134,7 +115,7 @@ export default function Category({ type }: { type: string }) {
               {category.icon}
             </span>
             <span className="flex-1 truncate font-semibold text-brand-700 text-base text-left">
-              {category.noc_priority.replace(/_/g, " ")}
+              {category.noc_priority.replace(/_/g, ' ')}
             </span>
             <ChevronRight className="h-4 w-4 text-zinc-400" />
           </div>

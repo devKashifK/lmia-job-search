@@ -1,15 +1,15 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import CustomLink from "@/components/ui/CustomLink";
-import { cn } from "@/lib/utils";
-import { useSession } from "@/hooks/use-session";
-import UserDropdown from "@/components/ui/user-dropdown";
+'use client';
+import { Button } from '@/components/ui/button';
+import CustomLink from '@/components/ui/CustomLink';
+import { cn } from '@/lib/utils';
+import { useSession } from '@/hooks/use-session';
+import UserDropdown from '@/components/ui/user-dropdown';
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
-} from "@/components/ui/navigation-menu";
-import Logo from "@/components/ui/logo";
+} from '@/components/ui/navigation-menu';
+import Logo from '@/components/ui/logo';
 
 export default function Navbar({ className }: { className?: string }) {
   const { session, loading } = useSession();
@@ -17,11 +17,11 @@ export default function Navbar({ className }: { className?: string }) {
   return (
     <nav
       className={cn(
-        "w-full absolute top-0 left-0 bg-transparent z-20 transition-all duration-200",
+        'w-full absolute top-0 left-0 bg-transparent z-20 transition-all duration-200',
         className
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-12 sm:px-6 lg:px-10 lg:pr-16">
         <div className="flex items-center justify-between w-full pt-6 gap-4">
           {/* Logo on the left */}
           <CustomLink href="/" className="flex items-center min-w-[120px]">
@@ -36,54 +36,6 @@ export default function Navbar({ className }: { className?: string }) {
           <div className="hidden md:flex flex-1 justify-center">
             <NavigationMenu>
               <NavigationMenuList className="flex flex-row items-center gap-2 md:gap-4">
-                {/* <NavigationMenuItem>
-                  <NavigationMenuTrigger className="h-9 px-4 bg-transparent hover:bg-brand-100/60 data-[state=open]:bg-brand-100/60 text-brand-700 font-medium">
-                    Solutions
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid w-[400px] gap-3 p-4">
-                      {solutions.map((item) => (
-                        <NavigationMenuLink
-                          key={item.title}
-                          href={item.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-brand-50"
-                        >
-                          <div className="text-sm font-medium text-brand-900">
-                            {item.title}
-                          </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-brand-500">
-                            {item.description}
-                          </p>
-                        </NavigationMenuLink>
-                      ))}
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem> */}
-                {/* 
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className="h-9 px-4 bg-transparent hover:bg-brand-100/60 data-[state=open]:bg-brand-100/60 text-brand-700 font-medium">
-                    Search
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <div className="grid w-[400px] gap-3 p-4">
-                      {searchPages.map((item) => (
-                        <NavigationMenuLink
-                          key={item.title}
-                          href={item.href}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-brand-50"
-                        >
-                          <div className="text-sm font-medium text-brand-900">
-                            {item.title}
-                          </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-brand-500">
-                            {item.description}
-                          </p>
-                        </NavigationMenuLink>
-                      ))}
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem> */}
-
                 <NavigationMenuItem>
                   <CustomLink
                     href="/search"

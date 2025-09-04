@@ -2,16 +2,7 @@
 
 import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  CheckCircle,
-  Circle,
-  X,
-  ChevronDown,
-  Calendar as CalendarIcon,
-  Filter,
-  Search,
-  RotateCcw,
-} from 'lucide-react';
+import { X, ChevronDown, Calendar as CalendarIcon, Search } from 'lucide-react';
 import {
   usePathname,
   useRouter,

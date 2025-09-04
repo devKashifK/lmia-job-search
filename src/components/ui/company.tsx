@@ -1,97 +1,77 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import SectionTitle from "./section-title";
-import { ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTableStore } from "@/context/store";
-import { useUpdateCredits } from "@/hooks/use-credits";
+import { motion } from 'framer-motion';
+import SectionTitle from './section-title';
+import { ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useTableStore } from '@/context/store';
+import { useUpdateCredits } from '@/hooks/use-credits';
 
 const companyGroups = [
   {
-    title: "Tim Hortons",
+    title: 'Tim Hortons',
     count: 4261,
-    companies: ["Tim Hortons"],
-    description: "Leading coffee and quick service restaurant chain.",
+    companies: ['Tim Hortons'],
+    description: 'Leading coffee and quick service restaurant chain.',
   },
   {
-    title: "Subway",
+    title: 'Subway',
     count: 2591,
-    companies: ["Subway"],
+    companies: ['Subway'],
     description: "World's largest submarine sandwich chain.",
   },
   {
-    title: "Mc Donalds",
+    title: 'Mc Donalds',
     count: 1458,
-    companies: ["Mc Donalds"],
-    description: "Global fast food restaurant chain.",
+    companies: ['Mc Donalds'],
+    description: 'Global fast food restaurant chain.',
   },
   {
-    title: "A&W",
+    title: 'A&W',
     count: 1068,
-    companies: ["A&W"],
-    description: "Classic American fast food restaurant.",
+    companies: ['A&W'],
+    description: 'Classic American fast food restaurant.',
   },
   {
-    title: "Pizza Hut",
+    title: 'Pizza Hut',
     count: 1038,
-    companies: ["Pizza Hut"],
-    description: "International pizza restaurant chain.",
+    companies: ['Pizza Hut'],
+    description: 'International pizza restaurant chain.',
   },
   {
-    title: "Dairy Queen",
+    title: 'Dairy Queen',
     count: 962,
-    companies: ["Dairy Queen"],
+    companies: ['Dairy Queen'],
     description:
-      "American chain of soft serve ice cream and fast food restaurants.",
+      'American chain of soft serve ice cream and fast food restaurants.',
   },
   {
-    title: "Jays Transportation",
+    title: 'Jays Transportation',
     count: 865,
-    companies: ["Jays Transportation"],
-    description: "Leading transportation and logistics company.",
+    companies: ['Jays Transportation'],
+    description: 'Leading transportation and logistics company.',
   },
   {
-    title: "Pattison Agriculture",
+    title: 'Pattison Agriculture',
     count: 839,
-    companies: ["Pattison Agriculture"],
-    description: "Major agricultural equipment and services provider.",
+    companies: ['Pattison Agriculture'],
+    description: 'Major agricultural equipment and services provider.',
   },
   {
-    title: "KFC",
+    title: 'KFC',
     count: 806,
-    companies: ["KFC"],
-    description: "Leading fast food restaurant chain.",
+    companies: ['KFC'],
+    description: 'Leading fast food restaurant chain.',
   },
 ];
 
 export default function Company() {
   const router = useRouter();
-  const { setFilterPanelConfig, setDataConfig } = useTableStore();
   const { updateCreditsAndSearch } = useUpdateCredits();
   const handleViewDetails = (company: string) => {
-    router.push(`/company/${encodeURIComponent(company)}`);
-    setFilterPanelConfig({
-      column: "operating_name",
-      table: "hot_leads_new",
-      keyword: company,
-      type: "hot_leads",
-      method: "query",
-    });
-    setDataConfig({
-      type: "hot_leads",
-      table: "hot_leads_new",
-      columns: JSON.stringify([
-        {
-          operating_name: company,
-        },
-      ]),
-      keyword: company,
-      method: "query",
-      year: "",
-      page: 1,
-      pageSize: 100,
-    });
+    router.push(
+      `/company/${encodeURIComponent(company)}?field=employer&t=trending_job`
+    );
   };
 
   return (
@@ -106,7 +86,7 @@ export default function Company() {
             key={group.title}
             whileHover={{ scale: 1.02 }}
             className={`flex-1 relative group ${
-              idx % 2 === 0 ? "md:text-right" : ""
+              idx % 2 === 0 ? 'md:text-right' : ''
             }`}
           >
             <div className="absolute -inset-0.5 bg-gradient-to-br from-brand-500/10 to-brand-600/10 rounded-2xl transform -rotate-2 transition-transform duration-300 group-hover:rotate-0" />

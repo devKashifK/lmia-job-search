@@ -259,7 +259,6 @@ export default function Page() {
     }
   };
 
-  // New function to handle trending search clicks
   const handleTrendingClick = async (term: string) => {
     setInput(term);
     setShowSuggestions(true);
@@ -272,52 +271,12 @@ export default function Page() {
 
       await updateCreditsAndSearch(term);
       if (searchType === 'hot_leads') {
-        setDataConfig({
-          type: 'hot_leads',
-          table: 'hot_leads_new',
-          columns: JSON.stringify([
-            {
-              job_title: term,
-            },
-          ]),
-          keyword: term,
-          method: 'query',
-          year: '',
-          page: 1,
-          pageSize: 100,
-        });
-
-        setFilterPanelConfig({
-          column: 'job_title',
-          table: 'hot_leads_new',
-          keyword: term,
-          type: 'hot_leads',
-          method: 'query',
-        });
-
-        navigate.push(`/search/hot-leads/${encodeURIComponent(term)}?`);
+        navigate.push(
+          `/search/hot-leads/${encodeURIComponent(
+            term
+          )}?field=job_title&t=trending_job`
+        );
       } else if (searchType === 'lmia') {
-        setDataConfig({
-          type: 'lmia',
-          table: 'lmia',
-          columns: JSON.stringify([
-            {
-              job_title: term,
-            },
-          ]),
-          keyword: term,
-          method: 'query',
-          year: '',
-          page: 1,
-          pageSize: 100,
-        });
-        setFilterPanelConfig({
-          column: 'job_title',
-          table: 'lmia',
-          keyword: term,
-          type: 'lmia',
-          method: 'query',
-        });
         navigate.push(`/search/lmia/${encodeURIComponent(term)}`);
       }
     } finally {
@@ -325,13 +284,6 @@ export default function Page() {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      startSearch();
-    }
-  };
-
-  // Updated trending searches - added Cook, removed Remote Positions
   const trendingSearches =
     searchType === 'hot_leads'
       ? [
@@ -467,7 +419,7 @@ export default function Page() {
                           className="bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium px-6 py-3 rounded-full hover:shadow-lg hover:shadow-brand-500/25 transition-all duration-300"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          onClick={startSearch}
+                          // onClick={startSearch}
                         >
                           {isChecking ? (
                             <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />

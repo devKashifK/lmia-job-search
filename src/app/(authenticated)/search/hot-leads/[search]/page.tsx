@@ -13,8 +13,6 @@ export default async function Engine({ params, searchParams }: PageProps) {
   // ?field=job_title  (normalize to a single string)
   const field = searchParams.field;
 
-  console.log('Search Key:', searchKey, field);
-
   return (
     <>
       <Navbar className="border-b border-brand-200 pb-4" />

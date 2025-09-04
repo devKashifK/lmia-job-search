@@ -515,7 +515,7 @@ export function NocJobDescription({
 
                       {/* Compact Action Buttons with Tooltips */}
                       <div className="flex flex-col gap-2 flex-shrink-0">
-                        <Tooltip>
+                        {/* <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
                               size="sm"
@@ -536,7 +536,7 @@ export function NocJobDescription({
                                 : 'Copy share details'}
                             </p>
                           </TooltipContent>
-                        </Tooltip>
+                        </Tooltip> */}
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -913,7 +913,7 @@ export function NocJobDescription({
             </div>
 
             {/* Expand Button */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.7 }}
@@ -928,7 +928,7 @@ export function NocJobDescription({
                 View Complete Job Details
                 <ExternalLink className="w-4 h-4 ml-2" />
               </Button>
-            </motion.div>
+            </motion.div> */}
 
             {/* Premium Contact Dialog */}
             <Dialog open={openPremium} onOpenChange={setOpenPremium}>
