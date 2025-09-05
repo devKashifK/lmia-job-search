@@ -212,7 +212,7 @@ export default function NewFilterPanel() {
   };
 
   return (
-    <div className="w-64 bg-gray-50/30 pr-4 border-r border-gray-200 h-full flex flex-col">
+    <div className="w-64 pr-4 border-r border-gray-200 h-full flex flex-col">
       {/* Compact Header */}
       <div className="px-1 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
@@ -513,7 +513,7 @@ function FilterAttributes({
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 focus:border-brand-400 transition-colors"
+          className="w-full px-3 py-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 focus:border-brand-400 transition-colors"
         />
         <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
       </div>
@@ -533,7 +533,7 @@ function FilterAttributes({
                   key={value}
                   onClick={() => handleFilterUpdate(column, value)}
                   className={cn(
-                    'w-full flex items-center justify-between px-3 py-2 text-sm rounded-md text-left transition-colors',
+                    'w-full flex items-center justify-between px-3 py-1 text-sm rounded-md text-left transition-colors',
                     isSelected
                       ? 'bg-brand-50 text-brand-900 border border-brand-200'
                       : 'text-gray-700 hover:bg-gray-50 border border-transparent hover:border-gray-200'
@@ -606,38 +606,21 @@ function DateRangeFilter() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="w-full flex items-center justify-between px-4 py-3 text-sm bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-lg hover:bg-gray-50/80 hover:border-gray-300/60 transition-all duration-200 text-left group shadow-sm hover:shadow-md">
-          <div className="flex items-center gap-2.5">
-            <CalendarIcon className="w-4 h-4 text-gray-500 group-hover:text-brand-500 transition-colors duration-200" />
-            <span className="text-gray-700 truncate font-medium">{label}</span>
-          </div>
-          <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+        <button className="w-full flex items-center justify-between px-3 py-2 text-sm bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors text-left">
+          <span className="text-gray-700 truncate">{label}</span>
+          <CalendarIcon className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
         </button>
       </PopoverTrigger>
-      <PopoverContent
-        className="w-auto p-0 shadow-xl border border-gray-200/60"
-        align="start"
-        side="right"
-      >
-        <div className="p-4 bg-white">
-          <div className="mb-3">
-            <h4 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-              <CalendarIcon className="w-4 h-4 text-brand-500" />
-              Select Date Range
-            </h4>
-            <p className="text-xs text-gray-500 mt-1">
-              Choose the posting date range
-            </p>
-          </div>
+      <PopoverContent className="w-auto p-0" align="start" side="right">
+        <div className="p-4">
           <Calendar
             mode="range"
             selected={range}
             onSelect={(r) => setRange(r || { from: undefined, to: undefined })}
             numberOfMonths={1}
-            className="rounded-lg border border-gray-100"
           />
         </div>
-        <div className="flex gap-2 p-4 border-t border-gray-100/80 bg-gray-50/30">
+        <div className="flex gap-2 p-4 border-t border-gray-100">
           <Button
             size="sm"
             onClick={() => {
@@ -645,9 +628,9 @@ function DateRangeFilter() {
               setOpen(false);
             }}
             disabled={!range.from && !range.to}
-            className="flex-1 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-sm"
+            className="flex-1"
           >
-            Apply Filter
+            Apply
           </Button>
           <Button
             variant="outline"
@@ -656,7 +639,7 @@ function DateRangeFilter() {
               clear();
               setOpen(false);
             }}
-            className="flex-1 border-gray-200 hover:bg-gray-50"
+            className="flex-1"
           >
             Clear
           </Button>

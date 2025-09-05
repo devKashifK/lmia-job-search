@@ -6,6 +6,10 @@ import {
   Utensils,
   LayoutGrid,
   Table2,
+  SearchX,
+  Filter,
+  RefreshCw,
+  TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
@@ -503,9 +507,67 @@ export function NewDataPanel({
 
   if (!data?.rows || data.rows.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <p className="text-gray-600">No jobs found</p>
+      <div className="flex flex-col h-[1200px] w-full">
+        <div className="flex flex-1 items-center justify-center w-full">
+          <div className="text-center w-full px-8">
+            {/* Animated Icon */}
+            <div className="relative mb-8">
+              <div className="w-24 h-24 mx-auto bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                <SearchX className="w-12 h-12 text-gray-400" />
+              </div>
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                <Filter className="w-4 h-4 text-white" />
+              </div>
+            </div>
+
+            {/* Main Message */}
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              No Jobs Found
+            </h3>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              We couldn't find any jobs matching your current search criteria. Try adjusting your filters or search terms to discover more opportunities.
+            </p>
+
+            {/* Suggestions */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-100">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-blue-500" />
+                Try these suggestions:
+              </h4>
+              <ul className="text-sm text-gray-600 space-y-2 text-left">
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                  <span>Use broader search terms or remove some filters</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                  <span>Check your spelling and try alternative keywords</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                  <span>Expand your location search to nearby areas</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                  <span>Try searching for related job titles or categories</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Action Button */}
+            <Button
+              onClick={() => window.location.reload()}
+              className="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white px-6 py-2.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh Search
+            </Button>
+
+            {/* Footer Text */}
+            <p className="text-xs text-gray-500 mt-6">
+              New jobs are added regularly. Check back soon for fresh opportunities!
+            </p>
+          </div>
         </div>
       </div>
     );
