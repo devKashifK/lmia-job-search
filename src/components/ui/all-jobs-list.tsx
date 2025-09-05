@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   Building2,
   MapPin,
@@ -17,6 +18,13 @@ import {
   TooltipTrigger,
 } from './tooltip';
 import Link from 'next/link';
+import { useSession } from '@/hooks/use-session';
+import {
+  handleSave,
+  checkMultipleSavedJobs,
+  getJobRecordId,
+} from '@/utils/saved-jobs';
+import { JobSortPopover, sortJobs, type SortConfig } from './job-sort-popover';
 
 interface Job {
   id?: number;
@@ -57,7 +65,68 @@ export function AllJobsList({
   className = '',
   totalCount,
 }: AllJobsListProps) {
-  const savedCount = jobs.filter((_, index) => savedJobs.has(index)).length;
+  const { session, isLoading: sessionLoading } = useSession();
+  const [dbSavedJobs, setDbSavedJobs] = useState<Set<string>>(new Set());
+  const [isLoadingSavedJobs, setIsLoadingSavedJobs] = useState(false);
+  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+
+  // Load saved jobs from database on mount or when jobs change
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadSavedJobs = async () => {
+      // Wait for session to load and both session and jobs to be available
+      if (sessionLoading) {
+        return;
+      }
+      
+      if (!session?.user?.id || !jobs.length) {
+        setDbSavedJobs(new Set());
+        return;
+      }
+      
+      setIsLoadingSavedJobs(true);
+      try {
+        const recordIds = jobs
+          .map(job => getJobRecordId(job))
+          .filter(Boolean) as string[];
+        
+        if (recordIds.length > 0 && !isCancelled) {
+          const savedRecordIds = await checkMultipleSavedJobs(recordIds, session);
+          if (!isCancelled) {
+            setDbSavedJobs(savedRecordIds);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load saved jobs:', error);
+        if (!isCancelled) {
+          setDbSavedJobs(new Set());
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingSavedJobs(false);
+        }
+      }
+    };
+
+    loadSavedJobs();
+
+    // Cleanup function to cancel async operation
+    return () => {
+      isCancelled = true;
+    };
+  }, [session?.user?.id, jobs, sessionLoading]);
+
+  // Sort jobs if sort config is set
+  const sortedJobs = useMemo(() => {
+    return sortJobs(jobs, sortConfig);
+  }, [jobs, sortConfig]);
+
+  // Calculate saved count - prioritize database state over local state
+  const savedCount = sortedJobs.filter((job, index) => {
+    const recordId = getJobRecordId(job);
+    return recordId ? dbSavedJobs.has(recordId) : savedJobs.has(index);
+  }).length;
 
   return (
     <TooltipProvider>
@@ -131,28 +200,24 @@ export function AllJobsList({
                 </div>
               </div>
             </div>
-            {/* 
-            {selectedJobId !== undefined && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-2 px-3 py-1 bg-brand-50 text-brand-600 rounded-full border border-brand-200">
-                    <div className="w-2 h-2 bg-brand-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs font-medium">Selected</span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Job selected for detailed view</p>
-                </TooltipContent>
-              </Tooltip>
-            )} */}
+            
+            {/* Sort Button */}
+            <div className="flex items-center gap-2">
+              <JobSortPopover 
+                currentSort={sortConfig}
+                onSortChange={setSortConfig}
+              />
+            </div>
           </div>
         </div>
 
         {/* Enhanced Compact Job List */}
         <div className="divide-y divide-gray-100">
-          {jobs.map((job, index) => {
+          {sortedJobs.map((job, index) => {
             const isSelected = selectedJobId === (job.id || index);
-            const isSaved = savedJobs.has(index);
+            const recordId = getJobRecordId(job);
+            // Prioritize database state over local state for saved status
+            const isSaved = recordId ? dbSavedJobs.has(recordId) : savedJobs.has(index);
             const jobTitle = job.job_title || job.occupation_title || 'N/A';
             const nocCode = job.noc_code || job['2021_noc'] || 'N/A';
             const isRecent =
@@ -390,12 +455,57 @@ export function AllJobsList({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={(e) => {
+                          disabled={isLoadingSavedJobs}
+                          onClick={async (e) => {
                             e.stopPropagation();
-                            onToggleSaved(index);
+
+                            if (!session?.user?.id) {
+                              // Fallback to local state if no session
+                              onToggleSaved(index);
+                              return;
+                            }
+
+                            if (!recordId) {
+                              console.warn(
+                                'No record ID found for job, using local state'
+                              );
+                              onToggleSaved(index);
+                              return;
+                            }
+
+                            try {
+                              const result = await handleSave(
+                                recordId,
+                                session
+                              );
+                              if (result) {
+                                // Update database saved jobs state
+                                setDbSavedJobs((prev) => {
+                                  const newSet = new Set(prev);
+                                  if (result.saved) {
+                                    newSet.add(recordId);
+                                  } else {
+                                    newSet.delete(recordId);
+                                  }
+                                  return newSet;
+                                });
+
+                                // Also update local state for consistency
+                                onToggleSaved(index);
+                              }
+                            } catch (error) {
+                              console.error(
+                                'Failed to save/unsave job:',
+                                error
+                              );
+                              // Fallback to local state on error
+                              onToggleSaved(index);
+                            }
                           }}
                           className={`flex-shrink-0 p-1 h-8 w-8 transition-all duration-150 ${
-                            isSaved
+                            isLoadingSavedJobs
+                              ? 'opacity-50 cursor-not-allowed'
+                              : isSaved
                               ? 'text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50'
                               : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
                           }`}
@@ -420,7 +530,7 @@ export function AllJobsList({
           })}
 
           {/* Enhanced Empty State */}
-          {jobs.length === 0 && (
+          {sortedJobs.length === 0 && (
             <div className="text-center py-16 px-4">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Briefcase className="w-8 h-8 text-gray-400" />

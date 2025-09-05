@@ -1,11 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { JobHeader } from '@/components/job-description/job-header';
-import { JobInfoBadges } from '@/components/job-description/job-info-badges';
-import { AboutCompany } from '@/components/job-description/about-company';
-import { JobResponsibilities } from '@/components/job-description/job-responsibilities';
-import { JobRequirements } from '@/components/job-description/job-requirements';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -16,7 +11,11 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSession } from '@/hooks/use-session';
+import { handleSave, checkIfSaved, getJobRecordId } from '@/utils/saved-jobs';
+import { NocJobDescriptionSkeleton } from './skeletons';
 import {
   Star,
   ExternalLink,
@@ -105,6 +104,7 @@ export function NocJobDescription({
   isSaved = false,
   className = '',
 }: NocJobDescriptionProps) {
+  const { session } = useSession();
   const [nocProfile, setNocProfile] = useState<NocProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -113,6 +113,66 @@ export function NocJobDescription({
   const [showAllAdditionalInfo, setShowAllAdditionalInfo] = useState(false);
   const [openPremium, setOpenPremium] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [dbSaved, setDbSaved] = useState(false);
+  const [savingJob, setSavingJob] = useState(false);
+
+  // Check if job is saved in database
+  useEffect(() => {
+    const checkSavedState = async () => {
+      if (!job || !session?.user?.id) {
+        setDbSaved(false);
+        return;
+      }
+
+      const recordId = getJobRecordId(job);
+      if (!recordId) {
+        setDbSaved(false);
+        return;
+      }
+
+      try {
+        const saved = await checkIfSaved(recordId, session);
+        setDbSaved(saved);
+      } catch (error) {
+        console.error('Failed to check if job is saved:', error);
+        setDbSaved(false);
+      }
+    };
+
+    checkSavedState();
+  }, [job, session?.user?.id]);
+
+  // Handle save job with database sync
+  const handleSaveJob = async () => {
+    if (!job || !session?.user?.id) {
+      // Fallback to prop function if no session
+      onSaveJob?.();
+      return;
+    }
+
+    const recordId = getJobRecordId(job);
+    if (!recordId) {
+      console.warn('No record ID found for job, using fallback');
+      onSaveJob?.();
+      return;
+    }
+
+    setSavingJob(true);
+    try {
+      const result = await handleSave(recordId, session);
+      if (result) {
+        setDbSaved(result.saved);
+        // Also call the prop function for local state consistency
+        onSaveJob?.();
+      }
+    } catch (error) {
+      console.error('Failed to save/unsave job:', error);
+      // Fallback to prop function on error
+      onSaveJob?.();
+    } finally {
+      setSavingJob(false);
+    }
+  };
 
   // Copy NOC code to clipboard
   const copyNOCCode = async () => {
@@ -183,124 +243,13 @@ export function NocJobDescription({
     }
   }, [job?.noc_code, job?.['2021_noc']]);
 
-  if (!job) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className={`bg-gradient-to-br from-gray-50 to-white overflow-y-auto relative ${className}`}
-      >
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-        </div>
-        <div className="relative z-10 w-full py-8 px-6">
-          <div className="flex items-center justify-center h-96">
-            <div className="text-center bg-white/90 backdrop-blur-sm rounded-3xl p-12 shadow-xl border border-white/30">
-              <motion.div
-                className="w-24 h-24 bg-gradient-to-br from-brand-100 to-brand-200 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg"
-                animate={{
-                  scale: [1, 1.05, 1],
-                  rotate: [0, 1, -1, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  repeatType: 'reverse',
-                }}
-              >
-                <Briefcase className="w-12 h-12 text-brand-600" />
-              </motion.div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                Select a Job
-              </h3>
-              <p className="text-gray-600 text-lg leading-relaxed max-w-md">
-                Choose a job from the list to view detailed NOC description,
-                requirements, and career insights.
-              </p>
-              <motion.div
-                className="mt-8 p-4 bg-gradient-to-r from-brand-50 to-blue-50 rounded-xl border border-brand-100"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <p className="text-sm text-brand-700 font-medium flex items-center justify-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  Get detailed insights for any LMIA job posting
-                </p>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    );
+  // Show skeleton for all loading states (no job selected OR loading NOC profile)
+  if (!job || loading) {
+    return <NocJobDescriptionSkeleton className={className} />;
   }
 
-  if (loading) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className={`bg-gradient-to-br from-gray-50 to-white overflow-y-auto relative ${className}`}
-      >
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          ></div>
-        </div>
-        <div className="relative z-10 w-full py-8 px-6">
-          <div className="flex items-center justify-center h-96">
-            <div className="text-center bg-white/90 backdrop-blur-sm rounded-3xl p-12 shadow-xl border border-white/30">
-              <motion.div
-                className="w-24 h-24 bg-gradient-to-br from-brand-100 to-brand-200 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg"
-                animate={{ rotate: 360 }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-              >
-                <Loader2 className="w-12 h-12 text-brand-600 animate-spin" />
-              </motion.div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                Loading NOC Profile...
-              </h3>
-              <p className="text-gray-600 text-lg">
-                Fetching detailed job information and requirements.
-              </p>
-              <div className="mt-6 flex justify-center space-x-1">
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="w-2 h-2 bg-brand-400 rounded-full"
-                    animate={{
-                      scale: [1, 1.5, 1],
-                      opacity: [0.5, 1, 0.5],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      delay: i * 0.2,
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    );
-  }
-
-  if (!nocProfile) {
+  // If job exists but no NOC profile found (after loading completed)
+  if (job && !loading && !nocProfile) {
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -541,20 +490,23 @@ export function NocJobDescription({
                           <TooltipTrigger asChild>
                             <Button
                               size="sm"
-                              onClick={onSaveJob}
+                              onClick={handleSaveJob}
+                              disabled={savingJob}
                               className={`transition-all duration-300 px-3 py-2 ${
-                                isSaved
+                                savingJob
+                                  ? 'opacity-50 cursor-not-allowed bg-white/20'
+                                  : (dbSaved || isSaved)
                                   ? 'bg-yellow-500 hover:bg-yellow-400 text-yellow-900 shadow-lg shadow-yellow-500/25'
                                   : 'bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm'
                               }`}
                             >
                               <motion.div
-                                animate={{ scale: isSaved ? [1, 1.2, 1] : 1 }}
+                                animate={{ scale: (dbSaved || isSaved) ? [1, 1.2, 1] : 1 }}
                                 transition={{ duration: 0.3 }}
                               >
                                 <Star
                                   className={`w-4 h-4 ${
-                                    isSaved ? 'fill-current' : ''
+                                    (dbSaved || isSaved) ? 'fill-current' : ''
                                   }`}
                                 />
                               </motion.div>
@@ -562,7 +514,12 @@ export function NocJobDescription({
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="text-xs">
-                              {isSaved ? 'Remove from saved' : 'Save this job'}
+                              {savingJob 
+                                ? 'Saving...' 
+                                : (dbSaved || isSaved) 
+                                ? 'Remove from saved' 
+                                : 'Save this job'
+                              }
                             </p>
                           </TooltipContent>
                         </Tooltip>

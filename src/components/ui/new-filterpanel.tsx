@@ -2,7 +2,21 @@
 
 import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { X, ChevronDown, Calendar as CalendarIcon, Search } from 'lucide-react';
+import {
+  X,
+  ChevronDown,
+  Calendar as CalendarIcon,
+  Search,
+  Filter,
+  MapPin,
+  Building2,
+  Briefcase,
+  Tag,
+  Hash,
+  User,
+  Sparkles,
+  RefreshCcw,
+} from 'lucide-react';
 import {
   usePathname,
   useRouter,
@@ -49,6 +63,28 @@ type SelectedFilter = { column: string; value: string };
 function toPositiveInt(v: string | null, fallback: number) {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
+}
+
+// Helper function to get appropriate icons for filter categories
+function getFilterIcon(column: string) {
+  switch (column) {
+    case 'state':
+    case 'city':
+      return MapPin;
+    case 'employer':
+      return Building2;
+    case 'job_title':
+    case 'occupation_title':
+      return Briefcase;
+    case 'category':
+      return Tag;
+    case 'noc_code':
+      return Hash;
+    case 'date_of_job_posting':
+      return CalendarIcon;
+    default:
+      return Filter;
+  }
 }
 
 /** Distinct values for a facet column (lightweight; deduped client-side). */
@@ -176,11 +212,16 @@ export default function NewFilterPanel() {
   };
 
   return (
-    <div className="w-60 bg-gray-50/30 pr-4 border-r border-gray-100 h-full flex flex-col">
-      {/* Clean Minimal Header */}
-      <div className="px-0 py-5 border-b border-gray-100">
+    <div className="w-64 bg-gray-50/30 pr-4 border-r border-gray-200 h-full flex flex-col">
+      {/* Compact Header */}
+      <div className="px-1 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-medium text-gray-900">Filters</h2>
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-brand-500 rounded-md">
+              <Filter className="w-3.5 h-3.5 text-white" />
+            </div>
+            <h2 className="text-sm font-semibold text-gray-900">Filters</h2>
+          </div>
           {(selectedFilters.length > 0 || dateFrom || dateTo) && (
             <button
               onClick={() => {
@@ -204,18 +245,18 @@ export default function NewFilterPanel() {
         </div>
       </div>
 
-      {/* Clean Active Filters */}
+      {/* Compact Active Filters */}
       {(selectedFilters.length > 0 || dateFrom || dateTo) && (
-        <div className="px-0 py-4 border-b border-gray-100">
-          <div className="space-y-2">
+        <div className="px-1 py-3 border-b border-gray-200">
+          <div className="space-y-1.5">
             {selectedFilters.map((filter) => (
               <div
                 key={`${filter.column}-${filter.value}`}
-                className="group flex items-center justify-between py-1.5 px-3 bg-white rounded-md border border-gray-200 hover:border-gray-300 transition-colors"
+                className="group flex items-center justify-between py-1.5 px-2.5 bg-white rounded-md border border-gray-200 hover:border-brand-300 transition-colors"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0" />
-                  <span className="text-sm text-gray-600 truncate">
+                  <div className="w-1.5 h-1.5 bg-brand-500 rounded-full flex-shrink-0" />
+                  <span className="text-xs text-gray-700 truncate">
                     {filter.value}
                   </span>
                 </div>
@@ -230,10 +271,10 @@ export default function NewFilterPanel() {
               </div>
             ))}
             {(dateFrom || dateTo) && (
-              <div className="group flex items-center justify-between py-1.5 px-3 bg-white rounded-md border border-gray-200 hover:border-gray-300 transition-colors">
+              <div className="group flex items-center justify-between py-1.5 px-2.5 bg-white rounded-md border border-gray-200 hover:border-gray-300 transition-colors">
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full flex-shrink-0" />
-                  <span className="text-sm text-gray-600 truncate">
+                  <CalendarIcon className="w-3 h-3 text-gray-500 flex-shrink-0" />
+                  <span className="text-xs text-gray-700 truncate">
                     {fmtDate(dateFrom)} - {fmtDate(dateTo)}
                   </span>
                 </div>
@@ -249,16 +290,17 @@ export default function NewFilterPanel() {
         </div>
       )}
 
-      {/* Clean Filter Sections */}
+      {/* Compact Filter Sections */}
       <div className="flex-1 overflow-y-auto px-0">
         {columns && (
-          <div className="py-2 space-y-6">
+          <div className="py-2 space-y-3">
             {columns.map((column) => {
               const isCollapsed = !!collapsedSections[column.accessorKey];
               const isDate = column.accessorKey === 'date_of_job_posting';
               const activeFilters = selectedFilters.filter(
                 (f) => f.column === column.accessorKey
               ).length;
+              const FilterIcon = getFilterIcon(column.accessorKey);
 
               return (
                 <div key={column.accessorKey}>
@@ -267,11 +309,20 @@ export default function NewFilterPanel() {
                     onClick={() => toggleSection(column.accessorKey)}
                   >
                     <div className="flex items-center gap-2">
+                      <div
+                        className={`p-1.5 rounded-md transition-colors ${
+                          activeFilters > 0
+                            ? 'bg-brand-100 text-brand-600'
+                            : 'bg-gray-100 text-gray-500'
+                        }`}
+                      >
+                        <FilterIcon className="w-3.5 h-3.5" />
+                      </div>
                       <span className="text-sm font-medium text-gray-900">
                         <AttributeName name={column.accessorKey} />
                       </span>
                       {activeFilters > 0 && (
-                        <span className="bg-primary-100 text-primary text-xs px-2 py-0.5 rounded-full font-medium">
+                        <span className="bg-brand-500 text-white text-xs px-1.5 py-0.5 rounded-full">
                           {activeFilters}
                         </span>
                       )}
@@ -284,7 +335,7 @@ export default function NewFilterPanel() {
                   </button>
 
                   {!isCollapsed && (
-                    <div className="mt-3 mb-2">
+                    <div className="mt-2 mb-2">
                       {isDate ? (
                         <DateRangeFilter />
                       ) : (
@@ -454,24 +505,24 @@ function FilterAttributes({
   if (!data) return null;
 
   return (
-    <div className="space-y-4">
-      {/* Clean Search */}
+    <div className="space-y-3">
+      {/* Compact Search */}
       <div className="relative">
         <input
           type="text"
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+          className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 focus:border-brand-400 transition-colors"
         />
         <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
       </div>
 
-      {/* Simple Options List */}
-      <div className="max-h-64 overflow-y-auto">
+      {/* Compact Options List */}
+      <div className="max-h-48 overflow-y-auto">
         <div className="space-y-1">
           {sortedData.length === 0 ? (
-            <div className="text-sm text-gray-500 text-center py-8">
+            <div className="text-sm text-gray-500 text-center py-6">
               {searchQuery ? 'No results found' : 'No options'}
             </div>
           ) : (
@@ -484,13 +535,13 @@ function FilterAttributes({
                   className={cn(
                     'w-full flex items-center justify-between px-3 py-2 text-sm rounded-md text-left transition-colors',
                     isSelected
-                      ? 'bg-primary-50 text-primary-900 border border-primary-200'
+                      ? 'bg-brand-50 text-brand-900 border border-brand-200'
                       : 'text-gray-700 hover:bg-gray-50 border border-transparent hover:border-gray-200'
                   )}
                 >
                   <span className="truncate">{value}</span>
                   {isSelected && (
-                    <div className="w-1.5 h-1.5 bg-primary-500 rounded-full flex-shrink-0 ml-2" />
+                    <div className="w-1.5 h-1.5 bg-brand-500 rounded-full flex-shrink-0 ml-2" />
                   )}
                 </button>
               );
@@ -555,21 +606,38 @@ function DateRangeFilter() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="w-full flex items-center justify-between px-3 py-2 text-sm bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors text-left">
-          <span className="text-gray-700 truncate">{label}</span>
-          <CalendarIcon className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
+        <button className="w-full flex items-center justify-between px-4 py-3 text-sm bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-lg hover:bg-gray-50/80 hover:border-gray-300/60 transition-all duration-200 text-left group shadow-sm hover:shadow-md">
+          <div className="flex items-center gap-2.5">
+            <CalendarIcon className="w-4 h-4 text-gray-500 group-hover:text-brand-500 transition-colors duration-200" />
+            <span className="text-gray-700 truncate font-medium">{label}</span>
+          </div>
+          <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start" side="right">
-        <div className="p-4">
+      <PopoverContent
+        className="w-auto p-0 shadow-xl border border-gray-200/60"
+        align="start"
+        side="right"
+      >
+        <div className="p-4 bg-white">
+          <div className="mb-3">
+            <h4 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+              <CalendarIcon className="w-4 h-4 text-brand-500" />
+              Select Date Range
+            </h4>
+            <p className="text-xs text-gray-500 mt-1">
+              Choose the posting date range
+            </p>
+          </div>
           <Calendar
             mode="range"
             selected={range}
             onSelect={(r) => setRange(r || { from: undefined, to: undefined })}
             numberOfMonths={1}
+            className="rounded-lg border border-gray-100"
           />
         </div>
-        <div className="flex gap-2 p-4 border-t border-gray-100">
+        <div className="flex gap-2 p-4 border-t border-gray-100/80 bg-gray-50/30">
           <Button
             size="sm"
             onClick={() => {
@@ -577,9 +645,9 @@ function DateRangeFilter() {
               setOpen(false);
             }}
             disabled={!range.from && !range.to}
-            className="flex-1"
+            className="flex-1 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-sm"
           >
-            Apply
+            Apply Filter
           </Button>
           <Button
             variant="outline"
@@ -588,7 +656,7 @@ function DateRangeFilter() {
               clear();
               setOpen(false);
             }}
-            className="flex-1"
+            className="flex-1 border-gray-200 hover:bg-gray-50"
           >
             Clear
           </Button>
@@ -610,4 +678,26 @@ function useFilterPanelColumns() {
     cols = cols.filter((f) => f.accessorKey !== 'noc_code');
   }
   return cols;
+}
+
+// Add custom scrollbar styles to document head
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(243, 244, 246, 0.5);
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, rgb(156, 163, 175), rgb(107, 114, 128));
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, rgb(107, 114, 128), rgb(75, 85, 99));
+    }
+  `;
+  document.head.appendChild(style);
 }

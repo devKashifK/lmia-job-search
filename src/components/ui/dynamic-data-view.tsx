@@ -22,6 +22,7 @@ import Pagination from '@/components/ui/pagination';
 import JobCard from '@/components/ui/job-card';
 import { NocJobDescription } from './noc-job-description';
 import { AllJobsList } from './all-jobs-list';
+import { NewDataPanelSkeleton } from './skeletons';
 import { useMinimumLoading } from '@/hooks/use-minimum-loading';
 import NewFilterPanel from '@/components/ui/new-filterpanel';
 import { useTableStore } from '@/context/store';
@@ -497,14 +498,7 @@ export function NewDataPanel({
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading jobs...</p>
-        </div>
-      </div>
-    );
+    return <NewDataPanelSkeleton />;
   }
 
   if (!data?.rows || data.rows.length === 0) {
