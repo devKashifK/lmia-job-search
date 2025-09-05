@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from '@/hooks/use-session';
 import { handleSave, checkIfSaved, getJobRecordId } from '@/utils/saved-jobs';
 import { NocJobDescriptionSkeleton } from './skeletons';
+import { ShareButton } from './share-button';
 import {
   Star,
   ExternalLink,
@@ -30,13 +31,13 @@ import {
   Sparkles,
   Clock,
   Users,
-  Copy,
-  Check,
   ChevronDown,
   ChevronUp,
   Globe,
   Phone,
   Mail,
+  Check,
+  Copy,
 } from 'lucide-react';
 
 interface NocProfile {
@@ -112,7 +113,6 @@ export function NocJobDescription({
   const [showAllResponsibilities, setShowAllResponsibilities] = useState(false);
   const [showAllAdditionalInfo, setShowAllAdditionalInfo] = useState(false);
   const [openPremium, setOpenPremium] = useState(false);
-  const [shareCopied, setShareCopied] = useState(false);
   const [dbSaved, setDbSaved] = useState(false);
   const [savingJob, setSavingJob] = useState(false);
 
@@ -183,25 +183,6 @@ export function NocJobDescription({
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy NOC code:', err);
-    }
-  };
-
-  // Share payload
-  const shareDetails = async () => {
-    try {
-      const payload = {
-        title: nocProfile?.title,
-        employer: job?.employer,
-        location: job ? `${job.city}, ${job.state}` : '',
-        noc: job?.noc_code || job?.['2021_noc'],
-        program: job?.program,
-        posted: job?.date_of_job_posting,
-      };
-      await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-      setShareCopied(true);
-      setTimeout(() => setShareCopied(false), 1500);
-    } catch (e) {
-      console.error('Failed to copy share payload', e);
     }
   };
 
@@ -464,28 +445,13 @@ export function NocJobDescription({
 
                       {/* Compact Action Buttons with Tooltips */}
                       <div className="flex flex-col gap-2 flex-shrink-0">
-                        {/* <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              size="sm"
-                              onClick={shareDetails}
-                              className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-3 py-2"
-                            >
-                              {shareCopied ? (
-                                <Check className="w-4 h-4" />
-                              ) : (
-                                <ExternalLink className="w-4 h-4" />
-                              )}
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">
-                              {shareCopied
-                                ? 'Copied share JSON'
-                                : 'Copy share details'}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip> */}
+                        <ShareButton
+                          jobTitle={nocProfile?.title}
+                          employer={job?.employer}
+                          city={job?.city}
+                          state={job?.state}
+                          className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-3 py-2"
+                        />
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -495,18 +461,20 @@ export function NocJobDescription({
                               className={`transition-all duration-300 px-3 py-2 ${
                                 savingJob
                                   ? 'opacity-50 cursor-not-allowed bg-white/20'
-                                  : (dbSaved || isSaved)
+                                  : dbSaved || isSaved
                                   ? 'bg-yellow-500 hover:bg-yellow-400 text-yellow-900 shadow-lg shadow-yellow-500/25'
                                   : 'bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm'
                               }`}
                             >
                               <motion.div
-                                animate={{ scale: (dbSaved || isSaved) ? [1, 1.2, 1] : 1 }}
+                                animate={{
+                                  scale: dbSaved || isSaved ? [1, 1.2, 1] : 1,
+                                }}
                                 transition={{ duration: 0.3 }}
                               >
                                 <Star
                                   className={`w-4 h-4 ${
-                                    (dbSaved || isSaved) ? 'fill-current' : ''
+                                    dbSaved || isSaved ? 'fill-current' : ''
                                   }`}
                                 />
                               </motion.div>
@@ -514,12 +482,11 @@ export function NocJobDescription({
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="text-xs">
-                              {savingJob 
-                                ? 'Saving...' 
-                                : (dbSaved || isSaved) 
-                                ? 'Remove from saved' 
-                                : 'Save this job'
-                              }
+                              {savingJob
+                                ? 'Saving...'
+                                : dbSaved || isSaved
+                                ? 'Remove from saved'
+                                : 'Save this job'}
                             </p>
                           </TooltipContent>
                         </Tooltip>
