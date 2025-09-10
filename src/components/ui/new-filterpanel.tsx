@@ -131,29 +131,37 @@ export default function NewFilterPanel() {
   const sp = useSearchParams();
 
   const columns = useFilterPanelColumns();
+  const tableName = (sp.get('t') ?? 'trending_job').trim(); // 👈 know which table
 
   const [selectedFilters, setSelectedFilters] = React.useState<
     SelectedFilter[]
   >([]);
 
+  // ✅ derive keys from columns so LMIA works too
+  const urlFilterKeys = React.useMemo(() => {
+    if (!columns) return [];
+    const EXCLUDE = new Set([
+      'id',
+      'RecordID',
+      'date_of_job_posting',
+      'lmia_year',
+    ]);
+    return columns
+      .map((c) => c.accessorKey)
+      .filter((k) => !!k && !EXCLUDE.has(k));
+  }, [columns]);
+
   React.useEffect(() => {
-    const keys = [
-      'state',
-      'city',
-      'category',
-      'job_title',
-      'noc_code',
-      'employer',
-    ];
+    if (!urlFilterKeys.length) return;
     const next: SelectedFilter[] = [];
-    for (const k of keys) {
+    for (const k of urlFilterKeys) {
       const vals = sp.getAll(k);
       for (const v of vals) next.push({ column: k, value: v });
     }
     setSelectedFilters(next);
-  }, [sp]);
+  }, [sp, urlFilterKeys]);
 
-  // read date range chips from URL (optional display)
+  // read date range chips from URL (works for both tables)
   const dateFrom = sp.get('date_from');
   const dateTo = sp.get('date_to');
 
@@ -165,18 +173,19 @@ export default function NewFilterPanel() {
     router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
   };
 
-  // collapsed sections (state & city open by default)
+  // collapsed sections (open primary facets)
   const [collapsedSections, setCollapsedSections] = React.useState<
     Record<string, boolean>
   >({});
   React.useEffect(() => {
-    if (!columns) return;
-    if (Object.keys(collapsedSections).length > 0) return;
+    if (!columns || Object.keys(collapsedSections).length > 0) return;
     const initial: Record<string, boolean> = {};
     columns.forEach((col) => {
-      initial[col.accessorKey] = !(
-        col.accessorKey === 'state' || col.accessorKey === 'city'
-      );
+      const openDefault =
+        col.accessorKey === 'state' ||
+        col.accessorKey === 'city' ||
+        col.accessorKey === 'territory'; // LMIA main facet
+      initial[col.accessorKey] = !openDefault;
     });
     setCollapsedSections(initial);
   }, [columns, collapsedSections]);
@@ -185,7 +194,6 @@ export default function NewFilterPanel() {
     setCollapsedSections((prev) => ({ ...prev, [column]: !prev[column] }));
 
   const handleSelectedFilters = (column: string, value: string) => {
-    // Only update local chips; URL is updated inside FilterAttributes
     setSelectedFilters((prev) => {
       const exists = prev.some((f) => f.column === column && f.value === value);
       return exists
@@ -195,7 +203,6 @@ export default function NewFilterPanel() {
   };
 
   const handleRemoveFilter = (column: string, value: string) => {
-    // 1) Update URL
     const nextSp = new URLSearchParams(sp.toString());
     const current = new Set(nextSp.getAll(column));
     current.delete(value);
@@ -204,7 +211,6 @@ export default function NewFilterPanel() {
     nextSp.set('page', '1');
     router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
 
-    // 2) Update local chips
     setSelectedFilters((prev) =>
       prev.filter((f) => !(f.column === column && f.value === value))
     );
@@ -212,7 +218,7 @@ export default function NewFilterPanel() {
 
   return (
     <div className="w-64 pr-4 border-r border-gray-200 h-full flex flex-col">
-      {/* Compact Header */}
+      {/* Header */}
       <div className="px-1 py-4 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -224,13 +230,11 @@ export default function NewFilterPanel() {
           {(selectedFilters.length > 0 || dateFrom || dateTo) && (
             <button
               onClick={() => {
-                // Clear all filters
                 const nextSp = new URLSearchParams();
-                const preserveParams = ['t', 'field', 'page', 'pageSize'];
-                preserveParams.forEach((param) => {
-                  const value = sp.get(param);
-                  if (value) nextSp.set(param, value);
-                });
+                for (const key of ['t', 'field', 'page', 'pageSize']) {
+                  const v = sp.get(key);
+                  if (v) nextSp.set(key, v);
+                }
                 nextSp.set('page', '1');
                 router.push(`${pathname}?${nextSp.toString()}`, {
                   scroll: false,
@@ -244,7 +248,7 @@ export default function NewFilterPanel() {
         </div>
       </div>
 
-      {/* Compact Active Filters */}
+      {/* Active filters */}
       {(selectedFilters.length > 0 || dateFrom || dateTo) && (
         <div className="px-1 py-3 border-b border-gray-200">
           <div className="space-y-1.5">
@@ -274,6 +278,8 @@ export default function NewFilterPanel() {
                 <div className="flex items-center gap-2 min-w-0">
                   <CalendarIcon className="w-3 h-3 text-gray-500 flex-shrink-0" />
                   <span className="text-xs text-gray-700 truncate">
+                    {/* 👇 label per table */}
+                    {tableName === 'lmia' ? 'LMIA Year' : 'Date Posted'}:{' '}
                     {fmtDate(dateFrom)} - {fmtDate(dateTo)}
                   </span>
                 </div>
@@ -289,13 +295,18 @@ export default function NewFilterPanel() {
         </div>
       )}
 
-      {/* Compact Filter Sections */}
+      {/* Sections */}
       <div className="flex-1 overflow-y-auto px-0">
         {columns && (
           <div className="py-2 space-y-3">
             {columns.map((column) => {
+              // 👇 date facet per table
+              const isDate =
+                (tableName === 'trending_job' &&
+                  column.accessorKey === 'date_of_job_posting') ||
+                (tableName === 'lmia' && column.accessorKey === 'lmia_year');
+
               const isCollapsed = !!collapsedSections[column.accessorKey];
-              const isDate = column.accessorKey === 'date_of_job_posting';
               const activeFilters = selectedFilters.filter(
                 (f) => f.column === column.accessorKey
               ).length;
@@ -336,6 +347,7 @@ export default function NewFilterPanel() {
                   {!isCollapsed && (
                     <div className="mt-2 mb-2">
                       {isDate ? (
+                        // ✅ same component; your hook already translates dates → lmia_year range
                         <DateRangeFilter />
                       ) : (
                         <FilterAttributes
