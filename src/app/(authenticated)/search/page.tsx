@@ -47,7 +47,6 @@ export default function Page() {
   const navigate = useRouter();
   const { toast } = useToast();
   const { session } = useSession();
-  const { setFilterPanelConfig, setDataConfig } = useTableStore();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -119,11 +118,6 @@ export default function Page() {
       } else if (searchType === 'lmia') {
         sp.set('field', suggestion.field ?? 'all');
         sp.set('t', 'lmia');
-        navigate.push(
-          `/search/hot-leads/${encodeURIComponent(
-            suggestion.suggestion
-          )}?${sp.toString()}`
-        );
         navigate.push(
           `/search/lmia/${encodeURIComponent(
             suggestion.suggestion
@@ -206,10 +200,27 @@ export default function Page() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(input);
-      if (searchType === 'hot_leads') {
-        navigate.push(`/search/hot-leads/${encodeURIComponent(input)}`);
-      } else if (searchType === 'lmia') {
-        navigate.push(`/search/lmia/${encodeURIComponent(input)}`);
+      if (!session?.session) {
+        updateCreditsAndSearch(suggestions[0]?.suggestion);
+        if (searchType === 'hot_leads') {
+          sp.set('field', suggestions[0].field ?? 'all');
+          sp.set('t', 'trending_job');
+          navigate.push(
+            `/search/hot-leads/${encodeURIComponent(
+              suggestions[0].suggestion
+            )}?${sp.toString()}`
+          );
+        } else if (searchType === 'lmia') {
+          sp.set('field', suggestions[0].field ?? 'all');
+          sp.set('t', 'lmia');
+
+          navigate.push(
+            `/search/lmia/${encodeURIComponent(
+              suggestions[0].suggestion
+            )}?${sp.toString()}`
+          );
+        }
+        return;
       }
     } finally {
       setIsChecking(false);
@@ -376,7 +387,7 @@ export default function Page() {
                           className="bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium px-6 py-3 rounded-full hover:shadow-lg hover:shadow-brand-500/25 transition-all duration-300"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          // onClick={startSearch}
+                          onClick={startSearch}
                         >
                           {isChecking ? (
                             <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />

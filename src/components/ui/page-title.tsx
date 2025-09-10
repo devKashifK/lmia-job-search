@@ -3,18 +3,25 @@ import React from 'react';
 import { Badge } from './badge';
 import { useData } from './dynamic-data-view';
 import { useSearchParams } from 'next/navigation';
+import CompactSearch from './compact-search';
 
 interface PageTitleProps {
   title: string;
   count?: number;
   showVerified?: boolean;
   className?: string;
+  showSearch?: boolean;
+  searchPlaceholder?: string;
+  defaultSearchType?: 'hot_leads' | 'lmia';
 }
 
 export default function PageTitle({
   title,
   showVerified = true,
   className = '',
+  showSearch = false,
+  searchPlaceholder = 'Quick search...',
+  defaultSearchType = 'hot_leads',
 }: PageTitleProps) {
   const { data } = useData('');
   const sp = useSearchParams();
@@ -23,16 +30,26 @@ export default function PageTitle({
   const tableName = (sp?.get('t') ?? 'trending_job').trim();
   const count = data?.count;
   return (
-    <div className={`flex flex-col gap-2 mb-2 ${className}`}>
-      <div className="flex items-center gap-3">
-        <div className="w-1 h-6 bg-brand-600 rounded-full"></div>
-        <AttributeName
-          className="text-2xl font-bold text-gray-900"
-          name={title}
-        />
-        <Badge variant="outline">
-          <AttributeName name={tableName} />
-        </Badge>
+    <div className={`flex flex-col gap-2 mb-2 w-full ${className}`}>
+      <div className="flex items-center justify-between gap-3 w-full">
+        <div className="flex items-center gap-3">
+          <div className="w-1 h-6 bg-brand-600 rounded-full"></div>
+          <AttributeName
+            className="text-2xl font-bold text-gray-900"
+            name={title}
+          />
+          <Badge variant="outline">
+            <AttributeName name={tableName} />
+          </Badge>
+        </div>
+
+        {showSearch && (
+          <CompactSearch
+            className="ml-auto"
+            placeholder={searchPlaceholder}
+            defaultSearchType={defaultSearchType}
+          />
+        )}
       </div>
       <div className="flex items-center gap-2 text-sm text-gray-500">
         {/* {count !== undefined && (

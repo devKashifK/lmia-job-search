@@ -330,12 +330,21 @@ export default function DynamicDataView({
   field,
 }: DynamicDataViewProps) {
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
+  
+  // Get search type from URL parameter
+  const searchParams = useSearchParams();
+  const searchType = (searchParams?.get('t') === 'lmia' ? 'lmia' : 'hot_leads') as 'lmia' | 'hot_leads';
 
   return (
     <div className=" mx-auto px-16 py-8">
       <div className="py-4">
         <div className="flex justify-between items-center mb-2">
-          <PageTitle title={title} />
+          <PageTitle 
+            title={title} 
+            showSearch={true}
+            searchPlaceholder={searchType === 'lmia' ? 'Search LMIA jobs...' : 'Search hot leads...'}
+            defaultSearchType={searchType}
+          />
           {/* <div className="flex items-center space-x-3"> */}
           {/* <DataPanelViewMode /> */}
 
