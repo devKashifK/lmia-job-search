@@ -81,8 +81,9 @@ export default function Page() {
         if (error) throw error;
         setSuggestions(data || []);
       } else if (searchType === 'lmia') {
-        const { data, error } = await db.rpc('rpc_suggest_lmia', {
-          term: query,
+        const { data, error } = await db.rpc('suggest_lmia', {
+          p_field: 'all',
+          p_q: query,
           p_limit: 10,
         });
         if (error) throw error;
@@ -108,22 +109,6 @@ export default function Page() {
     if (!session?.session) {
       updateCreditsAndSearch(suggestion?.suggestion);
       if (searchType === 'hot_leads') {
-        // applyDataConfig(
-        //   searchType,
-        //   'hot_leads_new',
-        //   suggestion,
-        //   'rpc',
-        //   setDataConfig
-        // );
-
-        // applyFilterPanelConfig(
-        //   'job_title',
-        //   searchType,
-        //   'hot_leads_new',
-        //   suggestion.suggestion,
-        //   'rpc',
-        //   setFilterPanelConfig
-        // );
         sp.set('field', suggestion.field ?? 'all');
         sp.set('t', 'trending_job');
         navigate.push(
@@ -132,18 +117,18 @@ export default function Page() {
           )}?${sp.toString()}`
         );
       } else if (searchType === 'lmia') {
-        applyDataConfig(searchType, 'lmia', suggestion, 'rpc', setDataConfig);
-
-        applyFilterPanelConfig(
-          'job_title',
-          searchType,
-          'lmia',
-          suggestion,
-          'rpc',
-          setFilterPanelConfig
+        sp.set('field', suggestion.field ?? 'all');
+        sp.set('t', 'lmia');
+        navigate.push(
+          `/search/hot-leads/${encodeURIComponent(
+            suggestion.suggestion
+          )}?${sp.toString()}`
         );
-
-        navigate.push(`/search/lmia/${encodeURIComponent(suggestion)}`);
+        navigate.push(
+          `/search/lmia/${encodeURIComponent(
+            suggestion.suggestion
+          )}?${sp.toString()}`
+        );
       }
       return;
     }
@@ -222,36 +207,8 @@ export default function Page() {
 
       await updateCreditsAndSearch(input);
       if (searchType === 'hot_leads') {
-        applyDataConfig(
-          searchType,
-          'hot_leads_new',
-          input,
-          'rpc',
-          setDataConfig
-        );
-
-        applyFilterPanelConfig(
-          'job_title',
-          searchType,
-          'hot_leads_new',
-          input,
-          'rpc',
-          setFilterPanelConfig
-        );
-
         navigate.push(`/search/hot-leads/${encodeURIComponent(input)}`);
       } else if (searchType === 'lmia') {
-        applyDataConfig(searchType, 'lmia', input, 'rpc', setDataConfig);
-
-        applyFilterPanelConfig(
-          'job_title',
-          searchType,
-          'lmia',
-          input,
-          'rpc',
-          setFilterPanelConfig
-        );
-
         navigate.push(`/search/lmia/${encodeURIComponent(input)}`);
       }
     } finally {

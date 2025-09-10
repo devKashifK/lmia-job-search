@@ -11,7 +11,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { Skeleton } from '@/components/ui/skeleton';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from '@/hooks/use-session';
 import { handleSave, checkIfSaved, getJobRecordId } from '@/utils/saved-jobs';
@@ -25,11 +24,9 @@ import {
   Calendar,
   Building2,
   AlertCircle,
-  Loader2,
   FileText,
   Award,
   Sparkles,
-  Clock,
   Users,
   ChevronDown,
   ChevronUp,

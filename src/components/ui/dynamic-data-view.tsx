@@ -80,8 +80,53 @@ function stableFiltersKey(sp: URLSearchParams) {
   return JSON.stringify(obj);
 }
 
-// if you added normalized columns, map them here
-const NORM_MAP: Partial<Record<AllowedField, string>> = {
+// your existing one, kept
+
+function getPrimaryKey(table: string) {
+  return table === 'lmia' ? 'RecordID' : 'id';
+}
+
+// Columns you allow for search/filters (URL params)
+function getAllowedFields(table: string): string[] {
+  if (table === 'lmia') {
+    return [
+      'territory',
+      'program',
+      'city',
+      'postal_code',
+      'lmia_period',
+      'lmia_year', // numeric
+      'priority_occupation',
+      'employer',
+      'noc_code',
+      'job_title',
+    ];
+  }
+  // trending_job
+  return ['state', 'city', 'category', 'job_title', 'noc_code', 'employer'];
+}
+
+// Subset used for free-text OR search (skip numeric fields like lmia_year)
+function getTextSearchFields(table: string): string[] {
+  if (table === 'lmia') {
+    return [
+      'territory',
+      'program',
+      'city',
+      'postal_code',
+      'lmia_period',
+      'priority_occupation',
+      'employer',
+      'noc_code',
+      'job_title',
+    ];
+  }
+  return ['state', 'city', 'category', 'job_title', 'noc_code', 'employer'];
+}
+
+// Map to normalized *_norm columns (only if you actually created them)
+// For LMIA we assume no *_norm yet; add mappings later if you generate them.
+const NORM_MAP_TRENDING: Record<string, string> = {
   state: 'state_norm',
   city: 'city_norm',
   category: 'category_norm',
@@ -90,6 +135,23 @@ const NORM_MAP: Partial<Record<AllowedField, string>> = {
   employer: 'employer_norm',
 };
 
+const NORM_MAP_LMIA: Record<string, string> = {
+  city: 'city_norm',
+  territory: 'territory_norm',
+  program: 'program_norm',
+  postal_code: 'postal_code_norm',
+  lmia_period: 'lmia_period_norm',
+  priority_occupation: 'priority_occupation_norm',
+  employer: 'employer_norm',
+  noc_code: 'noc_code_norm',
+  job_title: 'job_title_norm',
+  // lmia_year stays numeric, keep raw column
+};
+
+function getNormMap(table: string): Record<string, string> {
+  return table === 'lmia' ? NORM_MAP_LMIA : NORM_MAP_TRENDING;
+}
+
 export function useData(query: string, fieldFromProp?: string) {
   const router = useRouter();
   const pathname = usePathname();
@@ -97,6 +159,13 @@ export function useData(query: string, fieldFromProp?: string) {
 
   // table from URL (fallback to trending_job)
   const tableName = (sp.get('t') ?? 'trending_job').trim();
+
+  // ---- table-specific helpers
+  const pk = getPrimaryKey(tableName); // 'id' | 'RecordID'
+  const selectCols = getColumnName(tableName); // select list string
+  const allowedFields = getAllowedFields(tableName); // fields user can search/filter
+  const textSearchFields = getTextSearchFields(tableName); // subset (skip numeric)
+  const normMap = getNormMap(tableName); // only trending_job has *_norm
 
   // from URL
   const fieldParam = (sp.get('field') ?? 'all').toLowerCase();
@@ -111,7 +180,6 @@ export function useData(query: string, fieldFromProp?: string) {
   const rawDateFrom = sp.get('date_from') ?? undefined;
   const rawDateTo = sp.get('date_to') ?? undefined;
 
-  // keep only valid YYYY-MM-DD; if both are present and out of order, swap
   const isISO = (s?: string) => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
   let dateFrom = isISO(rawDateFrom) ? rawDateFrom : undefined;
   let dateTo = isISO(rawDateTo) ? rawDateTo : undefined;
@@ -121,9 +189,9 @@ export function useData(query: string, fieldFromProp?: string) {
     dateTo = tmp;
   }
 
-  // parse filters from URL → { city: [...], state: [...], ... }
+  // parse filters from URL → { column: [values...] }
   const filters: Record<string, string[]> = {};
-  for (const k of ALLOWED_FIELDS) {
+  for (const k of allowedFields) {
     const vals = sp
       .getAll(k)
       .map((s) => s.trim())
@@ -135,7 +203,7 @@ export function useData(query: string, fieldFromProp?: string) {
   const to = from + pageSize - 1;
   const q = (query ?? '').trim();
 
-  // small helpers to update URL (no Zustand)
+  // small helpers to update URL
   const setPage = (next: number) => {
     const nextSp = new URLSearchParams(sp.toString());
     nextSp.set('page', String(Math.max(1, Math.floor(next))));
@@ -145,7 +213,7 @@ export function useData(query: string, fieldFromProp?: string) {
   const setPageSize = (next: number) => {
     const nextSp = new URLSearchParams(sp.toString());
     nextSp.set('pageSize', String(Math.max(1, Math.floor(next))));
-    nextSp.set('page', '1'); // reset to first page
+    nextSp.set('page', '1');
     router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
   };
 
@@ -159,55 +227,87 @@ export function useData(query: string, fieldFromProp?: string) {
         page,
         pageSize,
         filtersKey,
-        // 🔹 include dates so React Query refetches when they change
         dateFrom ?? null,
         dateTo ?? null,
       ],
       keepPreviousData: true,
       queryFn: async () => {
-        let builder = db
-          .from(tableName)
-          .select(
-            'id,date_of_job_posting,state,city,category,job_title,noc_code,employer',
-            { count: 'exact' }
-          )
-          .order('id', { ascending: true });
+        let builder = db.from(tableName).select(selectCols, { count: 'exact' });
 
-        // free-text search
+        // ---------- free-text search
         if (q !== '') {
           if (field === 'all') {
-            const orExpr = (ALLOWED_FIELDS as readonly string[])
+            // OR across text-searchable columns only (avoid numeric lmia_year)
+            const orExpr = textSearchFields
               .map((c) => `${c}.ilike.%${q}%`)
               .join(',');
-            builder = builder.or(orExpr);
-          } else if ((ALLOWED_FIELDS as readonly string[]).includes(field)) {
-            builder = builder.ilike(field as AllowedField, `%${q}%`);
+            if (orExpr) builder = builder.or(orExpr);
+          } else if (allowedFields.includes(field)) {
+            if (tableName === 'lmia' && field === 'lmia_year') {
+              // numeric year: support exact match if q is numeric, else ignore
+              const num = Number(q);
+              if (Number.isFinite(num))
+                builder = builder.eq('lmia_year', Math.floor(num));
+            } else {
+              builder = builder.ilike(field as any, `%${q}%`);
+            }
           } else {
             console.warn('Ignored unknown field:', field);
           }
         }
 
-        // 🔹 date range (AND with other filters)
-        if (dateFrom) builder = builder.gte('date_of_job_posting', dateFrom);
-        if (dateTo) builder = builder.lte('date_of_job_posting', dateTo);
-
-        // filters: AND across columns, OR within a column (using normalized columns if present)
-        for (const key of Object.keys(filters)) {
-          const vals =
-            filters[key]?.map((v) => v.trim().toLowerCase()).filter(Boolean) ??
-            [];
-          if (!vals.length) continue;
-          const col = (NORM_MAP as any)[key] ?? key; // key_norm if available
-          builder =
-            vals.length === 1
-              ? builder.eq(col, vals[0])
-              : builder.in(col, vals);
+        // ---------- date range
+        if (tableName === 'trending_job') {
+          if (dateFrom) builder = builder.gte('date_of_job_posting', dateFrom);
+          if (dateTo) builder = builder.lte('date_of_job_posting', dateTo);
+        } else if (tableName === 'lmia') {
+          // interpret date range as year range on lmia_year
+          const yf = dateFrom ? Number(dateFrom.slice(0, 4)) : undefined;
+          const yt = dateTo ? Number(dateTo.slice(0, 4)) : undefined;
+          if (Number.isFinite(yf))
+            builder = builder.gte('lmia_year', yf as number);
+          if (Number.isFinite(yt))
+            builder = builder.lte('lmia_year', yt as number);
         }
 
-        const { data, error, count } = await builder
-          .order('date_of_job_posting', { ascending: false })
-          .order('id', { ascending: true })
-          .range(from, to);
+        // ---------- filters: AND across columns, OR within a column
+        for (const key of Object.keys(filters)) {
+          const rawVals = filters[key] ?? [];
+          if (!rawVals.length) continue;
+
+          const normCol = normMap[key] ?? key;
+
+          if (normCol !== key) {
+            // normalized column available → use lowercased exact matching
+            const canon = rawVals
+              .map((v) => v.trim().toLowerCase())
+              .filter(Boolean);
+            if (!canon.length) continue;
+            builder =
+              canon.length === 1
+                ? builder.eq(normCol, canon[0])
+                : builder.in(normCol, canon);
+          } else {
+            // no normalization → exact match/in on original values
+            builder =
+              rawVals.length === 1
+                ? builder.eq(key, rawVals[0])
+                : builder.in(key, rawVals);
+          }
+        }
+
+        // ---------- sort (table-specific) then paginate
+        if (tableName === 'trending_job') {
+          builder = builder
+            .order('date_of_job_posting', { ascending: false })
+            .order(pk as any, { ascending: true });
+        } else {
+          builder = builder
+            .order('lmia_year', { ascending: false })
+            .order(pk as any, { ascending: true });
+        }
+
+        const { data, error, count } = await builder.range(from, to);
         if (error) throw new Error(error.message || 'Failed to fetch');
 
         return {
@@ -287,6 +387,15 @@ export function applyDataConfig(
     pageSize: 100,
   });
 }
+
+export const getColumnName = (table: string) => {
+  const trending_job =
+    'id,date_of_job_posting,state,city,category,job_title,noc_code,employer';
+  const lmia =
+    'RecordID,territory,program,city,lmia_year,job_title,noc_code,priority_occupation,approved_positions,employer,postal_code,lmia_period';
+
+  return table === 'trending_job' ? trending_job : lmia;
+};
 
 export function applyFilterPanelConfig(
   column: string,
@@ -525,7 +634,9 @@ export function NewDataPanel({
               No Jobs Found
             </h3>
             <p className="text-gray-600 mb-6 leading-relaxed">
-              We couldn't find any jobs matching your current search criteria. Try adjusting your filters or search terms to discover more opportunities.
+              We couldn't find any jobs matching your current search criteria.
+              Try adjusting your filters or search terms to discover more
+              opportunities.
             </p>
 
             {/* Suggestions */}
@@ -549,7 +660,9 @@ export function NewDataPanel({
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                  <span>Try searching for related job titles or categories</span>
+                  <span>
+                    Try searching for related job titles or categories
+                  </span>
                 </li>
               </ul>
             </div>
@@ -565,7 +678,8 @@ export function NewDataPanel({
 
             {/* Footer Text */}
             <p className="text-xs text-gray-500 mt-6">
-              New jobs are added regularly. Check back soon for fresh opportunities!
+              New jobs are added regularly. Check back soon for fresh
+              opportunities!
             </p>
           </div>
         </div>

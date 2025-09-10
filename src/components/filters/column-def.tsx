@@ -196,7 +196,7 @@ export const lmiaColumns: ColumnWithIcon[] = [
     ),
   },
   {
-    accessorKey: 'operating_name',
+    accessorKey: 'employer',
     meta: { icon: <AreaChart className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">

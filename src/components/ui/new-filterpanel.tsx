@@ -132,7 +132,6 @@ export default function NewFilterPanel() {
 
   const columns = useFilterPanelColumns();
 
-  // local chips state (derived from URL)
   const [selectedFilters, setSelectedFilters] = React.useState<
     SelectedFilter[]
   >([]);
