@@ -35,6 +35,8 @@ import {
 import { useRouter, usePathname } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { getColumnName } from '@/components/ui/dynamic-data-view';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/pages/homepage/footer';
 
@@ -72,7 +74,7 @@ interface AnalysisFilters {
   [key: string]: any;
 }
 
-// Simple inline filters component
+// Modern analysis filters component
 function SimpleAnalysisFilters({
   currentFilters,
   tableName,
@@ -82,6 +84,7 @@ function SimpleAnalysisFilters({
   tableName: string;
   companyName: string;
 }) {
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -116,8 +119,8 @@ function SimpleAnalysisFilters({
   };
 
   const activeFiltersCount = [
-    currentFilters.dateFrom,
-    currentFilters.dateTo,
+    // Count date range as one filter if either date is set
+    currentFilters.dateFrom || currentFilters.dateTo ? 1 : 0,
     ...(currentFilters.location || []),
     ...(currentFilters.city || []),
     ...(currentFilters.nocCode || []),
@@ -185,213 +188,301 @@ function SimpleAnalysisFilters({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Filter className="h-4 w-4" />
-          Filters
+    <div className="bg-gradient-to-br from-white to-gray-50/30 border border-gray-200/60 rounded-xl shadow-sm">
+      {/* Header with Toggle */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <Filter className="h-4 w-4 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-gray-900">Filter Analysis</h3>
+            <p className="text-xs text-gray-500">Refine your company insights</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
           {activeFiltersCount > 0 && (
-            <Badge variant="secondary">{activeFiltersCount}</Badge>
+            <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+              {activeFiltersCount} active
+            </Badge>
           )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {/* First Row - Basic Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Search Type */}
-            <div className="space-y-2">
-              <Label>Data Source</Label>
-              <Select
-                value={currentFilters.searchType}
-                onValueChange={(value) => updateFilters({ t: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="hot_leads">Hot Leads</SelectItem>
-                  <SelectItem value="lmia">LMIA</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="h-8 px-3"
+          >
+            {showAdvanced ? 'Simple' : 'Advanced'}
+          </Button>
+        </div>
+      </div>
 
-            {/* Date From */}
-            <div className="space-y-2">
-              <Label>Date From</Label>
+      <div className="p-4 space-y-6">
+        {/* Essential Filters Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Data Source */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              Data Source
+            </Label>
+            <Select 
+              value={currentFilters.searchType} 
+              onValueChange={(value) => updateFilters({ t: value })}
+            >
+              <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="hot_leads">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    Hot Leads
+                  </div>
+                </SelectItem>
+                <SelectItem value="lmia">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    LMIA Official
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* Date Range */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+              <CalendarDays className="h-3 w-3 text-orange-500" />
+              Date Range
+            </Label>
+            <div className="grid grid-cols-2 gap-2">
               <Input
                 type="date"
                 value={currentFilters.dateFrom || ''}
                 onChange={(e) => updateFilters({ date_from: e.target.value })}
+                placeholder="Start date"
+                className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-sm"
               />
-            </div>
-
-            {/* Date To */}
-            <div className="space-y-2">
-              <Label>Date To</Label>
               <Input
                 type="date"
                 value={currentFilters.dateTo || ''}
                 onChange={(e) => updateFilters({ date_to: e.target.value })}
+                placeholder="End date"
+                className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-sm"
               />
             </div>
+            {(currentFilters.dateFrom || currentFilters.dateTo) && (
+              <div className="text-xs text-gray-500 flex items-center gap-1">
+                <CalendarDays className="h-3 w-3" />
+                {currentFilters.dateFrom && currentFilters.dateTo ? (
+                  <>From {new Date(currentFilters.dateFrom).toLocaleDateString()} to {new Date(currentFilters.dateTo).toLocaleDateString()}</>
+                ) : currentFilters.dateFrom ? (
+                  <>From {new Date(currentFilters.dateFrom).toLocaleDateString()} onwards</>
+                ) : (
+                  <>Up to {new Date(currentFilters.dateTo!).toLocaleDateString()}</>
+                )}
+              </div>
+            )}
           </div>
-
-          {/* Second Row - Advanced Filters */}
-          {!filtersLoading && filterOptions && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Location Filter */}
-              <div className="space-y-2">
-                <Label>
-                  {currentFilters.searchType === 'lmia'
-                    ? 'Territory'
-                    : 'Province'}
-                </Label>
-                <Select onValueChange={(value) => addFilter('location', value)}>
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={`Select ${
-                        currentFilters.searchType === 'lmia'
-                          ? 'territory'
-                          : 'state'
-                      }...`}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filterOptions.locations.map((location) => (
-                      <SelectItem
-                        key={location}
-                        value={location}
-                        disabled={(currentFilters.location || []).includes(
-                          location
-                        )}
-                      >
-                        {location}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* City Filter */}
-              <div className="space-y-2">
-                <Label>City</Label>
-                <Select onValueChange={(value) => addFilter('city', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select city..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filterOptions.cities.map((city) => (
-                      <SelectItem
-                        key={city}
-                        value={city}
-                        disabled={(currentFilters.city || []).includes(city)}
-                      >
-                        {city}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* NOC Code Filter */}
-              <div className="space-y-2">
-                <Label>NOC Code</Label>
-                <Select onValueChange={(value) => addFilter('noc_code', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select NOC code..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filterOptions.nocCodes.map((nocCode) => (
-                      <SelectItem
-                        key={nocCode}
-                        value={nocCode}
-                        disabled={(currentFilters.nocCode || []).includes(
-                          nocCode
-                        )}
-                      >
-                        {nocCode}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          )}
         </div>
-
+        
+        {/* Advanced Filters */}
+        {showAdvanced && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="space-y-4"
+          >
+            <div className="flex items-center gap-2 pt-2">
+              <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
+              <span className="text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                Advanced Filters
+              </span>
+              <div className="h-px flex-1 bg-gradient-to-l from-gray-200 to-transparent"></div>
+            </div>
+            
+            {!filtersLoading && filterOptions ? (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Location Filter */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <MapPin className="h-3 w-3 text-emerald-500" />
+                    {currentFilters.searchType === 'lmia' ? 'Territory' : 'State'}
+                  </Label>
+                  <Select onValueChange={(value) => addFilter('location', value)}>
+                    <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                      <SelectValue placeholder={`Select ${currentFilters.searchType === 'lmia' ? 'territory' : 'state'}...`} />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-48">
+                      {filterOptions.locations.map((location) => (
+                        <SelectItem 
+                          key={location} 
+                          value={location}
+                          disabled={(currentFilters.location || []).includes(location)}
+                          className="flex items-center gap-2"
+                        >
+                          <span className={`${(currentFilters.location || []).includes(location) ? 'text-gray-400' : ''}`}>
+                            {location}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* City Filter */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Building2 className="h-3 w-3 text-sky-500" />
+                    City
+                  </Label>
+                  <Select onValueChange={(value) => addFilter('city', value)}>
+                    <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                      <SelectValue placeholder="Select city..." />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-48">
+                      {filterOptions.cities.map((city) => (
+                        <SelectItem 
+                          key={city} 
+                          value={city}
+                          disabled={(currentFilters.city || []).includes(city)}
+                        >
+                          <span className={`${(currentFilters.city || []).includes(city) ? 'text-gray-400' : ''}`}>
+                            {city}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* NOC Code Filter */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Hash className="h-3 w-3 text-violet-500" />
+                    NOC Code
+                  </Label>
+                  <Select onValueChange={(value) => addFilter('noc_code', value)}>
+                    <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                      <SelectValue placeholder="Select NOC code..." />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-48">
+                      {filterOptions.nocCodes.map((nocCode) => (
+                        <SelectItem 
+                          key={nocCode} 
+                          value={nocCode}
+                          disabled={(currentFilters.nocCode || []).includes(nocCode)}
+                        >
+                          <span className={`${(currentFilters.nocCode || []).includes(nocCode) ? 'text-gray-400' : ''}`}>
+                            {nocCode}
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ) : filtersLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-sm text-gray-500">Loading filter options...</span>
+                </div>
+              </div>
+            ) : null}
+          </motion.div>
+        )}
+        
         {/* Active Filters */}
         {activeFiltersCount > 0 && (
-          <div className="mt-4 space-y-2">
-            <span className="text-sm text-gray-500 font-medium">
-              Active filters:
-            </span>
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center gap-2">
+              <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
+              <span className="text-xs font-medium text-gray-600">Active Filters ({activeFiltersCount})</span>
+              <div className="h-px flex-1 bg-gradient-to-l from-gray-200 to-transparent"></div>
+            </div>
             <div className="flex flex-wrap gap-2">
-              {currentFilters.dateFrom && (
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  From: {currentFilters.dateFrom}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
-                    onClick={() => updateFilters({ date_from: undefined })}
-                  />
-                </Badge>
-              )}
-              {currentFilters.dateTo && (
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  To: {currentFilters.dateTo}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
-                    onClick={() => updateFilters({ date_to: undefined })}
-                  />
+              {(currentFilters.dateFrom || currentFilters.dateTo) && (
+                <Badge variant="outline" className="flex items-center gap-2 px-3 py-1 bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 transition-colors">
+                  <CalendarDays className="h-3 w-3" />
+                  {currentFilters.dateFrom && currentFilters.dateTo ? (
+                    <>From {new Date(currentFilters.dateFrom).toLocaleDateString()} to {new Date(currentFilters.dateTo).toLocaleDateString()}</>
+                  ) : currentFilters.dateFrom ? (
+                    <>From {new Date(currentFilters.dateFrom).toLocaleDateString()}</>
+                  ) : (
+                    <>To {new Date(currentFilters.dateTo!).toLocaleDateString()}</>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-4 w-4 p-0 hover:bg-orange-200 rounded-full"
+                    onClick={() => updateFilters({ date_from: undefined, date_to: undefined })}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
                 </Badge>
               )}
               {currentFilters.location?.map((location) => (
-                <Badge
-                  key={location}
-                  variant="secondary"
-                  className="flex items-center gap-1"
-                >
-                  📍 {location}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
+                <Badge key={location} variant="outline" className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors">
+                  <MapPin className="h-3 w-3" />
+                  {location}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-4 w-4 p-0 hover:bg-emerald-200 rounded-full"
                     onClick={() => removeFilter('location', location)}
-                  />
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
                 </Badge>
               ))}
               {currentFilters.city?.map((city) => (
-                <Badge
-                  key={city}
-                  variant="secondary"
-                  className="flex items-center gap-1"
-                >
-                  🏙️ {city}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
+                <Badge key={city} variant="outline" className="flex items-center gap-2 px-3 py-1 bg-sky-50 border-sky-200 text-sky-700 hover:bg-sky-100 transition-colors">
+                  <Building2 className="h-3 w-3" />
+                  {city}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-4 w-4 p-0 hover:bg-sky-200 rounded-full"
                     onClick={() => removeFilter('city', city)}
-                  />
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
                 </Badge>
               ))}
               {currentFilters.nocCode?.map((nocCode) => (
-                <Badge
-                  key={nocCode}
-                  variant="secondary"
-                  className="flex items-center gap-1"
-                >
-                  🏷️ {nocCode}
-                  <X
-                    className="h-3 w-3 cursor-pointer"
+                <Badge key={nocCode} variant="outline" className="flex items-center gap-2 px-3 py-1 bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100 transition-colors">
+                  <Hash className="h-3 w-3" />
+                  {nocCode}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-4 w-4 p-0 hover:bg-violet-200 rounded-full"
                     onClick={() => removeFilter('noc_code', nocCode)}
-                  />
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
                 </Badge>
               ))}
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                Clear All
-              </Button>
+              
+              {activeFiltersCount > 1 && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={clearFilters}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 border"
+                >
+                  <X className="h-3 w-3 mr-1" />
+                  Clear All
+                </Button>
+              )}
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -744,40 +835,30 @@ function CompanyAnalysisContent({
 
   return (
     <div className="container mx-auto px-6 py-8 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Building2 className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {companyName}
-              </h1>
-              <p className="text-sm text-gray-500">
-                Company Analysis •{' '}
-                {filters.searchType === 'lmia' ? 'LMIA Data' : 'Hot Leads'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-sm">
-              {analysisData?.totalJobs || 0} Jobs
-            </Badge>
-            {/* {analysisData?.totalPositions && (
-              <Badge variant="outline" className="text-sm">
-                {analysisData.totalPositions} Positions
-              </Badge>
-            )} */}
+      {/* Simple Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <Building2 className="h-8 w-8 text-brand-600" />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {companyName}
+            </h1>
+            <p className="text-sm text-gray-500">
+              Company Analysis • {filters.searchType === 'lmia' ? 'LMIA' : 'Hot Leads'}
+            </p>
           </div>
         </div>
-
-        {/* Filters */}
-        <SimpleAnalysisFilters
-          currentFilters={filters}
-          tableName={tableName}
-          companyName={companyName}
-        />
+        <Badge variant="outline" className="text-sm">
+          {analysisData?.totalJobs || 0} Jobs
+        </Badge>
       </div>
+      
+      {/* Filters */}
+      <SimpleAnalysisFilters
+        currentFilters={filters}
+        tableName={tableName}
+        companyName={companyName}
+      />
 
       <Separator />
 

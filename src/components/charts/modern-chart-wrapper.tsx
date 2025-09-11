@@ -97,7 +97,7 @@ export function ModernChartWrapper({
   className = '',
   onExpand,
   onDownload,
-  height = '320px',
+  height = '380px',
   loading = false,
   error,
 }: ChartWrapperProps) {
@@ -261,7 +261,7 @@ export function ModernChartWrapper({
           </CardHeader>
 
           <CardContent className="relative z-10 pt-0 pb-4">
-            <div style={{ height }} className="w-full">
+            <div style={{ height }} className="w-full overflow-hidden">
               {children}
             </div>
           </CardContent>

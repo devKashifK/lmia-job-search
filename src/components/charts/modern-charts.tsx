@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -19,6 +19,13 @@ import {
   Treemap
 } from 'recharts';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Info, Eye } from 'lucide-react';
 
 // Modern color palettes
 export const CHART_COLORS = {
@@ -163,8 +170,8 @@ export function ModernBarChart({
 // Modern Pie Chart with Enhanced UI
 export function ModernPieChart({
   data,
-  innerRadius = 70,
-  outerRadius = 120,
+  innerRadius = 60,
+  outerRadius = 100,
   colorScheme = 'brand',
   showLabels = false,
   showLegend = true
@@ -211,40 +218,51 @@ export function ModernPieChart({
     );
   };
 
-  // Custom legend component
-  const CustomLegend = ({ payload }: any) => (
-    <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 px-4">
-      {payload?.map((entry: any, index: number) => {
-        const percentage = ((entry.payload.value / total) * 100).toFixed(1);
-        return (
-          <motion.div
-            key={entry.value}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-            className="flex items-center gap-2 text-sm"
-          >
-            <div 
-              className="w-3 h-3 rounded-full shadow-sm" 
-              style={{ backgroundColor: entry.color }}
-            />
-            <span className="text-gray-700 font-medium">
-              {entry.value}
-            </span>
-            <span className="text-gray-500 text-xs">
-              ({percentage}%)
-            </span>
-          </motion.div>
-        );
-      })}
-    </div>
-  );
+  // Popover legend component
+  const PopoverLegend = ({ payload }: any) => {
+    return (
+      <div className="min-w-0 max-w-sm">
+        <div className="text-sm font-semibold text-gray-900 mb-2 pb-2 border-b border-gray-200">
+          Legend ({payload?.length || 0} items)
+        </div>
+        <div className="max-h-60 overflow-y-auto custom-scrollbar pr-2">
+          <div className="space-y-1.5">
+            {payload?.map((entry: any, index: number) => {
+              const percentage = ((entry.payload.value / total) * 100).toFixed(1);
+              return (
+                <motion.div
+                  key={entry.value}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.02 }}
+                  className="flex items-start gap-2 p-1.5 hover:bg-gray-50 rounded-md transition-colors min-w-0"
+                >
+                  <div 
+                    className="w-3.5 h-3.5 rounded-full shadow-sm flex-shrink-0 mt-0.5" 
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-gray-900 font-medium text-xs leading-tight break-words">
+                      {entry.value}
+                    </div>
+                    <div className="text-gray-600 text-xs mt-0.5">
+                      {entry.payload.value.toLocaleString()} ({percentage}%)
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex-1 relative">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
             <defs>
               {colors.map((color, index) => (
                 <React.Fragment key={index}>
@@ -317,25 +335,48 @@ export function ModernPieChart({
         </ResponsiveContainer>
         
         {/* Center total display for donut charts */}
-        {innerRadius > 40 && (
+        {innerRadius > 30 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-xl font-bold text-gray-900">
                 {total.toLocaleString()}
               </div>
-              <div className="text-sm text-gray-600">Total</div>
+              <div className="text-xs text-gray-600">Total</div>
             </div>
           </div>
         )}
+
+        {/* Legend Button */}
+        {showLegend && data.length > 0 && (
+          <div className="absolute bottom-2 right-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 px-3 bg-white/90 backdrop-blur-sm hover:bg-white shadow-sm border-gray-200"
+                >
+                  <Eye className="h-3 w-3 mr-1" />
+                  <span className="text-xs">Legend</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent 
+                side="left" 
+                align="end" 
+                className="p-2 w-auto min-w-0 max-w-sm"
+                sideOffset={8}
+                avoidCollisions={true}
+              >
+                <PopoverLegend payload={data.map((item, index) => ({
+                  value: item.name,
+                  color: colors[index % colors.length],
+                  payload: item
+                }))} />
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
       </div>
-      
-      {showLegend && (
-        <CustomLegend payload={data.map((item, index) => ({
-          value: item.name,
-          color: colors[index % colors.length],
-          payload: item
-        }))} />
-      )}
     </div>
   );
 }
@@ -417,26 +458,18 @@ export function ModernDonutChart({
   data,
   colorScheme = 'brand',
   showLabels = true,
-  centerText
+  centerText,
+  showLegend = true
 }: ModernPieChartProps & { centerText?: string }) {
   return (
-    <div className="relative">
-      <ModernPieChart
-        data={data}
-        innerRadius={70}
-        outerRadius={110}
-        colorScheme={colorScheme}
-        showLabels={showLabels}
-      />
-      {centerText && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-gray-900">{centerText}</div>
-            <div className="text-sm text-gray-600">Total</div>
-          </div>
-        </div>
-      )}
-    </div>
+    <ModernPieChart
+      data={data}
+      innerRadius={60}
+      outerRadius={95}
+      colorScheme={colorScheme}
+      showLabels={showLabels}
+      showLegend={showLegend}
+    />
   );
 }
 
