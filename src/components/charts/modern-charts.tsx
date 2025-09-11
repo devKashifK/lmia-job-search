@@ -160,86 +160,183 @@ export function ModernBarChart({
   );
 }
 
-// Modern Pie Chart
+// Modern Pie Chart with Enhanced UI
 export function ModernPieChart({
   data,
-  innerRadius = 60,
-  outerRadius = 100,
+  innerRadius = 70,
+  outerRadius = 120,
   colorScheme = 'brand',
-  showLabels = true,
-  showLegend = false
+  showLabels = false,
+  showLegend = true
 }: ModernPieChartProps) {
   const colors = CHART_COLORS[colorScheme];
+  const total = data.reduce((sum, item) => sum + item.value, 0);
 
-  const RADIAN = Math.PI / 180;
+  // Enhanced custom label rendering
   const renderCustomizedLabel = ({
-    cx, cy, midAngle, innerRadius, outerRadius, percent
+    cx, cy, midAngle, innerRadius, outerRadius, percent, name, value
   }: any) => {
-    if (percent < 0.05) return null; // Don't show labels for very small slices
+    if (percent < 0.08) return null; // Only show labels for slices > 8%
     
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 1.2;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
     const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
     return (
-      <text 
-        x={x} 
-        y={y} 
-        fill="white" 
-        textAnchor={x > cx ? 'start' : 'end'} 
-        dominantBaseline="central"
-        fontSize={12}
-        fontWeight="600"
-      >
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
+      <g>
+        <text 
+          x={x} 
+          y={y - 8} 
+          fill="#374151" 
+          textAnchor={x > cx ? 'start' : 'end'} 
+          dominantBaseline="central"
+          fontSize={11}
+          fontWeight="600"
+        >
+          {`${(percent * 100).toFixed(1)}%`}
+        </text>
+        <text 
+          x={x} 
+          y={y + 8} 
+          fill="#6b7280" 
+          textAnchor={x > cx ? 'start' : 'end'} 
+          dominantBaseline="central"
+          fontSize={10}
+          fontWeight="400"
+        >
+          {name.length > 12 ? `${name.substring(0, 12)}...` : name}
+        </text>
+      </g>
     );
   };
 
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <defs>
-          {colors.map((color, index) => (
-            <linearGradient key={index} id={`pie-gradient-${index}`} x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity={1}/>
-              <stop offset="100%" stopColor={color} stopOpacity={0.8}/>
-            </linearGradient>
-          ))}
-        </defs>
-        
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          label={showLabels ? renderCustomizedLabel : false}
-          outerRadius={outerRadius}
-          innerRadius={innerRadius}
-          paddingAngle={2}
-          dataKey="value"
-          strokeWidth={2}
-          stroke="white"
-        >
-          {data.map((entry, index) => (
-            <Cell 
-              key={`cell-${index}`} 
-              fill={`url(#pie-gradient-${index % colors.length})`}
+  // Custom legend component
+  const CustomLegend = ({ payload }: any) => (
+    <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 px-4">
+      {payload?.map((entry: any, index: number) => {
+        const percentage = ((entry.payload.value / total) * 100).toFixed(1);
+        return (
+          <motion.div
+            key={entry.value}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.1 }}
+            className="flex items-center gap-2 text-sm"
+          >
+            <div 
+              className="w-3 h-3 rounded-full shadow-sm" 
+              style={{ backgroundColor: entry.color }}
             />
-          ))}
-        </Pie>
+            <span className="text-gray-700 font-medium">
+              {entry.value}
+            </span>
+            <span className="text-gray-500 text-xs">
+              ({percentage}%)
+            </span>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+
+  return (
+    <div className="w-full h-full flex flex-col">
+      <div className="flex-1 relative">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <defs>
+              {colors.map((color, index) => (
+                <React.Fragment key={index}>
+                  <linearGradient id={`pie-gradient-${index}`} x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor={color} stopOpacity={0.9}/>
+                    <stop offset="100%" stopColor={color} stopOpacity={0.7}/>
+                  </linearGradient>
+                  <filter id={`shadow-${index}`}>
+                    <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity={0.2}/>
+                  </filter>
+                </React.Fragment>
+              ))}
+            </defs>
+            
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={showLabels ? renderCustomizedLabel : false}
+              outerRadius={outerRadius}
+              innerRadius={innerRadius}
+              paddingAngle={3}
+              dataKey="value"
+              strokeWidth={0}
+              animationBegin={0}
+              animationDuration={800}
+            >
+              {data.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={`url(#pie-gradient-${index % colors.length})`}
+                  filter={`url(#shadow-${index % colors.length})`}
+                  style={{
+                    filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))'
+                  }}
+                />
+              ))}
+            </Pie>
+            
+            <Tooltip 
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const data = payload[0];
+                  const percentage = ((data.value / total) * 100).toFixed(1);
+                  return (
+                    <div className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-xl border border-gray-200">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: data.color }}
+                        />
+                        <p className="font-semibold text-gray-900 text-sm">{data.name}</p>
+                      </div>
+                      <p className="text-gray-700 text-sm">
+                        <span className="font-semibold">{data.value?.toLocaleString()}</span>
+                        <span className="text-gray-500 ml-1">({percentage}%)</span>
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
+            
+            {!showLegend && (
+              <Legend content={() => null} />
+            )}
+          </PieChart>
+        </ResponsiveContainer>
         
-        <Tooltip content={<CustomTooltip />} />
-        
-        {showLegend && (
-          <Legend 
-            verticalAlign="bottom" 
-            height={36}
-            wrapperStyle={{ fontSize: '12px' }}
-          />
+        {/* Center total display for donut charts */}
+        {innerRadius > 40 && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-900">
+                {total.toLocaleString()}
+              </div>
+              <div className="text-sm text-gray-600">Total</div>
+            </div>
+          </div>
         )}
-      </PieChart>
-    </ResponsiveContainer>
+      </div>
+      
+      {showLegend && (
+        <CustomLegend payload={data.map((item, index) => ({
+          value: item.name,
+          color: colors[index % colors.length],
+          payload: item
+        }))} />
+      )}
+    </div>
   );
 }
 

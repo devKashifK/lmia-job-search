@@ -697,10 +697,10 @@ function CompanyAnalysisContent({
             {/* Location Distribution */}
             <ModernChartWrapper
               title="Location Distribution"
-              subtitle={`Job postings by ${
+              description={`Job postings by ${
                 filters.searchType === 'lmia' ? 'territory' : 'state'
               }`}
-              trend={analysisData?.locationData.length ? 'up' : 'neutral'}
+              height="360px"
             >
               {analysisData?.locationData && (
                 <ModernPieChart
@@ -715,15 +715,14 @@ function CompanyAnalysisContent({
             {/* Time Trend */}
             <ModernChartWrapper
               title="Hiring Trends Over Time"
-              subtitle={`Job postings by ${
+              description={`Job postings by ${
                 filters.searchType === 'lmia' ? 'year' : 'posting date'
               }`}
-              trend={
-                analysisData?.trends.growthRate &&
-                analysisData.trends.growthRate > 0
-                  ? 'up'
-                  : 'down'
-              }
+              trend={analysisData?.trends.growthRate ? {
+                value: Math.abs(analysisData.trends.growthRate),
+                isPositive: analysisData.trends.growthRate > 0
+              } : undefined}
+              height="380px"
             >
               {analysisData?.timeData && (
                 <ModernLineChart
@@ -731,6 +730,7 @@ function CompanyAnalysisContent({
                     name: d.period,
                     value: d.count,
                   }))}
+                  showArea
                 />
               )}
             </ModernChartWrapper>
@@ -738,8 +738,8 @@ function CompanyAnalysisContent({
             {/* City Distribution */}
             <ModernChartWrapper
               title="Top Cities"
-              subtitle="Job postings by city location"
-              trend={'neutral'}
+              description="Job postings by city location"
+              height="360px"
             >
               {analysisData?.cityData && (
                 <ModernBarChart
@@ -747,6 +747,8 @@ function CompanyAnalysisContent({
                     name: d.name,
                     value: d.value,
                   }))}
+                  colorScheme="brand"
+                  showGrid
                 />
               )}
             </ModernChartWrapper>
@@ -754,8 +756,8 @@ function CompanyAnalysisContent({
             {/* NOC Codes */}
             <ModernChartWrapper
               title="NOC Code Distribution"
-              subtitle="Most common National Occupational Classification codes"
-              trend={'neutral'}
+              description="Most common National Occupational Classification codes"
+              height="360px"
             >
               {analysisData?.nocCodeData && (
                 <ModernBarChart
@@ -763,6 +765,8 @@ function CompanyAnalysisContent({
                     name: d.code,
                     value: d.count,
                   }))}
+                  colorScheme="professional"
+                  showGrid
                 />
               )}
             </ModernChartWrapper>
@@ -771,8 +775,8 @@ function CompanyAnalysisContent({
             {filters.searchType === 'lmia' && analysisData?.programData && (
               <ModernChartWrapper
                 title="LMIA Programs"
-                subtitle="Distribution by LMIA program type"
-                trend={'neutral'}
+                description="Distribution by LMIA program type"
+                height="340px"
               >
                 <ModernPieChart
                   data={analysisData.programData.map((d) => ({
@@ -785,43 +789,45 @@ function CompanyAnalysisContent({
 
             {filters.searchType === 'lmia' &&
               analysisData?.priorityOccupationData && (
-                <ModernChartWrapper
-                  title="Priority Occupations"
-                  subtitle="Jobs categorized by priority occupation status"
-                  trend={'neutral'}
-                >
+              <ModernChartWrapper
+                title="Priority Occupations"
+                description="Jobs categorized by priority occupation status"
+                height="360px"
+              >
                 <ModernBarChart
                   data={analysisData.priorityOccupationData.map((d) => ({
                     name: d.name,
                     value: d.value,
                   }))}
+                  colorScheme="pastel"
+                  showGrid
                 />
-                </ModernChartWrapper>
+              </ModernChartWrapper>
               )}
 
             {/* Hot Leads-specific charts */}
             {filters.searchType === 'hot_leads' &&
               analysisData?.categoryData && (
-                <ModernChartWrapper
-                  title="Job Categories"
-                  subtitle="Distribution by job category"
-                  trend={'neutral'}
-                >
+              <ModernChartWrapper
+                title="Job Categories"
+                description="Distribution by job category"
+                height="340px"
+              >
                 <ModernPieChart
                   data={analysisData.categoryData.map((d) => ({
                     name: d.name,
                     value: d.value,
                   }))}
                 />
-                </ModernChartWrapper>
+              </ModernChartWrapper>
               )}
 
             {/* Job Titles - Full width */}
-            <ModernChartWrapper
+              <ModernChartWrapper
               title="Top Job Titles"
-              subtitle="Most common positions at this company"
-              trend={'neutral'}
+              description="Most common positions at this company"
               className="lg:col-span-2"
+              height="400px"
             >
               {analysisData?.jobTitleData && (
                 <ModernBarChart
@@ -829,6 +835,8 @@ function CompanyAnalysisContent({
                     name: d.title,
                     value: d.count,
                   }))}
+                  colorScheme="gradient"
+                  showGrid
                 />
               )}
             </ModernChartWrapper>
