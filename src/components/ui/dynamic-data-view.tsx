@@ -40,10 +40,6 @@ function isValidType(type: string | undefined): type is DataType {
   return type === 'lmia' || type === 'hotLeads';
 }
 
-interface FilterObject {
-  [key: string]: string | string[];
-}
-
 interface DynamicDataViewProps {
   title: string;
   field: string;
@@ -57,9 +53,6 @@ const ALLOWED_FIELDS = [
   'noc_code',
   'employer',
 ] as const;
-type AllowedField = (typeof ALLOWED_FIELDS)[number];
-
-type FiltersArray = Array<Record<string, string | string[]>>;
 
 function toPositiveInt(v: string | null, fallback: number) {
   const n = Number(v);
@@ -330,19 +323,25 @@ export default function DynamicDataView({
   field,
 }: DynamicDataViewProps) {
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
-  
+
   // Get search type from URL parameter
   const searchParams = useSearchParams();
-  const searchType = (searchParams?.get('t') === 'lmia' ? 'lmia' : 'hot_leads') as 'lmia' | 'hot_leads';
+  const searchType = (
+    searchParams?.get('t') === 'lmia' ? 'lmia' : 'hot_leads'
+  ) as 'lmia' | 'hot_leads';
 
   return (
     <div className=" mx-auto px-16 py-8">
       <div className="py-4">
         <div className="flex justify-between items-center mb-2">
-          <PageTitle 
-            title={title} 
+          <PageTitle
+            title={title}
             showSearch={true}
-            searchPlaceholder={searchType === 'lmia' ? 'Search LMIA jobs...' : 'Search hot leads...'}
+            searchPlaceholder={
+              searchType === 'lmia'
+                ? 'Search LMIA jobs...'
+                : 'Search hot leads...'
+            }
             defaultSearchType={searchType}
           />
           {/* <div className="flex items-center space-x-3"> */}
@@ -369,6 +368,7 @@ export default function DynamicDataView({
           query={title}
           savedSet={savedSet}
           setSavedSet={setSavedSet}
+          searchType={searchType}
         />
       </div>
     </div>
@@ -556,11 +556,13 @@ export function NewDataPanel({
   field,
   savedSet,
   setSavedSet,
+  searchType,
 }: {
   savedSet: Set<number>;
   query: string;
   field: string;
   setSavedSet: (set: Set<number>) => void;
+  searchType: string;
 }) {
   const { data, error, isLoading, setPage } = useData(query, field);
   const [selectedJob, setSelectedJob] = React.useState<any>(null);
@@ -707,6 +709,7 @@ export function NewDataPanel({
             onViewNOC={handleViewNOC}
             isSaved={isJobSaved}
             className="h-full"
+            searchType={searchType}
           />
         </div>
 

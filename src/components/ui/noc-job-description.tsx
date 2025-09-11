@@ -35,7 +35,9 @@ import {
   Mail,
   Check,
   Copy,
+  TrendingUp,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface NocProfile {
   code: string;
@@ -72,6 +74,7 @@ interface NocJobDescriptionProps {
   onViewNOC?: () => void;
   isSaved?: boolean;
   className?: string;
+  searchType?: string;
 }
 
 async function fetchNocProfile(code: string): Promise<NocProfile | null> {
@@ -101,8 +104,10 @@ export function NocJobDescription({
   onViewNOC,
   isSaved = false,
   className = '',
+  searchType,
 }: NocJobDescriptionProps) {
   const { session } = useSession();
+  const router = useRouter();
   const [nocProfile, setNocProfile] = useState<NocProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -180,6 +185,17 @@ export function NocJobDescription({
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy NOC code:', err);
+    }
+  };
+
+  const handleViewCompanyJobs = () => {
+    if (job?.employer) {
+      if (searchType == 'hot_leads')
+        router.push(
+          `/analysis/${encodeURIComponent(job.employer)}?t=trending_job`
+        );
+    } else {
+      router.push(`/analysis/${encodeURIComponent(job.employer)}?t=lmia`);
     }
   };
 
@@ -437,11 +453,21 @@ export function NocJobDescription({
                               LMIA {job.lmia_year}
                             </Badge>
                           )}
+
+                          <Button
+                            onClick={handleViewCompanyJobs}
+                            className="bg-transparent  text-white shadow-none hover:shadow-none hover:bg-transparent transition-all duration-300 px-0 py-0 text-sm font-medium"
+                          >
+                            <TrendingUp className="w-5 h-5 text-white" />
+                            More Jobs by {jobData.company}
+                          </Button>
                         </div>
                       </div>
 
                       {/* Compact Action Buttons with Tooltips */}
                       <div className="flex flex-col gap-2 flex-shrink-0">
+                        {/* Company Analysis CTA Button */}
+
                         <ShareButton
                           jobTitle={nocProfile?.title}
                           employer={job?.employer}
@@ -585,6 +611,8 @@ export function NocJobDescription({
                 </CardContent>
               </Card>
             </motion.div>
+
+            {/* Company Analysis CTA Card */}
 
             {/* Content Sections - Compact */}
             <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">

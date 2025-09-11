@@ -91,8 +91,8 @@ function getFilterIcon(column: string) {
 export function useFilterColumnAttributes(column: string) {
   const sp = useSearchParams();
   const params = useParams<{ search?: string }>();
-  const table = (sp.get('t') ?? 'trending_job').trim();
-  const field = (sp.get('field') ?? 'all').trim().toLowerCase();
+  const table = (sp?.get('t') ?? 'trending_job').trim();
+  const field = (sp?.get('field') ?? 'all').trim().toLowerCase();
   const searchTerm =
     typeof params?.search === 'string' ? decodeURIComponent(params.search) : '';
 
@@ -131,7 +131,7 @@ export default function NewFilterPanel() {
   const sp = useSearchParams();
 
   const columns = useFilterPanelColumns();
-  const tableName = (sp.get('t') ?? 'trending_job').trim(); // 👈 know which table
+  const tableName = (sp?.get('t') ?? 'trending_job').trim(); // 👈 know which table
 
   const [selectedFilters, setSelectedFilters] = React.useState<
     SelectedFilter[]
@@ -152,20 +152,30 @@ export default function NewFilterPanel() {
   }, [columns]);
 
   React.useEffect(() => {
-    if (!urlFilterKeys.length) return;
+    if (!urlFilterKeys.length || !sp) return;
     const next: SelectedFilter[] = [];
     for (const k of urlFilterKeys) {
       const vals = sp.getAll(k);
       for (const v of vals) next.push({ column: k, value: v });
     }
-    setSelectedFilters(next);
+    
+    // Only update if the filters actually changed
+    setSelectedFilters(prev => {
+      if (prev.length !== next.length) return next;
+      
+      const prevString = prev.map(f => `${f.column}:${f.value}`).sort().join('|');
+      const nextString = next.map(f => `${f.column}:${f.value}`).sort().join('|');
+      
+      return prevString === nextString ? prev : next;
+    });
   }, [sp, urlFilterKeys]);
 
   // read date range chips from URL (works for both tables)
-  const dateFrom = sp.get('date_from');
-  const dateTo = sp.get('date_to');
+  const dateFrom = sp?.get('date_from');
+  const dateTo = sp?.get('date_to');
 
   const clearDateRange = () => {
+    if (!sp) return;
     const nextSp = new URLSearchParams(sp.toString());
     nextSp.delete('date_from');
     nextSp.delete('date_to');
@@ -203,6 +213,7 @@ export default function NewFilterPanel() {
   };
 
   const handleRemoveFilter = (column: string, value: string) => {
+    if (!sp) return;
     const nextSp = new URLSearchParams(sp.toString());
     const current = new Set(nextSp.getAll(column));
     current.delete(value);
@@ -230,6 +241,7 @@ export default function NewFilterPanel() {
           {(selectedFilters.length > 0 || dateFrom || dateTo) && (
             <button
               onClick={() => {
+                if (!sp) return;
                 const nextSp = new URLSearchParams();
                 for (const key of ['t', 'field', 'page', 'pageSize']) {
                   const v = sp.get(key);
@@ -452,6 +464,7 @@ function FilterAttributes({
   // initialize selected values from URL (?column=A&column=B)
   const [localFilters, setLocalFilters] = React.useState(new Set<string>());
   React.useEffect(() => {
+    if (!sp) return;
     setLocalFilters(new Set(sp.getAll(column)));
   }, [column, sp]);
 
@@ -484,6 +497,7 @@ function FilterAttributes({
   }, [filteredData]);
 
   const handleFilterUpdate = (accessorKey: string, value: string) => {
+    if (!sp) return;
     // derive from URL (single source of truth)
     const current = new Set(sp.getAll(accessorKey));
     current.has(value) ? current.delete(value) : current.add(value);
@@ -579,11 +593,12 @@ function DateRangeFilter() {
 
   const [open, setOpen] = React.useState(false);
   const [range, setRange] = React.useState<{ from?: Date; to?: Date }>({
-    from: parseISO(sp.get('date_from')),
-    to: parseISO(sp.get('date_to')),
+    from: parseISO(sp?.get('date_from') || null),
+    to: parseISO(sp?.get('date_to') || null),
   });
 
   const applyRange = (r?: { from?: Date; to?: Date }) => {
+    if (!sp) return;
     const nextSp = new URLSearchParams(sp.toString());
     // clean first
     nextSp.delete('date_from');
@@ -598,6 +613,7 @@ function DateRangeFilter() {
 
   const clear = () => {
     setRange({ from: undefined, to: undefined });
+    if (!sp) return;
     const nextSp = new URLSearchParams(sp.toString());
     nextSp.delete('date_from');
     nextSp.delete('date_to');
@@ -662,16 +678,18 @@ function DateRangeFilter() {
 
 function useFilterPanelColumns() {
   const sp = useSearchParams();
-  const table = (sp.get('t') ?? 'trending_job').trim();
-  const field = (sp.get('field') ?? 'all').trim();
+  const table = (sp?.get('t') ?? 'trending_job').trim();
+  const field = (sp?.get('field') ?? 'all').trim();
 
-  if (table === 'lmia') return lmiaColumns;
+  return React.useMemo(() => {
+    if (table === 'lmia') return lmiaColumns;
 
-  let cols = hotLeadsColumns;
-  if (field === 'job_title') {
-    cols = cols.filter((f) => f.accessorKey !== 'noc_code');
-  }
-  return cols;
+    let cols = hotLeadsColumns;
+    if (field === 'job_title') {
+      cols = cols.filter((f) => f.accessorKey !== 'noc_code');
+    }
+    return cols;
+  }, [table, field]);
 }
 
 // Add custom scrollbar styles to document head
