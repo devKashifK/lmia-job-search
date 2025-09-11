@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building2, BarChart3, TrendingUp } from 'lucide-react';
-import { getColumnName } from '@/components/ui/dynamic-data-view';
 
 function Analysis() {
   return (

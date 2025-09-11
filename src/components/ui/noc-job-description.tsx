@@ -190,12 +190,13 @@ export function NocJobDescription({
 
   const handleViewCompanyJobs = () => {
     if (job?.employer) {
-      if (searchType == 'hot_leads')
+      if (searchType == 'hot_leads') {
         router.push(
           `/analysis/${encodeURIComponent(job.employer)}?t=trending_job`
         );
-    } else {
-      router.push(`/analysis/${encodeURIComponent(job.employer)}?t=lmia`);
+      } else {
+        router.push(`/analysis/${encodeURIComponent(job.employer)}?t=lmia`);
+      }
     }
   };
 

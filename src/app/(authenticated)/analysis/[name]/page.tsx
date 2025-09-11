@@ -233,8 +233,8 @@ function CompanyAnalysisContent({
   }, [searchParams]);
 
   const tableName = filters.searchType === 'lmia' ? 'lmia' : 'trending_job';
-  const companyColumn =
-    filters.searchType === 'lmia' ? 'operating_name' : 'employer';
+  console.log(tableName, 'checkTableName');
+  const companyColumn = filters.searchType === 'lmia' ? 'employer' : 'employer';
   const locationColumn = filters.searchType === 'lmia' ? 'territory' : 'state';
   const dateColumn =
     filters.searchType === 'lmia' ? 'lmia_year' : 'date_of_job_posting';
@@ -242,7 +242,7 @@ function CompanyAnalysisContent({
   // Use more comprehensive column selection for analysis
   const selectCols =
     filters.searchType === 'lmia'
-      ? 'RecordID,territory,program,city,lmia_year,job_title,noc_code,priority_occupation,approved_positions,operating_name,postal_code,lmia_period'
+      ? 'RecordID,territory,program,city,lmia_year,job_title,noc_code,priority_occupation,approved_positions,postal_code,lmia_period,employer'
       : 'id,date_of_job_posting,state,city,category,job_title,noc_code,employer';
 
   // Fetch company analysis data
