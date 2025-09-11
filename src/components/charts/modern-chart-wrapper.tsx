@@ -1,15 +1,15 @@
 'use client';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  TrendingUp, 
-  BarChart3, 
-  PieChart, 
-  Activity, 
-  Download, 
+import {
+  TrendingUp,
+  BarChart3,
+  PieChart,
+  Activity,
+  Download,
   Expand,
   Info,
-  Maximize2
+  Maximize2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,23 +41,23 @@ interface ChartWrapperProps {
 
 const chartVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
+  visible: {
+    opacity: 1,
+    y: 0,
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
+      ease: 'easeOut',
+    },
   },
   hover: {
     y: -2,
     scale: 1.01,
     transition: {
       duration: 0.2,
-      ease: "easeInOut"
-    }
-  }
+      ease: 'easeInOut',
+    },
+  },
 };
 
 const shimmerVariants = {
@@ -66,9 +66,9 @@ const shimmerVariants = {
     transition: {
       duration: 2,
       repeat: Infinity,
-      ease: "linear"
-    }
-  }
+      ease: 'linear',
+    },
+  },
 };
 
 const LoadingSkeleton = () => (
@@ -99,7 +99,7 @@ export function ModernChartWrapper({
   onDownload,
   height = '320px',
   loading = false,
-  error
+  error,
 }: ChartWrapperProps) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -107,7 +107,9 @@ export function ModernChartWrapper({
 
   if (loading) {
     return (
-      <Card className={`relative overflow-hidden bg-white border shadow-sm ${className}`}>
+      <Card
+        className={`relative overflow-hidden bg-white border shadow-sm ${className}`}
+      >
         <CardHeader className="pb-2">
           <LoadingSkeleton />
         </CardHeader>
@@ -117,8 +119,13 @@ export function ModernChartWrapper({
 
   if (error) {
     return (
-      <Card className={`relative overflow-hidden bg-white border shadow-sm ${className}`}>
-        <CardContent className="flex flex-col items-center justify-center p-8" style={{ minHeight: height }}>
+      <Card
+        className={`relative overflow-hidden bg-white border shadow-sm ${className}`}
+      >
+        <CardContent
+          className="flex flex-col items-center justify-center p-8"
+          style={{ minHeight: height }}
+        >
           <div className="text-center space-y-2">
             <div className="h-12 w-12 bg-red-100 rounded-full flex items-center justify-center mx-auto">
               <Info className="h-6 w-6 text-red-600" />
@@ -145,24 +152,26 @@ export function ModernChartWrapper({
         <Card className="relative overflow-hidden bg-white border shadow-sm hover:shadow-lg transition-all duration-300 group">
           {/* Gradient background overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-brand-50/30 via-transparent to-purple-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
           {/* Animated border effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-400/20 via-purple-500/20 to-brand-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" 
-               style={{ padding: '1px' }}>
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-brand-400/20 via-purple-500/20 to-brand-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"
+            style={{ padding: '1px' }}
+          >
             <div className="h-full w-full bg-white rounded-lg" />
           </div>
 
           <CardHeader className="relative z-10 pb-2">
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
-                <motion.div 
+                <motion.div
                   className="p-2 bg-brand-100 rounded-lg"
                   whileHover={{ scale: 1.05, rotate: 5 }}
                   transition={{ duration: 0.2 }}
                 >
                   {icon || defaultIcon}
                 </motion.div>
-                
+
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900 text-sm leading-tight">
                     {title}
@@ -172,7 +181,7 @@ export function ModernChartWrapper({
                       {description}
                     </p>
                   )}
-                  
+
                   {/* Stats Row */}
                   <div className="flex items-center gap-4 mt-2">
                     {totalValue && (
@@ -183,16 +192,18 @@ export function ModernChartWrapper({
                         </span>
                       </div>
                     )}
-                    
+
                     {trend && (
-                      <Badge 
-                        variant={trend.isPositive ? "default" : "destructive"} 
+                      <Badge
+                        variant={trend.isPositive ? 'default' : 'destructive'}
                         className="text-xs px-2 py-0.5"
                       >
-                        <TrendingUp 
-                          className={`h-3 w-3 mr-1 ${trend.isPositive ? '' : 'rotate-180'}`} 
+                        <TrendingUp
+                          className={`h-3 w-3 mr-1 ${
+                            trend.isPositive ? '' : 'rotate-180'
+                          }`}
                         />
-                        {Math.abs(trend.value)}%
+                        {Math.abs(trend.value).toFixed(2)}%
                       </Badge>
                     )}
                   </div>
@@ -225,7 +236,7 @@ export function ModernChartWrapper({
                         </TooltipContent>
                       </Tooltip>
                     )}
-                    
+
                     {onDownload && (
                       <Tooltip>
                         <TooltipTrigger asChild>
