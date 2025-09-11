@@ -550,7 +550,7 @@ export function NocJobDescription({
                             </p>
                           </TooltipContent>
                         </Tooltip>
-                        <Tooltip>
+                        {/* <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
                               size="sm"
@@ -563,7 +563,7 @@ export function NocJobDescription({
                           <TooltipContent>
                             <p className="text-xs">View full NOC details</p>
                           </TooltipContent>
-                        </Tooltip>
+                        </Tooltip> */}
                       </div>
                     </div>
                   </div>
