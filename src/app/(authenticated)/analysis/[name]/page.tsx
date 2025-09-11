@@ -35,6 +35,8 @@ import {
 import { useRouter, usePathname } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { getColumnName } from '@/components/ui/dynamic-data-view';
+import Navbar from '@/components/ui/nabvar';
+import Footer from '@/pages/homepage/footer';
 
 interface CompanyAnalysisData {
   companyName: string;
@@ -542,12 +544,12 @@ function CompanyAnalysisContent({
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="container mx-auto px-6 py-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <Building2 className="h-8 w-8 text-blue-600" />
+            <Building2 className="h-8 w-8 text-primary" />
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
                 {companyName}
@@ -718,10 +720,14 @@ function CompanyAnalysisContent({
               description={`Job postings by ${
                 filters.searchType === 'lmia' ? 'year' : 'posting date'
               }`}
-              trend={analysisData?.trends.growthRate ? {
-                value: Math.abs(analysisData.trends.growthRate),
-                isPositive: analysisData.trends.growthRate > 0
-              } : undefined}
+              trend={
+                analysisData?.trends.growthRate
+                  ? {
+                      value: Math.abs(analysisData.trends.growthRate),
+                      isPositive: analysisData.trends.growthRate > 0,
+                    }
+                  : undefined
+              }
               height="380px"
             >
               {analysisData?.timeData && (
@@ -789,41 +795,41 @@ function CompanyAnalysisContent({
 
             {filters.searchType === 'lmia' &&
               analysisData?.priorityOccupationData && (
-              <ModernChartWrapper
-                title="Priority Occupations"
-                description="Jobs categorized by priority occupation status"
-                height="360px"
-              >
-                <ModernBarChart
-                  data={analysisData.priorityOccupationData.map((d) => ({
-                    name: d.name,
-                    value: d.value,
-                  }))}
-                  colorScheme="pastel"
-                  showGrid
-                />
-              </ModernChartWrapper>
+                <ModernChartWrapper
+                  title="Priority Occupations"
+                  description="Jobs categorized by priority occupation status"
+                  height="360px"
+                >
+                  <ModernBarChart
+                    data={analysisData.priorityOccupationData.map((d) => ({
+                      name: d.name,
+                      value: d.value,
+                    }))}
+                    colorScheme="pastel"
+                    showGrid
+                  />
+                </ModernChartWrapper>
               )}
 
             {/* Hot Leads-specific charts */}
             {filters.searchType === 'hot_leads' &&
               analysisData?.categoryData && (
-              <ModernChartWrapper
-                title="Job Categories"
-                description="Distribution by job category"
-                height="340px"
-              >
-                <ModernPieChart
-                  data={analysisData.categoryData.map((d) => ({
-                    name: d.name,
-                    value: d.value,
-                  }))}
-                />
-              </ModernChartWrapper>
+                <ModernChartWrapper
+                  title="Job Categories"
+                  description="Distribution by job category"
+                  height="340px"
+                >
+                  <ModernPieChart
+                    data={analysisData.categoryData.map((d) => ({
+                      name: d.name,
+                      value: d.value,
+                    }))}
+                  />
+                </ModernChartWrapper>
               )}
 
             {/* Job Titles - Full width */}
-              <ModernChartWrapper
+            <ModernChartWrapper
               title="Top Job Titles"
               description="Most common positions at this company"
               className="lg:col-span-2"
@@ -869,7 +875,11 @@ export default function DeepAnalysis({ params }: PageProps) {
         </div>
       }
     >
-      <CompanyAnalysisContent params={params} />
+      <Navbar />
+      <div className="mt-14">
+        <CompanyAnalysisContent params={params} />
+      </div>
+      <Footer />
     </Suspense>
   );
 }
