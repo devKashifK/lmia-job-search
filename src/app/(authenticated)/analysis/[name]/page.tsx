@@ -86,17 +86,22 @@ function SimpleAnalysisFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const updateFilters = (updates: Record<string, string | undefined>) => {
+  const updateFilters = (updates: Record<string, string | string[] | undefined>) => {
     const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
-
+    
     Object.entries(updates).forEach(([key, value]) => {
-      if (value) {
+      // Remove existing values for this key
+      newSearchParams.delete(key);
+      
+      if (Array.isArray(value)) {
+        // Add multiple values
+        value.forEach(v => newSearchParams.append(key, v));
+      } else if (value) {
+        // Add single value
         newSearchParams.set(key, value);
-      } else {
-        newSearchParams.delete(key);
       }
     });
-
+    
     router.push(`${pathname}?${newSearchParams.toString()}`);
   };
 
@@ -111,7 +116,61 @@ function SimpleAnalysisFilters({
   const activeFiltersCount = [
     currentFilters.dateFrom,
     currentFilters.dateTo,
+    ...(currentFilters.location || []),
+    ...(currentFilters.city || []),
+    ...(currentFilters.nocCode || []),
   ].filter(Boolean).length;
+  
+  // Get available filter options for the company
+  const { data: filterOptions, isLoading: filtersLoading } = useQuery({
+    queryKey: ['analysis-filter-options', tableName, companyName, currentFilters.searchType],
+    queryFn: async () => {
+      const companyColumn = currentFilters.searchType === 'lmia' ? 'operating_name' : 'employer';
+      const locationColumn = currentFilters.searchType === 'lmia' ? 'territory' : 'state';
+      
+      const selectCols = currentFilters.searchType === 'lmia'
+        ? [locationColumn, 'city', 'noc_code'].join(', ')
+        : [locationColumn, 'city', 'noc_code'].join(', ');
+      
+      const { data, error } = await db
+        .from(tableName)
+        .select(selectCols)
+        .eq(companyColumn, companyName);
+        
+      if (error) throw error;
+
+      const result: Record<string, Set<string>> = {
+        locations: new Set(),
+        cities: new Set(),
+        nocCodes: new Set(),
+      };
+      
+      data?.forEach((row: any) => {
+        if (row[locationColumn]) result.locations.add(row[locationColumn]);
+        if (row.city) result.cities.add(row.city);
+        if (row.noc_code) result.nocCodes.add(row.noc_code);
+      });
+
+      return {
+        locations: Array.from(result.locations).sort(),
+        cities: Array.from(result.cities).sort(),
+        nocCodes: Array.from(result.nocCodes).sort(),
+      };
+    },
+    enabled: !!companyName,
+  });
+  
+  const addFilter = (key: string, value: string) => {
+    const current = currentFilters[key as keyof typeof currentFilters] as string[] || [];
+    if (!current.includes(value)) {
+      updateFilters({ [key]: [...current, value] });
+    }
+  };
+
+  const removeFilter = (key: string, value: string) => {
+    const current = currentFilters[key as keyof typeof currentFilters] as string[] || [];
+    updateFilters({ [key]: current.filter(v => v !== value) });
+  };
 
   return (
     <Card>
@@ -125,70 +184,170 @@ function SimpleAnalysisFilters({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Search Type */}
-          <div className="space-y-2">
-            <Label>Data Source</Label>
-            <Select
-              value={currentFilters.searchType}
-              onValueChange={(value) => updateFilters({ t: value })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="hot_leads">Hot Leads</SelectItem>
-                <SelectItem value="lmia">LMIA</SelectItem>
-              </SelectContent>
-            </Select>
+        <div className="space-y-6">
+          {/* First Row - Basic Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search Type */}
+            <div className="space-y-2">
+              <Label>Data Source</Label>
+              <Select 
+                value={currentFilters.searchType} 
+                onValueChange={(value) => updateFilters({ t: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="hot_leads">Hot Leads</SelectItem>
+                  <SelectItem value="lmia">LMIA</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Date From */}
+            <div className="space-y-2">
+              <Label>Date From</Label>
+              <Input
+                type="date"
+                value={currentFilters.dateFrom || ''}
+                onChange={(e) => updateFilters({ date_from: e.target.value })}
+              />
+            </div>
+            
+            {/* Date To */}
+            <div className="space-y-2">
+              <Label>Date To</Label>
+              <Input
+                type="date"
+                value={currentFilters.dateTo || ''}
+                onChange={(e) => updateFilters({ date_to: e.target.value })}
+              />
+            </div>
           </div>
-
-          {/* Date From */}
-          <div className="space-y-2">
-            <Label>Date From</Label>
-            <Input
-              type="date"
-              value={currentFilters.dateFrom || ''}
-              onChange={(e) => updateFilters({ date_from: e.target.value })}
-            />
-          </div>
-
-          {/* Date To */}
-          <div className="space-y-2">
-            <Label>Date To</Label>
-            <Input
-              type="date"
-              value={currentFilters.dateTo || ''}
-              onChange={(e) => updateFilters({ date_to: e.target.value })}
-            />
-          </div>
+          
+          {/* Second Row - Advanced Filters */}
+          {!filtersLoading && filterOptions && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Location Filter */}
+              <div className="space-y-2">
+                <Label>{currentFilters.searchType === 'lmia' ? 'Territory' : 'State'}</Label>
+                <Select onValueChange={(value) => addFilter('location', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={`Select ${currentFilters.searchType === 'lmia' ? 'territory' : 'state'}...`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filterOptions.locations.map((location) => (
+                      <SelectItem 
+                        key={location} 
+                        value={location}
+                        disabled={(currentFilters.location || []).includes(location)}
+                      >
+                        {location}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* City Filter */}
+              <div className="space-y-2">
+                <Label>City</Label>
+                <Select onValueChange={(value) => addFilter('city', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select city..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filterOptions.cities.map((city) => (
+                      <SelectItem 
+                        key={city} 
+                        value={city}
+                        disabled={(currentFilters.city || []).includes(city)}
+                      >
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* NOC Code Filter */}
+              <div className="space-y-2">
+                <Label>NOC Code</Label>
+                <Select onValueChange={(value) => addFilter('noc_code', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select NOC code..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filterOptions.nocCodes.map((nocCode) => (
+                      <SelectItem 
+                        key={nocCode} 
+                        value={nocCode}
+                        disabled={(currentFilters.nocCode || []).includes(nocCode)}
+                      >
+                        {nocCode}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Active Filters */}
         {activeFiltersCount > 0 && (
-          <div className="mt-4 flex items-center gap-2">
-            <span className="text-sm text-gray-500">Active filters:</span>
-            {currentFilters.dateFrom && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                From: {currentFilters.dateFrom}
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() => updateFilters({ date_from: undefined })}
-                />
-              </Badge>
-            )}
-            {currentFilters.dateTo && (
-              <Badge variant="secondary" className="flex items-center gap-1">
-                To: {currentFilters.dateTo}
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() => updateFilters({ date_to: undefined })}
-                />
-              </Badge>
-            )}
-            <Button variant="ghost" size="sm" onClick={clearFilters}>
-              Clear All
-            </Button>
+          <div className="mt-4 space-y-2">
+            <span className="text-sm text-gray-500 font-medium">Active filters:</span>
+            <div className="flex flex-wrap gap-2">
+              {currentFilters.dateFrom && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  From: {currentFilters.dateFrom}
+                  <X 
+                    className="h-3 w-3 cursor-pointer" 
+                    onClick={() => updateFilters({ date_from: undefined })}
+                  />
+                </Badge>
+              )}
+              {currentFilters.dateTo && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  To: {currentFilters.dateTo}
+                  <X 
+                    className="h-3 w-3 cursor-pointer" 
+                    onClick={() => updateFilters({ date_to: undefined })}
+                  />
+                </Badge>
+              )}
+              {currentFilters.location?.map((location) => (
+                <Badge key={location} variant="secondary" className="flex items-center gap-1">
+                  📍 {location}
+                  <X 
+                    className="h-3 w-3 cursor-pointer" 
+                    onClick={() => removeFilter('location', location)}
+                  />
+                </Badge>
+              ))}
+              {currentFilters.city?.map((city) => (
+                <Badge key={city} variant="secondary" className="flex items-center gap-1">
+                  🏙️ {city}
+                  <X 
+                    className="h-3 w-3 cursor-pointer" 
+                    onClick={() => removeFilter('city', city)}
+                  />
+                </Badge>
+              ))}
+              {currentFilters.nocCode?.map((nocCode) => (
+                <Badge key={nocCode} variant="secondary" className="flex items-center gap-1">
+                  🏷️ {nocCode}
+                  <X 
+                    className="h-3 w-3 cursor-pointer" 
+                    onClick={() => removeFilter('noc_code', nocCode)}
+                  />
+                </Badge>
+              ))}
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                Clear All
+              </Button>
+            </div>
           </div>
         )}
       </CardContent>
@@ -564,11 +723,11 @@ function CompanyAnalysisContent({
             <Badge variant="outline" className="text-sm">
               {analysisData?.totalJobs || 0} Jobs
             </Badge>
-            {analysisData?.totalPositions && (
+            {/* {analysisData?.totalPositions && (
               <Badge variant="outline" className="text-sm">
                 {analysisData.totalPositions} Positions
               </Badge>
-            )}
+            )} */}
           </div>
         </div>
 
