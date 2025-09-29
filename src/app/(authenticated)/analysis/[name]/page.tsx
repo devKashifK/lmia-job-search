@@ -199,20 +199,20 @@ function SimpleAnalysisFilters({
               {activeFiltersCount} active
             </Badge>
           )}
-          <Button
+          {/* <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowAdvanced(!showAdvanced)}
             className="h-8 px-3"
           >
             {showAdvanced ? 'Simple' : 'Advanced'}
-          </Button>
+          </Button> */}
         </div>
       </div>
 
       <div className="p-4 space-y-6">
         {/* Essential Filters Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           {/* Data Source */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
@@ -249,7 +249,7 @@ function SimpleAnalysisFilters({
               <CalendarDays className="h-3 w-3 text-orange-500" />
               Date Range
             </Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col gap-2">
               <Input
                 type="date"
                 value={currentFilters.dateFrom || ''}
@@ -292,148 +292,138 @@ function SimpleAnalysisFilters({
         </div>
 
         {/* Advanced Filters */}
-        {showAdvanced && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="space-y-4"
-          >
-            <div className="flex items-center gap-2 pt-2">
-              <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
-              <span className="text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                Advanced Filters
-              </span>
-              <div className="h-px flex-1 bg-gradient-to-l from-gray-200 to-transparent"></div>
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          className="space-y-4"
+        >
+          <div className="flex items-start gap-2 pt-2">
+            <span className="text-xs text-left font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              Advanced Filters
+            </span>
+          </div>
+
+          {!filtersLoading && filterOptions ? (
+            <div className="flex flex-col gap-4">
+              {/* Location Filter */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <MapPin className="h-3 w-3 text-emerald-500" />
+                  {currentFilters.searchType === 'lmia' ? 'Territory' : 'State'}
+                </Label>
+                <Select onValueChange={(value) => addFilter('location', value)}>
+                  <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                    <SelectValue
+                      placeholder={`Select ${
+                        currentFilters.searchType === 'lmia'
+                          ? 'territory'
+                          : 'state'
+                      }...`}
+                    />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-48">
+                    {filterOptions.locations.map((location) => (
+                      <SelectItem
+                        key={location}
+                        value={location}
+                        disabled={(currentFilters.location || []).includes(
+                          location
+                        )}
+                        className="flex items-center gap-2"
+                      >
+                        <span
+                          className={`${
+                            (currentFilters.location || []).includes(location)
+                              ? 'text-gray-400'
+                              : ''
+                          }`}
+                        >
+                          {location}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* City Filter */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Building2 className="h-3 w-3 text-sky-500" />
+                  City
+                </Label>
+                <Select onValueChange={(value) => addFilter('city', value)}>
+                  <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                    <SelectValue placeholder="Select city..." />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-48">
+                    {filterOptions.cities.map((city) => (
+                      <SelectItem
+                        key={city}
+                        value={city}
+                        disabled={(currentFilters.city || []).includes(city)}
+                      >
+                        <span
+                          className={`${
+                            (currentFilters.city || []).includes(city)
+                              ? 'text-gray-400'
+                              : ''
+                          }`}
+                        >
+                          {city}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* NOC Code Filter */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <Hash className="h-3 w-3 text-violet-500" />
+                  NOC Code
+                </Label>
+                <Select onValueChange={(value) => addFilter('noc_code', value)}>
+                  <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                    <SelectValue placeholder="Select NOC code..." />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-48">
+                    {filterOptions.nocCodes.map((nocCode) => (
+                      <SelectItem
+                        key={nocCode}
+                        value={nocCode}
+                        disabled={(currentFilters.nocCode || []).includes(
+                          nocCode
+                        )}
+                      >
+                        <span
+                          className={`${
+                            (currentFilters.nocCode || []).includes(nocCode)
+                              ? 'text-gray-400'
+                              : ''
+                          }`}
+                        >
+                          {nocCode}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-
-            {!filtersLoading && filterOptions ? (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/* Location Filter */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <MapPin className="h-3 w-3 text-emerald-500" />
-                    {currentFilters.searchType === 'lmia'
-                      ? 'Territory'
-                      : 'State'}
-                  </Label>
-                  <Select
-                    onValueChange={(value) => addFilter('location', value)}
-                  >
-                    <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
-                      <SelectValue
-                        placeholder={`Select ${
-                          currentFilters.searchType === 'lmia'
-                            ? 'territory'
-                            : 'state'
-                        }...`}
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-48">
-                      {filterOptions.locations.map((location) => (
-                        <SelectItem
-                          key={location}
-                          value={location}
-                          disabled={(currentFilters.location || []).includes(
-                            location
-                          )}
-                          className="flex items-center gap-2"
-                        >
-                          <span
-                            className={`${
-                              (currentFilters.location || []).includes(location)
-                                ? 'text-gray-400'
-                                : ''
-                            }`}
-                          >
-                            {location}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* City Filter */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <Building2 className="h-3 w-3 text-sky-500" />
-                    City
-                  </Label>
-                  <Select onValueChange={(value) => addFilter('city', value)}>
-                    <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
-                      <SelectValue placeholder="Select city..." />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-48">
-                      {filterOptions.cities.map((city) => (
-                        <SelectItem
-                          key={city}
-                          value={city}
-                          disabled={(currentFilters.city || []).includes(city)}
-                        >
-                          <span
-                            className={`${
-                              (currentFilters.city || []).includes(city)
-                                ? 'text-gray-400'
-                                : ''
-                            }`}
-                          >
-                            {city}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* NOC Code Filter */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    <Hash className="h-3 w-3 text-violet-500" />
-                    NOC Code
-                  </Label>
-                  <Select
-                    onValueChange={(value) => addFilter('noc_code', value)}
-                  >
-                    <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
-                      <SelectValue placeholder="Select NOC code..." />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-48">
-                      {filterOptions.nocCodes.map((nocCode) => (
-                        <SelectItem
-                          key={nocCode}
-                          value={nocCode}
-                          disabled={(currentFilters.nocCode || []).includes(
-                            nocCode
-                          )}
-                        >
-                          <span
-                            className={`${
-                              (currentFilters.nocCode || []).includes(nocCode)
-                                ? 'text-gray-400'
-                                : ''
-                            }`}
-                          >
-                            {nocCode}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+          ) : filtersLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-sm text-gray-500">
+                  Loading filter options...
+                </span>
               </div>
-            ) : filtersLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm text-gray-500">
-                    Loading filter options...
-                  </span>
-                </div>
-              </div>
-            ) : null}
-          </motion.div>
-        )}
+            </div>
+          ) : null}
+        </motion.div>
 
         {/* Active Filters */}
         {activeFiltersCount > 0 && (
@@ -923,254 +913,218 @@ function CompanyAnalysisContent({
         </Badge>
       </div>
 
-      {/* Filters */}
-      <SimpleAnalysisFilters
-        currentFilters={filters}
-        tableName={tableName}
-        companyName={companyName}
-      />
+      <div className="flex gap-4">
+        {/* Filters */}
+        <SimpleAnalysisFilters
+          currentFilters={filters}
+          tableName={tableName}
+          companyName={companyName}
+        />
 
-      <Separator />
-
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader>
-                <div className="h-4 w-24 bg-gray-200 rounded" />
-                <div className="h-6 w-32 bg-gray-200 rounded" />
-              </CardHeader>
-              <CardContent>
-                <div className="h-32 bg-gray-200 rounded" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <>
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Growth Rate
-                </CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {analysisData?.trends.growthRate
-                    ? `${
-                        analysisData.trends.growthRate > 0 ? '+' : ''
-                      }${analysisData.trends.growthRate.toFixed(1)}%`
-                    : 'N/A'}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Year-over-year change
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Top Location
-                </CardTitle>
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-lg font-bold">
-                  {analysisData?.trends.popularLocation || 'N/A'}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Most common{' '}
-                  {filters.searchType === 'lmia' ? 'territory' : 'state'}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Top NOC Code
-                </CardTitle>
-                <Hash className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-lg font-bold">
-                  {analysisData?.trends.topNocCode || 'N/A'}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Most frequent NOC code
-                </p>
-              </CardContent>
-            </Card>
-
-            {filters.searchType === 'lmia' &&
-            analysisData?.trends.averagePositions ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader>
+                  <div className="h-4 w-24 bg-gray-200 rounded" />
+                  <div className="h-6 w-32 bg-gray-200 rounded" />
+                </CardHeader>
+                <CardContent>
+                  <div className="h-32 bg-gray-200 rounded" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4 w-full">
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Avg. Positions
+                    Growth Rate
                   </CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {analysisData.trends.averagePositions.toFixed(1)}
+                    {analysisData?.trends.growthRate
+                      ? `${
+                          analysisData.trends.growthRate > 0 ? '+' : ''
+                        }${analysisData.trends.growthRate.toFixed(1)}%`
+                      : 'N/A'}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Per LMIA application
+                    Year-over-year change
                   </p>
                 </CardContent>
               </Card>
-            ) : (
+
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Common Role
+                    Top Location
                   </CardTitle>
-                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-sm font-bold truncate">
-                    {analysisData?.trends.commonTitle || 'N/A'}
+                  <div className="text-lg font-bold">
+                    {analysisData?.trends.popularLocation || 'N/A'}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Most frequent job title
+                    Most common{' '}
+                    {filters.searchType === 'lmia' ? 'territory' : 'state'}
                   </p>
                 </CardContent>
               </Card>
-            )}
-          </div>
 
-          {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Location Distribution */}
-            <ModernChartWrapper
-              title="Location Distribution"
-              description={`Job postings by ${
-                filters.searchType === 'lmia' ? 'territory' : 'state'
-              }`}
-              height="360px"
-            >
-              {analysisData?.locationData && (
-                <ModernPieChart
-                  data={analysisData.locationData.map((d) => ({
-                    name: d.name,
-                    value: d.value,
-                  }))}
-                />
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Top NOC Code
+                  </CardTitle>
+                  <Hash className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-lg font-bold">
+                    {analysisData?.trends.topNocCode || 'N/A'}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Most frequent NOC code
+                  </p>
+                </CardContent>
+              </Card>
+
+              {filters.searchType === 'lmia' &&
+              analysisData?.trends.averagePositions ? (
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Avg. Positions
+                    </CardTitle>
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {analysisData.trends.averagePositions.toFixed(1)}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Per LMIA application
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Common Role
+                    </CardTitle>
+                    <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm font-bold truncate">
+                      {analysisData?.trends.commonTitle || 'N/A'}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Most frequent job title
+                    </p>
+                  </CardContent>
+                </Card>
               )}
-            </ModernChartWrapper>
+            </div>
 
-            {/* Time Trend */}
-            <ModernChartWrapper
-              title="Hiring Trends Over Time"
-              description={`Job postings by ${
-                filters.searchType === 'lmia' ? 'year' : 'posting date'
-              }`}
-              trend={
-                analysisData?.trends.growthRate
-                  ? {
-                      value: Math.abs(analysisData.trends.growthRate),
-                      isPositive: analysisData.trends.growthRate > 0,
-                    }
-                  : undefined
-              }
-              height="380px"
-            >
-              {analysisData?.timeData && (
-                <ModernLineChart
-                  data={analysisData.timeData.map((d) => ({
-                    name: d.period,
-                    value: d.count,
-                  }))}
-                  showArea
-                />
-              )}
-            </ModernChartWrapper>
-
-            {/* City Distribution */}
-            <ModernChartWrapper
-              title="Top Cities"
-              description="Job postings by city location"
-              height="360px"
-            >
-              {analysisData?.cityData && (
-                <ModernBarChart
-                  data={analysisData.cityData.map((d) => ({
-                    name: d.name,
-                    value: d.value,
-                  }))}
-                  colorScheme="brand"
-                  showGrid
-                />
-              )}
-            </ModernChartWrapper>
-
-            {/* NOC Codes */}
-            <ModernChartWrapper
-              title="NOC Code Distribution"
-              description="Most common National Occupational Classification codes"
-              height="360px"
-            >
-              {analysisData?.nocCodeData && (
-                <ModernBarChart
-                  data={analysisData.nocCodeData.map((d) => ({
-                    name: d.code,
-                    value: d.count,
-                  }))}
-                  colorScheme="professional"
-                  showGrid
-                />
-              )}
-            </ModernChartWrapper>
-
-            {/* LMIA-specific charts */}
-            {filters.searchType === 'lmia' && analysisData?.programData && (
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Location Distribution */}
               <ModernChartWrapper
-                title="LMIA Programs"
-                description="Distribution by LMIA program type"
-                height="340px"
+                title="Location Distribution"
+                description={`Job postings by ${
+                  filters.searchType === 'lmia' ? 'territory' : 'state'
+                }`}
+                height="360px"
               >
-                <ModernPieChart
-                  data={analysisData.programData.map((d) => ({
-                    name: d.name,
-                    value: d.value,
-                  }))}
-                />
-              </ModernChartWrapper>
-            )}
-
-            {filters.searchType === 'lmia' &&
-              analysisData?.priorityOccupationData && (
-                <ModernChartWrapper
-                  title="Priority Occupations"
-                  description="Jobs categorized by priority occupation status"
-                  height="360px"
-                >
-                  <ModernBarChart
-                    data={analysisData.priorityOccupationData.map((d) => ({
+                {analysisData?.locationData && (
+                  <ModernPieChart
+                    data={analysisData.locationData.map((d) => ({
                       name: d.name,
                       value: d.value,
                     }))}
-                    colorScheme="pastel"
+                  />
+                )}
+              </ModernChartWrapper>
+
+              {/* Time Trend */}
+              <ModernChartWrapper
+                title="Hiring Trends Over Time"
+                description={`Job postings by ${
+                  filters.searchType === 'lmia' ? 'year' : 'posting date'
+                }`}
+                trend={
+                  analysisData?.trends.growthRate
+                    ? {
+                        value: Math.abs(analysisData.trends.growthRate),
+                        isPositive: analysisData.trends.growthRate > 0,
+                      }
+                    : undefined
+                }
+                height="380px"
+              >
+                {analysisData?.timeData && (
+                  <ModernLineChart
+                    data={analysisData.timeData.map((d) => ({
+                      name: d.period,
+                      value: d.count,
+                    }))}
+                    showArea
+                  />
+                )}
+              </ModernChartWrapper>
+
+              {/* City Distribution */}
+              <ModernChartWrapper
+                title="Top Cities"
+                description="Job postings by city location"
+                height="360px"
+              >
+                {analysisData?.cityData && (
+                  <ModernBarChart
+                    data={analysisData.cityData.map((d) => ({
+                      name: d.name,
+                      value: d.value,
+                    }))}
+                    colorScheme="brand"
                     showGrid
                   />
-                </ModernChartWrapper>
-              )}
+                )}
+              </ModernChartWrapper>
 
-            {/* Hot Leads-specific charts */}
-            {filters.searchType === 'hot_leads' &&
-              analysisData?.categoryData && (
+              {/* NOC Codes */}
+              <ModernChartWrapper
+                title="NOC Code Distribution"
+                description="Most common National Occupational Classification codes"
+                height="360px"
+              >
+                {analysisData?.nocCodeData && (
+                  <ModernBarChart
+                    data={analysisData.nocCodeData.map((d) => ({
+                      name: d.code,
+                      value: d.count,
+                    }))}
+                    colorScheme="professional"
+                    showGrid
+                  />
+                )}
+              </ModernChartWrapper>
+
+              {/* LMIA-specific charts */}
+              {filters.searchType === 'lmia' && analysisData?.programData && (
                 <ModernChartWrapper
-                  title="Job Categories"
-                  description="Distribution by job category"
+                  title="LMIA Programs"
+                  description="Distribution by LMIA program type"
                   height="340px"
                 >
                   <ModernPieChart
-                    data={analysisData.categoryData.map((d) => ({
+                    data={analysisData.programData.map((d) => ({
                       name: d.name,
                       value: d.value,
                     }))}
@@ -1178,27 +1132,63 @@ function CompanyAnalysisContent({
                 </ModernChartWrapper>
               )}
 
-            {/* Job Titles - Full width */}
-            <ModernChartWrapper
-              title="Top Job Titles"
-              description="Most common positions at this company"
-              className="lg:col-span-2"
-              height="400px"
-            >
-              {analysisData?.jobTitleData && (
-                <ModernBarChart
-                  data={analysisData.jobTitleData.map((d) => ({
-                    name: d.title,
-                    value: d.count,
-                  }))}
-                  colorScheme="gradient"
-                  showGrid
-                />
-              )}
-            </ModernChartWrapper>
+              {filters.searchType === 'lmia' &&
+                analysisData?.priorityOccupationData && (
+                  <ModernChartWrapper
+                    title="Priority Occupations"
+                    description="Jobs categorized by priority occupation status"
+                    height="360px"
+                  >
+                    <ModernBarChart
+                      data={analysisData.priorityOccupationData.map((d) => ({
+                        name: d.name,
+                        value: d.value,
+                      }))}
+                      colorScheme="pastel"
+                      showGrid
+                    />
+                  </ModernChartWrapper>
+                )}
+
+              {/* Hot Leads-specific charts */}
+              {filters.searchType === 'hot_leads' &&
+                analysisData?.categoryData && (
+                  <ModernChartWrapper
+                    title="Job Categories"
+                    description="Distribution by job category"
+                    height="340px"
+                  >
+                    <ModernPieChart
+                      data={analysisData.categoryData.map((d) => ({
+                        name: d.name,
+                        value: d.value,
+                      }))}
+                    />
+                  </ModernChartWrapper>
+                )}
+
+              {/* Job Titles - Full width */}
+              <ModernChartWrapper
+                title="Top Job Titles"
+                description="Most common positions at this company"
+                className="lg:col-span-2"
+                height="400px"
+              >
+                {analysisData?.jobTitleData && (
+                  <ModernBarChart
+                    data={analysisData.jobTitleData.map((d) => ({
+                      name: d.title,
+                      value: d.count,
+                    }))}
+                    colorScheme="gradient"
+                    showGrid
+                  />
+                )}
+              </ModernChartWrapper>
+            </div>
           </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 }
