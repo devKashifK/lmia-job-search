@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" style="margin: 0; padding: 0">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Confirm your Job Maze account</title>
+    <style>
+      /* ============ Base (kept minimal for email clients) ============ */
+      :root {
+        --bg: #f3fbf5; /* minty canvas */
+        --panel: #ffffff; /* card */
+        --ink: #0f172a; /* dark heading */
+        --muted: #475569; /* secondary text */
+        --brand: #22c55e; /* green CTA */
+        --brand-deep: #16a34a;
+        --chip: #d1fae5;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #f3fdf6;
+          --panel: #e1f7e8;
+          --ink: #e5e7eb;
+          --muted: #000000;
+          --chip: #d3f5dd;
+        }
+      }
+      a {
+        color: var(--brand);
+      }
+      /* Mobile tweaks */
+      @media (max-width: 600px) {
+        .wrapper {
+          padding: 24px !important;
+        }
+        .card {
+          padding: 24px !important;
+        }
+        h1 {
+          font-size: 28px !important;
+          line-height: 1.2 !important;
+        }
+        .cta {
+          padding: 14px 18px !important;
+          width: 100% !important;
+          display: block !important;
+          text-align: center !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body style="margin: 0; background: var(--bg)">
+    <!-- full-width background table for Outlook -->
+    <table
+      role="presentation"
+      cellpadding="0"
+      cellspacing="0"
+      width="100%"
+      style="background: var(--bg)"
+    >
+      <tr>
+        <td align="center">
+          <!-- Wrapper -->
+          <table
+            role="presentation"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+            style="max-width: 640px; margin: 0 auto"
+          >
+            <!-- Header -->
+            <tr>
+              <td class="wrapper" style="padding: 32px 32px 16px 32px">
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                >
+                  <tr>
+                    <td
+                      align="left"
+                      style="font-family: Arial, Helvetica, sans-serif"
+                    >
+                      <!-- Logo/text lockup -->
+                      <div
+                        style="
+                          display: inline-block;
+                          vertical-align: middle;
+                          background: #eafff0;
+                          border-radius: 10px;
+                          padding: 8px;
+                        "
+                      >
+                        <span
+                          style="
+                            display: inline-block;
+                            width: 10px;
+                            height: 10px;
+                            background: #16a34a;
+                            border-radius: 2px;
+                            margin-right: 6px;
+                          "
+                        ></span>
+                        <span style="font-weight: 700; color: #14532d"
+                          >Job Maze</span
+                        >
+                      </div>
+                    </td>
+                    <td
+                      align="right"
+                      style="
+                        font-family: Arial, Helvetica, sans-serif;
+                        color: var(--muted);
+                        font-size: 12px;
+                      "
+                    >
+                      <a
+                        href="{{ .SiteURL }}"
+                        style="text-decoration: none; color: var(--muted)"
+                        >jobmaze.ca</a
+                      >
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Card -->
+            <tr>
+              <td style="padding: 0 32px 32px 32px">
+                <table
+                  role="presentation"
+                  width="100%"
+                  cellpadding="0"
+                  cellspacing="0"
+                  class="card"
+                  style="
+                    background: var(--panel);
+                    border-radius: 16px;
+                    box-shadow: 0 8px 28px rgba(16, 24, 40, 0.06);
+                    overflow: hidden;
+                  "
+                >
+                  <!-- Hero band -->
+                  <tr>
+                    <td
+                      style="
+                        padding: 28px 28px 0 28px;
+                        background: linear-gradient(
+                          180deg,
+                          #f0fff4 0%,
+                          var(--panel) 60%
+                        );
+                      "
+                    >
+                      <h1
+                        style="
+                          margin: 0 0 8px 0;
+                          font-family: Arial, Helvetica, sans-serif;
+                          font-size: 34px;
+                          line-height: 1.15;
+                        "
+                      >
+                        Discover your
+                        <span style="color: #16a34a">Perfect</span> Match
+                      </h1>
+                      <p
+                        style="
+                          margin: 0 0 20px 0;
+                          font-family: Arial, Helvetica, sans-serif;
+                          color: var(--muted);
+                          font-size: 14px;
+                        "
+                      >
+                        Hi {{ .Email }}, confirm your email to start finding top
+                        opportunities on Job Maze.
+                      </p>
+                    </td>
+                  </tr>
+
+                  <!-- CTA -->
+                  <tr>
+                    <td style="padding: 0 28px 12px 28px">
+                      <a
+                        href="{{ .ConfirmationURL }}"
+                        class="cta"
+                        style="
+                          background: var(--brand);
+                          color: #fff;
+                          text-decoration: none;
+                          font-family: Arial, Helvetica, sans-serif;
+                          font-size: 16px;
+                          font-weight: 700;
+                          padding: 16px 22px;
+                          border-radius: 999px;
+                          display: inline-block;
+                        "
+                      >
+                        Confirm my account
+                      </a>
+                    </td>
+                  </tr>
+
+                  <!-- Secondary info -->
+                  <tr>
+                    <td style="padding: 0 28px 24px 28px">
+                      <div
+                        style="
+                          font-family: Arial, Helvetica, sans-serif;
+                          font-size: 13px;
+                          color: var(--muted);
+                        "
+                      >
+                        If the button doesn’t work, copy and paste this link
+                        into your browser:
+                        <div
+                          style="
+                            margin-top: 8px;
+                            word-break: break-all;
+                            background: var(--chip);
+                            padding: 10px 12px;
+                            border-radius: 8px;
+                            color: #065f46;
+                          "
+                        >
+                          {{ .ConfirmationURL }}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td
+                      style="
+                        padding: 18px 28px 28px 28px;
+                        border-top: 1px solid rgba(15, 23, 42, 0.06);
+                      "
+                    >
+                      <p
+                        style="
+                          margin: 0;
+                          font-family: Arial, Helvetica, sans-serif;
+                          font-size: 12px;
+                          color: var(--muted);
+                        "
+                      >
+                        You’re receiving this because someone used
+                        <strong>{{ .Email }}</strong> to sign up at Job Maze. If
+                        this wasn’t you, you can ignore this email.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Tiny legal -->
+            <tr>
+              <td align="center" style="padding: 0 32px 48px 32px">
+                <p
+                  style="
+                    margin: 0;
+                    font-family: Arial, Helvetica, sans-serif;
+                    font-size: 11px;
+                    color: #94a3b8;
+                  "
+                >
+                  © {{ .Year | default "2025" }} Job Maze •
+                  <a
+                    href="{{ .SiteURL }}/privacy"
+                    style="color: #94a3b8; text-decoration: underline"
+                    >Privacy</a
+                  >
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
