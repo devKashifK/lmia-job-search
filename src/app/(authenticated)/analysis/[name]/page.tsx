@@ -179,7 +179,7 @@ function SimpleAnalysisFilters({
   };
 
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50/30 border border-gray-200/60 rounded-xl shadow-sm">
+    <div className="bg-gradient-to-br w-[30%] from-white to-gray-50/30 border border-gray-200/60 rounded-xl shadow-sm">
       {/* Header with Toggle */}
       <div className="flex items-center justify-between p-4 border-b border-gray-100">
         <div className="flex items-center gap-3">

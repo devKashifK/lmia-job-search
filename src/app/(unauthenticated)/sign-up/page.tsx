@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import CustomLink from "../../../components/ui/CustomLink";
-import { Label } from "@/components/ui/label";
-import db from "@/db";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
+import CustomLink from '../../../components/ui/CustomLink';
+import { Label } from '@/components/ui/label';
+import db from '@/db';
+import { useToast } from '@/hooks/use-toast';
 import {
   Gift,
   ChevronLeft,
@@ -17,25 +17,25 @@ import {
   ArrowRight,
   Shield,
   KeyRound,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import BackgroundWrapper from "@/components/ui/background-wrapper";
-import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collison";
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+import BackgroundWrapper from '@/components/ui/background-wrapper';
+import { BackgroundBeamsWithCollision } from '@/components/ui/background-beams-with-collison';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/select';
+import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [userType, setUserType] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [userType, setUserType] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -48,18 +48,18 @@ export default function SignUpPage() {
 
     if (!agreed) {
       toast({
-        title: "Agreement Required",
-        description: "Please agree to the Terms & Privacy Policy",
-        variant: "destructive",
+        title: 'Agreement Required',
+        description: 'Please agree to the Terms & Privacy Policy',
+        variant: 'destructive',
       });
       return;
     }
 
     if (!name || !email || !password || !userType || !confirmPassword) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all fields",
-        variant: "destructive",
+        title: 'Missing Information',
+        description: 'Please fill in all fields',
+        variant: 'destructive',
       });
       return;
     }
@@ -67,17 +67,17 @@ export default function SignUpPage() {
     if (password !== confirmPassword) {
       toast({
         title: "Passwords Don't Match",
-        description: "Please make sure your passwords match",
-        variant: "destructive",
+        description: 'Please make sure your passwords match',
+        variant: 'destructive',
       });
       return;
     }
 
     if (password.length < 8) {
       toast({
-        title: "Password Too Short",
-        description: "Password must be at least 8 characters long",
-        variant: "destructive",
+        title: 'Password Too Short',
+        description: 'Password must be at least 8 characters long',
+        variant: 'destructive',
       });
       return;
     }
@@ -100,12 +100,12 @@ export default function SignUpPage() {
       if (error) throw error;
 
       toast({
-        title: "Success!",
-        description: "We have added 10 free credits to your account",
-        variant: "default",
+        title: 'Success!',
+        description: 'We have send a confirmation email to your mail.',
+        variant: 'default',
       });
 
-      router.push("/search");
+      router.push('/search');
       return;
       //   const userId = data.user?.id;
 
@@ -239,7 +239,7 @@ export default function SignUpPage() {
                       <div className="relative">
                         <Input
                           id="password"
-                          type={showPassword ? "text" : "password"}
+                          type={showPassword ? 'text' : 'password'}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           className="h-12 pl-10 pr-10"
@@ -272,7 +272,7 @@ export default function SignUpPage() {
                       <div className="relative">
                         <Input
                           id="confirmPassword"
-                          type={showConfirmPassword ? "text" : "password"}
+                          type={showConfirmPassword ? 'text' : 'password'}
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           className="h-12 pl-10 pr-10"
@@ -309,14 +309,14 @@ export default function SignUpPage() {
                       htmlFor="terms"
                       className="text-sm text-gray-600 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      I agree to the{" "}
+                      I agree to the{' '}
                       <CustomLink
                         href="/terms"
                         className="text-brand-600 hover:text-brand-500"
                       >
                         Terms of Service
-                      </CustomLink>{" "}
-                      and{" "}
+                      </CustomLink>{' '}
+                      and{' '}
                       <CustomLink
                         href="/privacy"
                         className="text-brand-600 hover:text-brand-500"
@@ -343,7 +343,7 @@ export default function SignUpPage() {
                 </form>
 
                 <p className="text-center text-sm text-gray-600 mt-6">
-                  Already have an account?{" "}
+                  Already have an account?{' '}
                   <CustomLink
                     href="/sign-in"
                     className="font-medium text-brand-600 hover:text-brand-500"
@@ -390,10 +390,10 @@ export default function SignUpPage() {
                     </p>
                     <div className="grid grid-cols-2 gap-4">
                       {[
-                        "5 Free Credits",
-                        "Advanced Search",
-                        "Email Alerts",
-                        "Saved Searches",
+                        '5 Free Credits',
+                        'Advanced Search',
+                        'Email Alerts',
+                        'Saved Searches',
                       ].map((benefit) => (
                         <div
                           key={benefit}
