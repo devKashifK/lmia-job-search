@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
   Popover,
@@ -26,14 +26,14 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command';
-import { 
-  CalendarDays, 
-  MapPin, 
-  Briefcase, 
-  Filter, 
-  X, 
+import {
+  CalendarDays,
+  MapPin,
+  Briefcase,
+  Filter,
+  X,
   ChevronDown,
-  Check 
+  Check,
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import db from '@/db';
@@ -55,15 +55,15 @@ interface AnalysisFiltersProps {
   companyName: string;
 }
 
-export function AnalysisFilters({ 
-  currentFilters, 
-  tableName, 
-  companyName 
+export function AnalysisFilters({
+  currentFilters,
+  tableName,
+  companyName,
 }: AnalysisFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
+
   const [showFilters, setShowFilters] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
   const [jobTitleOpen, setJobTitleOpen] = useState(false);
@@ -72,21 +72,23 @@ export function AnalysisFilters({
   const { data: filterOptions } = useQuery({
     queryKey: ['filter-options', tableName, companyName],
     queryFn: async () => {
-      const companyColumn = currentFilters.searchType === 'lmia' ? 'operating_name' : 'employer';
-      const locationColumn = currentFilters.searchType === 'lmia' ? 'territory' : 'state';
-      
+      const companyColumn =
+        currentFilters.searchType === 'lmia' ? 'operating_name' : 'employer';
+      const locationColumn =
+        currentFilters.searchType === 'lmia' ? 'territory' : 'state';
+
       const selectCols = [locationColumn, 'job_title'].join(', ');
-      
+
       const { data, error } = await db
         .from(tableName)
         .select(selectCols)
         .eq(companyColumn, companyName);
-        
+
       if (error) throw error;
 
       const locations = new Set<string>();
       const jobTitles = new Set<string>();
-      
+
       data?.forEach((row: any) => {
         if (row[locationColumn]) locations.add(row[locationColumn]);
         if (row.job_title) jobTitles.add(row.job_title);
@@ -100,23 +102,25 @@ export function AnalysisFilters({
     enabled: !!companyName,
   });
 
-  const updateFilters = (updates: Record<string, string | string[] | undefined>) => {
+  const updateFilters = (
+    updates: Record<string, string | string[] | undefined>
+  ) => {
     const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
-    
+
     // Apply updates
     Object.entries(updates).forEach(([key, value]) => {
       // Remove existing values for this key
       newSearchParams.delete(key);
-      
+
       if (Array.isArray(value)) {
         // Add multiple values
-        value.forEach(v => newSearchParams.append(key, v));
+        value.forEach((v) => newSearchParams.append(key, v));
       } else if (value) {
         // Add single value
         newSearchParams.set(key, value);
       }
     });
-    
+
     router.push(`${pathname}?${newSearchParams.toString()}`);
   };
 
@@ -155,24 +159,29 @@ export function AnalysisFilters({
               {activeFiltersCount}
             </Badge>
           )}
-          <ChevronDown className={cn("h-4 w-4 transition-transform", showFilters && "rotate-180")} />
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 transition-transform',
+              showFilters && 'rotate-180'
+            )}
+          />
         </Button>
-        
+
         <div className="flex items-center gap-2">
           {/* Search Type Selector */}
-          <Select 
-            value={currentFilters.searchType} 
+          <Select
+            value={currentFilters.searchType}
             onValueChange={(value) => updateFilters({ t: value })}
           >
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="hot_leads">Hot Leads</SelectItem>
+              <SelectItem value="hot_leads">Trending</SelectItem>
               <SelectItem value="lmia">LMIA</SelectItem>
             </SelectContent>
           </Select>
-          
+
           {activeFiltersCount > 0 && (
             <Button variant="ghost" size="sm" onClick={clearFilters}>
               Clear All
@@ -196,16 +205,22 @@ export function AnalysisFilters({
               </Label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="date-from" className="text-sm text-gray-600">From</Label>
+                  <Label htmlFor="date-from" className="text-sm text-gray-600">
+                    From
+                  </Label>
                   <Input
                     id="date-from"
                     type="date"
                     value={currentFilters.dateFrom || ''}
-                    onChange={(e) => updateFilters({ date_from: e.target.value })}
+                    onChange={(e) =>
+                      updateFilters({ date_from: e.target.value })
+                    }
                   />
                 </div>
                 <div>
-                  <Label htmlFor="date-to" className="text-sm text-gray-600">To</Label>
+                  <Label htmlFor="date-to" className="text-sm text-gray-600">
+                    To
+                  </Label>
                   <Input
                     id="date-to"
                     type="date"
@@ -230,9 +245,10 @@ export function AnalysisFilters({
                     aria-expanded={locationOpen}
                     className="w-full justify-between"
                   >
-                    {currentFilters.location && currentFilters.location.length > 0
+                    {currentFilters.location &&
+                    currentFilters.location.length > 0
                       ? `${currentFilters.location.length} selected`
-                      : "Select locations..."}
+                      : 'Select locations...'}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
@@ -245,19 +261,22 @@ export function AnalysisFilters({
                         <CommandItem
                           key={location}
                           onSelect={() => {
-                            const currentSelected = currentFilters.location || [];
-                            const newSelected = currentSelected.includes(location)
-                              ? currentSelected.filter(l => l !== location)
+                            const currentSelected =
+                              currentFilters.location || [];
+                            const newSelected = currentSelected.includes(
+                              location
+                            )
+                              ? currentSelected.filter((l) => l !== location)
                               : [...currentSelected, location];
                             updateFilters({ location: newSelected });
                           }}
                         >
                           <Check
                             className={cn(
-                              "mr-2 h-4 w-4",
+                              'mr-2 h-4 w-4',
                               (currentFilters.location || []).includes(location)
-                                ? "opacity-100"
-                                : "opacity-0"
+                                ? 'opacity-100'
+                                : 'opacity-0'
                             )}
                           />
                           {location}
@@ -283,9 +302,10 @@ export function AnalysisFilters({
                     aria-expanded={jobTitleOpen}
                     className="w-full justify-between"
                   >
-                    {currentFilters.jobTitle && currentFilters.jobTitle.length > 0
+                    {currentFilters.jobTitle &&
+                    currentFilters.jobTitle.length > 0
                       ? `${currentFilters.jobTitle.length} selected`
-                      : "Select job titles..."}
+                      : 'Select job titles...'}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
@@ -298,19 +318,20 @@ export function AnalysisFilters({
                         <CommandItem
                           key={title}
                           onSelect={() => {
-                            const currentSelected = currentFilters.jobTitle || [];
+                            const currentSelected =
+                              currentFilters.jobTitle || [];
                             const newSelected = currentSelected.includes(title)
-                              ? currentSelected.filter(t => t !== title)
+                              ? currentSelected.filter((t) => t !== title)
                               : [...currentSelected, title];
                             updateFilters({ job_title: newSelected });
                           }}
                         >
                           <Check
                             className={cn(
-                              "mr-2 h-4 w-4",
+                              'mr-2 h-4 w-4',
                               (currentFilters.jobTitle || []).includes(title)
-                                ? "opacity-100"
-                                : "opacity-0"
+                                ? 'opacity-100'
+                                : 'opacity-0'
                             )}
                           />
                           {title}
@@ -331,8 +352,8 @@ export function AnalysisFilters({
           {currentFilters.dateFrom && (
             <Badge variant="secondary" className="flex items-center gap-1">
               From: {currentFilters.dateFrom}
-              <X 
-                className="h-3 w-3 cursor-pointer" 
+              <X
+                className="h-3 w-3 cursor-pointer"
                 onClick={() => updateFilters({ date_from: undefined })}
               />
             </Badge>
@@ -340,31 +361,42 @@ export function AnalysisFilters({
           {currentFilters.dateTo && (
             <Badge variant="secondary" className="flex items-center gap-1">
               To: {currentFilters.dateTo}
-              <X 
-                className="h-3 w-3 cursor-pointer" 
+              <X
+                className="h-3 w-3 cursor-pointer"
                 onClick={() => updateFilters({ date_to: undefined })}
               />
             </Badge>
           )}
           {currentFilters.location?.map((location) => (
-            <Badge key={location} variant="secondary" className="flex items-center gap-1">
+            <Badge
+              key={location}
+              variant="secondary"
+              className="flex items-center gap-1"
+            >
               {location}
-              <X 
-                className="h-3 w-3 cursor-pointer" 
+              <X
+                className="h-3 w-3 cursor-pointer"
                 onClick={() => {
-                  const newLocations = currentFilters.location?.filter(l => l !== location) || [];
+                  const newLocations =
+                    currentFilters.location?.filter((l) => l !== location) ||
+                    [];
                   updateFilters({ location: newLocations });
                 }}
               />
             </Badge>
           ))}
           {currentFilters.jobTitle?.map((title) => (
-            <Badge key={title} variant="secondary" className="flex items-center gap-1">
+            <Badge
+              key={title}
+              variant="secondary"
+              className="flex items-center gap-1"
+            >
               {title.length > 30 ? `${title.substring(0, 30)}...` : title}
-              <X 
-                className="h-3 w-3 cursor-pointer" 
+              <X
+                className="h-3 w-3 cursor-pointer"
                 onClick={() => {
-                  const newTitles = currentFilters.jobTitle?.filter(t => t !== title) || [];
+                  const newTitles =
+                    currentFilters.jobTitle?.filter((t) => t !== title) || [];
                   updateFilters({ job_title: newTitles });
                 }}
               />

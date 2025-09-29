@@ -7,8 +7,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarDays, MapPin, Briefcase, Filter, X, ChevronDown, Hash, Building2 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  CalendarDays,
+  MapPin,
+  Briefcase,
+  Filter,
+  X,
+  ChevronDown,
+  Hash,
+  Building2,
+} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import db from '@/db';
 import { cn } from '@/lib/utils';
@@ -29,32 +44,39 @@ interface EnhancedAnalysisFiltersProps {
   companyName: string;
 }
 
-export function EnhancedAnalysisFilters({ 
-  currentFilters, 
-  tableName, 
-  companyName 
+export function EnhancedAnalysisFilters({
+  currentFilters,
+  tableName,
+  companyName,
 }: EnhancedAnalysisFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
+
   const [showFilters, setShowFilters] = useState(false);
 
   // Get available filter options for the company
   const { data: filterOptions, isLoading } = useQuery({
-    queryKey: ['analysis-filter-options', tableName, companyName, currentFilters.searchType],
+    queryKey: [
+      'analysis-filter-options',
+      tableName,
+      companyName,
+      currentFilters.searchType,
+    ],
     queryFn: async () => {
-      const companyColumn = currentFilters.searchType === 'lmia' ? 'operating_name' : 'employer';
-      
-      const selectCols = currentFilters.searchType === 'lmia'
-        ? 'territory,city,job_title,noc_code,program'
-        : 'state,city,job_title,noc_code,category';
-      
+      const companyColumn =
+        currentFilters.searchType === 'lmia' ? 'operating_name' : 'employer';
+
+      const selectCols =
+        currentFilters.searchType === 'lmia'
+          ? 'territory,city,job_title,noc_code,program'
+          : 'state,city,job_title,noc_code,category';
+
       const { data, error } = await db
         .from(tableName)
         .select(selectCols)
         .eq(companyColumn, companyName);
-        
+
       if (error) throw error;
 
       const result: Record<string, Set<string>> = {
@@ -65,9 +87,10 @@ export function EnhancedAnalysisFilters({
         categories: new Set(),
         programs: new Set(),
       };
-      
+
       data?.forEach((row: any) => {
-        const locationColumn = currentFilters.searchType === 'lmia' ? 'territory' : 'state';
+        const locationColumn =
+          currentFilters.searchType === 'lmia' ? 'territory' : 'state';
         if (row[locationColumn]) result.locations.add(row[locationColumn]);
         if (row.city) result.cities.add(row.city);
         if (row.job_title) result.jobTitles.add(row.job_title);
@@ -88,32 +111,36 @@ export function EnhancedAnalysisFilters({
     enabled: !!companyName,
   });
 
-  const updateFilters = (updates: Record<string, string | string[] | undefined>) => {
+  const updateFilters = (
+    updates: Record<string, string | string[] | undefined>
+  ) => {
     const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
-    
+
     Object.entries(updates).forEach(([key, value]) => {
       newSearchParams.delete(key);
-      
+
       if (Array.isArray(value)) {
-        value.forEach(v => newSearchParams.append(key, v));
+        value.forEach((v) => newSearchParams.append(key, v));
       } else if (value) {
         newSearchParams.set(key, value);
       }
     });
-    
+
     router.push(`${pathname}?${newSearchParams.toString()}`);
   };
 
   const addFilter = (key: string, value: string) => {
-    const current = currentFilters[key as keyof typeof currentFilters] as string[] || [];
+    const current =
+      (currentFilters[key as keyof typeof currentFilters] as string[]) || [];
     if (!current.includes(value)) {
       updateFilters({ [key]: [...current, value] });
     }
   };
 
   const removeFilter = (key: string, value: string) => {
-    const current = currentFilters[key as keyof typeof currentFilters] as string[] || [];
-    updateFilters({ [key]: current.filter(v => v !== value) });
+    const current =
+      (currentFilters[key as keyof typeof currentFilters] as string[]) || [];
+    updateFilters({ [key]: current.filter((v) => v !== value) });
   };
 
   const clearAllFilters = () => {
@@ -139,9 +166,9 @@ export function EnhancedAnalysisFilters({
   ].filter(Boolean).length;
 
   const renderMultiSelect = (
-    label: string, 
-    icon: React.ReactNode, 
-    options: string[] = [], 
+    label: string,
+    icon: React.ReactNode,
+    options: string[] = [],
     filterKey: string,
     currentValues: string[] = []
   ) => (
@@ -156,8 +183,8 @@ export function EnhancedAnalysisFilters({
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
-            <SelectItem 
-              key={option} 
+            <SelectItem
+              key={option}
               value={option}
               disabled={currentValues.includes(option)}
             >
@@ -166,15 +193,19 @@ export function EnhancedAnalysisFilters({
           ))}
         </SelectContent>
       </Select>
-      
+
       {/* Show selected values */}
       {currentValues.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {currentValues.map((value) => (
-            <Badge key={value} variant="secondary" className="flex items-center gap-1">
+            <Badge
+              key={value}
+              variant="secondary"
+              className="flex items-center gap-1"
+            >
               {value.length > 20 ? `${value.substring(0, 20)}...` : value}
-              <X 
-                className="h-3 w-3 cursor-pointer" 
+              <X
+                className="h-3 w-3 cursor-pointer"
                 onClick={() => removeFilter(filterKey, value)}
               />
             </Badge>
@@ -200,24 +231,29 @@ export function EnhancedAnalysisFilters({
               {activeFiltersCount}
             </Badge>
           )}
-          <ChevronDown className={cn("h-4 w-4 transition-transform", showFilters && "rotate-180")} />
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 transition-transform',
+              showFilters && 'rotate-180'
+            )}
+          />
         </Button>
-        
+
         <div className="flex items-center gap-2">
           {/* Search Type Selector */}
-          <Select 
-            value={currentFilters.searchType} 
+          <Select
+            value={currentFilters.searchType}
             onValueChange={(value) => updateFilters({ t: value })}
           >
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="hot_leads">Hot Leads</SelectItem>
+              <SelectItem value="hot_leads">Trending</SelectItem>
               <SelectItem value="lmia">LMIA</SelectItem>
             </SelectContent>
           </Select>
-          
+
           {activeFiltersCount > 0 && (
             <Button variant="ghost" size="sm" onClick={clearAllFilters}>
               Clear All
@@ -237,20 +273,27 @@ export function EnhancedAnalysisFilters({
             <div className="space-y-2">
               <Label className="flex items-center gap-2">
                 <CalendarDays className="h-4 w-4" />
-                Date Range {currentFilters.searchType === 'lmia' ? '(Year)' : '(Date)'}
+                Date Range{' '}
+                {currentFilters.searchType === 'lmia' ? '(Year)' : '(Date)'}
               </Label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="date-from" className="text-sm text-gray-600">From</Label>
+                  <Label htmlFor="date-from" className="text-sm text-gray-600">
+                    From
+                  </Label>
                   <Input
                     id="date-from"
                     type="date"
                     value={currentFilters.dateFrom || ''}
-                    onChange={(e) => updateFilters({ date_from: e.target.value })}
+                    onChange={(e) =>
+                      updateFilters({ date_from: e.target.value })
+                    }
                   />
                 </div>
                 <div>
-                  <Label htmlFor="date-to" className="text-sm text-gray-600">To</Label>
+                  <Label htmlFor="date-to" className="text-sm text-gray-600">
+                    To
+                  </Label>
                   <Input
                     id="date-to"
                     type="date"

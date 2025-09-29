@@ -377,7 +377,9 @@ export default function Page() {
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="hot_leads">Hot Leads</SelectItem>
+                            <SelectItem value="hot_leads">
+                              Trending Jobs
+                            </SelectItem>
                             <SelectItem value="lmia">LMIA</SelectItem>
                           </SelectContent>
                         </Select>

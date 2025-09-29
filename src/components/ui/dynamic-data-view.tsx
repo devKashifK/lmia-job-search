@@ -340,7 +340,7 @@ export default function DynamicDataView({
             searchPlaceholder={
               searchType === 'lmia'
                 ? 'Search LMIA jobs...'
-                : 'Search hot leads...'
+                : 'Search Trending jobs...'
             }
             defaultSearchType={searchType}
           />

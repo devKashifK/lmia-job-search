@@ -23,18 +23,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Briefcase, CalendarDays, Filter, X } from 'lucide-react';
-import {
-  Building2,
-  TrendingUp,
-  MapPin,
-  Calendar,
-  Users,
-  Hash,
-  Award,
-} from 'lucide-react';
+import { Building2, TrendingUp, MapPin, Users, Hash } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
-import { getColumnName } from '@/components/ui/dynamic-data-view';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Navbar from '@/components/ui/nabvar';
@@ -197,7 +188,9 @@ function SimpleAnalysisFilters({
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">Filter Analysis</h3>
-            <p className="text-xs text-gray-500">Refine your company insights</p>
+            <p className="text-xs text-gray-500">
+              Refine your company insights
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -206,9 +199,9 @@ function SimpleAnalysisFilters({
               {activeFiltersCount} active
             </Badge>
           )}
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setShowAdvanced(!showAdvanced)}
             className="h-8 px-3"
           >
@@ -226,8 +219,8 @@ function SimpleAnalysisFilters({
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
               Data Source
             </Label>
-            <Select 
-              value={currentFilters.searchType} 
+            <Select
+              value={currentFilters.searchType}
               onValueChange={(value) => updateFilters({ t: value })}
             >
               <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
@@ -237,19 +230,19 @@ function SimpleAnalysisFilters({
                 <SelectItem value="hot_leads">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    Hot Leads
+                    Trending Jobs
                   </div>
                 </SelectItem>
                 <SelectItem value="lmia">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    LMIA Official
+                    LMIA
                   </div>
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
-          
+
           {/* Date Range */}
           <div className="space-y-2">
             <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
@@ -276,20 +269,31 @@ function SimpleAnalysisFilters({
               <div className="text-xs text-gray-500 flex items-center gap-1">
                 <CalendarDays className="h-3 w-3" />
                 {currentFilters.dateFrom && currentFilters.dateTo ? (
-                  <>From {new Date(currentFilters.dateFrom).toLocaleDateString()} to {new Date(currentFilters.dateTo).toLocaleDateString()}</>
+                  <>
+                    From{' '}
+                    {new Date(currentFilters.dateFrom).toLocaleDateString()} to{' '}
+                    {new Date(currentFilters.dateTo).toLocaleDateString()}
+                  </>
                 ) : currentFilters.dateFrom ? (
-                  <>From {new Date(currentFilters.dateFrom).toLocaleDateString()} onwards</>
+                  <>
+                    From{' '}
+                    {new Date(currentFilters.dateFrom).toLocaleDateString()}{' '}
+                    onwards
+                  </>
                 ) : (
-                  <>Up to {new Date(currentFilters.dateTo!).toLocaleDateString()}</>
+                  <>
+                    Up to{' '}
+                    {new Date(currentFilters.dateTo!).toLocaleDateString()}
+                  </>
                 )}
               </div>
             )}
           </div>
         </div>
-        
+
         {/* Advanced Filters */}
         {showAdvanced && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -302,28 +306,46 @@ function SimpleAnalysisFilters({
               </span>
               <div className="h-px flex-1 bg-gradient-to-l from-gray-200 to-transparent"></div>
             </div>
-            
+
             {!filtersLoading && filterOptions ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Location Filter */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                     <MapPin className="h-3 w-3 text-emerald-500" />
-                    {currentFilters.searchType === 'lmia' ? 'Territory' : 'State'}
+                    {currentFilters.searchType === 'lmia'
+                      ? 'Territory'
+                      : 'State'}
                   </Label>
-                  <Select onValueChange={(value) => addFilter('location', value)}>
+                  <Select
+                    onValueChange={(value) => addFilter('location', value)}
+                  >
                     <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
-                      <SelectValue placeholder={`Select ${currentFilters.searchType === 'lmia' ? 'territory' : 'state'}...`} />
+                      <SelectValue
+                        placeholder={`Select ${
+                          currentFilters.searchType === 'lmia'
+                            ? 'territory'
+                            : 'state'
+                        }...`}
+                      />
                     </SelectTrigger>
                     <SelectContent className="max-h-48">
                       {filterOptions.locations.map((location) => (
-                        <SelectItem 
-                          key={location} 
+                        <SelectItem
+                          key={location}
                           value={location}
-                          disabled={(currentFilters.location || []).includes(location)}
+                          disabled={(currentFilters.location || []).includes(
+                            location
+                          )}
                           className="flex items-center gap-2"
                         >
-                          <span className={`${(currentFilters.location || []).includes(location) ? 'text-gray-400' : ''}`}>
+                          <span
+                            className={`${
+                              (currentFilters.location || []).includes(location)
+                                ? 'text-gray-400'
+                                : ''
+                            }`}
+                          >
                             {location}
                           </span>
                         </SelectItem>
@@ -331,7 +353,7 @@ function SimpleAnalysisFilters({
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 {/* City Filter */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
@@ -344,12 +366,18 @@ function SimpleAnalysisFilters({
                     </SelectTrigger>
                     <SelectContent className="max-h-48">
                       {filterOptions.cities.map((city) => (
-                        <SelectItem 
-                          key={city} 
+                        <SelectItem
+                          key={city}
                           value={city}
                           disabled={(currentFilters.city || []).includes(city)}
                         >
-                          <span className={`${(currentFilters.city || []).includes(city) ? 'text-gray-400' : ''}`}>
+                          <span
+                            className={`${
+                              (currentFilters.city || []).includes(city)
+                                ? 'text-gray-400'
+                                : ''
+                            }`}
+                          >
                             {city}
                           </span>
                         </SelectItem>
@@ -357,25 +385,35 @@ function SimpleAnalysisFilters({
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 {/* NOC Code Filter */}
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                     <Hash className="h-3 w-3 text-violet-500" />
                     NOC Code
                   </Label>
-                  <Select onValueChange={(value) => addFilter('noc_code', value)}>
+                  <Select
+                    onValueChange={(value) => addFilter('noc_code', value)}
+                  >
                     <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
                       <SelectValue placeholder="Select NOC code..." />
                     </SelectTrigger>
                     <SelectContent className="max-h-48">
                       {filterOptions.nocCodes.map((nocCode) => (
-                        <SelectItem 
-                          key={nocCode} 
+                        <SelectItem
+                          key={nocCode}
                           value={nocCode}
-                          disabled={(currentFilters.nocCode || []).includes(nocCode)}
+                          disabled={(currentFilters.nocCode || []).includes(
+                            nocCode
+                          )}
                         >
-                          <span className={`${(currentFilters.nocCode || []).includes(nocCode) ? 'text-gray-400' : ''}`}>
+                          <span
+                            className={`${
+                              (currentFilters.nocCode || []).includes(nocCode)
+                                ? 'text-gray-400'
+                                : ''
+                            }`}
+                          >
                             {nocCode}
                           </span>
                         </SelectItem>
@@ -388,49 +426,74 @@ function SimpleAnalysisFilters({
               <div className="flex items-center justify-center py-8">
                 <div className="flex items-center gap-3">
                   <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm text-gray-500">Loading filter options...</span>
+                  <span className="text-sm text-gray-500">
+                    Loading filter options...
+                  </span>
                 </div>
               </div>
             ) : null}
           </motion.div>
         )}
-        
+
         {/* Active Filters */}
         {activeFiltersCount > 0 && (
           <div className="space-y-3 pt-2">
             <div className="flex items-center gap-2">
               <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
-              <span className="text-xs font-medium text-gray-600">Active Filters ({activeFiltersCount})</span>
+              <span className="text-xs font-medium text-gray-600">
+                Active Filters ({activeFiltersCount})
+              </span>
               <div className="h-px flex-1 bg-gradient-to-l from-gray-200 to-transparent"></div>
             </div>
             <div className="flex flex-wrap gap-2">
               {(currentFilters.dateFrom || currentFilters.dateTo) && (
-                <Badge variant="outline" className="flex items-center gap-2 px-3 py-1 bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 transition-colors">
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-2 px-3 py-1 bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 transition-colors"
+                >
                   <CalendarDays className="h-3 w-3" />
                   {currentFilters.dateFrom && currentFilters.dateTo ? (
-                    <>From {new Date(currentFilters.dateFrom).toLocaleDateString()} to {new Date(currentFilters.dateTo).toLocaleDateString()}</>
+                    <>
+                      From{' '}
+                      {new Date(currentFilters.dateFrom).toLocaleDateString()}{' '}
+                      to {new Date(currentFilters.dateTo).toLocaleDateString()}
+                    </>
                   ) : currentFilters.dateFrom ? (
-                    <>From {new Date(currentFilters.dateFrom).toLocaleDateString()}</>
+                    <>
+                      From{' '}
+                      {new Date(currentFilters.dateFrom).toLocaleDateString()}
+                    </>
                   ) : (
-                    <>To {new Date(currentFilters.dateTo!).toLocaleDateString()}</>
+                    <>
+                      To {new Date(currentFilters.dateTo!).toLocaleDateString()}
+                    </>
                   )}
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="h-4 w-4 p-0 hover:bg-orange-200 rounded-full"
-                    onClick={() => updateFilters({ date_from: undefined, date_to: undefined })}
+                    onClick={() =>
+                      updateFilters({
+                        date_from: undefined,
+                        date_to: undefined,
+                      })
+                    }
                   >
                     <X className="h-3 w-3" />
                   </Button>
                 </Badge>
               )}
               {currentFilters.location?.map((location) => (
-                <Badge key={location} variant="outline" className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors">
+                <Badge
+                  key={location}
+                  variant="outline"
+                  className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                >
                   <MapPin className="h-3 w-3" />
                   {location}
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="h-4 w-4 p-0 hover:bg-emerald-200 rounded-full"
                     onClick={() => removeFilter('location', location)}
                   >
@@ -439,12 +502,16 @@ function SimpleAnalysisFilters({
                 </Badge>
               ))}
               {currentFilters.city?.map((city) => (
-                <Badge key={city} variant="outline" className="flex items-center gap-2 px-3 py-1 bg-sky-50 border-sky-200 text-sky-700 hover:bg-sky-100 transition-colors">
+                <Badge
+                  key={city}
+                  variant="outline"
+                  className="flex items-center gap-2 px-3 py-1 bg-sky-50 border-sky-200 text-sky-700 hover:bg-sky-100 transition-colors"
+                >
                   <Building2 className="h-3 w-3" />
                   {city}
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="h-4 w-4 p-0 hover:bg-sky-200 rounded-full"
                     onClick={() => removeFilter('city', city)}
                   >
@@ -453,12 +520,16 @@ function SimpleAnalysisFilters({
                 </Badge>
               ))}
               {currentFilters.nocCode?.map((nocCode) => (
-                <Badge key={nocCode} variant="outline" className="flex items-center gap-2 px-3 py-1 bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100 transition-colors">
+                <Badge
+                  key={nocCode}
+                  variant="outline"
+                  className="flex items-center gap-2 px-3 py-1 bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100 transition-colors"
+                >
                   <Hash className="h-3 w-3" />
                   {nocCode}
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="h-4 w-4 p-0 hover:bg-violet-200 rounded-full"
                     onClick={() => removeFilter('noc_code', nocCode)}
                   >
@@ -466,11 +537,11 @@ function SimpleAnalysisFilters({
                   </Button>
                 </Badge>
               ))}
-              
+
               {activeFiltersCount > 1 && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={clearFilters}
                   className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 border"
                 >
@@ -840,11 +911,10 @@ function CompanyAnalysisContent({
         <div className="flex items-center space-x-3">
           <Building2 className="h-8 w-8 text-brand-600" />
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {companyName}
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900">{companyName}</h1>
             <p className="text-sm text-gray-500">
-              Company Analysis • {filters.searchType === 'lmia' ? 'LMIA' : 'Hot Leads'}
+              Company Analysis •{' '}
+              {filters.searchType === 'lmia' ? 'LMIA' : 'Hot Leads'}
             </p>
           </div>
         </div>
@@ -852,7 +922,7 @@ function CompanyAnalysisContent({
           {analysisData?.totalJobs || 0} Jobs
         </Badge>
       </div>
-      
+
       {/* Filters */}
       <SimpleAnalysisFilters
         currentFilters={filters}

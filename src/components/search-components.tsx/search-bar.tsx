@@ -1,29 +1,29 @@
-"use client";
-import { useRef, useState, useEffect } from "react";
-import { Search, X } from "lucide-react";
-import { useTableStore } from "@/context/store";
-import { toast } from "@/hooks/use-toast";
-import db from "@/db";
-import { useRouter } from "next/navigation";
-import { useUpdateCredits } from "@/hooks/use-credits";
-import { motion, AnimatePresence } from "framer-motion";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
+'use client';
+import { useRef, useState, useEffect } from 'react';
+import { Search, X } from 'lucide-react';
+import { useTableStore } from '@/context/store';
+import { toast } from '@/hooks/use-toast';
+import db from '@/db';
+import { useRouter } from 'next/navigation';
+import { useUpdateCredits } from '@/hooks/use-credits';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 export function SearchBar({ type }: { type: string }) {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [isChecking, setIsChecking] = useState(false);
   const [suggestions, setSuggestions] = useState<{ suggestion: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [searchType, setSearchType] = useState<string>(type || "hot_leads");
+  const [searchType, setSearchType] = useState<string>(type || 'hot_leads');
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const { searchWithFuse } = useTableStore();
   const { updateCreditsAndSearch } = useUpdateCredits();
@@ -40,8 +40,8 @@ export function SearchBar({ type }: { type: string }) {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const fetchSuggestions = async (query: string) => {
@@ -52,15 +52,15 @@ export function SearchBar({ type }: { type: string }) {
 
     setIsLoadingSuggestions(true);
     try {
-      if (searchType === "hot_leads") {
-        const { data } = await db.rpc("rpc_suggest_hot_leads_new", {
+      if (searchType === 'hot_leads') {
+        const { data } = await db.rpc('rpc_suggest_hot_leads_new', {
           term: query,
           p_limit: 10,
         });
 
         setSuggestions(data || []);
       } else {
-        const { data } = await db.rpc("rpc_suggest_lmia", {
+        const { data } = await db.rpc('rpc_suggest_lmia', {
           term: query,
           p_limit: 10,
         });
@@ -68,7 +68,7 @@ export function SearchBar({ type }: { type: string }) {
         setSuggestions(data || []);
       }
     } catch (error) {
-      console.error("Error fetching suggestions:", error);
+      console.error('Error fetching suggestions:', error);
       setSuggestions([]);
     } finally {
       setIsLoadingSuggestions(false);
@@ -91,15 +91,15 @@ export function SearchBar({ type }: { type: string }) {
   const checkCredits = async () => {
     try {
       const { data: credits } = await db
-        .from("credits")
-        .select("total_credit, used_credit")
+        .from('credits')
+        .select('total_credit, used_credit')
         .single();
 
       if (!credits) {
         toast({
-          title: "Error",
-          description: "Unable to fetch credits information",
-          variant: "destructive",
+          title: 'Error',
+          description: 'Unable to fetch credits information',
+          variant: 'destructive',
         });
         return false;
       }
@@ -109,22 +109,22 @@ export function SearchBar({ type }: { type: string }) {
 
       if (remainingCredits <= 0) {
         toast({
-          title: "No Credits Remaining",
+          title: 'No Credits Remaining',
           description:
             "You've used all your credits. Please purchase more to continue searching.",
-          variant: "destructive",
+          variant: 'destructive',
         });
-        navigate.push("/dashboard/credits");
+        navigate.push('/dashboard/credits');
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error("Error checking credits:", error);
+      console.error('Error checking credits:', error);
       toast({
-        title: "Error",
-        description: "Unable to verify credits. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Unable to verify credits. Please try again.',
+        variant: 'destructive',
       });
       return false;
     }
@@ -133,9 +133,9 @@ export function SearchBar({ type }: { type: string }) {
   const handleSearch = async (query = searchQuery) => {
     if (!query.trim()) {
       toast({
-        title: "Empty Search",
-        description: "Please enter a search term",
-        variant: "destructive",
+        title: 'Empty Search',
+        description: 'Please enter a search term',
+        variant: 'destructive',
       });
       return;
     }
@@ -149,8 +149,8 @@ export function SearchBar({ type }: { type: string }) {
       searchWithFuse(query, searchType);
 
       const { data: updatedCredits } = await db
-        .from("credits")
-        .select("total_credit, used_credit")
+        .from('credits')
+        .select('total_credit, used_credit')
         .single();
 
       const remainingCredits = updatedCredits
@@ -158,21 +158,21 @@ export function SearchBar({ type }: { type: string }) {
         : 0;
 
       toast({
-        title: "Search Initiated",
+        title: 'Search Initiated',
         description: `Search started for "${query}". You have ${remainingCredits} credits remaining.`,
-        variant: "success",
+        variant: 'success',
       });
 
-      if (searchType === "hot_leads") {
+      if (searchType === 'hot_leads') {
         navigate.push(`/search/hot-leads/${query}`);
       } else {
         navigate.push(`/search/lmia/${query}`);
       }
     } catch (error) {
       toast({
-        title: "Search Failed",
-        description: "An error occurred while searching. Please try again.",
-        variant: "destructive",
+        title: 'Search Failed',
+        description: 'An error occurred while searching. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsChecking(false);
@@ -180,16 +180,16 @@ export function SearchBar({ type }: { type: string }) {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSearch();
     }
   };
 
   const handleClear = () => {
-    setSearchQuery("");
+    setSearchQuery('');
     setSuggestions([]);
     setShowSuggestions(false);
-    searchWithFuse("", searchType);
+    searchWithFuse('', searchType);
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -238,7 +238,7 @@ export function SearchBar({ type }: { type: string }) {
             <SelectValue placeholder="Select type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="hot_leads">Hot Leads</SelectItem>
+            <SelectItem value="hot_leads">Trending</SelectItem>
             <SelectItem value="lmia">LMIA</SelectItem>
           </SelectContent>
         </Select>
