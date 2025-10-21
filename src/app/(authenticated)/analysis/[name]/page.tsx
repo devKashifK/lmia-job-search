@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Briefcase, CalendarDays, Filter, X } from 'lucide-react';
+import { Briefcase, CalendarDays, ChevronLeft, Filter, X } from 'lucide-react';
 import { Building2, TrendingUp, MapPin, Users, Hash } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
@@ -555,6 +555,11 @@ function CompanyAnalysisContent({
   const resolvedParams = use(params);
   const searchParams = useSearchParams();
   const companyName = decodeURIComponent(resolvedParams.name);
+  const router = useRouter();
+
+  const goBack = () => {
+    router.back();
+  };
 
   // Get filters from URL parameters
   const filters = useMemo((): AnalysisFilters => {
@@ -584,7 +589,6 @@ function CompanyAnalysisContent({
   }, [searchParams]);
 
   const tableName = filters.searchType === 'lmia' ? 'lmia' : 'trending_job';
-  console.log(tableName, 'checkTableName');
   const companyColumn = filters.searchType === 'lmia' ? 'employer' : 'employer';
   const locationColumn = filters.searchType === 'lmia' ? 'territory' : 'state';
   const dateColumn =
@@ -908,9 +912,18 @@ function CompanyAnalysisContent({
             </p>
           </div>
         </div>
-        <Badge variant="outline" className="text-sm">
-          {analysisData?.totalJobs || 0} Jobs
-        </Badge>
+        <div className="flex gap-1">
+          <Badge variant="outline" className="text-sm">
+            {analysisData?.totalJobs || 0} Jobs
+          </Badge>
+          <Button
+            onClick={goBack}
+            className="bg-brand-600 text-white hover:bg-brand-700 px-3"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Go Back
+          </Button>
+        </div>
       </div>
 
       <div className="flex gap-4">

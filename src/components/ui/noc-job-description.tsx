@@ -36,6 +36,7 @@ import {
   Check,
   Copy,
   TrendingUp,
+  Contact,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -312,6 +313,10 @@ export function NocJobDescription({
     companyLogoUrl: '/logo.svg',
     additionalInfo: nocProfile.additionalInfo,
   };
+
+  const goTo = (path: string) => {
+    router.push(path);
+  };
   return (
     <TooltipProvider>
       <motion.div
@@ -353,7 +358,16 @@ export function NocJobDescription({
                               <Award className="w-4 h-4 text-white" />
                             </div>
                             <div className="flex items-center gap-1">
-                              <Badge className="bg-white/20 text-white border-white/30 font-mono text-xs px-2 py-1">
+                              <Badge
+                                onClick={() =>
+                                  goTo(
+                                    `${encodeURIComponent(
+                                      job.noc_code
+                                    )}?field=noc_code&t=trending_job`
+                                  )
+                                }
+                                className="bg-white/20 cursor-pointer text-white border-white/30 font-mono text-xs px-2 py-1"
+                              >
                                 NOC {job.noc_code || job['2021_noc']}
                               </Badge>
                               <Tooltip>
@@ -401,7 +415,16 @@ export function NocJobDescription({
 
                         {/* Enhanced Company and Location */}
                         <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm">
-                          <div className="flex items-center gap-1.5">
+                          <div
+                            className="flex items-center gap-1.5"
+                            onClick={() =>
+                              goTo(
+                                `/analysis/${encodeURIComponent(
+                                  jobData.company
+                                )}`
+                              )
+                            }
+                          >
                             <Building2 className="w-4 h-4" />
                             <span className="font-medium">
                               {jobData.company}
@@ -830,6 +853,7 @@ export function NocJobDescription({
                               </Button>
                             )}
                           </div>
+
                           <ul className="space-y-2 text-sm">
                             <AnimatePresence>
                               {(showAllAdditionalInfo
@@ -859,6 +883,16 @@ export function NocJobDescription({
                       </Card>
                     </motion.div>
                   )}
+
+                <div>
+                  <Button
+                    className="bg-brand-600 w-full"
+                    onClick={() => setOpenPremium(true)}
+                  >
+                    <Contact className="w-4 h-4" />
+                    Contact Employer
+                  </Button>
+                </div>
               </div>
             </div>
 
