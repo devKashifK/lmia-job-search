@@ -22,7 +22,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Briefcase, CalendarDays, ChevronLeft, Filter, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  Briefcase,
+  Calendar,
+  CalendarDays,
+  ChevronLeft,
+  Database,
+  Download,
+  Filter,
+  X,
+  Home,
+} from 'lucide-react';
 import { Building2, TrendingUp, MapPin, Users, Hash } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
@@ -30,6 +41,8 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/pages/homepage/footer';
+import { Icon } from '@iconify/react/dist/iconify.js';
+import UserDropdown from '@/components/ui/user-dropdown';
 
 interface CompanyAnalysisData {
   companyName: string;
@@ -65,8 +78,7 @@ interface AnalysisFilters {
   [key: string]: any;
 }
 
-// Modern analysis filters component
-function SimpleAnalysisFilters({
+const FilterSidebar = ({
   currentFilters,
   tableName,
   companyName,
@@ -74,7 +86,7 @@ function SimpleAnalysisFilters({
   currentFilters: AnalysisFilters;
   tableName: string;
   companyName: string;
-}) {
+}) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -117,7 +129,6 @@ function SimpleAnalysisFilters({
     ...(currentFilters.nocCode || []),
   ].filter(Boolean).length;
 
-  // Get available filter options for the company
   const { data: filterOptions, isLoading: filtersLoading } = useQuery({
     queryKey: [
       'analysis-filter-options',
@@ -179,43 +190,13 @@ function SimpleAnalysisFilters({
   };
 
   return (
-    <div className="bg-gradient-to-br w-[30%] from-white to-gray-50/30 border border-gray-200/60 rounded-xl shadow-sm">
-      {/* Header with Toggle */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <Filter className="h-4 w-4 text-blue-600" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">Filter Analysis</h3>
-            <p className="text-xs text-gray-500">
-              Refine your company insights
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {activeFiltersCount > 0 && (
-            <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-              {activeFiltersCount} active
-            </Badge>
-          )}
-          {/* <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="h-8 px-3"
-          >
-            {showAdvanced ? 'Simple' : 'Advanced'}
-          </Button> */}
-        </div>
-      </div>
-
-      <div className="p-4 space-y-6">
-        {/* Essential Filters Row */}
-        <div className="flex flex-col gap-4">
+    <div className="bg-white/95 backdrop-blur-sm border-r border-brand-200/40 h-full flex flex-col shadow-lg">
+      {/* Horizontal Filter Bar - Top of L */}
+      <div className="border-b border-brand-200/40 bg-gradient-to-r from-brand-50/60 to-white px-6 py-4">
+        <div className="flex items-center justify-between gap-6 flex-col">
           {/* Data Source */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+          <div className="flex flex-col items-start w-full gap-3">
+            <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2 whitespace-nowrap">
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
               Data Source
             </Label>
@@ -223,7 +204,7 @@ function SimpleAnalysisFilters({
               value={currentFilters.searchType}
               onValueChange={(value) => updateFilters({ t: value })}
             >
-              <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+              <SelectTrigger className="w-full h-9 bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -244,76 +225,98 @@ function SimpleAnalysisFilters({
           </div>
 
           {/* Date Range */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <CalendarDays className="h-3 w-3 text-orange-500" />
+          <div className="flex flex-col items-start w-full gap-3">
+            <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2 whitespace-nowrap">
+              <CalendarDays className="h-3.5 w-3.5 text-orange-500" />
               Date Range
             </Label>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col w-full items-start gap-2">
               <Input
                 type="date"
                 value={currentFilters.dateFrom || ''}
                 onChange={(e) => updateFilters({ date_from: e.target.value })}
-                placeholder="Start date"
-                className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-sm"
+                placeholder="From"
+                className="w-full h-9 bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-xs"
               />
               <Input
                 type="date"
                 value={currentFilters.dateTo || ''}
                 onChange={(e) => updateFilters({ date_to: e.target.value })}
-                placeholder="End date"
-                className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-sm"
+                placeholder="To"
+                className="w-full h-9 bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-xs"
               />
             </div>
-            {(currentFilters.dateFrom || currentFilters.dateTo) && (
-              <div className="text-xs text-gray-500 flex items-center gap-1">
-                <CalendarDays className="h-3 w-3" />
-                {currentFilters.dateFrom && currentFilters.dateTo ? (
-                  <>
-                    From{' '}
-                    {new Date(currentFilters.dateFrom).toLocaleDateString()} to{' '}
-                    {new Date(currentFilters.dateTo).toLocaleDateString()}
-                  </>
-                ) : currentFilters.dateFrom ? (
-                  <>
-                    From{' '}
-                    {new Date(currentFilters.dateFrom).toLocaleDateString()}{' '}
-                    onwards
-                  </>
-                ) : (
-                  <>
-                    Up to{' '}
-                    {new Date(currentFilters.dateTo!).toLocaleDateString()}
-                  </>
-                )}
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Advanced Filters */}
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          className="space-y-4"
-        >
-          <div className="flex items-start gap-2 pt-2">
-            <span className="text-xs text-left font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-              Advanced Filters
-            </span>
+          {/* Active Filters Count */}
+          {activeFiltersCount > 0 && (
+            <div className="flex items-center gap-2 ml-auto">
+              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-3 py-1">
+                {activeFiltersCount} Active
+              </Badge>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="h-9 px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <X className="h-3.5 w-3.5 mr-1.5" />
+                Clear All
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Vertical Filter Panel - Vertical part of L */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-white via-brand-50/20 to-brand-50/30">
+        {/* Date Range Display (when not in top bar due to space) */}
+        {(currentFilters.dateFrom || currentFilters.dateTo) && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <CalendarDays className="h-4 w-4 text-blue-600" />
+              <span className="text-xs font-semibold text-blue-900">
+                Active Date Range
+              </span>
+            </div>
+            <p className="text-xs text-blue-700">
+              {currentFilters.dateFrom && currentFilters.dateTo ? (
+                <>
+                  {new Date(currentFilters.dateFrom).toLocaleDateString()} →{' '}
+                  {new Date(currentFilters.dateTo).toLocaleDateString()}
+                </>
+              ) : currentFilters.dateFrom ? (
+                <>
+                  From {new Date(currentFilters.dateFrom).toLocaleDateString()}
+                </>
+              ) : (
+                <>
+                  Until {new Date(currentFilters.dateTo!).toLocaleDateString()}
+                </>
+              )}
+            </p>
+          </div>
+        )}
+
+        {/* Advanced Filters Section */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
+            <Filter className="w-4 h-4 text-emerald-600" />
+            <h3 className="text-sm font-semibold text-gray-800">
+              Additional Filters
+            </h3>
           </div>
 
           {!filtersLoading && filterOptions ? (
-            <div className="flex flex-col gap-4">
+            <div className="space-y-5">
               {/* Location Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <MapPin className="h-3 w-3 text-emerald-500" />
+                <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2">
+                  <MapPin className="h-3.5 w-3.5 text-emerald-500" />
                   {currentFilters.searchType === 'lmia' ? 'Territory' : 'State'}
                 </Label>
                 <Select onValueChange={(value) => addFilter('location', value)}>
-                  <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                  <SelectTrigger className="h-9 bg-white border-gray-200 shadow-sm hover:border-emerald-300 transition-colors">
                     <SelectValue
                       placeholder={`Select ${
                         currentFilters.searchType === 'lmia'
@@ -330,17 +333,8 @@ function SimpleAnalysisFilters({
                         disabled={(currentFilters.location || []).includes(
                           location
                         )}
-                        className="flex items-center gap-2"
                       >
-                        <span
-                          className={`${
-                            (currentFilters.location || []).includes(location)
-                              ? 'text-gray-400'
-                              : ''
-                          }`}
-                        >
-                          {location}
-                        </span>
+                        {location}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -349,12 +343,12 @@ function SimpleAnalysisFilters({
 
               {/* City Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <Building2 className="h-3 w-3 text-sky-500" />
+                <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2">
+                  <Building2 className="h-3.5 w-3.5 text-sky-500" />
                   City
                 </Label>
                 <Select onValueChange={(value) => addFilter('city', value)}>
-                  <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                  <SelectTrigger className="h-9 bg-white border-gray-200 shadow-sm hover:border-sky-300 transition-colors">
                     <SelectValue placeholder="Select city..." />
                   </SelectTrigger>
                   <SelectContent className="max-h-48">
@@ -364,15 +358,7 @@ function SimpleAnalysisFilters({
                         value={city}
                         disabled={(currentFilters.city || []).includes(city)}
                       >
-                        <span
-                          className={`${
-                            (currentFilters.city || []).includes(city)
-                              ? 'text-gray-400'
-                              : ''
-                          }`}
-                        >
-                          {city}
-                        </span>
+                        {city}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -381,12 +367,12 @@ function SimpleAnalysisFilters({
 
               {/* NOC Code Filter */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <Hash className="h-3 w-3 text-violet-500" />
+                <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2">
+                  <Hash className="h-3.5 w-3.5 text-violet-500" />
                   NOC Code
                 </Label>
                 <Select onValueChange={(value) => addFilter('noc_code', value)}>
-                  <SelectTrigger className="bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                  <SelectTrigger className="h-9 bg-white border-gray-200 shadow-sm hover:border-violet-300 transition-colors">
                     <SelectValue placeholder="Select NOC code..." />
                   </SelectTrigger>
                   <SelectContent className="max-h-48">
@@ -398,15 +384,7 @@ function SimpleAnalysisFilters({
                           nocCode
                         )}
                       >
-                        <span
-                          className={`${
-                            (currentFilters.nocCode || []).includes(nocCode)
-                              ? 'text-gray-400'
-                              : ''
-                          }`}
-                        >
-                          {nocCode}
-                        </span>
+                        {nocCode}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -416,78 +394,39 @@ function SimpleAnalysisFilters({
           ) : filtersLoading ? (
             <div className="flex items-center justify-center py-8">
               <div className="flex items-center gap-3">
-                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                <span className="text-sm text-gray-500">
+                <div className="w-4 h-4 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-xs text-gray-500">
                   Loading filter options...
                 </span>
               </div>
             </div>
           ) : null}
-        </motion.div>
+        </div>
 
-        {/* Active Filters */}
+        {/* Active Filters Tags */}
         {activeFiltersCount > 0 && (
-          <div className="space-y-3 pt-2">
+          <div className="space-y-3 pt-4 border-t border-gray-100">
             <div className="flex items-center gap-2">
-              <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
-              <span className="text-xs font-medium text-gray-600">
+              <span className="text-xs font-semibold text-gray-700">
                 Active Filters ({activeFiltersCount})
               </span>
-              <div className="h-px flex-1 bg-gradient-to-l from-gray-200 to-transparent"></div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {(currentFilters.dateFrom || currentFilters.dateTo) && (
-                <Badge
-                  variant="outline"
-                  className="flex items-center gap-2 px-3 py-1 bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100 transition-colors"
-                >
-                  <CalendarDays className="h-3 w-3" />
-                  {currentFilters.dateFrom && currentFilters.dateTo ? (
-                    <>
-                      From{' '}
-                      {new Date(currentFilters.dateFrom).toLocaleDateString()}{' '}
-                      to {new Date(currentFilters.dateTo).toLocaleDateString()}
-                    </>
-                  ) : currentFilters.dateFrom ? (
-                    <>
-                      From{' '}
-                      {new Date(currentFilters.dateFrom).toLocaleDateString()}
-                    </>
-                  ) : (
-                    <>
-                      To {new Date(currentFilters.dateTo!).toLocaleDateString()}
-                    </>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-4 w-4 p-0 hover:bg-orange-200 rounded-full"
-                    onClick={() =>
-                      updateFilters({
-                        date_from: undefined,
-                        date_to: undefined,
-                      })
-                    }
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Badge>
-              )}
               {currentFilters.location?.map((location) => (
                 <Badge
                   key={location}
                   variant="outline"
-                  className="flex items-center gap-2 px-3 py-1 bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition-colors text-xs"
                 >
                   <MapPin className="h-3 w-3" />
-                  {location}
+                  <span className="max-w-[120px] truncate">{location}</span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-4 w-4 p-0 hover:bg-emerald-200 rounded-full"
+                    className="h-3.5 w-3.5 p-0 hover:bg-emerald-200 rounded-full ml-1"
                     onClick={() => removeFilter('location', location)}
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-2.5 w-2.5" />
                   </Button>
                 </Badge>
               ))}
@@ -495,17 +434,17 @@ function SimpleAnalysisFilters({
                 <Badge
                   key={city}
                   variant="outline"
-                  className="flex items-center gap-2 px-3 py-1 bg-sky-50 border-sky-200 text-sky-700 hover:bg-sky-100 transition-colors"
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-sky-50 border-sky-200 text-sky-700 hover:bg-sky-100 transition-colors text-xs"
                 >
                   <Building2 className="h-3 w-3" />
-                  {city}
+                  <span className="max-w-[120px] truncate">{city}</span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-4 w-4 p-0 hover:bg-sky-200 rounded-full"
+                    className="h-3.5 w-3.5 p-0 hover:bg-sky-200 rounded-full ml-1"
                     onClick={() => removeFilter('city', city)}
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-2.5 w-2.5" />
                   </Button>
                 </Badge>
               ))}
@@ -513,40 +452,27 @@ function SimpleAnalysisFilters({
                 <Badge
                   key={nocCode}
                   variant="outline"
-                  className="flex items-center gap-2 px-3 py-1 bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100 transition-colors"
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100 transition-colors text-xs"
                 >
                   <Hash className="h-3 w-3" />
-                  {nocCode}
+                  <span className="max-w-[120px] truncate">{nocCode}</span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-4 w-4 p-0 hover:bg-violet-200 rounded-full"
+                    className="h-3.5 w-3.5 p-0 hover:bg-violet-200 rounded-full ml-1"
                     onClick={() => removeFilter('noc_code', nocCode)}
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-2.5 w-2.5" />
                   </Button>
                 </Badge>
               ))}
-
-              {activeFiltersCount > 1 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 border"
-                >
-                  <X className="h-3 w-3 mr-1" />
-                  Clear All
-                </Button>
-              )}
             </div>
           </div>
         )}
       </div>
     </div>
   );
-}
-
+};
 function CompanyAnalysisContent({
   params,
 }: {
@@ -560,6 +486,8 @@ function CompanyAnalysisContent({
   const goBack = () => {
     router.back();
   };
+  const [isFilterOpen, setIsFilterOpen] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Get filters from URL parameters
   const filters = useMemo((): AnalysisFilters => {
@@ -898,41 +826,222 @@ function CompanyAnalysisContent({
     );
   }
 
+  console.log(analysisData, 'checkAnalysisData');
+
+  const handleExportReport = async () => {
+    setIsExporting(true);
+    try {
+      // Dynamically import jsPDF and html2canvas
+      const { default: jsPDF } = await import('jspdf');
+      const html2canvas = (await import('html2canvas')).default;
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      const contentWidth = pageWidth - 2 * margin;
+      let yPosition = margin;
+
+      // Add Title
+      pdf.setFontSize(24);
+      pdf.setTextColor(16, 185, 129); // emerald-600
+      pdf.text(`${companyName} Analysis Report`, margin, yPosition);
+      yPosition += 10;
+
+      // Add metadata
+      pdf.setFontSize(10);
+      pdf.setTextColor(107, 114, 128); // gray-500
+      pdf.text(
+        `Generated on ${new Date().toLocaleDateString()} | Data Source: ${
+          filters.searchType === 'lmia' ? 'LMIA' : 'Hot Leads'
+        }`,
+        margin,
+        yPosition
+      );
+      yPosition += 15;
+
+      // Add summary metrics
+      pdf.setFontSize(14);
+      pdf.setTextColor(31, 41, 55); // gray-800
+      pdf.text('Key Metrics', margin, yPosition);
+      yPosition += 8;
+
+      pdf.setFontSize(10);
+      pdf.setTextColor(75, 85, 99); // gray-600
+      const metrics = [
+        `Total Jobs: ${analysisData?.totalJobs || 0}`,
+        `Growth Rate: ${
+          analysisData?.trends.growthRate
+            ? `${
+                analysisData.trends.growthRate > 0 ? '+' : ''
+              }${analysisData.trends.growthRate.toFixed(1)}%`
+            : 'N/A'
+        }`,
+        `Top Location: ${analysisData?.trends.popularLocation || 'N/A'}`,
+        `Common Role: ${analysisData?.trends.commonTitle || 'N/A'}`,
+        `Top NOC Code: ${analysisData?.trends.topNocCode || 'N/A'}`,
+      ];
+
+      metrics.forEach((metric) => {
+        pdf.text(metric, margin + 5, yPosition);
+        yPosition += 6;
+      });
+
+      yPosition += 10;
+
+      // Function to capture and add chart to PDF
+      const addChartToPdf = async (elementId: string, title: string) => {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        // Check if we need a new page
+        if (yPosition > pageHeight - 80) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+
+        // Add chart title
+        pdf.setFontSize(12);
+        pdf.setTextColor(31, 41, 55);
+        pdf.text(title, margin, yPosition);
+        yPosition += 8;
+
+        const canvas = await html2canvas(element, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = contentWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        // Check if image fits on current page
+        if (yPosition + imgHeight > pageHeight - margin) {
+          pdf.addPage();
+          yPosition = margin;
+          // Re-add title on new page
+          pdf.text(title, margin, yPosition);
+          yPosition += 8;
+        }
+
+        pdf.addImage(imgData, 'PNG', margin, yPosition, imgWidth, imgHeight);
+        yPosition += imgHeight + 10;
+      };
+
+      // Add charts with unique IDs
+      await addChartToPdf('chart-hiring-trends', 'Hiring Trends Over Time');
+      await addChartToPdf(
+        'chart-location-distribution',
+        'Location Distribution'
+      );
+      await addChartToPdf('chart-top-cities', 'Top Cities');
+      await addChartToPdf('chart-job-titles', 'Top Job Titles');
+      await addChartToPdf('chart-noc-codes', 'NOC Code Distribution');
+      await addChartToPdf('chart-categories', 'Job Categories');
+
+      // Save the PDF
+      pdf.save(
+        `${companyName.replace(/[^a-z0-9]/gi, '_')}_analysis_${
+          new Date().toISOString().split('T')[0]
+        }.pdf`
+      );
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF report. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
-    <div className="container mx-auto px-6 py-8 space-y-6">
-      {/* Simple Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <Building2 className="h-8 w-8 text-brand-600" />
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">{companyName}</h1>
-            <p className="text-sm text-gray-500">
-              Company Analysis •{' '}
-              {filters.searchType === 'lmia' ? 'LMIA' : 'Hot Leads'}
-            </p>
+    <div className="flex h-screen flex-col bg-gradient-to-br from-brand-50/40 via-white to-brand-50/20">
+      <header className="bg-white/80 backdrop-blur-md border-b border-brand-200/30 sticky top-0 z-20 flex-shrink-0 shadow-sm">
+        <div className="max-w-[1600px] mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Left Section: Filter Toggle + Title */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className="p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors flex items-center justify-center"
+                aria-label={isFilterOpen ? 'Hide Filters' : 'Show Filters'}
+              >
+                {isFilterOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Filter className="w-5 h-5" />
+                )}
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-600 rounded-lg">
+                  <Building2 className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">
+                    D Jones Trucking Ltd
+                  </h1>
+                  <p className="text-xs text-gray-500">
+                    Company Analysis • Real-time Insights
+                  </p>
+                </div>
+              </div>
+            </div>
+            {/* Right Section: Action Buttons */}
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={() => router.push('/')}
+                variant={'outline'}
+                className="px-4 py-2 font-medium rounded-lg transition-colors text-sm shadow-sm flex items-center gap-2"
+              >
+                <Home className="w-4 h-4" />
+                Home
+              </Button>
+              <button
+                onClick={handleExportReport}
+                disabled={isExporting || isLoading}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm shadow-sm flex items-center gap-2"
+              >
+                {isExporting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    Export Report
+                  </>
+                )}
+              </button>
+              <Button
+                variant={'secondary'}
+                onClick={goBack}
+                className="px-4 py-2  font-medium rounded-lg transition-colors text-sm shadow-sm flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Go Back
+              </Button>
+              <UserDropdown />
+            </div>
           </div>
         </div>
-        <div className="flex gap-1">
-          <Badge variant="outline" className="text-sm">
-            {analysisData?.totalJobs || 0} Jobs
-          </Badge>
-          <Button
-            onClick={goBack}
-            className="bg-brand-600 text-white hover:bg-brand-700 px-3"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Go Back
-          </Button>
-        </div>
-      </div>
+      </header>
 
-      <div className="flex gap-4">
-        {/* Filters */}
-        <SimpleAnalysisFilters
-          currentFilters={filters}
-          tableName={tableName}
-          companyName={companyName}
-        />
+      {/* Container for Sidebar + Main Content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar container with L-shape */}
+        <aside
+          className={`transition-all duration-300 ${
+            isFilterOpen ? 'w-80' : 'w-0'
+          } overflow-hidden flex-shrink-0 bg-white/95 backdrop-blur-sm`}
+        >
+          <FilterSidebar
+            currentFilters={filters}
+            tableName={tableName}
+            companyName={companyName}
+          />
+        </aside>
 
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -949,255 +1058,144 @@ function CompanyAnalysisContent({
             ))}
           </div>
         ) : (
-          <div className="flex flex-col gap-4 w-full">
+          <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-gradient-to-b from-transparent to-brand-50/10">
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Growth Rate
-                  </CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {analysisData?.trends.growthRate
-                      ? `${
-                          analysisData.trends.growthRate > 0 ? '+' : ''
-                        }${analysisData.trends.growthRate.toFixed(1)}%`
-                      : 'N/A'}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Year-over-year change
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Top Location
-                  </CardTitle>
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-lg font-bold">
-                    {analysisData?.trends.popularLocation || 'N/A'}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Most common{' '}
-                    {filters.searchType === 'lmia' ? 'territory' : 'state'}
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Top NOC Code
-                  </CardTitle>
-                  <Hash className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-lg font-bold">
-                    {analysisData?.trends.topNocCode || 'N/A'}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Most frequent NOC code
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <MetricCard
+                label={'Growth Rate'}
+                value={
+                  analysisData?.trends.growthRate
+                    ? `${
+                        analysisData.trends.growthRate > 0 ? '+' : ''
+                      }${analysisData.trends.growthRate.toFixed(1)}%`
+                    : 'N/A'
+                }
+                subtitle={'Year-over-year change'}
+                icon={'material-symbols:trending-up'}
+              />
+              <MetricCard
+                label={'Top Location'}
+                value={analysisData?.trends.popularLocation || 'N/A'}
+                subtitle={`Most common ${
+                  filters.searchType === 'lmia' ? 'territory' : 'state'
+                }`}
+                icon={'material-symbols:add-location-alt'}
+              />
+              <MetricCard
+                label={'Top NOC Code'}
+                value={analysisData?.trends.topNocCode || 'N/A'}
+                subtitle={'Most frequent NOC code'}
+                icon={'line-md:hash-small'}
+              />
 
               {filters.searchType === 'lmia' &&
               analysisData?.trends.averagePositions ? (
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Avg. Positions
-                    </CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {analysisData.trends.averagePositions.toFixed(1)}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Per LMIA application
-                    </p>
-                  </CardContent>
-                </Card>
+                <MetricCard
+                  label={'Avg. Positions'}
+                  value={analysisData.trends.averagePositions.toFixed(1)}
+                  subtitle={'Per LMIA application'}
+                  icon={'solar:suitcase-line-duotone'}
+                />
               ) : (
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Common Role
-                    </CardTitle>
-                    <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-sm font-bold truncate">
-                      {analysisData?.trends.commonTitle || 'N/A'}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Most frequent job title
-                    </p>
-                  </CardContent>
-                </Card>
+                <MetricCard
+                  label={'Common Role'}
+                  value={analysisData?.trends.commonTitle || 'N/A'}
+                  subtitle={'Most frequent job title'}
+                  icon={'solar:suitcase-line-duotone'}
+                />
               )}
             </div>
 
-            {/* Charts */}
+            {/* Two Column Charts - Location & Cities */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Location Distribution */}
-              <ModernChartWrapper
-                title="Location Distribution"
-                description={`Job postings by ${
-                  filters.searchType === 'lmia' ? 'territory' : 'state'
-                }`}
-                height="360px"
-              >
-                {analysisData?.locationData && (
-                  <ModernPieChart
+              <div id="chart-location-distribution">
+                <DashboardCard
+                  title="Location Distribution"
+                  subtitle="Job postings by state/territory"
+                  icon={MapPin}
+                  className="h-[400px]"
+                >
+                  <DonutChart
                     data={analysisData.locationData.map((d) => ({
                       name: d.name,
                       value: d.value,
                     }))}
+                    centerValue={analysisData.locationData.length}
+                    centerLabel={'Locations'}
                   />
-                )}
-              </ModernChartWrapper>
-
-              {/* Time Trend */}
-              <ModernChartWrapper
-                title="Hiring Trends Over Time"
-                description={`Job postings by ${
-                  filters.searchType === 'lmia' ? 'year' : 'posting date'
-                }`}
-                trend={
-                  analysisData?.trends.growthRate
-                    ? {
-                        value: Math.abs(analysisData.trends.growthRate),
-                        isPositive: analysisData.trends.growthRate > 0,
-                      }
-                    : undefined
-                }
-                height="380px"
-              >
-                {analysisData?.timeData && (
-                  <ModernLineChart
-                    data={analysisData.timeData.map((d) => ({
-                      name: d.period,
-                      value: d.count,
-                    }))}
-                    showArea
-                  />
-                )}
-              </ModernChartWrapper>
-
-              {/* City Distribution */}
-              <ModernChartWrapper
-                title="Top Cities"
-                description="Job postings by city location"
-                height="360px"
-              >
-                {analysisData?.cityData && (
-                  <ModernBarChart
+                </DashboardCard>
+              </div>
+              <div id="chart-top-cities">
+                <DashboardCard
+                  title="Top Cities"
+                  subtitle="Most active hiring locations"
+                  icon={Building2}
+                  className="h-[400px]"
+                >
+                  <BarChart
                     data={analysisData.cityData.map((d) => ({
                       name: d.name,
                       value: d.value,
                     }))}
-                    colorScheme="brand"
-                    showGrid
                   />
-                )}
-              </ModernChartWrapper>
+                </DashboardCard>
+              </div>
+            </div>
 
-              {/* NOC Codes */}
-              <ModernChartWrapper
-                title="NOC Code Distribution"
-                description="Most common National Occupational Classification codes"
-                height="360px"
-              >
-                {analysisData?.nocCodeData && (
-                  <ModernBarChart
-                    data={analysisData.nocCodeData.map((d) => ({
-                      name: d.code,
-                      value: d.count,
-                    }))}
-                    colorScheme="professional"
-                    showGrid
-                  />
-                )}
-              </ModernChartWrapper>
-
-              {/* LMIA-specific charts */}
-              {filters.searchType === 'lmia' && analysisData?.programData && (
-                <ModernChartWrapper
-                  title="LMIA Programs"
-                  description="Distribution by LMIA program type"
-                  height="340px"
+            {/* Two Column Charts - NOC Codes & Categories */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div id="chart-noc-codes">
+                <DashboardCard
+                  title="NOC Code Distribution"
+                  subtitle="Most common occupational classifications"
+                  icon={Hash}
+                  className="h-[400px]"
                 >
-                  <ModernPieChart
-                    data={analysisData.programData.map((d) => ({
-                      name: d.name,
-                      value: d.value,
-                    }))}
+                  <ColumnChart data={analysisData.nocCodeData} />
+                </DashboardCard>
+              </div>
+              <div id="chart-categories">
+                <DashboardCard
+                  title="Job Categories"
+                  subtitle="Distribution by job category"
+                  icon={Briefcase}
+                  className="h-[400px]"
+                >
+                  <DonutChart
+                    data={analysisData.categoryData}
+                    centerLabel={'Categories'}
+                    centerValue={analysisData?.categoryData?.length}
                   />
-                </ModernChartWrapper>
-              )}
+                </DashboardCard>
+              </div>
+            </div>
 
-              {filters.searchType === 'lmia' &&
-                analysisData?.priorityOccupationData && (
-                  <ModernChartWrapper
-                    title="Priority Occupations"
-                    description="Jobs categorized by priority occupation status"
-                    height="360px"
-                  >
-                    <ModernBarChart
-                      data={analysisData.priorityOccupationData.map((d) => ({
-                        name: d.name,
-                        value: d.value,
-                      }))}
-                      colorScheme="pastel"
-                      showGrid
-                    />
-                  </ModernChartWrapper>
-                )}
+            {/* Full Width Chart - Job Titles */}
+            <div className="grid grid-cols-1 gap-6">
+              <div id="chart-job-titles">
+                <DashboardCard
+                  title="Top Job Titles"
+                  subtitle="Most common positions at this company"
+                  icon={Users}
+                  className="h-[350px]"
+                >
+                  <ColumnChart data={analysisData.jobTitleData} />
+                </DashboardCard>
+              </div>
+            </div>
 
-              {/* Hot Leads-specific charts */}
-              {filters.searchType === 'hot_leads' &&
-                analysisData?.categoryData && (
-                  <ModernChartWrapper
-                    title="Job Categories"
-                    description="Distribution by job category"
-                    height="340px"
-                  >
-                    <ModernPieChart
-                      data={analysisData.categoryData.map((d) => ({
-                        name: d.name,
-                        value: d.value,
-                      }))}
-                    />
-                  </ModernChartWrapper>
-                )}
-
-              {/* Job Titles - Full width */}
-              <ModernChartWrapper
-                title="Top Job Titles"
-                description="Most common positions at this company"
-                className="lg:col-span-2"
-                height="400px"
-              >
-                {analysisData?.jobTitleData && (
-                  <ModernBarChart
-                    data={analysisData.jobTitleData.map((d) => ({
-                      name: d.title,
-                      value: d.count,
-                    }))}
-                    colorScheme="gradient"
-                    showGrid
-                  />
-                )}
-              </ModernChartWrapper>
+            {/* Full Width Chart - Hiring Trends */}
+            <div className="grid grid-cols-1 gap-6">
+              <div id="chart-hiring-trends">
+                <DashboardCard
+                  title="Hiring Trends Over Time"
+                  subtitle="Historical job posting activity"
+                  icon={TrendingUp}
+                  className="h-[450px] p-0 overflow-visible"
+                >
+                  <AreaChart data={analysisData?.timeData} color="#10b981" />
+                </DashboardCard>
+              </div>
             </div>
           </div>
         )}
@@ -1228,11 +1226,452 @@ export default function DeepAnalysis({ params }: PageProps) {
         </div>
       }
     >
-      <Navbar />
-      <div className="mt-14">
+      <div className="">
         <CompanyAnalysisContent params={params} />
       </div>
       <Footer />
     </Suspense>
   );
 }
+
+const MetricCard = ({ label, value, subtitle, trend, icon }) => {
+  return (
+    <div className="group bg-white/90 backdrop-blur-sm rounded-xl shadow-sm border border-brand-200/30 p-5 hover:shadow-lg hover:border-brand-400/50 hover:bg-white hover:-translate-y-1 transition-all duration-300">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1">
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+            {label}
+          </p>
+          <p className="text-2xl font-bold text-gray-900 group-hover:text-brand-700 transition-colors">{value}</p>
+        </div>
+        <div className="p-2.5 bg-gradient-to-br from-brand-50 to-brand-100/80 rounded-xl ring-1 ring-brand-200/40 group-hover:ring-brand-400/50 group-hover:shadow-md transition-all">
+          <Icon icon={icon} className="w-5 h-5 text-brand-600 group-hover:text-brand-700" />
+        </div>
+      </div>
+      <p className="text-xs text-gray-500 group-hover:text-gray-600">{subtitle}</p>
+    </div>
+  );
+};
+
+const DashboardCard = ({
+  title,
+  subtitle,
+  icon: Icon,
+  children,
+  className = '',
+}) => {
+  return (
+    <div
+      className={`group bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-brand-200/30 hover:border-brand-300/50 hover:shadow-xl transition-all duration-300 flex flex-col ${className}`}
+    >
+      <div className="flex items-center gap-2.5 p-5 pb-3 flex-shrink-0">
+        <div className="p-2 bg-gradient-to-br from-brand-50 to-brand-100/60 rounded-lg ring-1 ring-brand-200/30 group-hover:ring-brand-300/50 transition-all">
+          <Icon className="w-4 h-4 text-brand-600 group-hover:text-brand-700" />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-sm font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
+            {title}
+          </h3>
+          <p className="text-xs text-gray-500 group-hover:text-gray-600 transition-colors">{subtitle}</p>
+        </div>
+      </div>
+      <div className="flex-grow overflow-hidden w-full">{children}</div>
+    </div>
+  );
+};
+
+const AreaChart = ({ data, color = '#10b981' }) => {
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  // Use 'count' instead of 'value'
+  const maxValue = data.length > 0 ? Math.max(...data.map((d) => d.count)) : 1;
+  const minValue = data.length > 0 ? Math.min(...data.map((d) => d.count)) : 0;
+  const range = maxValue - minValue || 1;
+  const width = 1000;
+  const height = 400;
+  const padding = 50;
+  const bottomPadding = 80;
+
+  // Use 'period' and 'count'
+  const points =
+    data.length > 1
+      ? data.map((d, i) => {
+          const x = padding + (i / (data.length - 1)) * (width - 2 * padding);
+          const y =
+            height -
+            bottomPadding -
+            ((d.count - minValue) / range) * (height - padding - bottomPadding);
+          return { x, y, value: d.count, period: d.period }; // Store period instead of year
+        })
+      : [];
+
+  const pathData = points
+    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+    .join(' ');
+  const areaData =
+    points.length > 0
+      ? `${pathData} L ${points[points.length - 1].x} ${
+          height - bottomPadding
+        } L ${points[0].x} ${height - bottomPadding} Z`
+      : '';
+
+  return (
+    <div className="relative w-full h-full px-4 py-2">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="w-full h-full"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style={{ stopColor: color, stopOpacity: 0.3 }} />
+            <stop
+              offset="100%"
+              style={{ stopColor: color, stopOpacity: 0.05 }}
+            />
+          </linearGradient>
+        </defs>
+        <path d={areaData} fill="url(#areaGradient)" />
+        <path
+          d={pathData}
+          fill="none"
+          stroke={color}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {points.map((point, index) => (
+          <g key={index}>
+            <circle
+              cx={point.x}
+              cy={point.y}
+              r={hoveredIndex === index ? '6' : '4'}
+              fill="white"
+              stroke={color}
+              strokeWidth="2"
+              className="transition-all cursor-pointer"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            />
+            {hoveredIndex === index && (
+              <g>
+                <rect
+                  x={point.x - 30}
+                  y={point.y - 35}
+                  width="60"
+                  height="28"
+                  rx="6"
+                  fill="rgba(0, 0, 0, 0.8)"
+                />
+                {/* Display value (count) */}
+                <text
+                  x={point.x}
+                  y={point.y - 24}
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="10"
+                  fontWeight="bold"
+                >
+                  {point.value}
+                </text>
+                {/* Display period */}
+                <text
+                  x={point.x}
+                  y={point.y - 13}
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="8"
+                >
+                  {point.period}
+                </text>
+              </g>
+            )}
+          </g>
+        ))}
+        {/* X-axis line */}
+        <line
+          x1={padding}
+          y1={height - bottomPadding}
+          x2={width - padding}
+          y2={height - bottomPadding}
+          stroke="#d1d5db"
+          strokeWidth="1.5"
+        />
+        {/* X-axis labels */}
+        {points.map((point, index) => (
+          <g key={`label-group-${index}`}>
+            {/* Tick mark */}
+            <line
+              x1={point.x}
+              y1={height - bottomPadding}
+              x2={point.x}
+              y2={height - bottomPadding + 5}
+              stroke="#9ca3af"
+              strokeWidth="1"
+            />
+            {/* Label text */}
+            <text
+              x={point.x}
+              y={height - bottomPadding + 30}
+              textAnchor="middle"
+              fontSize="18"
+              fontWeight={hoveredIndex === index ? 700 : 600}
+              fill={hoveredIndex === index ? '#047857' : '#1f2937'}
+              className="select-none"
+              style={{
+                userSelect: 'none',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+              }}
+            >
+              {point.period}
+            </text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+};
+
+const COLOR_PALETTE = [
+  '#6366f1',
+  '#8b5cf6',
+  '#14b8a6',
+  '#f59e0b',
+  '#ef4444',
+  '#ec4899',
+  '#3b82f6',
+  '#10b981',
+];
+const DonutChart = ({ data, centerValue, centerLabel }) => {
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  let currentAngle = -90;
+
+  const paths = data.map((item, index) => {
+    // Assign color based on index, cycling through the palette
+    const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
+    const percentage = total > 0 ? (item.value / total) * 100 : 0;
+    const angle = (percentage / 100) * 360;
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + angle;
+    currentAngle = endAngle;
+    const startRad = (startAngle * Math.PI) / 180;
+    const endRad = (endAngle * Math.PI) / 180;
+    const x1 = 50 + 40 * Math.cos(startRad);
+    const y1 = 50 + 40 * Math.sin(startRad);
+    const x2 = 50 + 40 * Math.cos(endRad);
+    const y2 = 50 + 40 * Math.sin(endRad);
+    const largeArc = angle > 180 ? 1 : 0;
+    const pathData = [
+      `M 50 50`,
+      `L ${x1} ${y1}`,
+      `A 40 40 0 ${largeArc} 1 ${x2} ${y2}`,
+      `Z`,
+    ].join(' ');
+    return {
+      pathData,
+      color: assignedColor, // Use assigned color
+      name: item.name, // Keep using item.label
+      value: item.value,
+      percentage: percentage.toFixed(1),
+      index,
+    };
+  });
+
+  const displayData =
+    hoveredIndex !== null && paths[hoveredIndex] ? paths[hoveredIndex] : null;
+
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center p-4">
+      <div className="relative w-48 h-48">
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          <circle
+            cx="50"
+            cy="50"
+            r="40"
+            fill="none"
+            stroke="#f3f4f6"
+            strokeWidth="20"
+          />
+          {paths.map((path) => (
+            <path
+              key={path.index}
+              d={path.pathData}
+              fill={path.color} // Use assigned color here
+              className="transition-all duration-200 cursor-pointer"
+              style={{
+                opacity:
+                  hoveredIndex === null || hoveredIndex === path.index
+                    ? 1
+                    : 0.4,
+                transform:
+                  hoveredIndex === path.index ? 'scale(1.02)' : 'scale(1)',
+                transformOrigin: '50% 50%',
+              }}
+              onMouseEnter={() => setHoveredIndex(path.index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            />
+          ))}
+          <circle cx="50" cy="50" r="25" fill="white" />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none text-center">
+          {displayData ? (
+            <>
+              <div className="text-2xl font-bold text-gray-900">
+                {displayData.value}
+              </div>
+              <div className="text-xs text-gray-500">
+                {displayData.percentage}%
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-2xl font-bold text-gray-900">
+                {centerValue}
+              </div>
+              <div className="text-xs text-gray-500">{centerLabel}</div>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-3 justify-center">
+        {/* Update legend to use assigned colors */}
+        {paths.map(
+          (pathInfo, index) => (
+            console.log(pathInfo, 'pathInfo'),
+            (
+              <div
+                key={index}
+                className="flex items-center gap-2 cursor-pointer transition-opacity"
+                style={{
+                  opacity:
+                    hoveredIndex === null || hoveredIndex === index ? 1 : 0.4,
+                }}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: pathInfo.color }} // Use assigned color
+                />
+                {/* Use pathInfo.label which corresponds to item.label */}
+                <span className="text-xs text-gray-600 font-medium">
+                  {pathInfo.name}
+                </span>
+              </div>
+            )
+          )
+        )}
+      </div>
+    </div>
+  );
+};
+
+const BarChart = ({ data, maxValue }) => {
+  console.log(data, 'barChartData');
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const max =
+    maxValue || (data.length > 0 ? Math.max(...data.map((d) => d.value)) : 1);
+
+  return (
+    <div className="h-full w-full overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-brand-300 scrollbar-track-gray-100">
+      <div className="space-y-3 p-4">
+      {data.map((item, index) => {
+        // Assign color based on index, cycling through the palette
+        const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
+        const percentage = max > 0 ? (item.value / max) * 100 : 0;
+        const isHovered = hoveredIndex === index;
+        return (
+          <div
+            key={index}
+            className="space-y-1 transition-all duration-200"
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            style={{ opacity: hoveredIndex === null || isHovered ? 1 : 0.5 }}
+          >
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-gray-600 font-medium">{item.name}</span>
+              <span className="text-gray-900 font-semibold">
+                {item.value.toLocaleString()}
+              </span>
+            </div>
+            <div className="relative h-8 bg-gray-100 rounded-lg overflow-hidden group">
+              <div
+                className="absolute inset-y-0 left-0 rounded-lg transition-all duration-500 ease-out"
+                style={{
+                  width: `${percentage}%`,
+                  backgroundColor: assignedColor, // Use assigned color
+                  transform: isHovered ? 'scaleY(1.1)' : 'scaleY(1)',
+                }}
+              />
+              {isHovered && (
+                <div className="absolute inset-0 flex items-center justify-end pr-3">
+                  <span className="text-xs font-bold text-white drop-shadow-lg">
+                    {percentage.toFixed(1)}%
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+      </div>
+    </div>
+  );
+};
+
+const ColumnChart = ({ data }) => {
+  // Expects data with 'title' and 'count'
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  // Use 'count' instead of 'value' for maxValue calculation
+  const maxValue = data.length > 0 ? Math.max(...data.map((d) => d.count)) : 1;
+
+  return (
+    <div className="h-full flex items-end justify-around gap-4 p-4">
+      {data.map((item, index) => {
+        // Assign color based on index, cycling through the palette
+        const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
+        // Use 'count' instead of 'value' for height percentage
+        const heightPercentage =
+          maxValue > 0 ? (item.count / maxValue) * 100 : 0;
+        const isHovered = hoveredIndex === index;
+        return (
+          <div
+            key={index}
+            className="flex-1 flex flex-col items-center gap-2 transition-all duration-200 h-full"
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            style={{ opacity: hoveredIndex === null || isHovered ? 1 : 0.5 }}
+          >
+            <div className="relative w-full flex items-end justify-center h-full">
+              {isHovered && (
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full mb-2 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-lg whitespace-nowrap z-10">
+                  {/* Use 'count' in tooltip */}
+                  {item.count} ({heightPercentage.toFixed(1)}%)
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
+                </div>
+              )}
+              <div
+                className="w-full rounded-t-lg transition-all duration-500 ease-out cursor-pointer relative overflow-hidden"
+                style={{
+                  height: `${heightPercentage}%`,
+                  backgroundColor: assignedColor, // Use assigned color
+                  minHeight: '2px',
+                  transform: isHovered ? 'scaleX(1.05)' : 'scaleX(1)',
+                }}
+              >
+                <div className="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity" />
+              </div>
+            </div>
+            {/* Use 'title' for label */}
+            <span
+              className="text-xs text-gray-600 text-center font-medium transition-all"
+              style={{ fontWeight: isHovered ? 700 : 500 }}
+            >
+              {item.title}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
