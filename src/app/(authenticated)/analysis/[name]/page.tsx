@@ -955,6 +955,8 @@ function CompanyAnalysisContent({
     }
   };
 
+  console.log(analysisData, 'ChecknalysisData');
+
   return (
     <div className="flex h-screen flex-col bg-gradient-to-br from-brand-50/40 via-white to-brand-50/20">
       <header className="bg-white/80 backdrop-blur-md border-b border-brand-200/30 sticky top-0 z-20 flex-shrink-0 shadow-sm">
@@ -979,7 +981,7 @@ function CompanyAnalysisContent({
                 </div>
                 <div>
                   <h1 className="text-xl font-bold text-gray-900">
-                    D Jones Trucking Ltd
+                    {companyName}
                   </h1>
                   <p className="text-xs text-gray-500">
                     Company Analysis • Real-time Insights
@@ -997,7 +999,7 @@ function CompanyAnalysisContent({
                 <Home className="w-4 h-4" />
                 Home
               </Button>
-              <button
+              {/* <button
                 onClick={handleExportReport}
                 disabled={isExporting || isLoading}
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm shadow-sm flex items-center gap-2"
@@ -1013,7 +1015,7 @@ function CompanyAnalysisContent({
                     Export Report
                   </>
                 )}
-              </button>
+              </button> */}
               <Button
                 variant={'secondary'}
                 onClick={goBack}
@@ -1116,11 +1118,11 @@ function CompanyAnalysisContent({
                   className="h-[400px]"
                 >
                   <DonutChart
-                    data={analysisData.locationData.map((d) => ({
+                    data={analysisData?.locationData.map((d) => ({
                       name: d.name,
                       value: d.value,
                     }))}
-                    centerValue={analysisData.locationData.length}
+                    centerValue={analysisData?.locationData.length}
                     centerLabel={'Locations'}
                   />
                 </DashboardCard>
@@ -1242,13 +1244,20 @@ const MetricCard = ({ label, value, subtitle, trend, icon }) => {
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">
             {label}
           </p>
-          <p className="text-2xl font-bold text-gray-900 group-hover:text-brand-700 transition-colors">{value}</p>
+          <p className="text-2xl font-bold text-gray-900 group-hover:text-brand-700 transition-colors">
+            {value}
+          </p>
         </div>
         <div className="p-2.5 bg-gradient-to-br from-brand-50 to-brand-100/80 rounded-xl ring-1 ring-brand-200/40 group-hover:ring-brand-400/50 group-hover:shadow-md transition-all">
-          <Icon icon={icon} className="w-5 h-5 text-brand-600 group-hover:text-brand-700" />
+          <Icon
+            icon={icon}
+            className="w-5 h-5 text-brand-600 group-hover:text-brand-700"
+          />
         </div>
       </div>
-      <p className="text-xs text-gray-500 group-hover:text-gray-600">{subtitle}</p>
+      <p className="text-xs text-gray-500 group-hover:text-gray-600">
+        {subtitle}
+      </p>
     </div>
   );
 };
@@ -1272,7 +1281,9 @@ const DashboardCard = ({
           <h3 className="text-sm font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
             {title}
           </h3>
-          <p className="text-xs text-gray-500 group-hover:text-gray-600 transition-colors">{subtitle}</p>
+          <p className="text-xs text-gray-500 group-hover:text-gray-600 transition-colors">
+            {subtitle}
+          </p>
         </div>
       </div>
       <div className="flex-grow overflow-hidden w-full">{children}</div>
@@ -1442,40 +1453,44 @@ const COLOR_PALETTE = [
   '#10b981',
 ];
 const DonutChart = ({ data, centerValue, centerLabel }) => {
+  console.log(data, 'donutChartData');
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const total = (data && data.reduce((sum, item) => sum + item.value, 0)) || 0;
   let currentAngle = -90;
 
-  const paths = data.map((item, index) => {
-    // Assign color based on index, cycling through the palette
-    const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
-    const percentage = total > 0 ? (item.value / total) * 100 : 0;
-    const angle = (percentage / 100) * 360;
-    const startAngle = currentAngle;
-    const endAngle = currentAngle + angle;
-    currentAngle = endAngle;
-    const startRad = (startAngle * Math.PI) / 180;
-    const endRad = (endAngle * Math.PI) / 180;
-    const x1 = 50 + 40 * Math.cos(startRad);
-    const y1 = 50 + 40 * Math.sin(startRad);
-    const x2 = 50 + 40 * Math.cos(endRad);
-    const y2 = 50 + 40 * Math.sin(endRad);
-    const largeArc = angle > 180 ? 1 : 0;
-    const pathData = [
-      `M 50 50`,
-      `L ${x1} ${y1}`,
-      `A 40 40 0 ${largeArc} 1 ${x2} ${y2}`,
-      `Z`,
-    ].join(' ');
-    return {
-      pathData,
-      color: assignedColor, // Use assigned color
-      name: item.name, // Keep using item.label
-      value: item.value,
-      percentage: percentage.toFixed(1),
-      index,
-    };
-  });
+  const paths =
+    (data &&
+      data.map((item, index) => {
+        // Assign color based on index, cycling through the palette
+        const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
+        const percentage = total > 0 ? (item.value / total) * 100 : 0;
+        const angle = (percentage / 100) * 360;
+        const startAngle = currentAngle;
+        const endAngle = currentAngle + angle;
+        currentAngle = endAngle;
+        const startRad = (startAngle * Math.PI) / 180;
+        const endRad = (endAngle * Math.PI) / 180;
+        const x1 = 50 + 40 * Math.cos(startRad);
+        const y1 = 50 + 40 * Math.sin(startRad);
+        const x2 = 50 + 40 * Math.cos(endRad);
+        const y2 = 50 + 40 * Math.sin(endRad);
+        const largeArc = angle > 180 ? 1 : 0;
+        const pathData = [
+          `M 50 50`,
+          `L ${x1} ${y1}`,
+          `A 40 40 0 ${largeArc} 1 ${x2} ${y2}`,
+          `Z`,
+        ].join(' ');
+        return {
+          pathData,
+          color: assignedColor, // Use assigned color
+          name: item.name, // Keep using item.label
+          value: item.value,
+          percentage: percentage.toFixed(1),
+          index,
+        };
+      })) ||
+    [];
 
   const displayData =
     hoveredIndex !== null && paths[hoveredIndex] ? paths[hoveredIndex] : null;
@@ -1575,45 +1590,45 @@ const BarChart = ({ data, maxValue }) => {
   return (
     <div className="h-full w-full overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-brand-300 scrollbar-track-gray-100">
       <div className="space-y-3 p-4">
-      {data.map((item, index) => {
-        // Assign color based on index, cycling through the palette
-        const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
-        const percentage = max > 0 ? (item.value / max) * 100 : 0;
-        const isHovered = hoveredIndex === index;
-        return (
-          <div
-            key={index}
-            className="space-y-1 transition-all duration-200"
-            onMouseEnter={() => setHoveredIndex(index)}
-            onMouseLeave={() => setHoveredIndex(null)}
-            style={{ opacity: hoveredIndex === null || isHovered ? 1 : 0.5 }}
-          >
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-600 font-medium">{item.name}</span>
-              <span className="text-gray-900 font-semibold">
-                {item.value.toLocaleString()}
-              </span>
+        {data.map((item, index) => {
+          // Assign color based on index, cycling through the palette
+          const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
+          const percentage = max > 0 ? (item.value / max) * 100 : 0;
+          const isHovered = hoveredIndex === index;
+          return (
+            <div
+              key={index}
+              className="space-y-1 transition-all duration-200"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              style={{ opacity: hoveredIndex === null || isHovered ? 1 : 0.5 }}
+            >
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-600 font-medium">{item.name}</span>
+                <span className="text-gray-900 font-semibold">
+                  {item.value.toLocaleString()}
+                </span>
+              </div>
+              <div className="relative h-8 bg-gray-100 rounded-lg overflow-hidden group">
+                <div
+                  className="absolute inset-y-0 left-0 rounded-lg transition-all duration-500 ease-out"
+                  style={{
+                    width: `${percentage}%`,
+                    backgroundColor: assignedColor, // Use assigned color
+                    transform: isHovered ? 'scaleY(1.1)' : 'scaleY(1)',
+                  }}
+                />
+                {isHovered && (
+                  <div className="absolute inset-0 flex items-center justify-end pr-3">
+                    <span className="text-xs font-bold text-white drop-shadow-lg">
+                      {percentage.toFixed(1)}%
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="relative h-8 bg-gray-100 rounded-lg overflow-hidden group">
-              <div
-                className="absolute inset-y-0 left-0 rounded-lg transition-all duration-500 ease-out"
-                style={{
-                  width: `${percentage}%`,
-                  backgroundColor: assignedColor, // Use assigned color
-                  transform: isHovered ? 'scaleY(1.1)' : 'scaleY(1)',
-                }}
-              />
-              {isHovered && (
-                <div className="absolute inset-0 flex items-center justify-end pr-3">
-                  <span className="text-xs font-bold text-white drop-shadow-lg">
-                    {percentage.toFixed(1)}%
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
       </div>
     </div>
   );

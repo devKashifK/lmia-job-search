@@ -190,6 +190,7 @@ export function NocJobDescription({
   };
 
   const handleViewCompanyJobs = () => {
+    console.log(searchType, 'checkSearchType');
     if (job?.employer) {
       if (searchType == 'hot_leads') {
         router.push(
@@ -317,6 +318,7 @@ export function NocJobDescription({
   const goTo = (path: string) => {
     router.push(path);
   };
+  console.log(jobData, 'checkJobData');
   return (
     <TooltipProvider>
       <motion.div
@@ -430,7 +432,16 @@ export function NocJobDescription({
                               {jobData.company}
                             </span>
                           </div>
-                          <div className="flex items-center gap-1.5">
+                          <div
+                            className="flex items-center gap-1.5"
+                            // onClick={() => {
+                            //   goTo(
+                            //     `/search/${searchType}/${encodeURIComponent(
+                            //       jobData.location.split(',')[0].trim()
+                            //     )}?field=state&t=${searchType}`
+                            //   );
+                            // }}
+                          >
                             <MapPin className="w-4 h-4" />
                             <span>{jobData.location}</span>
                           </div>
