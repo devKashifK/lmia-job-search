@@ -26,7 +26,7 @@ export default function Navbar({ className }: { className?: string }) {
           {/* Logo on the left */}
           <CustomLink href="/" className="flex items-center min-w-[120px]">
             <div className="flex items-center gap-2">
-              {/* <Logo className="h-12 w-12 rounded-lg text-brand-600" /> */}
+              <Logo className="h-12 w-12 rounded-lg text-brand-600" />
               <span className="text-2xl font-bold bg-gradient-to-r from-brand-600 to-brand-700 text-transparent bg-clip-text leading-none">
                 Job Maze
               </span>

@@ -1,12 +1,12 @@
-"use client";
-import CustomLink from "@/components/ui/CustomLink";
-import { motion } from "framer-motion";
+'use client';
+import CustomLink from '@/components/ui/CustomLink';
+import { motion } from 'framer-motion';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Building2, Flame } from "lucide-react";
+} from '@/components/ui/popover';
+import { Building2, Flame } from 'lucide-react';
 
 export default function Hero() {
   return (
@@ -33,9 +33,9 @@ export default function Hero() {
                   Get Started
                 </button>
               </CustomLink>
-              <button className="border-2 border-brand-600 text-brand-600 px-8 py-4 rounded-full font-semibold hover:bg-brand-600 hover:text-white transition-all duration-300 hover:scale-105">
+              {/* <button className="border-2 border-brand-600 text-brand-600 px-8 py-4 rounded-full font-semibold hover:bg-brand-600 hover:text-white transition-all duration-300 hover:scale-105">
                 Watch Demo
-              </button>
+              </button> */}
             </div>
           </motion.div>
           {/* Visual/Animation Placeholder */}
@@ -43,9 +43,9 @@ export default function Hero() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="md:w-1/2 flex justify-center"
+            className="md:w-1/2 flex justify-center rounded-md"
           >
-            <div className="bg-brand-100/60 rounded-2xl shadow-xl p-8 flex items-center justify-center w-full max-w-xs aspect-square">
+            {/* <div className="bg-brand-100/60 rounded-2xl shadow-xl p-8 flex items-center justify-center w-full max-w-xs aspect-square">
               <svg
                 className="w-24 h-24 text-brand-400 animate-pulse"
                 fill="none"
@@ -59,7 +59,8 @@ export default function Hero() {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-            </div>
+            </div> */}
+            <video src="/demo.mp4" autoPlay controls className="rounded-md" />
           </motion.div>
         </div>
         {/* Stats Section */}
