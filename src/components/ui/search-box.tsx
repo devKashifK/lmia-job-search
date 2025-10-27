@@ -183,12 +183,14 @@ export function SearchBox() {
         router.push(
           `/search/hot-leads/${encodeURIComponent(
             s.suggestion
-          )}?${sp.toString()}`
+          )}?${sp.toString()}field=job_title`
         );
       } else {
         sp.set('t', 'lmia');
         router.push(
-          `/search/lmia/${encodeURIComponent(s.suggestion)}?${sp.toString()}`
+          `/search/lmia/${encodeURIComponent(
+            s.suggestion
+          )}?${sp.toString()}field=job_title`
         );
       }
       return;
@@ -211,6 +213,7 @@ export function SearchBox() {
     try {
       // Always pass location if provided
       if (location.trim()) sp.set('state', location.trim());
+      if (!sp.get('field')) sp.set('field', 'job_title');
       else sp.delete('state');
 
       if (!session?.session) {
