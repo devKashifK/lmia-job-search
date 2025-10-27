@@ -222,7 +222,7 @@ export function SearchBox() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-white/20 overflow-hidden"
+        className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
       >
         {/* Tab Selection */}
         <div className="flex border-b border-white/30 bg-white/20 overflow-hidden backdrop-blur-sm">
@@ -317,8 +317,8 @@ export function SearchBox() {
               className={cn(
                 'relative flex items-center rounded-3xl transition-all duration-500 border-2 overflow-visible group',
                 showSuggestions
-                  ? 'bg-white border-brand-500 shadow-2xl shadow-brand-500/25 ring-4 ring-brand-500/20'
-                  : 'bg-white/80 backdrop-blur-md border-white/30 shadow-xl hover:shadow-2xl hover:border-brand-300/50'
+                  ? 'bg-white border-brand-500 shadow-sm shadow-brand-500/25 ring-4 ring-brand-500/20'
+                  : 'bg-white/80 backdrop-blur-md border-white/30 shadow-xl hover:shadow-xl hover:border-brand-300/50'
               )}
             >
               <motion.div
@@ -368,7 +368,7 @@ export function SearchBox() {
                 />
 
                 <motion.div
-                  className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500 shadow-lg shadow-brand-500/50"
+                  className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500 shadow-sm shadow-brand-500/50"
                   initial={{ width: 0, opacity: 0 }}
                   animate={{
                     width: input ? '100%' : 0,
@@ -458,7 +458,7 @@ export function SearchBox() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute left-0 right-0 top-full mt-3 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden z-[9999]"
+                    className="absolute left-0 right-0 top-full mt-3 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-white/30 overflow-hidden z-[9999]"
                   >
                     <div className="max-h-[400px] overflow-y-auto">
                       {isLoadingSuggestions ? (

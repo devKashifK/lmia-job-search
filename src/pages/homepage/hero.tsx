@@ -48,7 +48,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden"
+          className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
         >
           <div className="flex flex-col md:flex-row items-center justify-between p-10 md:p-20 gap-10">
             {/* Text Content */}
@@ -79,10 +79,12 @@ export default function Hero() {
               <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight bg-gradient-to-r from-gray-900 via-brand-700 to-gray-900 bg-clip-text text-transparent">
                 Empowering Your Search Experience
               </h1>
-              
+
               <p className="text-xl md:text-2xl mb-10 text-gray-700">
                 Advanced search, dynamic insights, and seamless monetization—
-                <span className="font-semibold text-brand-600">all in one platform.</span>
+                <span className="font-semibold text-brand-600">
+                  all in one platform.
+                </span>
               </p>
 
               {/* Features List */}
@@ -129,7 +131,7 @@ export default function Hero() {
                     </span>
                   </motion.button>
                 </CustomLink>
-                
+
                 <motion.button
                   className="px-8 py-4 rounded-2xl font-bold text-brand-700 border-2 border-brand-300 bg-brand-50 hover:bg-brand-100 transition-all duration-300"
                   whileHover={{ scale: 1.05 }}
@@ -234,9 +236,24 @@ export default function Hero() {
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"
         >
           {[
-            { icon: Search, value: '1M+', label: 'Searches Performed', color: 'from-brand-100 to-brand-200' },
-            { icon: Zap, value: '99%', label: 'Success Rate', color: 'from-brand-200 to-brand-300' },
-            { icon: CheckCircle2, value: '24/7', label: 'Support Available', color: 'from-brand-100 to-brand-200' },
+            {
+              icon: Search,
+              value: '1M+',
+              label: 'Searches Performed',
+              color: 'from-brand-100 to-brand-200',
+            },
+            {
+              icon: Zap,
+              value: '99%',
+              label: 'Success Rate',
+              color: 'from-brand-200 to-brand-300',
+            },
+            {
+              icon: CheckCircle2,
+              value: '24/7',
+              label: 'Support Available',
+              color: 'from-brand-100 to-brand-200',
+            },
           ].map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -246,7 +263,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
                 whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-brand-100 hover:shadow-2xl transition-all duration-300"
+                className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-sm border border-brand-100 hover:shadow-2xl transition-all duration-300"
               >
                 <div className="flex items-center gap-4">
                   <motion.div
@@ -256,7 +273,9 @@ export default function Hero() {
                     <Icon className="w-6 h-6 text-brand-600" />
                   </motion.div>
                   <div>
-                    <h3 className="text-3xl font-bold text-brand-700">{stat.value}</h3>
+                    <h3 className="text-3xl font-bold text-brand-700">
+                      {stat.value}
+                    </h3>
                     <p className="text-gray-600 font-medium">{stat.label}</p>
                   </div>
                 </div>
