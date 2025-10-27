@@ -182,10 +182,28 @@ export function NocJobDescription({
     if (job?.employer) {
       if (searchType === 'hot_leads') {
         router.push(
-          `/analysis/${encodeURIComponent(job.employer)}?t=trending_job`
+          `/analysis/${encodeURIComponent(
+            job.employer
+          )}?t=trending_job&jobTitle=${encodeURIComponent(
+            job.job_title
+          )}&location=${encodeURIComponent(
+            job.state
+          )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
+            job.noc_code
+          )}`
         );
       } else {
-        router.push(`/analysis/${encodeURIComponent(job.employer)}?t=lmia`);
+        router.push(
+          `/analysis/${encodeURIComponent(
+            job.employer
+          )}?t=lmia&jobTitle=${encodeURIComponent(
+            job.job_title
+          )}&location=${encodeURIComponent(
+            job.state
+          )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
+            job.noc_code
+          )}`
+        );
       }
     }
   };

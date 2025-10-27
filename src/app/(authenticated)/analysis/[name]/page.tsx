@@ -23,6 +23,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
   ArrowLeft,
   Briefcase,
   Calendar,
@@ -33,8 +46,11 @@ import {
   Filter,
   X,
   Home,
+  Check,
+  ChevronsUpDown,
 } from 'lucide-react';
 import { Building2, TrendingUp, MapPin, Users, Hash } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
@@ -91,6 +107,7 @@ const FilterSidebar = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const jobTitleFromUrl = searchParams?.get('jobTitle') || undefined;
 
   const updateFilters = (
     updates: Record<string, string | string[] | undefined>
@@ -128,6 +145,91 @@ const FilterSidebar = ({
     ...(currentFilters.city || []),
     ...(currentFilters.nocCode || []),
   ].filter(Boolean).length;
+
+  // Fetch companies with matching job title
+  const { data: companiesData, isLoading: companiesLoading } = useQuery({
+    queryKey: [
+      'analysis-companies',
+      tableName,
+      jobTitleFromUrl,
+      currentFilters.searchType,
+    ],
+    queryFn: async () => {
+      const companyColumn =
+        currentFilters.searchType === 'lmia' ? 'employer' : 'employer';
+      const jobTitleColumn = 'job_title';
+
+      // Use RPC function for better performance with DISTINCT
+      const { data, error } = await db.rpc(
+        'get_distinct_companies_by_job_title',
+        {
+          p_table_name: tableName,
+          p_company_column: companyColumn,
+          p_job_title_column: jobTitleColumn,
+          p_job_title_filter: jobTitleFromUrl || null,
+        }
+      );
+
+      if (error) {
+        // Fallback to client-side distinct if RPC doesn't exist
+        console.log('RPC not available, using fallback query');
+
+        let query = db
+          .from(tableName)
+          .select(companyColumn)
+          .order(companyColumn);
+
+        // Filter by job title if provided
+        if (jobTitleFromUrl) {
+          query = query.ilike(jobTitleColumn, `%${jobTitleFromUrl}%`);
+        }
+
+        const { data: fallbackData, error: fallbackError } = await query;
+
+        if (fallbackError) throw fallbackError;
+
+        // Get unique companies using Set
+        const uniqueCompanies = Array.from(
+          new Set(
+            fallbackData
+              ?.map((row: Record<string, string>) => row[companyColumn])
+              .filter(Boolean)
+          )
+        ).sort();
+
+        return uniqueCompanies as string[];
+      }
+
+      return (data || []) as string[];
+    },
+    enabled: !!tableName,
+  });
+
+  const [companySearchOpen, setCompanySearchOpen] = useState(false);
+  const [companySearchQuery, setCompanySearchQuery] = useState('');
+
+  // Filter companies based on search query for better performance
+  const filteredCompanies = useMemo(() => {
+    if (!companiesData) return [];
+    if (!companySearchQuery) return companiesData.slice(0, 100); // Show first 100 initially
+    
+    const query = companySearchQuery.toLowerCase();
+    return companiesData
+      .filter((company) => company.toLowerCase().includes(query))
+      .slice(0, 100); // Limit to 100 results
+  }, [companiesData, companySearchQuery]);
+
+  const switchCompany = (newCompany: string) => {
+    // Navigate to the new company's analysis page with current filters
+    const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
+    setCompanySearchOpen(false);
+    setCompanySearchQuery(''); // Reset search
+    router.push(
+      `/analysis/${encodeURIComponent(
+        newCompany
+      )}?${newSearchParams.toString()}`
+    );
+  };
 
   const { data: filterOptions, isLoading: filtersLoading } = useQuery({
     queryKey: [
@@ -191,6 +293,197 @@ const FilterSidebar = ({
 
   return (
     <div className="bg-white/95 backdrop-blur-sm border-r border-brand-200/40 h-full flex flex-col shadow-lg">
+      {/* Applied Filters Display */}
+      {activeFiltersCount > 0 && (
+        <div className="border-b border-brand-200/40 bg-gradient-to-r from-emerald-50 to-white px-4 py-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Filter className="h-3.5 w-3.5 text-emerald-600" />
+              <span className="text-xs font-semibold text-gray-700">
+                Active Filters
+              </span>
+              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-2 py-0.5 text-xs">
+                {activeFiltersCount}
+              </Badge>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="h-6 px-2 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <X className="h-3 w-3 mr-1" />
+              Clear All
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {(currentFilters.dateFrom || currentFilters.dateTo) && (
+              <Badge
+                variant="outline"
+                className="flex items-center gap-1 px-2 py-0.5 bg-blue-50 border-blue-200 text-blue-700 text-xs"
+              >
+                <CalendarDays className="h-3 w-3" />
+                Date Range
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-3 w-3 p-0 hover:bg-blue-200 rounded-full ml-1"
+                  onClick={() =>
+                    updateFilters({ date_from: undefined, date_to: undefined })
+                  }
+                >
+                  <X className="h-2 w-2" />
+                </Button>
+              </Badge>
+            )}
+            {currentFilters.location?.map((loc) => (
+              <Badge
+                key={loc}
+                variant="outline"
+                className="flex items-center gap-1 px-2 py-0.5 bg-purple-50 border-purple-200 text-purple-700 text-xs"
+              >
+                <MapPin className="h-3 w-3" />
+                {loc}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-3 w-3 p-0 hover:bg-purple-200 rounded-full ml-1"
+                  onClick={() => removeFilter('location', loc)}
+                >
+                  <X className="h-2 w-2" />
+                </Button>
+              </Badge>
+            ))}
+            {currentFilters.city?.map((city) => (
+              <Badge
+                key={city}
+                variant="outline"
+                className="flex items-center gap-1 px-2 py-0.5 bg-orange-50 border-orange-200 text-orange-700 text-xs"
+              >
+                <Building2 className="h-3 w-3" />
+                {city}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-3 w-3 p-0 hover:bg-orange-200 rounded-full ml-1"
+                  onClick={() => removeFilter('city', city)}
+                >
+                  <X className="h-2 w-2" />
+                </Button>
+              </Badge>
+            ))}
+            {currentFilters.nocCode?.map((noc) => (
+              <Badge
+                key={noc}
+                variant="outline"
+                className="flex items-center gap-1 px-2 py-0.5 bg-violet-50 border-violet-200 text-violet-700 text-xs"
+              >
+                <Hash className="h-3 w-3" />
+                {noc}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-3 w-3 p-0 hover:bg-violet-200 rounded-full ml-1"
+                  onClick={() => removeFilter('noc_code', noc)}
+                >
+                  <X className="h-2 w-2" />
+                </Button>
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Company Switcher */}
+      <div className="border-b border-brand-200/40 bg-gradient-to-r from-brand-50/60 to-white px-4 py-3">
+        <div className="flex items-center justify-between mb-2">
+          <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2">
+            <Building2 className="h-3.5 w-3.5 text-brand-600" />
+            Company
+          </Label>
+          {companiesData && companiesData.length > 0 && (
+            <Badge
+              variant="outline"
+              className="text-xs px-2 py-0.5 bg-blue-50 border-blue-200 text-blue-700"
+            >
+              {companiesData.length.toLocaleString()}
+            </Badge>
+          )}
+        </div>
+        <Popover open={companySearchOpen} onOpenChange={setCompanySearchOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={companySearchOpen}
+              className="w-full h-9 justify-between bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-sm font-normal"
+            >
+              <span className="truncate">
+                {companyName || 'Select company...'}
+              </span>
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-[var(--radix-popover-trigger-width)] p-0"
+            align="start"
+          >
+            <Command shouldFilter={false}>
+              <CommandInput 
+                placeholder="Search companies..." 
+                className="h-9"
+                value={companySearchQuery}
+                onValueChange={setCompanySearchQuery}
+              />
+              <CommandList>
+                <CommandEmpty>
+                  {companiesLoading
+                    ? 'Loading companies...'
+                    : companySearchQuery
+                    ? 'No company found. Try a different search.'
+                    : 'Type to search companies...'}
+                </CommandEmpty>
+                <CommandGroup>
+                  {filteredCompanies.length > 0 ? (
+                    <>
+                      {filteredCompanies.map((company) => (
+                        <CommandItem
+                          key={company}
+                          value={company}
+                          onSelect={() => switchCompany(company)}
+                          className="text-sm"
+                        >
+                          <Check
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              companyName === company
+                                ? 'opacity-100'
+                                : 'opacity-0'
+                            )}
+                          />
+                          {company}
+                        </CommandItem>
+                      ))}
+                      {!companySearchQuery && companiesData && companiesData.length > 100 && (
+                        <div className="px-2 py-1.5 text-xs text-center text-gray-500 bg-gray-50 border-t">
+                          Showing first 100 of {companiesData.length.toLocaleString()} companies. Type to search more.
+                        </div>
+                      )}
+                    </>
+                  ) : null}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        {jobTitleFromUrl && (
+          <p className="text-xs text-gray-500 mt-1.5 flex items-center gap-1">
+            <Briefcase className="h-3 w-3" />
+            Filtered by: {jobTitleFromUrl}
+          </p>
+        )}
+      </div>
+
       {/* Horizontal Filter Bar - Top of L */}
       <div className="border-b border-brand-200/40 bg-gradient-to-r from-brand-50/60 to-white px-6 py-4">
         <div className="flex items-center justify-between gap-6 flex-col">
@@ -247,24 +540,6 @@ const FilterSidebar = ({
               />
             </div>
           </div>
-
-          {/* Active Filters Count */}
-          {activeFiltersCount > 0 && (
-            <div className="flex items-center gap-2 ml-auto">
-              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-3 py-1">
-                {activeFiltersCount} Active
-              </Badge>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearFilters}
-                className="h-9 px-3 text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                <X className="h-3.5 w-3.5 mr-1.5" />
-                Clear All
-              </Button>
-            </div>
-          )}
         </div>
       </div>
 
@@ -404,7 +679,7 @@ const FilterSidebar = ({
         </div>
 
         {/* Active Filters Tags */}
-        {activeFiltersCount > 0 && (
+        {/* {activeFiltersCount > 0 && (
           <div className="space-y-3 pt-4 border-t border-gray-100">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-gray-700">
@@ -468,7 +743,7 @@ const FilterSidebar = ({
               ))}
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
@@ -498,7 +773,10 @@ function CompanyAnalysisContent({
     const dateTo = searchParams?.get('date_to') || undefined;
     const location = searchParams?.getAll('location') || [];
     const jobTitle = searchParams?.getAll('job_title') || [];
-    const nocCode = searchParams?.getAll('noc_code') || [];
+    // Support both 'noc' and 'noc_code' parameter names
+    const nocFromUrl = searchParams?.getAll('noc') || [];
+    const nocCodeFromUrl = searchParams?.getAll('noc_code') || [];
+    const nocCode = [...nocFromUrl, ...nocCodeFromUrl].filter(Boolean);
     const category = searchParams?.getAll('category') || [];
     const program = searchParams?.getAll('program') || [];
     const city = searchParams?.getAll('city') || [];
