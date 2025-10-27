@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   Search,
   Briefcase,
-  FileText,
   TrendingUp,
   ArrowRight,
   Clock,
@@ -15,6 +14,8 @@ import {
   Utensils,
   Wheat,
   Store,
+  MapPin,
+  X,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -53,49 +54,44 @@ const categories = [
   {
     icon: <Car className="h-5 w-5" />,
     noc_priority: 'Automotive_Maintenance',
-    description: 'Jobs in vehicle maintenance and repair',
     bg: 'bg-brand-50',
   },
   {
     icon: <Building className="h-5 w-5" />,
     noc_priority: 'Construction',
-    description: 'Construction and building trades',
     bg: 'bg-brand-50',
   },
   {
     icon: <Wheat className="h-5 w-5" />,
     noc_priority: 'Farm',
-    description: 'Agricultural and farming positions',
     bg: 'bg-brand-50',
   },
   {
     icon: <Utensils className="h-5 w-5" />,
     noc_priority: 'F&B',
-    description: 'Food and beverage service jobs',
     bg: 'bg-brand-50',
   },
   {
     icon: <Utensils className="h-5 w-5" />,
     noc_priority: 'Food Processing',
-    description: 'Food manufacturing and processing',
     bg: 'bg-brand-50',
   },
   {
     icon: <Hospital className="h-5 w-5" />,
     noc_priority: 'Healthcare',
-    description: 'Medical and healthcare positions',
     bg: 'bg-brand-50',
   },
   {
     icon: <Store className="h-5 w-5" />,
     noc_priority: 'Office_Retail',
-    description: 'Office and retail positions',
     bg: 'bg-brand-50',
   },
 ];
 
 export function SearchBox() {
   const [input, setInput] = useState('');
+  const [location, setLocation] = useState(''); // NEW: location state
+  const [showLocationMenu, setShowLocationMenu] = useState(false); // NEW: popover
   const [isSearching, setIsSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -113,17 +109,23 @@ export function SearchBox() {
 
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const locationMenuRef = useRef<HTMLDivElement>(null);
   const { setDataConfig, setFilterPanelConfig } = useTableStore();
 
+  // Close menus on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const t = event.target as Node;
       if (
         suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node) &&
+        !suggestionsRef.current.contains(t) &&
         searchInputRef.current &&
-        !searchInputRef.current.contains(event.target as Node)
+        !searchInputRef.current.contains(t)
       ) {
         setShowSuggestions(false);
+      }
+      if (locationMenuRef.current && !locationMenuRef.current.contains(t)) {
+        setShowLocationMenu(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -170,11 +172,13 @@ export function SearchBox() {
   };
 
   const handleSuggestionClick = async (s: Suggestion) => {
-    // If not logged in, consume credits and navigate directly
+    // Unauthed: consume credit and go
     if (!session?.session) {
       updateCreditsAndSearch(s?.suggestion);
+      sp.set('field', s.field ?? 'all');
+      // include location if present
+      if (location.trim()) sp.set('loc', location.trim());
       if (searchType === 'hot_leads') {
-        sp.set('field', s.field ?? 'all');
         sp.set('t', 'trending_job');
         router.push(
           `/search/hot-leads/${encodeURIComponent(
@@ -182,7 +186,6 @@ export function SearchBox() {
           )}?${sp.toString()}`
         );
       } else {
-        sp.set('field', s.field ?? 'all');
         sp.set('t', 'lmia');
         router.push(
           `/search/lmia/${encodeURIComponent(s.suggestion)}?${sp.toString()}`
@@ -190,7 +193,7 @@ export function SearchBox() {
       }
       return;
     }
-    // If logged in, just fill input and let user hit search
+    // Authed: fill input only
     setInput(s.suggestion);
     setShowSuggestions(false);
   };
@@ -206,6 +209,10 @@ export function SearchBox() {
     }
     setIsSearching(true);
     try {
+      // Always pass location if provided
+      if (location.trim()) sp.set('state', location.trim());
+      else sp.delete('state');
+
       if (!session?.session) {
         updateCreditsAndSearch(input);
         if (searchType === 'hot_leads') {
@@ -221,11 +228,13 @@ export function SearchBox() {
         }
         return;
       }
-      router.push(
+
+      const base =
         searchType === 'hot_leads'
           ? `/search/hot-leads/${encodeURIComponent(input)}`
-          : `/search/lmia/${encodeURIComponent(input)}`
-      );
+          : `/search/lmia/${encodeURIComponent(input)}`;
+
+      router.push(sp.toString() ? `${base}?${sp.toString()}` : base);
     } catch (error) {
       console.error('Search error:', error);
       toast({
@@ -256,7 +265,6 @@ export function SearchBox() {
         .single();
 
       if (error) throw error;
-
       if (!credits) {
         toast({
           title: 'Error',
@@ -265,10 +273,8 @@ export function SearchBox() {
         });
         return false;
       }
-
       const remainingCredits =
         credits.total_credit - (credits.used_credit || 0);
-
       if (remainingCredits <= 0) {
         toast({
           title: 'No Credits Remaining',
@@ -276,10 +282,9 @@ export function SearchBox() {
             "You've used all your credits. Please purchase more to continue searching.",
           variant: 'destructive',
         });
-        router.push('/dashboard/credits'); // Redirect to credits page
+        router.push('/dashboard/credits');
         return false;
       }
-
       return true;
     } catch (error) {
       console.error('Error checking credits:', error);
@@ -302,15 +307,19 @@ export function SearchBox() {
       if (!hasCredits) return;
 
       await updateCreditsAndSearch(term);
+      const qs = new URLSearchParams();
+      qs.set('field', 'job_title');
       if (searchType === 'hot_leads') {
+        qs.set('t', 'trending_job');
+        if (location.trim()) qs.set('loc', location.trim());
         router.push(
-          `/search/hot-leads/${encodeURIComponent(
-            term
-          )}?field=job_title&t=trending_job`
+          `/search/hot-leads/${encodeURIComponent(term)}?${qs.toString()}`
         );
       } else if (searchType === 'lmia') {
+        qs.set('t', 'lmia');
+        if (location.trim()) qs.set('loc', location.trim());
         router.push(
-          `/search/lmia/${encodeURIComponent(term)}?&field=job_title&t=lmia`
+          `/search/lmia/${encodeURIComponent(term)}?${qs.toString()}`
         );
       }
     } finally {
@@ -320,10 +329,12 @@ export function SearchBox() {
   const handleCategoryClick = (category: { noc_priority: string }) => {
     updateCreditsAndSearch(category.noc_priority);
     if (searchType === 'hot_leads') {
+      const qs = new URLSearchParams({ field: 'category', t: 'trending_job' });
+      if (location.trim()) qs.set('loc', location.trim());
       router.push(
         `/search/hot-leads/${encodeURIComponent(
           category.noc_priority
-        )}?field=category&t=trending_job`
+        )}?${qs.toString()}`
       );
     } else {
       setDataConfig({
@@ -344,7 +355,10 @@ export function SearchBox() {
         type: 'lmia',
         method: 'query',
       });
-      router.push(`/search/lmia/${encodeURIComponent(category.noc_priority)}`);
+      const qs = new URLSearchParams();
+      if (location.trim()) qs.set('loc', location.trim());
+      const base = `/search/lmia/${encodeURIComponent(category.noc_priority)}`;
+      router.push(qs.toString() ? `${base}?${qs.toString()}` : base);
     }
   };
 
@@ -358,7 +372,7 @@ export function SearchBox() {
         transition={{ duration: 0.6 }}
         className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
       >
-        {/* Hero Section */}
+        {/* Hero */}
         <div className="bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -398,21 +412,6 @@ export function SearchBox() {
               '',
             ]}
           />
-
-          {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-center"
-          >
-            <div className="text-lg md:text-xl text-gray-600 font-medium">
-              Search With:{' '}
-              <span className="font-bold text-brand-600 bg-gradient-to-r from-brand-50 to-brand-100 px-3 py-1 rounded-lg">
-                Noc Code, Program, Employer, Address, Occupation, City, Employer
-                Name, Province Mapping
-              </span>
-            </div>
-          </motion.div> */}
         </div>
 
         {/* Search Section */}
@@ -424,16 +423,18 @@ export function SearchBox() {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <div className="relative">
+              {/* ONE big bar: query + location */}
               <div
                 className={cn(
-                  'relative flex items-center rounded-2xl transition-all duration-500 border-2 overflow-visible group',
-                  showSuggestions
+                  'relative flex items-stretch rounded-2xl transition-all duration-500 border-2 overflow-visible group',
+                  showSuggestions || showLocationMenu
                     ? 'bg-white border-brand-500 shadow-lg shadow-brand-500/20 ring-2 ring-brand-500/10'
                     : 'bg-white border-gray-200 shadow-md hover:border-brand-300 hover:shadow-lg'
                 )}
               >
+                {/* leading search icon */}
                 <motion.div
-                  className="pl-5 pr-3 py-4"
+                  className="pl-5 pr-3 py-4 flex items-center"
                   animate={{ scale: showSuggestions ? 1.1 : 1 }}
                   transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
                 >
@@ -445,30 +446,124 @@ export function SearchBox() {
                         : 'bg-brand-100 text-brand-600 group-hover:bg-brand-200'
                     )}
                   >
-                    <motion.div
-                      className="absolute inset-0 opacity-30"
-                      animate={{ opacity: [0.3, 0.5, 0.3] }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      }}
-                    />
                     <Search className="w-5 h-5 relative z-10" />
                   </div>
                 </motion.div>
 
+                {/* MAIN query input */}
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={input}
                   onChange={handleChange}
                   onFocus={() => setShowSuggestions(true)}
-                  placeholder="Search for jobs, companies, location , noc or keywords..."
+                  placeholder="Search for jobs, companies, NOC, keywords…"
                   className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-base py-4 px-2 focus:outline-none"
                   onKeyDown={(e) => e.key === 'Enter' && startSearch()}
                 />
 
+                {/* Divider to visually keep it one big bar */}
+                <div className="my-2 w-px bg-gray-200" />
+
+                {/* LOCATION segment */}
+                <div className="relative flex items-center gap-2 px-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowLocationMenu((v) => !v)}
+                    className={cn(
+                      'flex items-center gap-2 rounded-xl px-3 py-2 transition-all duration-200',
+                      showLocationMenu
+                        ? 'bg-brand-50 text-brand-700'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    )}
+                  >
+                    <MapPin className="w-4 h-4" />
+                    <span className="text-sm font-medium">
+                      {location.trim() ? location : 'Location'}
+                    </span>
+                  </button>
+
+                  {/* Clear location */}
+                  {location.trim() && (
+                    <button
+                      type="button"
+                      aria-label="Clear location"
+                      onClick={() => setLocation('')}
+                      className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {/* Location popover */}
+                  <AnimatePresence>
+                    {showLocationMenu && (
+                      <motion.div
+                        ref={locationMenuRef}
+                        initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-[calc(100%+10px)] z-[10000] w-80 rounded-2xl border border-gray-200 bg-white shadow-xl"
+                      >
+                        <div className="p-3 border-b border-gray-100">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLocation('Canada');
+                              setShowLocationMenu(false);
+                            }}
+                            className="w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 hover:bg-brand-50 transition"
+                          >
+                            <span className="flex items-center gap-2 text-gray-800">
+                              <MapPin className="w-4 h-4 text-brand-600" />
+                              All of Canada
+                            </span>
+                            <span className="text-xs font-semibold text-brand-700 bg-brand-100 px-2 py-0.5 rounded">
+                              Quick set
+                            </span>
+                          </button>
+                        </div>
+                        <div className="p-3">
+                          <label className="block text-xs font-semibold text-gray-500 mb-2">
+                            Or type a location (city / province)
+                          </label>
+                          <input
+                            type="text"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            placeholder="e.g., Toronto, ON or British Columbia"
+                            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') setShowLocationMenu(false);
+                            }}
+                          />
+                          <div className="mt-3 flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLocation('');
+                                setShowLocationMenu(false);
+                              }}
+                              className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+                            >
+                              Clear
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setShowLocationMenu(false)}
+                              className="text-sm px-3 py-1.5 rounded-lg bg-brand-600 text-white hover:brightness-110"
+                            >
+                              Done
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* trailing controls */}
                 <div className="flex items-center gap-3 pr-4">
                   <AnimatePresence>
                     {input && (
@@ -551,17 +646,6 @@ export function SearchBox() {
                   </motion.button>
                 </div>
               </div>
-
-              {/* Animated underline */}
-              {/* <motion.div
-                className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500"
-                initial={{ width: 0, opacity: 0 }}
-                animate={{
-                  width: showSuggestions ? '100%' : 0,
-                  opacity: showSuggestions ? 1 : 0,
-                }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
-              /> */}
             </div>
 
             {/* Suggestions Dropdown */}
@@ -711,20 +795,18 @@ export function SearchBox() {
           </motion.div>
         </div>
 
-        {/* Search Type Checkboxes */}
+        {/* Search Type */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className=" px-10"
+          className="px-10"
         >
           <div className="flex items-center gap-6">
             <span className="text-sm font-semibold text-gray-700">
               Search Type:
             </span>
-
             <div className="flex items-center gap-4">
-              {/* LMIA Checkbox (acts as radio) */}
               <motion.label
                 className="flex items-center gap-2 cursor-pointer group"
                 whileHover={{ scale: 1.05 }}
@@ -768,7 +850,6 @@ export function SearchBox() {
                 </span>
               </motion.label>
 
-              {/* Trending Jobs Checkbox (acts as radio) */}
               <motion.label
                 className="flex items-center gap-2 cursor-pointer group"
                 whileHover={{ scale: 1.05 }}
@@ -815,7 +896,7 @@ export function SearchBox() {
           </div>
         </motion.div>
 
-        {/* Trending Searches */}
+        {/* Trending */}
         <div className="px-10 pb-10 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent">
           <motion.div
             className="mt-8"
@@ -857,7 +938,6 @@ export function SearchBox() {
                   whileHover={{ y: -2, scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  {/* Note: Tailwind doesn't have `opacity-15` by default; using a subtle overlay via opacity utility is optional */}
                   <div className="relative flex items-center gap-2">
                     <motion.div
                       animate={{ scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] }}
@@ -886,7 +966,7 @@ export function SearchBox() {
           </motion.div>
         </div>
 
-        {/* Categories Section */}
+        {/* Categories */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -917,7 +997,9 @@ export function SearchBox() {
                   backgroundColor: 'rgb(249 250 251)',
                 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => handleCategoryClick(category)}
+                onClick={() =>
+                  handleCategoryClick({ noc_priority: category.noc_priority })
+                }
                 className="flex flex-col items-center gap-3 p-4 rounded-xl border border-gray-200 bg-white hover:border-brand-300 transition-all duration-200 text-left"
               >
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-brand-100 text-brand-600">
