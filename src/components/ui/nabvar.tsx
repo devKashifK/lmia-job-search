@@ -21,7 +21,7 @@ export default function Navbar({ className }: { className?: string }) {
         className
       )}
     >
-      <div className="max-w-full mx-auto px-12 sm:px-6 lg:px-10 lg:pr-16">
+      <div className="max-w-full mx-auto px-12 sm:px-6 lg:px-[6.5rem] lg:pr-28">
         <div className="flex items-center justify-between w-full pt-6 gap-4">
           {/* Logo on the left */}
           <CustomLink href="/" className="flex items-center min-w-[120px]">

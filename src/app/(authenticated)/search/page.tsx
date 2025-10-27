@@ -23,7 +23,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Category from '@/components/ui/category';
-import { useTableStore } from '@/context/store';
 import {
   applyDataConfig,
   applyFilterPanelConfig,

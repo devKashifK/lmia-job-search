@@ -571,6 +571,8 @@ export function NewDataPanel({
   );
   const navigate = useRouter();
 
+  console.log('Data:', query, field, data);
+
   // Set first job as selected by default when data loads
   React.useEffect(() => {
     if (data?.rows && data.rows.length > 0 && !selectedJob) {

@@ -402,12 +402,12 @@ export function NocJobDescription({
                               </Tooltip>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1">
+                          {/* <div className="flex items-center gap-1">
                             <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
                             <span className="text-white/90 text-xs font-medium">
                               Active Posting
                             </span>
-                          </div>
+                          </div> */}
                         </div>
 
                         {/* Job Title */}
