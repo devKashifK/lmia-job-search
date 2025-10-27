@@ -15,11 +15,12 @@ export default async function Engine({ params, searchParams }: PageProps) {
 
   return (
     <>
-      <Navbar className="border-b border-brand-200 pb-4" />
-      <div className="mt-14">
+      <Navbar className="" />
+      <div className="pt-24">
         <DynamicDataView
           title={decodeURIComponent(searchKey)}
           field={decodeURIComponent(field as string)}
+          searchType="hot_leads"
         />
       </div>
       <Footer />

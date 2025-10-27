@@ -1,33 +1,33 @@
-"use client";
+'use client';
 
-import { Lightbulb, MousePointerClick, Sparkles, Share2 } from "lucide-react";
-import { motion } from "framer-motion";
-import SectionTitle from "@/components/ui/section-title";
+import { Lightbulb, MousePointerClick, Sparkles, Share2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import SectionTitle from '@/components/ui/section-title';
 
 const steps = [
   {
     icon: Lightbulb,
-    title: "Start by entering your query",
+    title: 'Start by entering your query',
     description:
       "Type in what you're looking for—NOC code, employer, city, or more.",
   },
   {
     icon: MousePointerClick,
-    title: "Click to generate results",
+    title: 'Click to generate results',
     description:
-      "Our engine instantly fetches and visualizes the most relevant data.",
+      'Our engine instantly fetches and visualizes the most relevant data.',
   },
   {
     icon: Sparkles,
-    title: "Polish it up, make it yours",
+    title: 'Polish it up, make it yours',
     description:
-      "Use filters and charts to refine your results and gain insights.",
+      'Use filters and charts to refine your results and gain insights.',
   },
   {
     icon: Share2,
-    title: "Take it anywhere",
+    title: 'Take it anywhere',
     description:
-      "Export your findings or share them with your team in one click.",
+      'Export your findings or share them with your team in one click.',
   },
 ];
 
@@ -73,7 +73,7 @@ export default function HowItWorks() {
             >
               <div
                 className={`flex flex-col md:flex-row items-center gap-8 ${
-                  i % 2 === 0 ? "md:flex-row-reverse" : ""
+                  i % 2 === 0 ? 'md:flex-row-reverse' : ''
                 }`}
               >
                 {/* Icon container */}
@@ -98,7 +98,7 @@ export default function HowItWorks() {
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   className={`flex-1 relative group ${
-                    i % 2 === 0 ? "md:text-right" : ""
+                    i % 2 === 0 ? 'md:text-right' : ''
                   }`}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-brand-600/5 rounded-2xl transform -rotate-1 transition-transform duration-300 group-hover:rotate-0" />

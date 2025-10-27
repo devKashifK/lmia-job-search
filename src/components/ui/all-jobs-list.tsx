@@ -79,20 +79,23 @@ export function AllJobsList({
       if (sessionLoading) {
         return;
       }
-      
+
       if (!session?.user?.id || !jobs.length) {
         setDbSavedJobs(new Set());
         return;
       }
-      
+
       setIsLoadingSavedJobs(true);
       try {
         const recordIds = jobs
-          .map(job => getJobRecordId(job))
+          .map((job) => getJobRecordId(job))
           .filter(Boolean) as string[];
-        
+
         if (recordIds.length > 0 && !isCancelled) {
-          const savedRecordIds = await checkMultipleSavedJobs(recordIds, session);
+          const savedRecordIds = await checkMultipleSavedJobs(
+            recordIds,
+            session
+          );
           if (!isCancelled) {
             setDbSavedJobs(savedRecordIds);
           }
@@ -132,18 +135,18 @@ export function AllJobsList({
     <TooltipProvider>
       <div className={`bg-white overflow-y-auto ${className}`}>
         {/* Enhanced Compact Header */}
-        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3 shadow-sm">
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-3 py-2 shadow-sm">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-                  <Briefcase className="w-4 h-4 text-white" />
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <div className="w-6 h-6 bg-brand-500 rounded-lg flex items-center justify-center">
+                  <Briefcase className="w-3.5 h-3.5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-sm font-semibold text-gray-900">
                     Job Listings
                   </h3>
-                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                  <div className="flex items-center gap-2 text-xs text-gray-500">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="cursor-help">
@@ -183,8 +186,8 @@ export function AllJobsList({
                     {savedCount > 0 && (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <span className="flex items-center gap-1 text-yellow-600">
-                            <Star className="w-3 h-3 fill-current" />
+                          <span className="flex items-center gap-0.5 text-yellow-600 text-xs">
+                            <Star className="w-2.5 h-2.5 fill-current" />
                             {savedCount} saved
                           </span>
                         </TooltipTrigger>
@@ -200,10 +203,10 @@ export function AllJobsList({
                 </div>
               </div>
             </div>
-            
+
             {/* Sort Button */}
             <div className="flex items-center gap-2">
-              <JobSortPopover 
+              <JobSortPopover
                 currentSort={sortConfig}
                 onSortChange={setSortConfig}
               />
@@ -217,7 +220,9 @@ export function AllJobsList({
             const isSelected = selectedJobId === (job.id || index);
             const recordId = getJobRecordId(job);
             // Prioritize database state over local state for saved status
-            const isSaved = recordId ? dbSavedJobs.has(recordId) : savedJobs.has(index);
+            const isSaved = recordId
+              ? dbSavedJobs.has(recordId)
+              : savedJobs.has(index);
             const jobTitle = job.job_title || job.occupation_title || 'N/A';
             const nocCode = job.noc_code || job['2021_noc'] || 'N/A';
             const isRecent =
@@ -229,28 +234,28 @@ export function AllJobsList({
             return (
               <div
                 key={job.id || index}
-                className={`group cursor-pointer transition-all duration-150 hover:bg-gray-50 hover:shadow-sm ${
+                className={`group cursor-pointer transition-all duration-200 hover:bg-gradient-to-r hover:from-gray-50 hover:to-white border-b border-gray-100 ${
                   isSelected
-                    ? 'bg-brand-50 border-l-4 border-l-brand-500 shadow-sm'
-                    : ''
+                    ? 'bg-gradient-to-r from-brand-50 to-white border-l-4 border-l-brand-500 shadow-md'
+                    : 'hover:border-l-2 hover:border-l-brand-300'
                 }`}
                 onClick={() => onJobSelect(job)}
               >
-                <div className="px-4 py-3">
+                <div className="px-3 py-2.5">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       {/* Job Title and Company */}
-                      <div className="flex items-start gap-3 mb-2">
+                      <div className="flex items-start gap-2 mb-1.5">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div
-                              className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-150 ${
+                              className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
                                 isSelected
-                                  ? 'bg-brand-500 text-white shadow-md'
-                                  : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'
+                                  ? 'bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-lg shadow-brand-500/30'
+                                  : 'bg-gradient-to-br from-gray-100 to-gray-200 text-gray-600 group-hover:from-brand-100 group-hover:to-brand-200 group-hover:text-brand-600'
                               }`}
                             >
-                              <Building2 className="w-5 h-5" />
+                              <Building2 className="w-4 h-4" />
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -265,7 +270,7 @@ export function AllJobsList({
                           <div className="flex items-center gap-2 mb-1">
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <h4 className="font-medium text-gray-900 truncate cursor-help">
+                                <h4 className="font-semibold text-gray-900 truncate cursor-help text-sm group-hover:text-brand-700 transition-colors">
                                   {jobTitle}
                                 </h4>
                               </TooltipTrigger>
@@ -278,7 +283,7 @@ export function AllJobsList({
                                 <TooltipTrigger asChild>
                                   <Badge
                                     variant="secondary"
-                                    className="text-xs px-1.5 py-0.5 bg-green-100 text-green-700 border-green-200"
+                                    className="text-xs px-2 py-0.5 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 border-green-300 font-semibold shadow-sm"
                                   >
                                     New
                                   </Badge>
@@ -294,7 +299,7 @@ export function AllJobsList({
                             href={`/company/${encodeURIComponent(
                               job.employer
                             )}?field=employer&t=trending_job`}
-                            className="text-sm text-gray-600 truncate hover:underline"
+                            className="text-xs text-gray-600 truncate hover:text-brand-600 hover:underline transition-colors font-medium"
                           >
                             {job.employer}
                           </Link>
@@ -302,12 +307,12 @@ export function AllJobsList({
                       </div>
 
                       {/* Enhanced Job Details */}
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="flex items-center gap-1 cursor-help">
                               <MapPin className="w-3 h-3" />
-                              <span>
+                              <span className="text-xs">
                                 {job.city}, {job.state}
                               </span>
                             </div>
@@ -326,7 +331,7 @@ export function AllJobsList({
                           <TooltipTrigger asChild>
                             <div className="flex items-center gap-1 cursor-help">
                               <Briefcase className="w-3 h-3" />
-                              <span>NOC: {nocCode}</span>
+                              <span className="text-xs">NOC: {nocCode}</span>
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -342,7 +347,7 @@ export function AllJobsList({
                             <TooltipTrigger asChild>
                               <div className="flex items-center gap-1 cursor-help">
                                 <Calendar className="w-3 h-3" />
-                                <span>
+                                <span className="text-xs">
                                   {new Date(
                                     job.date_of_job_posting
                                   ).toLocaleDateString()}
@@ -368,7 +373,7 @@ export function AllJobsList({
                         {job.approved_positions && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <span className="cursor-help">
+                              <span className="cursor-help text-xs">
                                 {job.approved_positions} positions
                               </span>
                             </TooltipTrigger>
@@ -383,7 +388,9 @@ export function AllJobsList({
                             <TooltipTrigger asChild>
                               <div className="flex items-center gap-1 cursor-help">
                                 <Clock className="w-3 h-3" />
-                                <span>LMIA {job.lmia_year}</span>
+                                <span className="text-xs">
+                                  LMIA {job.lmia_year}
+                                </span>
                               </div>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -394,13 +401,13 @@ export function AllJobsList({
                       </div>
 
                       {/* Enhanced Tags */}
-                      <div className="flex flex-wrap gap-1 mt-2">
+                      <div className="flex flex-wrap gap-1.5 mt-2">
                         {job.category && (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Badge
                                 variant="secondary"
-                                className="text-xs px-2 py-0.5 cursor-help"
+                                className="text-xs px-2 py-0.5 cursor-help bg-brand-50 text-brand-700 border-brand-200 hover:bg-brand-100 transition-colors"
                               >
                                 {job.category}
                               </Badge>
@@ -415,7 +422,7 @@ export function AllJobsList({
                             <TooltipTrigger asChild>
                               <Badge
                                 variant="outline"
-                                className="text-xs px-2 py-0.5 cursor-help"
+                                className="text-xs px-2 py-0.5 cursor-help bg-brand-50 text-brand-700 border-brand-200 hover:bg-brand-100 transition-colors"
                               >
                                 {job.program}
                               </Badge>
@@ -433,7 +440,7 @@ export function AllJobsList({
                             <TooltipTrigger asChild>
                               <Badge
                                 variant="outline"
-                                className="text-xs px-2 py-0.5 border-green-200 text-green-700 bg-green-50 cursor-help"
+                                className="text-xs px-2 py-0.5 border-green-300 text-green-700 bg-gradient-to-r from-green-50 to-emerald-50 cursor-help hover:from-green-100 hover:to-emerald-100 transition-all font-semibold shadow-sm"
                               >
                                 Priority
                               </Badge>
@@ -502,17 +509,17 @@ export function AllJobsList({
                               onToggleSaved(index);
                             }
                           }}
-                          className={`flex-shrink-0 p-1 h-8 w-8 transition-all duration-150 ${
+                          className={`flex-shrink-0 p-1.5 h-7 w-7 rounded-lg transition-all duration-200 ${
                             isLoadingSavedJobs
                               ? 'opacity-50 cursor-not-allowed'
                               : isSaved
-                              ? 'text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50'
-                              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                              ? 'text-yellow-500 hover:text-yellow-600 bg-yellow-50 hover:bg-yellow-100 shadow-sm'
+                              : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-50'
                           }`}
                         >
                           <Star
-                            className={`w-4 h-4 transition-all duration-150 ${
-                              isSaved ? 'fill-current' : ''
+                            className={`w-3.5 h-3.5 transition-all duration-200 ${
+                              isSaved ? 'fill-current scale-110' : ''
                             }`}
                           />
                         </Button>

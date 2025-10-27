@@ -15,13 +15,14 @@ export function NewDataPanelSkeleton({
     <div className={`flex flex-col w-full  h-[1200px] ${className}`}>
       <div className="flex flex-1 min-h-0">
         {/* Middle Section - NOC Job Description - Fixed width */}
-        <div className="flex-1 min-w-0 max-w-4xl">
-          <NocJobDescriptionSkeleton className="h-full" />
-        </div>
 
         {/* Right Sidebar - All Jobs - Fixed width */}
-        <div className="w-96 flex-shrink-0 border-l ml-4 border-gray-200">
+        <div className="w-[550px] flex-shrink-0 border-l ml-4 border-gray-200">
           <AllJobsListSkeleton className="h-full" itemCount={5} />
+        </div>
+
+        <div className="flex-1 min-w-0 max-w-4xl">
+          <NocJobDescriptionSkeleton className="h-full" />
         </div>
       </div>
 

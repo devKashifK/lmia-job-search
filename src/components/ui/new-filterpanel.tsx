@@ -88,7 +88,10 @@ function getFilterIcon(column: string) {
 }
 
 /** Distinct values for a facet column (lightweight; deduped client-side). */
-export function useFilterColumnAttributes(column: string) {
+export function useFilterColumnAttributes(
+  column: string,
+  stateFilter?: string
+) {
   const sp = useSearchParams();
   const params = useParams<{ search?: string }>();
   const table = (sp?.get('t') ?? 'trending_job').trim();
@@ -97,11 +100,15 @@ export function useFilterColumnAttributes(column: string) {
     typeof params?.search === 'string' ? decodeURIComponent(params.search) : '';
 
   return useQuery({
-    queryKey: ['facet-values', table, column, field, searchTerm],
+    queryKey: ['facet-values', table, column, field, searchTerm, stateFilter],
     queryFn: async () => {
       let q = db.from(table).select(column);
       if (searchTerm && field && field !== 'all') {
         q = q.ilike(field as any, `%${searchTerm}%`);
+      }
+      // If column is city and stateFilter is provided, filter by that state
+      if (column === 'city' && stateFilter) {
+        q = q.eq('state', stateFilter);
       }
       const { data, error } = await q.limit(10000);
       if (error) throw new Error(error.message);
@@ -133,10 +140,6 @@ export default function NewFilterPanel() {
   const columns = useFilterPanelColumns();
   const tableName = (sp?.get('t') ?? 'trending_job').trim(); // 👈 know which table
 
-  const [selectedFilters, setSelectedFilters] = React.useState<
-    SelectedFilter[]
-  >([]);
-
   // ✅ derive keys from columns so LMIA works too
   const urlFilterKeys = React.useMemo(() => {
     if (!columns) return [];
@@ -150,38 +153,6 @@ export default function NewFilterPanel() {
       .map((c) => c.accessorKey)
       .filter((k) => !!k && !EXCLUDE.has(k));
   }, [columns]);
-
-  React.useEffect(() => {
-    if (!urlFilterKeys.length || !sp) return;
-    const next: SelectedFilter[] = [];
-    for (const k of urlFilterKeys) {
-      const vals = sp.getAll(k);
-      for (const v of vals) next.push({ column: k, value: v });
-    }
-    
-    // Only update if the filters actually changed
-    setSelectedFilters(prev => {
-      if (prev.length !== next.length) return next;
-      
-      const prevString = prev.map(f => `${f.column}:${f.value}`).sort().join('|');
-      const nextString = next.map(f => `${f.column}:${f.value}`).sort().join('|');
-      
-      return prevString === nextString ? prev : next;
-    });
-  }, [sp, urlFilterKeys]);
-
-  // read date range chips from URL (works for both tables)
-  const dateFrom = sp?.get('date_from');
-  const dateTo = sp?.get('date_to');
-
-  const clearDateRange = () => {
-    if (!sp) return;
-    const nextSp = new URLSearchParams(sp.toString());
-    nextSp.delete('date_from');
-    nextSp.delete('date_to');
-    nextSp.set('page', '1');
-    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
-  };
 
   // collapsed sections (open primary facets)
   const [collapsedSections, setCollapsedSections] = React.useState<
@@ -203,109 +174,17 @@ export default function NewFilterPanel() {
   const toggleSection = (column: string) =>
     setCollapsedSections((prev) => ({ ...prev, [column]: !prev[column] }));
 
-  const handleSelectedFilters = (column: string, value: string) => {
-    setSelectedFilters((prev) => {
-      const exists = prev.some((f) => f.column === column && f.value === value);
-      return exists
-        ? prev.filter((f) => !(f.column === column && f.value === value))
-        : [...prev, { column, value }];
-    });
-  };
-
-  const handleRemoveFilter = (column: string, value: string) => {
-    if (!sp) return;
-    const nextSp = new URLSearchParams(sp.toString());
-    const current = new Set(nextSp.getAll(column));
-    current.delete(value);
-    nextSp.delete(column);
-    for (const v of current) nextSp.append(column, v);
-    nextSp.set('page', '1');
-    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
-
-    setSelectedFilters((prev) =>
-      prev.filter((f) => !(f.column === column && f.value === value))
-    );
-  };
-
   return (
-    <div className="w-64 pr-4 border-r border-gray-200 h-full flex flex-col">
+    <div className="w-56 bg-white border-r border-gray-200 h-full flex flex-col">
       {/* Header */}
-      <div className="px-1 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-brand-500 rounded-md">
-              <Filter className="w-3.5 h-3.5 text-white" />
-            </div>
-            <h2 className="text-sm font-semibold text-gray-900">Filters</h2>
+      <div className="px-0 py-3 border-b border-gray-100">
+        <div className="flex items-center gap-2">
+          <div className="p-1 bg-brand-500 rounded">
+            <Filter className="w-3.5 h-3.5 text-white" />
           </div>
-          {(selectedFilters.length > 0 || dateFrom || dateTo) && (
-            <button
-              onClick={() => {
-                if (!sp) return;
-                const nextSp = new URLSearchParams();
-                for (const key of ['t', 'field', 'page', 'pageSize']) {
-                  const v = sp.get(key);
-                  if (v) nextSp.set(key, v);
-                }
-                nextSp.set('page', '1');
-                router.push(`${pathname}?${nextSp.toString()}`, {
-                  scroll: false,
-                });
-              }}
-              className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              Clear all
-            </button>
-          )}
+          <h2 className="text-sm font-semibold text-gray-900">Filters</h2>
         </div>
       </div>
-
-      {/* Active filters */}
-      {(selectedFilters.length > 0 || dateFrom || dateTo) && (
-        <div className="px-1 py-3 border-b border-gray-200">
-          <div className="space-y-1.5">
-            {selectedFilters.map((filter) => (
-              <div
-                key={`${filter.column}-${filter.value}`}
-                className="group flex items-center justify-between py-1.5 px-2.5 bg-white rounded-md border border-gray-200 hover:border-brand-300 transition-colors"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="w-1.5 h-1.5 bg-brand-500 rounded-full flex-shrink-0" />
-                  <span className="text-xs text-gray-700 truncate">
-                    {filter.value}
-                  </span>
-                </div>
-                <button
-                  onClick={() =>
-                    handleRemoveFilter(filter.column, filter.value)
-                  }
-                  className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-gray-100 rounded transition-all"
-                >
-                  <X className="w-3 h-3 text-gray-400" />
-                </button>
-              </div>
-            ))}
-            {(dateFrom || dateTo) && (
-              <div className="group flex items-center justify-between py-1.5 px-2.5 bg-white rounded-md border border-gray-200 hover:border-gray-300 transition-colors">
-                <div className="flex items-center gap-2 min-w-0">
-                  <CalendarIcon className="w-3 h-3 text-gray-500 flex-shrink-0" />
-                  <span className="text-xs text-gray-700 truncate">
-                    {/* 👇 label per table */}
-                    {tableName === 'lmia' ? 'LMIA Year' : 'Date Posted'}:{' '}
-                    {fmtDate(dateFrom)} - {fmtDate(dateTo)}
-                  </span>
-                </div>
-                <button
-                  onClick={clearDateRange}
-                  className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-gray-100 rounded transition-all"
-                >
-                  <X className="w-3 h-3 text-gray-400" />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Sections */}
       <div className="flex-1 overflow-y-auto px-0">
@@ -319,38 +198,31 @@ export default function NewFilterPanel() {
                 (tableName === 'lmia' && column.accessorKey === 'lmia_year');
 
               const isCollapsed = !!collapsedSections[column.accessorKey];
-              const activeFilters = selectedFilters.filter(
-                (f) => f.column === column.accessorKey
-              ).length;
+              const activeFilters = sp?.getAll(column.accessorKey)?.length || 0;
               const FilterIcon = getFilterIcon(column.accessorKey);
 
               return (
                 <div key={column.accessorKey}>
                   <button
-                    className="w-full flex items-center justify-between py-2 group"
+                    className="w-full flex items-center justify-between py-2 px-3 hover:bg-gray-50 transition-colors"
                     onClick={() => toggleSection(column.accessorKey)}
                   >
                     <div className="flex items-center gap-2">
                       <div
-                        className={`p-1.5 rounded-md transition-colors ${
+                        className={`p-1 rounded transition-colors ${
                           activeFilters > 0
-                            ? 'bg-brand-100 text-brand-600'
+                            ? 'bg-brand-50 border border-brand-200 text-brand-600'
                             : 'bg-gray-100 text-gray-500'
                         }`}
                       >
-                        <FilterIcon className="w-3.5 h-3.5" />
+                        <FilterIcon className="w-3 h-3" />
                       </div>
                       <span className="text-sm font-medium text-gray-900">
                         <AttributeName name={column.accessorKey} />
                       </span>
-                      {activeFilters > 0 && (
-                        <span className="bg-brand-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                          {activeFilters}
-                        </span>
-                      )}
                     </div>
                     <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                      className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${
                         isCollapsed ? 'rotate-0' : 'rotate-180'
                       }`}
                     />
@@ -362,11 +234,7 @@ export default function NewFilterPanel() {
                         // ✅ same component; your hook already translates dates → lmia_year range
                         <DateRangeFilter />
                       ) : (
-                        <FilterAttributes
-                          column={column.accessorKey}
-                          selectedFilters={selectedFilters}
-                          handleSelectedFilters={handleSelectedFilters}
-                        />
+                        <FilterAttributes column={column.accessorKey} />
                       )}
                     </div>
                   )}
@@ -445,21 +313,21 @@ function DateRangeChip({
 // Child: one facet (non-date)
 // ---------------------------
 
-function FilterAttributes({
-  column,
-  selectedFilters,
-  handleSelectedFilters,
-}: {
-  column: string;
-  selectedFilters: SelectedFilter[];
-  handleSelectedFilters: (column: string, value: string) => void;
-}) {
+function FilterAttributes({ column }: { column: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
 
+  // Get state filter if column is city
+  const stateFilter = column === 'city' ? sp?.getAll('state') : undefined;
+  const stateFilterValue =
+    stateFilter && stateFilter.length > 0 ? stateFilter[0] : undefined;
+
   // facet options
-  const { data, isLoading, error } = useFilterColumnAttributes(column);
+  const { data, isLoading, error } = useFilterColumnAttributes(
+    column,
+    stateFilterValue
+  );
 
   // initialize selected values from URL (?column=A&column=B)
   const [localFilters, setLocalFilters] = React.useState(new Set<string>());
@@ -509,9 +377,8 @@ function FilterAttributes({
     nextSp.set('page', '1');
     router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
 
-    // local + chips
+    // local
     setLocalFilters(new Set(current));
-    handleSelectedFilters(accessorKey, value);
   };
 
   if (isLoading) {
@@ -530,25 +397,25 @@ function FilterAttributes({
   if (!data) return null;
 
   return (
-    <div className="space-y-3">
-      {/* Compact Search */}
+    <div className="space-y-2 px-1">
+      {/* Search */}
       <div className="relative">
         <input
           type="text"
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-3 py-1 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-400 focus:border-brand-400 transition-colors"
+          className="w-full px-2.5 py-1.5 text-sm bg-gray-50 border border-gray-200 rounded focus:outline-none focus:border-brand-500 focus:bg-white transition-colors"
         />
-        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute right-2.5 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
       </div>
 
-      {/* Compact Options List */}
-      <div className="max-h-48 overflow-y-auto">
-        <div className="space-y-1">
+      {/* Options */}
+      <div className="max-h-40 overflow-y-auto">
+        <div className="space-y-0.5">
           {sortedData.length === 0 ? (
-            <div className="text-sm text-gray-500 text-center py-6">
-              {searchQuery ? 'No results found' : 'No options'}
+            <div className="text-sm text-gray-500 text-center py-4">
+              {searchQuery ? 'No results' : 'No options'}
             </div>
           ) : (
             sortedData.map((value) => {
@@ -558,15 +425,15 @@ function FilterAttributes({
                   key={value}
                   onClick={() => handleFilterUpdate(column, value)}
                   className={cn(
-                    'w-full flex items-center justify-between px-3 py-1 text-sm rounded-md text-left transition-colors',
+                    'w-full flex items-center justify-between px-2.5 py-1.5 text-sm rounded text-left transition-colors',
                     isSelected
-                      ? 'bg-brand-50 text-brand-900 border border-brand-200'
-                      : 'text-gray-700 hover:bg-gray-50 border border-transparent hover:border-gray-200'
+                      ? 'bg-brand-50 border border-brand-200 text-brand-900'
+                      : 'text-gray-700 hover:bg-gray-50'
                   )}
                 >
-                  <span className="truncate">{value}</span>
+                  <span className="truncate text-xs">{value}</span>
                   {isSelected && (
-                    <div className="w-1.5 h-1.5 bg-brand-500 rounded-full flex-shrink-0 ml-2" />
+                    <div className="w-1.5 h-1.5 bg-brand-500 rounded-full"></div>
                   )}
                 </button>
               );
@@ -631,48 +498,52 @@ function DateRangeFilter() {
       : 'Pick a date range';
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button className="w-full flex items-center justify-between px-3 py-2 text-sm bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors text-left">
-          <span className="text-gray-700 truncate">{label}</span>
-          <CalendarIcon className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start" side="right">
-        <div className="p-4">
-          <Calendar
-            mode="range"
-            selected={range}
-            onSelect={(r) => setRange(r || { from: undefined, to: undefined })}
-            numberOfMonths={1}
-          />
-        </div>
-        <div className="flex gap-2 p-4 border-t border-gray-100">
-          <Button
-            size="sm"
-            onClick={() => {
-              applyRange(range);
-              setOpen(false);
-            }}
-            disabled={!range.from && !range.to}
-            className="flex-1"
-          >
-            Apply
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              clear();
-              setOpen(false);
-            }}
-            className="flex-1"
-          >
-            Clear
-          </Button>
-        </div>
-      </PopoverContent>
-    </Popover>
+    <div className="px-3">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button className="w-full flex items-center justify-between px-2.5 py-1.5 text-sm bg-gray-50 border border-gray-200 rounded hover:bg-white hover:border-brand-500 transition-colors text-left">
+            <span className="text-gray-700 truncate text-xs">{label}</span>
+            <CalendarIcon className="w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-2" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start" side="right">
+          <div className="p-3">
+            <Calendar
+              mode="range"
+              selected={range}
+              onSelect={(r) =>
+                setRange(r || { from: undefined, to: undefined })
+              }
+              numberOfMonths={1}
+            />
+          </div>
+          <div className="flex gap-2 p-3 border-t border-gray-100">
+            <Button
+              size="sm"
+              onClick={() => {
+                applyRange(range);
+                setOpen(false);
+              }}
+              disabled={!range.from && !range.to}
+              className="flex-1 bg-brand-500 hover:bg-brand-600 text-white text-xs"
+            >
+              Apply
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                clear();
+                setOpen(false);
+              }}
+              className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 text-xs"
+            >
+              Clear
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
 

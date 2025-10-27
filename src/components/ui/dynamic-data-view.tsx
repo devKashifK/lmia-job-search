@@ -29,6 +29,7 @@ import { AllJobsList } from './all-jobs-list';
 import { NewDataPanelSkeleton } from './skeletons';
 import { useMinimumLoading } from '@/hooks/use-minimum-loading';
 import NewFilterPanel from '@/components/ui/new-filterpanel';
+import AppliedFilters from '@/components/ui/applied-filters';
 import { useTableStore } from '@/context/store';
 import db from '@/db';
 import { useQuery } from '@tanstack/react-query';
@@ -332,8 +333,8 @@ export default function DynamicDataView({
 
   return (
     <div className=" mx-auto px-16 py-8">
-      <div className="py-4">
-        <div className="flex justify-between items-center mb-2">
+      <div className="py-0">
+        <div className="flex justify-between items-center mb-0">
           <PageTitle
             title={title}
             showSearch={true}
@@ -359,7 +360,11 @@ export default function DynamicDataView({
           {/* </div> */}
         </div>
       </div>
-      <div className="relative flex gap-4">
+
+      {/* Applied Filters */}
+      <AppliedFilters />
+
+      <div className="relative flex gap-1">
         <div className="w-1/5">
           <NewFilterPanel />
         </div>
@@ -573,14 +578,15 @@ export function NewDataPanel({
 
   console.log('Data:', query, field, data);
 
-  // Set first job as selected by default when data loads
+  // Set first job as selected by default when data loads or changes
   React.useEffect(() => {
-    if (data?.rows && data.rows.length > 0 && !selectedJob) {
+    if (data?.rows && data.rows.length > 0) {
       const firstJob = data.rows[0];
+      // Always update to first job when data changes (filters, pagination, etc.)
       setSelectedJob(firstJob);
       setSelectedJobId(firstJob.id || 0);
     }
-  }, [data?.rows, selectedJob]);
+  }, [data?.rows]);
 
   const handleJobSelect = (job: any) => {
     setSelectedJob(job);
@@ -704,19 +710,9 @@ export function NewDataPanel({
     <div className="flex flex-col  h-[1200px]">
       <div className="flex flex-1 min-h-0">
         {/* Middle Section - NOC Job Description - Fixed width */}
-        <div className="flex-1 min-w-0 max-w-4xl">
-          <NocJobDescription
-            job={selectedJob}
-            onSaveJob={handleSaveJob}
-            onViewNOC={handleViewNOC}
-            isSaved={isJobSaved}
-            className="h-full"
-            searchType={searchType}
-          />
-        </div>
 
         {/* Right Sidebar - All Jobs - Fixed width */}
-        <div className="w-96 flex-shrink-0 border-l ml-4 border-gray-200">
+        <div className="w-[550px] flex-shrink-0 border-r border-gray-200">
           <AllJobsList
             jobs={data?.rows || []}
             selectedJobId={selectedJobId}
@@ -733,6 +729,16 @@ export function NewDataPanel({
             }}
             totalCount={data?.count}
             className="h-full"
+          />
+        </div>
+        <div className="flex-1 min-w-0 max-w-4xl">
+          <NocJobDescription
+            job={selectedJob}
+            onSaveJob={handleSaveJob}
+            onViewNOC={handleViewNOC}
+            isSaved={isJobSaved}
+            className="h-full"
+            searchType={searchType}
           />
         </div>
       </div>

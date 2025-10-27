@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Search,
@@ -7,54 +7,54 @@ import {
   Lock,
   Wand2,
   Filter,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import SectionTitle from "@/components/ui/section-title";
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+import SectionTitle from '@/components/ui/section-title';
 
 const features = [
   {
-    title: "Advance Search",
+    title: 'Advance Search',
     description: `Instantly find jobs by title, company, NOC code, or city. Use advanced filters to narrow results and discover the most relevant opportunities for your career goals. Easily combine multiple criteria, such as job type, location, and employer, to pinpoint exactly what you're looking for. Our search engine is optimized for speed and accuracy, ensuring you never miss a match.`,
     icon: Search,
-    span: "col-span-2 row-span-1",
+    span: 'col-span-2 row-span-1',
     content: null,
   },
   {
-    title: "Dynamic Charts",
+    title: 'Dynamic Charts',
     description:
-      "Explore trends, compare salaries, and analyze hiring patterns with beautiful, easy-to-understand charts that update as you search.",
+      'Explore trends, compare salaries, and analyze hiring patterns with beautiful, easy-to-understand charts that update as you search.',
     icon: BarChart2,
-    span: "col-span-1 row-span-1",
+    span: 'col-span-1 row-span-1',
     content: null,
   },
   {
-    title: "Latest Job Details",
+    title: 'Latest Job Details',
     description:
-      "Access up-to-date listings, employer profiles, and job requirements. Never miss a new opportunity with real-time updates and detailed job insights.",
+      'Access up-to-date listings, employer profiles, and job requirements. Never miss a new opportunity with real-time updates and detailed job insights.',
     icon: Newspaper,
-    span: "col-span-1 row-span-1",
+    span: 'col-span-1 row-span-1',
     content: null,
   },
   {
-    title: "Premium Information",
+    title: 'Premium Information',
     description: `View hidden contact details, company analytics, and insider information available only to premium users, giving you a competitive edge in your job search. Unlock access to recruiter emails, phone numbers, and in-depth company data. Premium members also receive exclusive insights, such as salary benchmarks and hiring trends, to help you make informed decisions.`,
     icon: Lock,
-    span: "col-span-2 row-span-1",
+    span: 'col-span-2 row-span-1',
     content: null,
   },
   {
-    title: "Smart Search",
+    title: 'Smart Search',
     description: `Get intelligent recommendations as you type, with personalized job matches and employer suggestions based on your profile and preferences. Our AI-powered engine learns from your activity and preferences, offering smarter suggestions and highlighting jobs you're most likely to be interested in. Save time and discover hidden opportunities tailored just for you.`,
     icon: Wand2,
-    span: "col-span-2 row-span-1",
+    span: 'col-span-2 row-span-1',
     content: null,
   },
   {
-    title: "Real-Time Filtering",
+    title: 'Real-Time Filtering',
     description:
-      "Refine your search on the fly—adjust filters for salary, location, job type, and more, and see results update instantly for a seamless experience.",
+      'Refine your search on the fly—adjust filters for salary, location, job type, and more, and see results update instantly for a seamless experience.',
     icon: Filter,
-    span: "col-span-1 row-span-1",
+    span: 'col-span-1 row-span-1',
     content: null,
   },
 ];
@@ -77,7 +77,7 @@ const item = {
 export default function Features() {
   return (
     <section className="py-20 relative bg-gradient-to-b from-white to-gray-50/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-16">
         <SectionTitle
           title="Powerful Features for Enhanced Job Search"
           subtitle="Everything you need to streamline your job search experience"
