@@ -238,9 +238,83 @@ export function SearchBox() {
     }
   };
 
-  const handleTrendingClick = (term: string) => {
+  const checkCredits = async () => {
+    if (!session?.user?.id) {
+      toast({
+        title: 'Error',
+        description: 'You must be logged in to perform this action',
+        variant: 'destructive',
+      });
+      return false;
+    }
+
+    try {
+      const { data: credits, error } = await db
+        .from('credits')
+        .select('total_credit, used_credit')
+        .eq('id', session.user.id)
+        .single();
+
+      if (error) throw error;
+
+      if (!credits) {
+        toast({
+          title: 'Error',
+          description: 'Unable to fetch credits information',
+          variant: 'destructive',
+        });
+        return false;
+      }
+
+      const remainingCredits =
+        credits.total_credit - (credits.used_credit || 0);
+
+      if (remainingCredits <= 0) {
+        toast({
+          title: 'No Credits Remaining',
+          description:
+            "You've used all your credits. Please purchase more to continue searching.",
+          variant: 'destructive',
+        });
+        router.push('/dashboard/credits'); // Redirect to credits page
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error checking credits:', error);
+      toast({
+        title: 'Error',
+        description: 'Unable to verify credits. Please try again.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
+  const handleTrendingClick = async (term: string) => {
     setInput(term);
-    void startSearch();
+    setShowSuggestions(true);
+    fetchSuggestions(term);
+
+    try {
+      const hasCredits = await checkCredits();
+      if (!hasCredits) return;
+
+      await updateCreditsAndSearch(term);
+      if (searchType === 'hot_leads') {
+        router.push(
+          `/search/hot-leads/${encodeURIComponent(
+            term
+          )}?field=job_title&t=trending_job`
+        );
+      } else if (searchType === 'lmia') {
+        router.push(
+          `/search/lmia/${encodeURIComponent(term)}?&field=job_title&t=lmia`
+        );
+      }
+    } finally {
+    }
   };
 
   const handleCategoryClick = (category: { noc_priority: string }) => {
@@ -390,7 +464,7 @@ export function SearchBox() {
                   value={input}
                   onChange={handleChange}
                   onFocus={() => setShowSuggestions(true)}
-                  placeholder="Search for jobs, companies, or keywords..."
+                  placeholder="Search for jobs, companies, location , noc or keywords..."
                   className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-base py-4 px-2 focus:outline-none"
                   onKeyDown={(e) => e.key === 'Enter' && startSearch()}
                 />

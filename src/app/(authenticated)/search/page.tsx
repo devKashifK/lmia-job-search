@@ -244,7 +244,9 @@ export default function Page() {
           )}?field=job_title&t=trending_job`
         );
       } else if (searchType === 'lmia') {
-        navigate.push(`/search/lmia/${encodeURIComponent(term)}?&t=lmia`);
+        navigate.push(
+          `/search/lmia/${encodeURIComponent(term)}?&field=job_title&t=lmia`
+        );
       }
     } finally {
       setIsChecking(false);
