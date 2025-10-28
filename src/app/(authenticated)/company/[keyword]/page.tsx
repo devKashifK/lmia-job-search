@@ -10,8 +10,6 @@ export default function CompanyPage({ params, searchParams }: PageProps) {
   // ?field=job_title  (normalize to a single string)
   const field = searchParams.field;
 
-  console.log('Search Key:', searchKey, field);
-
   return (
     <DynamicDataView
       title={decodeURIComponent(searchKey)}

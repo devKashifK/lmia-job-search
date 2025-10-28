@@ -2,13 +2,7 @@
 
 import React, { Suspense, useMemo, use } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ModernChartWrapper } from '@/components/charts/modern-chart-wrapper';
-import {
-  ModernBarChart,
-  ModernPieChart,
-  ModernLineChart,
-} from '@/components/charts/modern-charts';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import db from '@/db';
 import { Button } from '@/components/ui/button';
@@ -172,7 +166,6 @@ const FilterSidebar = ({
 
       if (error) {
         // Fallback to client-side distinct if RPC doesn't exist
-        console.log('RPC not available, using fallback query');
 
         let query = db
           .from(tableName)
@@ -212,7 +205,7 @@ const FilterSidebar = ({
   const filteredCompanies = useMemo(() => {
     if (!companiesData) return [];
     if (!companySearchQuery) return companiesData.slice(0, 100); // Show first 100 initially
-    
+
     const query = companySearchQuery.toLowerCase();
     return companiesData
       .filter((company) => company.toLowerCase().includes(query))
@@ -429,8 +422,8 @@ const FilterSidebar = ({
             align="start"
           >
             <Command shouldFilter={false}>
-              <CommandInput 
-                placeholder="Search companies..." 
+              <CommandInput
+                placeholder="Search companies..."
                 className="h-9"
                 value={companySearchQuery}
                 onValueChange={setCompanySearchQuery}
@@ -464,11 +457,15 @@ const FilterSidebar = ({
                           {company}
                         </CommandItem>
                       ))}
-                      {!companySearchQuery && companiesData && companiesData.length > 100 && (
-                        <div className="px-2 py-1.5 text-xs text-center text-gray-500 bg-gray-50 border-t">
-                          Showing first 100 of {companiesData.length.toLocaleString()} companies. Type to search more.
-                        </div>
-                      )}
+                      {!companySearchQuery &&
+                        companiesData &&
+                        companiesData.length > 100 && (
+                          <div className="px-2 py-1.5 text-xs text-center text-gray-500 bg-gray-50 border-t">
+                            Showing first 100 of{' '}
+                            {companiesData.length.toLocaleString()} companies.
+                            Type to search more.
+                          </div>
+                        )}
                     </>
                   ) : null}
                 </CommandGroup>
@@ -877,8 +874,6 @@ function CompanyAnalysisContent({
 
       // Debug information for trending jobs
       if (filters.searchType === 'hot_leads' && jobs && jobs.length > 0) {
-        console.log('Sample trending job data:', jobs[0]);
-        console.log('Available columns:', Object.keys(jobs[0]));
       }
 
       const totalJobs = jobs?.length || 0;
@@ -1104,8 +1099,6 @@ function CompanyAnalysisContent({
     );
   }
 
-  console.log(analysisData, 'checkAnalysisData');
-
   const handleExportReport = async () => {
     setIsExporting(true);
     try {
@@ -1232,8 +1225,6 @@ function CompanyAnalysisContent({
       setIsExporting(false);
     }
   };
-
-  console.log(analysisData, 'ChecknalysisData');
 
   return (
     <div className="flex h-screen flex-col bg-gradient-to-br from-brand-50/40 via-white to-brand-50/20">
@@ -1731,7 +1722,6 @@ const COLOR_PALETTE = [
   '#10b981',
 ];
 const DonutChart = ({ data, centerValue, centerLabel }) => {
-  console.log(data, 'donutChartData');
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const total = (data && data.reduce((sum, item) => sum + item.value, 0)) || 0;
   let currentAngle = -90;
@@ -1828,39 +1818,33 @@ const DonutChart = ({ data, centerValue, centerLabel }) => {
       </div>
       <div className="mt-4 flex flex-wrap gap-3 justify-center">
         {/* Update legend to use assigned colors */}
-        {paths.map(
-          (pathInfo, index) => (
-            console.log(pathInfo, 'pathInfo'),
-            (
-              <div
-                key={index}
-                className="flex items-center gap-2 cursor-pointer transition-opacity"
-                style={{
-                  opacity:
-                    hoveredIndex === null || hoveredIndex === index ? 1 : 0.4,
-                }}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: pathInfo.color }} // Use assigned color
-                />
-                {/* Use pathInfo.label which corresponds to item.label */}
-                <span className="text-xs text-gray-600 font-medium">
-                  {pathInfo.name}
-                </span>
-              </div>
-            )
-          )
-        )}
+        {paths.map((pathInfo, index) => (
+          <div
+            key={index}
+            className="flex items-center gap-2 cursor-pointer transition-opacity"
+            style={{
+              opacity:
+                hoveredIndex === null || hoveredIndex === index ? 1 : 0.4,
+            }}
+            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: pathInfo.color }} // Use assigned color
+            />
+            {/* Use pathInfo.label which corresponds to item.label */}
+            <span className="text-xs text-gray-600 font-medium">
+              {pathInfo.name}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
 const BarChart = ({ data, maxValue }) => {
-  console.log(data, 'barChartData');
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const max =
     maxValue || (data.length > 0 ? Math.max(...data.map((d) => d.value)) : 1);

@@ -236,7 +236,6 @@ function PlanCard({ plan, currency }: { plan: Plan; currency: Currency }) {
               onClick={() => {
                 // Wire to your routes/checkout as needed:
                 // e.g., router.push(plan.href ?? '/checkout?plan=' + encodeURIComponent(plan.name))
-                console.log('Select plan:', plan.name);
               }}
             >
               {plan.cta ?? 'Get Started'}

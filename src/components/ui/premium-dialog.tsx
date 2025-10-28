@@ -214,7 +214,6 @@ type MonthlyJobTrendsChartProps = {
 };
 
 function MonthlyJobTrendsChart({ data }: MonthlyJobTrendsChartProps) {
-  console.log(data, 'checkData');
   // Aggregate by month (YYYY-MM)
   const monthlyMap = new Map<string, { cnt: number }>();
   data.forEach((item) => {

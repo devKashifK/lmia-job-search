@@ -22,13 +22,13 @@ import {
 interface CompactSearchProps {
   className?: string;
   placeholder?: string;
-  defaultSearchType?: 'hot_leads' | 'lmia';
+  defaultSearchType?: 'Trending Jobs' | 'lmia';
 }
 
 export default function CompactSearch({
   className = '',
   placeholder = 'Quick search...',
-  defaultSearchType = 'hot_leads',
+  defaultSearchType = 'Trending Jobs',
 }: CompactSearchProps) {
   const [input, setInput] = useState('');
   const [isChecking, setIsChecking] = useState(false);
@@ -37,7 +37,7 @@ export default function CompactSearch({
   >([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>(
+  const [searchType, setSearchType] = useState<'Trending Jobs' | 'lmia'>(
     defaultSearchType
   );
   const [isExpanded, setIsExpanded] = useState(false);
@@ -113,7 +113,6 @@ export default function CompactSearch({
     suggestion: string;
     field?: string;
   }) => {
-    console.log('Suggestion clicked:', suggestion);
     if (!session?.session) {
       updateCreditsAndSearch(suggestion.suggestion);
       if (searchType === 'hot_leads') {
@@ -289,7 +288,7 @@ export default function CompactSearch({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="hot_leads">Hot</SelectItem>
+                  <SelectItem value="hot_leads">Trending Jobs</SelectItem>
                   <SelectItem value="lmia">LMIA</SelectItem>
                 </SelectContent>
               </Select>

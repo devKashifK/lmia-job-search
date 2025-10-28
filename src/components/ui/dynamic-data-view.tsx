@@ -4,22 +4,13 @@ import {
   Building2,
   Briefcase,
   Utensils,
-  LayoutGrid,
-  Table2,
   SearchX,
   Filter,
   RefreshCw,
   TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
-import { VisibilityState, OnChangeFn } from '@tanstack/react-table';
-
-import {
-  LMIA,
-  hotLeadsColumns,
-  lmiaColumns,
-} from '@/components/filters/column-def';
+import { LMIA } from '@/components/filters/column-def';
 import Loader from '@/components/ui/loader';
 import PageTitle from '@/components/ui/page-title';
 import Pagination from '@/components/ui/pagination';
@@ -345,23 +336,9 @@ export default function DynamicDataView({
             }
             defaultSearchType={searchType}
           />
-          {/* <div className="flex items-center space-x-3"> */}
-          {/* <DataPanelViewMode /> */}
-
-          {/* <DataPanelColumns /> */}
-
-          {/* <div className="flex-shrink-0">
-              <SortButton
-                options={sortOptions}
-                currentSort={sortBy}
-                onSortChange={setSortBy}
-              />
-            </div> */}
-          {/* </div> */}
         </div>
       </div>
 
-      {/* Applied Filters */}
       <AppliedFilters />
 
       <div className="relative flex gap-1">
@@ -440,30 +417,8 @@ export function DataPanel({
   setSavedSet: (set: Set<number>) => void;
 }) {
   const { data, error, isLoading } = useData(query, field);
-  console.log('Data:', data);
   const { dataConfig } = useTableStore();
-  const { viewMode } = useTableStore();
-
   const navigate = useRouter();
-
-  const columns = dataConfig.type === 'lmia' ? lmiaColumns : hotLeadsColumns;
-
-  const initialColumnVisibility = columns.reduce((acc, column) => {
-    if (typeof column.accessorKey === 'string') {
-      acc[column.accessorKey] = true;
-    }
-    return acc;
-  }, {} as VisibilityState);
-
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    initialColumnVisibility
-  );
-
-  const handleColumnVisibilityChange: OnChangeFn<VisibilityState> = (
-    updater
-  ) => {
-    setColumnVisibility(updater);
-  };
 
   const type: DataType = isValidType(dataConfig?.type)
     ? dataConfig.type
@@ -491,57 +446,48 @@ export function DataPanel({
         ) : (
           <div>
             {data?.rows && data.rows.length > 0 ? (
-              viewMode === 'grid' ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {data.rows.map((item: LMIA, idx: number) => {
-                    const logoIcons = [Building2, Briefcase, Utensils];
-                    const LogoIcon = logoIcons[idx % logoIcons.length];
-                    const saved = savedSet.has(idx);
-                    return (
-                      <JobCard
-                        key={item.id || idx}
-                        logoIcon={LogoIcon}
-                        saved={saved}
-                        onToggleSaved={() => {
-                          const next = new Set(savedSet);
-                          if (next.has(idx)) next.delete(idx);
-                          else next.add(idx);
-                          setSavedSet(next);
-                        }}
-                        employerName={item.employer}
-                        jobTitle={item.job_title || item.occupation_title}
-                        city={item.city}
-                        state={item.state}
-                        noc={item.noc_code || item['2021_noc']}
-                        category={item.category}
-                        employerType={item.employer_type}
-                        datePosted={item.date_of_job_posting}
-                        recordID={item.RecordID}
-                        onKnowMore={() => {
-                          navigate.push(`/search/noc-profile/${item.noc_code}`);
-                        }}
-                        type={type}
-                        program={type === 'lmia' ? item.program : undefined}
-                        lmiaYear={type === 'lmia' ? item.lmia_year : undefined}
-                        priorityOccupation={
-                          type === 'lmia' ? item.priority_occupation : undefined
-                        }
-                        approvedPositions={
-                          type === 'lmia' ? item.approved_positions : undefined
-                        }
-                        territory={type === 'lmia' ? item.territory : undefined}
-                      />
-                    );
-                  })}
-                </div>
-              ) : (
-                <DataTable
-                  columns={columns}
-                  data={data.data}
-                  columnVisibility={columnVisibility}
-                  onColumnVisibilityChange={handleColumnVisibilityChange}
-                />
-              )
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {data.rows.map((item: LMIA, idx: number) => {
+                  const logoIcons = [Building2, Briefcase, Utensils];
+                  const LogoIcon = logoIcons[idx % logoIcons.length];
+                  const saved = savedSet.has(idx);
+                  return (
+                    <JobCard
+                      key={item.id || idx}
+                      logoIcon={LogoIcon}
+                      saved={saved}
+                      onToggleSaved={() => {
+                        const next = new Set(savedSet);
+                        if (next.has(idx)) next.delete(idx);
+                        else next.add(idx);
+                        setSavedSet(next);
+                      }}
+                      employerName={item.employer}
+                      jobTitle={item.job_title || item.occupation_title}
+                      city={item.city}
+                      state={item.state}
+                      noc={item.noc_code || item['2021_noc']}
+                      category={item.category}
+                      employerType={item.employer_type}
+                      datePosted={item.date_of_job_posting}
+                      recordID={item.RecordID}
+                      onKnowMore={() => {
+                        navigate.push(`/search/noc-profile/${item.noc_code}`);
+                      }}
+                      type={type}
+                      program={type === 'lmia' ? item.program : undefined}
+                      lmiaYear={type === 'lmia' ? item.lmia_year : undefined}
+                      priorityOccupation={
+                        type === 'lmia' ? item.priority_occupation : undefined
+                      }
+                      approvedPositions={
+                        type === 'lmia' ? item.approved_positions : undefined
+                      }
+                      territory={type === 'lmia' ? item.territory : undefined}
+                    />
+                  );
+                })}
+              </div>
             ) : (
               <div className="text-center py-8">No results found</div>
             )}
@@ -575,8 +521,6 @@ export function NewDataPanel({
     undefined
   );
   const navigate = useRouter();
-
-  console.log('Data:', query, field, data);
 
   // Set first job as selected by default when data loads or changes
   React.useEffect(() => {
@@ -757,73 +701,8 @@ export function NewDataPanel({
   );
 }
 
-const DataPanelViewMode = () => {
-  const { viewMode, setViewMode } = useTableStore();
-  return (
-    <div className="flex items-center border rounded-md bg-background">
-      <Button
-        variant={viewMode === 'grid' ? 'default' : 'ghost'}
-        size="sm"
-        onClick={() => setViewMode('grid')}
-        className="h-9 px-3 rounded-r-none"
-      >
-        <LayoutGrid className="h-4 w-4 mr-2" />
-        Grid
-      </Button>
-      <div className="h-9 border-l" />
-      <Button
-        variant={viewMode === 'table' ? 'default' : 'ghost'}
-        size="sm"
-        onClick={() => setViewMode('table')}
-        className="h-9 px-3 rounded-l-none"
-      >
-        <Table2 className="h-4 w-4 mr-2" />
-        Table
-      </Button>
-    </div>
-  );
-};
-
-// const DataPanelColumns = () => {
-//   return (
-//     viewMode === "table" && (
-//       <DropdownMenu>
-//         <DropdownMenuTrigger asChild>
-//           <Button variant="outline" size="sm" className="h-9">
-//             <Settings2 className="h-4 w-4 mr-2" />
-//             Columns
-//           </Button>
-//         </DropdownMenuTrigger>
-//         <DropdownMenuContent align="end" className="w-[200px]">
-//           {columns.map((column) => {
-//             const key = column.accessorKey as keyof LMIA;
-//             const headerContent =
-//               typeof column.header === "string" ? column.header : key;
-//             return key ? (
-//               <DropdownMenuCheckboxItem
-//                 key={key}
-//                 className="capitalize"
-//                 checked={columnVisibility[key] ?? true}
-//                 onCheckedChange={(value) =>
-//                   handleColumnVisibilityChange((prev) => ({
-//                     ...prev,
-//                     [key]: value,
-//                   }))
-//                 }
-//               >
-//                 {headerContent}
-//               </DropdownMenuCheckboxItem>
-//             ) : null;
-//           })}
-//         </DropdownMenuContent>
-//       </DropdownMenu>
-//     )
-//   );
-// };
-
 export const useSelectedColumnRecord = () => {
   const { selectedRecordID, dataConfig } = useTableStore.getState();
-  console.log(selectedRecordID, 'check');
 
   const selectProjection =
     dataConfig.type === 'lmia'

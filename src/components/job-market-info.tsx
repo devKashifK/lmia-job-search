@@ -17,7 +17,6 @@ function isJobRecord(
 
 export default function JobMarketInfo({ id }: JobMarketInfoProps) {
   const { data: jd } = useSelectedColumnRecord();
-  console.log(jd);
   const navigate = useRouter();
 
   const handleClick = () => {

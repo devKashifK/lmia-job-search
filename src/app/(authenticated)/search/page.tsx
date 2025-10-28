@@ -103,7 +103,6 @@ export default function Page() {
   };
 
   const handleSuggestionClick = async (suggestion: object) => {
-    console.log('Suggestion clicked:', suggestion);
     if (!session?.session) {
       updateCreditsAndSearch(suggestion?.suggestion);
       if (searchType === 'hot_leads') {
