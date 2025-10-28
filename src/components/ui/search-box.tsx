@@ -91,6 +91,7 @@ const categories = [
 export function SearchBox() {
   const [input, setInput] = useState('');
   const [location, setLocation] = useState(''); // NEW: location state
+  const [city, setCity] = useState(''); // NEW: city state
   const [showLocationMenu, setShowLocationMenu] = useState(false); // NEW: popover
   const [isSearching, setIsSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -183,14 +184,12 @@ export function SearchBox() {
         router.push(
           `/search/hot-leads/${encodeURIComponent(
             s.suggestion
-          )}?${sp.toString()}field=job_title`
+          )}?${sp.toString()}`
         );
       } else {
         sp.set('t', 'lmia');
         router.push(
-          `/search/lmia/${encodeURIComponent(
-            s.suggestion
-          )}?${sp.toString()}field=job_title`
+          `/search/lmia/${encodeURIComponent(s.suggestion)}?${sp.toString()}`
         );
       }
       return;
@@ -209,15 +208,32 @@ export function SearchBox() {
       });
       return;
     }
+
     setIsSearching(true);
     try {
-      // Always pass location if provided
-      if (location.trim()) sp.set('state', location.trim());
-      if (!sp.get('field')) sp.set('field', 'job_title');
-      else sp.delete('state');
+      // --- Normalize inputs
+      const loc = (location || '').trim();
+      const cty = (city || '').trim();
+      const isCanada = loc.toLowerCase() === 'canada';
+
+      // --- Location params
+      if (isCanada) {
+        sp.delete('state');
+        sp.delete('city');
+      } else {
+        if (loc) sp.set('state', loc);
+        else sp.delete('state');
+
+        if (cty) sp.set('city', cty);
+        else sp.delete('city');
+      }
+
+      // --- Always set field
+      sp.set('field', 'job_title');
 
       if (!session?.session) {
         updateCreditsAndSearch(input);
+
         if (searchType === 'hot_leads') {
           sp.set('t', 'trending_job');
           router.push(
@@ -529,13 +545,26 @@ export function SearchBox() {
                         </div>
                         <div className="p-3">
                           <label className="block text-xs font-semibold text-gray-500 mb-2">
-                            Or type a location (city / province)
+                            type a state / province
                           </label>
                           <input
                             type="text"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                             placeholder="e.g., Toronto, ON or British Columbia"
+                            className="w-full mb-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') setShowLocationMenu(false);
+                            }}
+                          />
+                          <label className="block text-xs font-semibold text-gray-500 mb-2">
+                            Or type a city
+                          </label>
+                          <input
+                            type="text"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            placeholder="e.g., Edmonton, Abbortsford, Calgary"
                             className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') setShowLocationMenu(false);
