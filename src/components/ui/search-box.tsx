@@ -29,28 +29,16 @@ import db from '@/db';
 import { useTableStore } from '@/context/store';
 import { Badge } from '@/components/ui/badge';
 import { TypewriterEffect } from './type-writter';
+import { Input } from './input';
+import { Label } from './label';
+import { Button } from './button';
+import CategoryBox from './category-box';
+import TrendingSearchBox from './trending-search-box';
 
 interface Suggestion {
   suggestion: string;
   field?: string;
 }
-
-const trendingByType = {
-  hot_leads: [
-    'Bookkeeper',
-    'Cook',
-    'Kitchen Helper',
-    'Truck Driver',
-    'Carpenter',
-    'Baker',
-  ],
-  lmia: [
-    'Food Service Supervisors',
-    'Cooks',
-    'Retail Sales Supervisors',
-    'Transport Truck Drivers',
-  ],
-} as const;
 
 const categories = [
   {
@@ -119,7 +107,6 @@ export function SearchBox() {
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const locationMenuRef = useRef<HTMLDivElement>(null);
-  const { setDataConfig, setFilterPanelConfig } = useTableStore();
 
   // helpers for dates
   const toYMD = (d: Date) => {
@@ -245,7 +232,7 @@ export function SearchBox() {
     if (!session?.session) {
       updateCreditsAndSearch(s?.suggestion);
       sp.set('field', s.field ?? 'all');
-      if (location.trim()) sp.set('loc', location.trim());
+      if (location.trim()) sp.set('state', location.trim());
       attachRangeParams(sp);
 
       if (searchType === 'hot_leads') {
@@ -377,80 +364,6 @@ export function SearchBox() {
     }
   };
 
-  const handleTrendingClick = async (term: string) => {
-    setInput(term);
-    setShowSuggestions(true);
-    fetchSuggestions(term);
-
-    try {
-      const hasCredits = await checkCredits();
-      if (!hasCredits) return;
-
-      await updateCreditsAndSearch(term);
-      const qs = new URLSearchParams();
-      qs.set('field', 'job_title');
-      if (location.trim()) qs.set('loc', location.trim());
-      if (dateFrom && dateTo) {
-        qs.set('date_from', dateFrom);
-        qs.set('date_to', dateTo);
-      }
-      if (searchType === 'hot_leads') {
-        qs.set('t', 'trending_job');
-        router.push(
-          `/search/hot-leads/${encodeURIComponent(term)}?${qs.toString()}`
-        );
-      } else if (searchType === 'lmia') {
-        qs.set('t', 'lmia');
-        router.push(
-          `/search/lmia/${encodeURIComponent(term)}?${qs.toString()}`
-        );
-      }
-    } finally {
-    }
-  };
-
-  const handleCategoryClick = (category: { noc_priority: string }) => {
-    updateCreditsAndSearch(category.noc_priority);
-    if (searchType === 'hot_leads') {
-      const qs = new URLSearchParams({ field: 'category', t: 'trending_job' });
-      if (location.trim()) qs.set('loc', location.trim());
-      if (dateFrom && dateTo) {
-        qs.set('date_from', dateFrom);
-        qs.set('date_to', dateTo);
-      }
-      router.push(
-        `/search/hot-leads/${encodeURIComponent(
-          category.noc_priority
-        )}?${qs.toString()}`
-      );
-    } else {
-      setDataConfig({
-        type: 'lmia',
-        table: 'lmia',
-        columns: JSON.stringify([
-          { priority_occupation: category.noc_priority },
-        ]),
-        keyword: category.noc_priority,
-        method: 'query',
-        page: 1,
-        pageSize: 100,
-      });
-      setFilterPanelConfig({
-        column: 'priority_occupation',
-        table: 'lmia',
-        keyword: category.noc_priority,
-        type: 'lmia',
-        method: 'query',
-      });
-      const qs = new URLSearchParams();
-      if (location.trim()) qs.set('loc', location.trim());
-      const base = `/search/lmia/${encodeURIComponent(category.noc_priority)}`;
-      router.push(qs.toString() ? `${base}?${qs.toString()}` : base);
-    }
-  };
-
-  const trendingSearches = trendingByType[searchType];
-
   return (
     <div className="w-full max-w-full mx-auto px-16 pt-28">
       <motion.div
@@ -554,11 +467,11 @@ export function SearchBox() {
 
                 {/* location block */}
                 <div className="relative flex items-center gap-2 px-4">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setShowLocationMenu((v) => !v)}
                     className={cn(
-                      'flex items-center gap-2 rounded-xl px-3 py-2 transition-all duration-200',
+                      'flex items-center gap-2 rounded-xl shadow-none px-3 py-2 transition-all duration-200',
                       showLocationMenu
                         ? 'bg-brand-50 text-brand-700'
                         : 'hover:bg-gray-100 text-gray-700'
@@ -568,17 +481,17 @@ export function SearchBox() {
                     <span className="text-sm font-medium">
                       {location.trim() ? location : 'Location'}
                     </span>
-                  </button>
+                  </Button>
 
                   {location.trim() && (
-                    <button
+                    <Button
                       type="button"
                       aria-label="Clear location"
                       onClick={() => setLocation('')}
                       className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
                     >
                       <X className="w-4 h-4" />
-                    </button>
+                    </Button>
                   )}
 
                   <AnimatePresence>
@@ -592,7 +505,7 @@ export function SearchBox() {
                         className="absolute right-0 top-[calc(100%+10px)] z-[10000] w-80 rounded-2xl border border-gray-200 bg-white shadow-xl"
                       >
                         <div className="p-3 border-b border-gray-100">
-                          <button
+                          <Button
                             type="button"
                             onClick={() => {
                               setLocation('Canada');
@@ -607,13 +520,13 @@ export function SearchBox() {
                             <span className="text-xs font-semibold text-brand-700 bg-brand-100 px-2 py-0.5 rounded">
                               Quick set
                             </span>
-                          </button>
+                          </Button>
                         </div>
                         <div className="p-3">
-                          <label className="block text-xs font-semibold text-gray-500 mb-2">
-                            type a state / province
-                          </label>
-                          <input
+                          <Label className="block text-xs font-semibold text-gray-500 mb-2">
+                            Type a state / province
+                          </Label>
+                          <Input
                             type="text"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
@@ -623,10 +536,10 @@ export function SearchBox() {
                               if (e.key === 'Enter') setShowLocationMenu(false);
                             }}
                           />
-                          <label className="block text-xs font-semibold text-gray-500 mb-2">
+                          <Label className="block text-xs font-semibold text-gray-500 mb-2">
                             Or type a city
-                          </label>
-                          <input
+                          </Label>
+                          <Input
                             type="text"
                             value={city}
                             onChange={(e) => setCity(e.target.value)}
@@ -637,23 +550,25 @@ export function SearchBox() {
                             }}
                           />
                           <div className="mt-3 flex justify-end gap-2">
-                            <button
+                            <Button
+                              variant={'outline'}
                               type="button"
                               onClick={() => {
                                 setLocation('');
                                 setShowLocationMenu(false);
                               }}
-                              className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50"
+                              className="text-sm px-3 py-1.5 rounded-lg "
                             >
                               Clear
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              variant={'default'}
                               type="button"
                               onClick={() => setShowLocationMenu(false)}
-                              className="text-sm px-3 py-1.5 rounded-lg bg-brand-600 text-white hover:brightness-110"
+                              className="text-sm px-3 py-1.5 rounded-lg bg-brand-600 text-white"
                             >
                               Done
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       </motion.div>
@@ -911,7 +826,7 @@ export function SearchBox() {
                 whileTap={{ scale: 0.95 }}
               >
                 <motion.div className="relative" whileHover={{ scale: 1.1 }}>
-                  <input
+                  <Input
                     type="checkbox"
                     checked={searchType === 'lmia'}
                     onChange={() => setSearchType('lmia')}
@@ -948,7 +863,7 @@ export function SearchBox() {
                 whileTap={{ scale: 0.95 }}
               >
                 <motion.div className="relative" whileHover={{ scale: 1.1 }}>
-                  <input
+                  <Input
                     type="checkbox"
                     checked={searchType === 'hot_leads'}
                     onChange={() => setSearchType('hot_leads')}
@@ -999,7 +914,7 @@ export function SearchBox() {
                   {baseRanges.map((r) => {
                     const checked = rangeKey === r.key;
                     return (
-                      <label
+                      <Label
                         key={r.key}
                         className={cn(
                           'flex items-center gap-2 cursor-pointer rounded-xl border px-3 py-2 text-sm transition-all duration-200',
@@ -1008,7 +923,7 @@ export function SearchBox() {
                             : 'border-gray-200 hover:border-brand-300 hover:bg-gray-50'
                         )}
                       >
-                        <input
+                        <Input
                           type="checkbox"
                           className="sr-only"
                           checked={checked}
@@ -1027,12 +942,13 @@ export function SearchBox() {
                           {checked && <Check className="w-3 h-3 text-white" />}
                         </span>
                         <span className="font-medium">{r.label}</span>
-                      </label>
+                      </Label>
                     );
                   })}
 
                   {/* Expander */}
-                  <button
+                  <Button
+                    variant={'outline'}
                     type="button"
                     onClick={() => setShowMoreRanges((v) => !v)}
                     className="flex items-center gap-2 rounded-xl border border-gray-200 px-3 py-2 text-sm hover:border-brand-300 hover:bg-gray-50 transition"
@@ -1046,7 +962,7 @@ export function SearchBox() {
                         More ranges <ChevronDown className="w-4 h-4" />
                       </>
                     )}
-                  </button>
+                  </Button>
 
                   {/* More ranges */}
                   <AnimatePresence initial={false}>
@@ -1060,7 +976,7 @@ export function SearchBox() {
                         {moreRanges.map((r) => {
                           const checked = rangeKey === r.key;
                           return (
-                            <label
+                            <Label
                               key={r.key}
                               className={cn(
                                 'flex items-center gap-2 cursor-pointer rounded-xl border px-3 py-2 text-sm transition-all duration-200',
@@ -1069,7 +985,7 @@ export function SearchBox() {
                                   : 'border-gray-200 hover:border-brand-300 hover:bg-gray-50'
                               )}
                             >
-                              <input
+                              <Input
                                 type="checkbox"
                                 className="sr-only"
                                 checked={checked}
@@ -1092,7 +1008,7 @@ export function SearchBox() {
                                 )}
                               </span>
                               <span className="font-medium">{r.label}</span>
-                            </label>
+                            </Label>
                           );
                         })}
                       </motion.div>
@@ -1100,13 +1016,13 @@ export function SearchBox() {
                   </AnimatePresence>
 
                   {(dateFrom || dateTo) && (
-                    <button
+                    <Button
                       type="button"
                       onClick={clearRange}
-                      className="ml-1 text-sm text-gray-600 underline underline-offset-2 hover:text-gray-800"
+                      className="ml-1 shadow-none text-sm text-gray-600 underline underline-offset-2 hover:text-gray-800"
                     >
                       Clear date filter
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -1141,97 +1057,26 @@ export function SearchBox() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              {trendingSearches.map((term, index) => (
-                <motion.button
-                  key={term}
-                  className={cn(
-                    'group relative px-5 py-3 bg-gradient-to-r from-white to-brand-50 border border-brand-200 text-gray-700 rounded-2xl transition-all duration-300 text-sm font-semibold overflow-hidden shadow-md hover:shadow-xl shadow-brand-500/10',
-                    'hover:scale-105 hover:border-brand-300'
-                  )}
-                  onClick={() => handleTrendingClick(term)}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
-                  whileHover={{ y: -2, scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <div className="relative flex items-center gap-2">
-                    <motion.div
-                      animate={{ scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: index * 0.2,
-                        type: 'spring',
-                        stiffness: 200,
-                      }}
-                    >
-                      <Star className="w-4 h-4 text-yellow-500 drop-shadow-sm" />
-                    </motion.div>
-                    <span className="font-medium">{term}</span>
-                    <motion.div
-                      className="opacity-0 group-hover:opacity-100 transition-all duration-200"
-                      initial={{ x: -5, scale: 0.8 }}
-                      whileHover={{ x: 0, scale: 1 }}
-                    >
-                      <ArrowRight className="w-3 h-3 text-brand-500" />
-                    </motion.div>
-                  </div>
-                </motion.button>
-              ))}
-            </div>
+            <TrendingSearchBox
+              dateFrom={dateFrom}
+              dateTo={dateTo}
+              checkCredits={checkCredits}
+              fetchSuggestions={fetchSuggestions}
+              location={location}
+              searchType={searchType}
+              setInput={setInput}
+              setShowSuggestions={setShowSuggestions}
+            />
           </motion.div>
         </div>
 
         {/* Categories */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="px-10 pb-10"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="text-left mb-8"
-          >
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Popular Categories
-            </h2>
-            <p className="text-gray-600">Quick access to top job categories</p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-6xl">
-            {categories.map((category, index) => (
-              <motion.button
-                key={category.noc_priority}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 + index * 0.05, duration: 0.3 }}
-                whileHover={{
-                  scale: 1.02,
-                  backgroundColor: 'rgb(249 250 251)',
-                }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() =>
-                  handleCategoryClick({ noc_priority: category.noc_priority })
-                }
-                className="flex flex-col items-center gap-3 p-4 rounded-xl border border-gray-200 bg-white hover:border-brand-300 transition-all duration-200 text-left"
-              >
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-brand-100 text-brand-600">
-                  {category.icon}
-                </div>
-                <div className="w-full">
-                  <div className="font-medium text-gray-900 text-sm text-center">
-                    {category.noc_priority.replace(/_/g, ' ')}
-                  </div>
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
+        <CategoryBox
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          location={location}
+          searchType={searchType}
+        />
       </motion.div>
     </div>
   );
