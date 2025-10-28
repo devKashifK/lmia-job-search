@@ -2,10 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Search,
-  Briefcase,
   TrendingUp,
   ArrowRight,
-  Clock,
   Star,
   Check,
   Car,
@@ -16,8 +14,10 @@ import {
   Store,
   MapPin,
   X,
-  ChevronDown, // --- RANGE: expander icon
-  ChevronUp, // --- RANGE: expander icon
+  ChevronDown,
+  ChevronUp,
+  Briefcase, // restored for suggestions
+  Clock, // restored for suggestions header
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -92,8 +92,8 @@ const categories = [
 
 export function SearchBox() {
   const [input, setInput] = useState('');
-  const [location, setLocation] = useState(''); // existing
-  const [city, setCity] = useState(''); // existing
+  const [location, setLocation] = useState('');
+  const [city, setCity] = useState('');
   const [showLocationMenu, setShowLocationMenu] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -103,8 +103,8 @@ export function SearchBox() {
     'hot_leads'
   );
 
-  // --- RANGE: state for date range filter
-  const [rangeKey, setRangeKey] = useState<string | null>(null); // 'today' | '7d' | '30d' | '1y' | '4y' | null
+  // --- RANGE (Trending Jobs only)
+  const [rangeKey, setRangeKey] = useState<string | null>(null); // 'today' | '7d' | '30d' | '1y' | '4y'
   const [dateFrom, setDateFrom] = useState<string>(''); // YYYY-MM-DD
   const [dateTo, setDateTo] = useState<string>(''); // YYYY-MM-DD
   const [showMoreRanges, setShowMoreRanges] = useState(false);
@@ -121,7 +121,7 @@ export function SearchBox() {
   const locationMenuRef = useRef<HTMLDivElement>(null);
   const { setDataConfig, setFilterPanelConfig } = useTableStore();
 
-  // --- RANGE: helpers
+  // helpers for dates
   const toYMD = (d: Date) => {
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -152,26 +152,25 @@ export function SearchBox() {
     setDateTo(end);
     setRangeKey(key);
   };
-
   const clearRange = () => {
     setRangeKey(null);
     setDateFrom('');
     setDateTo('');
   };
 
-  // Initialize from URL if already present
+  // seed from URL (if user lands with date_from/date_to)
   useEffect(() => {
     const urlFrom = searchParams?.get('date_from') || '';
     const urlTo = searchParams?.get('date_to') || '';
     if (urlFrom || urlTo) {
       setDateFrom(urlFrom);
       setDateTo(urlTo || todayYMD());
-      setRangeKey(null); // unknown preset; leave as custom
+      setRangeKey(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // existing: outside-click closers
+  // close popovers on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const t = event.target as Node;
@@ -191,7 +190,7 @@ export function SearchBox() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // existing: suggestions fetchers...
+  // suggestions fetcher
   const fetchSuggestions = async (query: string) => {
     if (!query.trim()) {
       setSuggestions([]);
@@ -231,6 +230,7 @@ export function SearchBox() {
     void fetchSuggestions(value);
   };
 
+  // attach date params to URL only for trending jobs
   const attachRangeParams = (params: URLSearchParams) => {
     if (searchType === 'hot_leads' && dateFrom && dateTo) {
       params.set('date_from', dateFrom);
@@ -246,7 +246,6 @@ export function SearchBox() {
       updateCreditsAndSearch(s?.suggestion);
       sp.set('field', s.field ?? 'all');
       if (location.trim()) sp.set('loc', location.trim());
-      // --- RANGE: add range if trending
       attachRangeParams(sp);
 
       if (searchType === 'hot_leads') {
@@ -295,8 +294,6 @@ export function SearchBox() {
       }
 
       sp.set('field', 'job_title');
-
-      // --- RANGE: add/remove range only for trending jobs
       attachRangeParams(sp);
 
       if (!session?.session) {
@@ -393,7 +390,6 @@ export function SearchBox() {
       const qs = new URLSearchParams();
       qs.set('field', 'job_title');
       if (location.trim()) qs.set('loc', location.trim());
-      // --- RANGE:
       if (dateFrom && dateTo) {
         qs.set('date_from', dateFrom);
         qs.set('date_to', dateTo);
@@ -418,7 +414,6 @@ export function SearchBox() {
     if (searchType === 'hot_leads') {
       const qs = new URLSearchParams({ field: 'category', t: 'trending_job' });
       if (location.trim()) qs.set('loc', location.trim());
-      // --- RANGE:
       if (dateFrom && dateTo) {
         qs.set('date_from', dateFrom);
         qs.set('date_to', dateTo);
@@ -515,7 +510,7 @@ export function SearchBox() {
             transition={{ delay: 0.2, duration: 0.5 }}
           >
             <div className="relative">
-              {/* main search bar (unchanged UI) */}
+              {/* main search bar */}
               <div
                 className={cn(
                   'relative flex items-stretch rounded-2xl transition-all duration-500 border-2 overflow-visible group',
@@ -557,7 +552,7 @@ export function SearchBox() {
                 {/* divider */}
                 <div className="my-2 w-px bg-gray-200" />
 
-                {/* location block (unchanged) */}
+                {/* location block */}
                 <div className="relative flex items-center gap-2 px-4">
                   <button
                     type="button"
@@ -666,7 +661,7 @@ export function SearchBox() {
                   </AnimatePresence>
                 </div>
 
-                {/* trailing controls (unchanged) */}
+                {/* trailing controls */}
                 <div className="flex items-center gap-3 pr-4">
                   <AnimatePresence>
                     {input && (
@@ -751,7 +746,7 @@ export function SearchBox() {
               </div>
             </div>
 
-            {/* suggestions dropdown (unchanged) */}
+            {/* Suggestions Dropdown (restored) */}
             <AnimatePresence>
               {showSuggestions && input.trim() && (
                 <motion.div
@@ -762,8 +757,136 @@ export function SearchBox() {
                   transition={{ duration: 0.2 }}
                   className="absolute left-0 right-0 top-full mt-3 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-white/30 overflow-hidden z-[9999]"
                 >
-                  {/* … existing inner content unchanged … */}
-                  {/* (kept as-is to avoid noise) */}
+                  <div className="max-h-[400px] overflow-y-auto">
+                    {isLoadingSuggestions ? (
+                      <div className="p-6 space-y-3">
+                        {[...Array(4)].map((_, index) => (
+                          <motion.div
+                            key={index}
+                            className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                          >
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
+                            <div className="flex-1 space-y-2">
+                              <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full w-3/4 animate-pulse" />
+                              <div className="h-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full w-1/2 animate-pulse" />
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    ) : suggestions.length > 0 ? (
+                      <div className="p-2">
+                        <div className="px-4 py-3 bg-gradient-to-r from-brand-50 to-brand-100 rounded-2xl mb-2 border-b border-white/20">
+                          <div className="flex items-center gap-2 text-sm text-brand-700 font-medium">
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{
+                                duration: 4,
+                                repeat: Infinity,
+                                ease: 'linear',
+                              }}
+                            >
+                              <Clock className="w-4 h-4" />
+                            </motion.div>
+                            <span className="font-medium">
+                              Suggestions based on your search
+                            </span>
+                          </div>
+                        </div>
+
+                        {suggestions.map((s, index) => (
+                          <motion.div
+                            key={`${s.suggestion}-${index}`}
+                            className="group px-4 py-4 hover:bg-gradient-to-r hover:from-brand-50 hover:to-brand-100 cursor-pointer transition-all duration-200 rounded-2xl mx-1 mb-1"
+                            onClick={() => handleSuggestionClick(s)}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            whileHover={{ scale: 1.02, x: 5 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <div className="flex items-center gap-4">
+                              <motion.div
+                                className="p-3 rounded-2xl bg-gradient-to-r from-brand-100 to-brand-200 group-hover:from-brand-200 group-hover:to-brand-300 transition-all duration-200 relative overflow-hidden shadow-lg shadow-brand-500/20"
+                                whileHover={{ rotate: 15, scale: 1.1 }}
+                              >
+                                <motion.div
+                                  className="absolute inset-0 opacity-30"
+                                  animate={{ opacity: [0.3, 0.5, 0.3] }}
+                                  transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: 'linear',
+                                  }}
+                                />
+                                <Search className="w-5 h-5 text-brand-600 relative z-10" />
+                              </motion.div>
+                              <div className="flex-1">
+                                <span className="text-gray-800 group-hover:text-brand-700 transition-colors font-semibold text-base block">
+                                  {s.suggestion}
+                                </span>
+                                <span className="text-sm text-gray-500 mt-1 block flex items-center gap-1">
+                                  {s.field === 'job_title' ? (
+                                    <>
+                                      <Briefcase className="w-3 h-3" />
+                                      Job Title
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Search className="w-3 h-3" />
+                                      Search term
+                                    </>
+                                  )}
+                                </span>
+                              </div>
+                              <motion.div
+                                className="opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                initial={{ x: 10, scale: 0.8 }}
+                                whileHover={{ x: 0, scale: 1 }}
+                              >
+                                <motion.div
+                                  animate={{ x: [0, 3, 0] }}
+                                  transition={{
+                                    duration: 1,
+                                    repeat: Infinity,
+                                    repeatDelay: 1,
+                                  }}
+                                >
+                                  <ArrowRight className="w-5 h-5 text-brand-500" />
+                                </motion.div>
+                              </motion.div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    ) : (
+                      <motion.div
+                        className="p-10 text-center"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                      >
+                        <motion.div
+                          className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center shadow-lg"
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 20,
+                            repeat: Infinity,
+                            ease: 'linear',
+                          }}
+                        >
+                          <Search className="w-8 h-8 text-gray-400" />
+                        </motion.div>
+                        <p className="font-semibold text-gray-700 text-lg mb-1">
+                          No suggestions found
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Try different keywords or check spelling
+                        </p>
+                      </motion.div>
+                    )}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -858,7 +981,7 @@ export function SearchBox() {
             </div>
           </div>
 
-          {/* --- RANGE: Sort by (date posted) – only for Trending Jobs */}
+          {/* Sort by (date posted) – only for Trending Jobs */}
           {searchType === 'hot_leads' && (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
@@ -976,7 +1099,6 @@ export function SearchBox() {
                     )}
                   </AnimatePresence>
 
-                  {/* Clear selection */}
                   {(dateFrom || dateTo) && (
                     <button
                       type="button"
