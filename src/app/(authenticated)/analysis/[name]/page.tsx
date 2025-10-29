@@ -3,8 +3,6 @@
 import React, { Suspense, useMemo, use } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { useQuery } from '@tanstack/react-query';
-import db from '@/db';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -32,27 +30,25 @@ import {
 import {
   ArrowLeft,
   Briefcase,
-  Calendar,
   CalendarDays,
-  ChevronLeft,
-  Database,
-  Download,
   Filter,
   X,
   Home,
   Check,
   ChevronsUpDown,
+  Users,
 } from 'lucide-react';
-import { Building2, TrendingUp, MapPin, Users, Hash } from 'lucide-react';
+import { Building2, TrendingUp, MapPin, Hash, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
-import { Separator } from '@/components/ui/separator';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/pages/homepage/footer';
 import { Icon } from '@iconify/react/dist/iconify.js';
-import UserDropdown from '@/components/ui/user-dropdown';
+import BackgroundWrapper from '@/components/ui/background-wrapper';
+import { useQuery } from '@tanstack/react-query';
+import db from '@/db';
 
 interface CompanyAnalysisData {
   companyName: string;
@@ -285,7 +281,7 @@ const FilterSidebar = ({
   };
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm border-r border-brand-200/40 h-full flex flex-col shadow-lg">
+    <div className="bg-white/95 border-brand-200/40 h-full flex flex-col ">
       {/* Applied Filters Display */}
       {activeFiltersCount > 0 && (
         <div className="border-b border-brand-200/40 bg-gradient-to-r from-emerald-50 to-white px-4 py-3">
@@ -1069,33 +1065,53 @@ function CompanyAnalysisContent({
 
   if (!companyName) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="text-center py-12">
-          <CardContent>
-            <Building2 className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              No Company Selected
-            </h2>
-            <p className="text-gray-500">
-              Please select a company from the search results to view analysis.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <BackgroundWrapper>
+        <Navbar />
+        <div className="min-h-screen pt-24 pb-20">
+          <div className="container mx-auto px-6">
+            <Card className="text-center py-12 border-0 shadow-sm">
+              <CardContent>
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gray-100 mb-6">
+                  <Building2 className="w-8 h-8 text-gray-400" />
+                </div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                  No Company Selected
+                </h2>
+                <p className="text-gray-500">
+                  Please select a company from the search results to view
+                  analysis.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <Footer />
+      </BackgroundWrapper>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="border-red-200">
-          <CardContent className="pt-6">
-            <p className="text-red-600">
-              Error loading analysis: {(error as Error).message}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      <BackgroundWrapper>
+        <Navbar />
+        <div className="min-h-screen pt-24 pb-20">
+          <div className="container mx-auto px-6">
+            <Card className="border-red-200 border-2 shadow-sm">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-red-100 rounded-lg">
+                    <AlertCircle className="w-5 h-5 text-red-600" />
+                  </div>
+                  <p className="text-red-600 font-medium">
+                    Error loading analysis: {(error as Error).message}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <Footer />
+      </BackgroundWrapper>
     );
   }
 
@@ -1131,74 +1147,98 @@ function CompanyAnalysisContent({
       );
       yPosition += 15;
 
-      // Add summary metrics
+      // Add metrics section
       pdf.setFontSize(14);
       pdf.setTextColor(31, 41, 55); // gray-800
       pdf.text('Key Metrics', margin, yPosition);
       yPosition += 8;
 
+      // Add metric data
       pdf.setFontSize(10);
       pdf.setTextColor(75, 85, 99); // gray-600
-      const metrics = [
-        `Total Jobs: ${analysisData?.totalJobs || 0}`,
-        `Growth Rate: ${
-          analysisData?.trends.growthRate
-            ? `${
-                analysisData.trends.growthRate > 0 ? '+' : ''
-              }${analysisData.trends.growthRate.toFixed(1)}%`
-            : 'N/A'
-        }`,
-        `Top Location: ${analysisData?.trends.popularLocation || 'N/A'}`,
-        `Common Role: ${analysisData?.trends.commonTitle || 'N/A'}`,
-        `Top NOC Code: ${analysisData?.trends.topNocCode || 'N/A'}`,
-      ];
 
-      metrics.forEach((metric) => {
-        pdf.text(metric, margin + 5, yPosition);
+      if (analysisData?.trends.growthRate) {
+        pdf.text(
+          `Growth Rate: ${
+            analysisData.trends.growthRate > 0 ? '+' : ''
+          }${analysisData.trends.growthRate.toFixed(1)}%`,
+          margin,
+          yPosition
+        );
         yPosition += 6;
-      });
+      }
+
+      if (analysisData?.trends.popularLocation) {
+        pdf.text(
+          `Top Location: ${analysisData.trends.popularLocation}`,
+          margin,
+          yPosition
+        );
+        yPosition += 6;
+      }
+
+      if (analysisData?.trends.topNocCode) {
+        pdf.text(
+          `Top NOC Code: ${analysisData.trends.topNocCode}`,
+          margin,
+          yPosition
+        );
+        yPosition += 6;
+      }
 
       yPosition += 10;
 
-      // Function to capture and add chart to PDF
-      const addChartToPdf = async (elementId: string, title: string) => {
-        const element = document.getElementById(elementId);
-        if (!element) return;
+      // Function to add chart to PDF
+      const addChartToPdf = async (chartId: string, title: string) => {
+        const chartElement = document.getElementById(chartId);
+        if (!chartElement) return;
 
-        // Check if we need a new page
-        if (yPosition > pageHeight - 80) {
-          pdf.addPage();
-          yPosition = margin;
-        }
+        try {
+          const canvas = await html2canvas(chartElement, {
+            backgroundColor: '#ffffff',
+            scale: 2,
+          });
 
-        // Add chart title
-        pdf.setFontSize(12);
-        pdf.setTextColor(31, 41, 55);
-        pdf.text(title, margin, yPosition);
-        yPosition += 8;
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = contentWidth;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        const canvas = await html2canvas(element, {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-        });
-
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = contentWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        // Check if image fits on current page
-        if (yPosition + imgHeight > pageHeight - margin) {
-          pdf.addPage();
-          yPosition = margin;
-          // Re-add title on new page
+          // Add chart title
+          pdf.setFontSize(12);
+          pdf.setTextColor(31, 41, 55);
           pdf.text(title, margin, yPosition);
           yPosition += 8;
-        }
 
-        pdf.addImage(imgData, 'PNG', margin, yPosition, imgWidth, imgHeight);
-        yPosition += imgHeight + 10;
+          // Add image if it fits on the page
+          if (yPosition + imgHeight <= pageHeight - margin) {
+            pdf.addImage(
+              imgData,
+              'PNG',
+              margin,
+              yPosition,
+              imgWidth,
+              imgHeight
+            );
+            yPosition += imgHeight + 15;
+          } else {
+            // Add new page if it doesn't fit
+            pdf.addPage();
+            yPosition = margin;
+            pdf.text(title, margin, yPosition);
+            yPosition += 8;
+            pdf.addImage(
+              imgData,
+              'PNG',
+              margin,
+              yPosition,
+              imgWidth,
+              imgHeight
+            );
+            yPosition += imgHeight + 15;
+          }
+        } catch (error) {
+          console.error(`Error capturing ${chartId}:`, error);
+        }
       };
 
       // Add charts with unique IDs
@@ -1227,251 +1267,356 @@ function CompanyAnalysisContent({
   };
 
   return (
-    <div className="flex h-screen flex-col bg-gradient-to-br from-brand-50/40 via-white to-brand-50/20">
-      <header className="bg-white/80 backdrop-blur-md border-b border-brand-200/30 sticky top-0 z-20 flex-shrink-0 shadow-sm">
-        <div className="max-w-[1600px] mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            {/* Left Section: Filter Toggle + Title */}
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="p-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors flex items-center justify-center"
-                aria-label={isFilterOpen ? 'Hide Filters' : 'Show Filters'}
-              >
-                {isFilterOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Filter className="w-5 h-5" />
-                )}
-              </button>
+    <BackgroundWrapper>
+      <Navbar />
+      <div className="min-h-screen pt-20 pb-16">
+        <div className="max-w-[1600px] mx-auto px-12">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white/90   rounded-2xl  p-6 mb-6 relative overflow-hidden"
+          >
+            {/* Animated background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 via-transparent to-brand-600/5 opacity-0 hover:opacity-100 transition-opacity duration-500" />
+
+            {/* Top accent line */}
+
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                    variant="outline"
+                    size="sm"
+                    className={`h-10 w-10 p-0 rounded-xl transition-all duration-300 shadow-md ${
+                      isFilterOpen
+                        ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-500 shadow-lg shadow-brand-500/30'
+                        : 'bg-white text-gray-700 border-brand-200 hover:border-brand-300 hover:bg-brand-50 hover:shadow-brand-500/20'
+                    }`}
+                  >
+                    <motion.div
+                      animate={{ rotate: isFilterOpen ? 180 : 0 }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    >
+                      {isFilterOpen ? (
+                        <X className="w-4 h-4" />
+                      ) : (
+                        <Filter className="w-4 h-4" />
+                      )}
+                    </motion.div>
+                  </Button>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="flex items-center gap-3"
+                >
+                  <motion.div
+                    className="p-3 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl shadow-lg shadow-brand-500/30 ring-2 ring-brand-200/50"
+                    whileHover={{ scale: 1.05, rotate: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Building2 className="w-5 h-5 text-white" />
+                  </motion.div>
+                  <div>
+                    <motion.h1
+                      className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-brand-700 bg-clip-text text-transparent"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      {companyName}
+                    </motion.h1>
+                    <motion.p
+                      className="text-sm text-gray-600 flex items-center gap-2 mt-1"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <span>Company Analysis</span>
+                    </motion.p>
+                  </div>
+                </motion.div>
+              </div>
+
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-600 rounded-lg">
-                  <Building2 className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">
-                    {companyName}
-                  </h1>
-                  <p className="text-xs text-gray-500">
-                    Company Analysis • Real-time Insights
-                  </p>
-                </div>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Button
+                    variant="outline"
+                    onClick={goBack}
+                    className="bg-white/80 backdrop-blur-sm border-brand-200 hover:border-brand-300 hover:bg-brand-50 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-brand-500/20"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back
+                  </Button>
+                </motion.div>
               </div>
             </div>
-            {/* Right Section: Action Buttons */}
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={() => router.push('/')}
-                variant={'outline'}
-                className="px-4 py-2 font-medium rounded-lg transition-colors text-sm shadow-sm flex items-center gap-2"
+          </motion.div>
+
+          <div className="flex gap-4">
+            {/* Sidebar */}
+            {isFilterOpen && (
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="w-80 flex-shrink-0"
               >
-                <Home className="w-4 h-4" />
-                Home
-              </Button>
-              {/* <button
-                onClick={handleExportReport}
-                disabled={isExporting || isLoading}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-sm shadow-sm flex items-center gap-2"
-              >
-                {isExporting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4" />
-                    Export Report
-                  </>
-                )}
-              </button> */}
-              <Button
-                variant={'secondary'}
-                onClick={goBack}
-                className="px-4 py-2  font-medium rounded-lg transition-colors text-sm shadow-sm flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Go Back
-              </Button>
-              <UserDropdown />
+                <motion.div
+                  className="bg-white/90 backdrop-blur-sm border border-brand-200/30 rounded-2xl shadow-xl shadow-brand-500/15 overflow-hidden relative"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  {/* Animated background gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-500/3 via-transparent to-brand-600/3" />
+
+                  {/* Header */}
+                  <div className="relative bg-gradient-to-r from-brand-50 to-brand-100/60 px-4 py-3 border-b border-brand-200/30">
+                    <div className="flex items-center gap-3">
+                      <motion.div
+                        className="p-2 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl shadow-lg shadow-brand-500/30 ring-2 ring-brand-200/50"
+                        whileHover={{ scale: 1.05, rotate: 5 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Filter className="w-4 h-4 text-white" />
+                      </motion.div>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-brand-700 bg-clip-text text-transparent">
+                          Filters
+                        </h3>
+                        <p className="text-xs text-gray-600 mt-0.5">
+                          Customize your analysis view
+                        </p>
+                      </div>
+                      <motion.div
+                        className="flex flex-col items-end"
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-brand-100 to-brand-200 text-brand-700 border border-brand-300/50">
+                          <div className="w-1.5 h-1.5 bg-brand-500 rounded-full mr-1.5 animate-pulse" />
+                          {
+                            Object.values(filters).filter(
+                              (v) =>
+                                v &&
+                                (typeof v === 'string' ||
+                                  (Array.isArray(v) && v.length > 0))
+                            ).length
+                          }{' '}
+                          active
+                        </div>
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative p-4">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <FilterSidebar
+                        currentFilters={filters}
+                        tableName={tableName}
+                        companyName={companyName}
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Bottom accent */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500" />
+                </motion.div>
+              </motion.div>
+            )}
+
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <Card
+                      key={i}
+                      className="animate-pulse border-0 bg-white/80 backdrop-blur-sm shadow-sm"
+                    >
+                      <CardHeader>
+                        <div className="h-4 w-24 bg-gray-200 rounded-lg" />
+                        <div className="h-6 w-32 bg-gray-200 rounded-lg" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-32 bg-gray-200 rounded-lg" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Key Metrics */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
+                    <MetricCard
+                      label={'Growth Rate'}
+                      value={
+                        analysisData?.trends.growthRate
+                          ? `${
+                              analysisData.trends.growthRate > 0 ? '+' : ''
+                            }${analysisData.trends.growthRate.toFixed(1)}%`
+                          : 'N/A'
+                      }
+                      subtitle={'Year-over-year change'}
+                      icon={'material-symbols:trending-up'}
+                    />
+                    <MetricCard
+                      label={'Top Location'}
+                      value={analysisData?.trends.popularLocation || 'N/A'}
+                      subtitle={`Most common ${
+                        filters.searchType === 'lmia' ? 'territory' : 'state'
+                      }`}
+                      icon={'material-symbols:add-location-alt'}
+                    />
+                    <MetricCard
+                      label={'Top NOC Code'}
+                      value={analysisData?.trends.topNocCode || 'N/A'}
+                      subtitle={'Most frequent NOC code'}
+                      icon={'line-md:hash-small'}
+                    />
+
+                    {filters.searchType === 'lmia' &&
+                    analysisData?.trends.averagePositions ? (
+                      <MetricCard
+                        label={'Avg. Positions'}
+                        value={analysisData.trends.averagePositions.toFixed(1)}
+                        subtitle={'Per LMIA application'}
+                        icon={'solar:suitcase-line-duotone'}
+                      />
+                    ) : (
+                      <MetricCard
+                        label={'Common Role'}
+                        value={analysisData?.trends.commonTitle || 'N/A'}
+                        subtitle={'Most frequent job title'}
+                        icon={'solar:suitcase-line-duotone'}
+                      />
+                    )}
+                  </div>
+
+                  {/* Two Column Charts - Location & Cities */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div id="chart-location-distribution">
+                      <DashboardCard
+                        title="Location Distribution"
+                        subtitle="Job postings by state/territory"
+                        icon={MapPin}
+                        className="h-[450px]"
+                      >
+                        <DonutChart
+                          data={analysisData?.locationData.map((d) => ({
+                            name: d.name,
+                            value: d.value,
+                          }))}
+                          centerValue={analysisData?.locationData.length}
+                          centerLabel={'Locations'}
+                        />
+                      </DashboardCard>
+                    </div>
+                    <div id="chart-top-cities">
+                      <DashboardCard
+                        title="Top Cities"
+                        subtitle="Most active hiring locations"
+                        icon={Building2}
+                        className="h-[450px]"
+                      >
+                        <BarChart
+                          data={analysisData.cityData.map((d) => ({
+                            name: d.name,
+                            value: d.value,
+                          }))}
+                        />
+                      </DashboardCard>
+                    </div>
+                  </div>
+
+                  {/* Two Column Charts - NOC Codes & Categories */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div id="chart-noc-codes">
+                      <DashboardCard
+                        title="NOC Code Distribution"
+                        subtitle="Most common occupational classifications"
+                        icon={Hash}
+                        className="h-[450px]"
+                      >
+                        <ColumnChart data={analysisData.nocCodeData} />
+                      </DashboardCard>
+                    </div>
+                    <div id="chart-categories">
+                      <DashboardCard
+                        title="Job Categories"
+                        subtitle="Distribution by job category"
+                        icon={Briefcase}
+                        className="h-[450px]"
+                      >
+                        <DonutChart
+                          data={analysisData.categoryData}
+                          centerLabel={'Categories'}
+                          centerValue={analysisData?.categoryData?.length}
+                        />
+                      </DashboardCard>
+                    </div>
+                  </div>
+
+                  {/* Full Width Chart - Job Titles */}
+                  <div className="grid grid-cols-1 gap-4">
+                    <div id="chart-job-titles">
+                      <DashboardCard
+                        title="Top Job Titles"
+                        subtitle="Most common positions at this company"
+                        icon={Users}
+                        className="h-[450px]"
+                      >
+                        <ColumnChart data={analysisData.jobTitleData} />
+                      </DashboardCard>
+                    </div>
+                  </div>
+
+                  {/* Full Width Chart - Hiring Trends */}
+                  <div className="grid grid-cols-1 gap-4">
+                    <div id="chart-hiring-trends">
+                      <DashboardCard
+                        title="Hiring Trends Over Time"
+                        subtitle="Historical job posting activity"
+                        icon={TrendingUp}
+                        className="h-[450px] p-0 overflow-visible"
+                      >
+                        <AreaChart
+                          data={analysisData?.timeData}
+                          color="#10b981"
+                        />
+                      </DashboardCard>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </header>
-
-      {/* Container for Sidebar + Main Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar container with L-shape */}
-        <aside
-          className={`transition-all duration-300 ${
-            isFilterOpen ? 'w-80' : 'w-0'
-          } overflow-hidden flex-shrink-0 bg-white/95 backdrop-blur-sm`}
-        >
-          <FilterSidebar
-            currentFilters={filters}
-            tableName={tableName}
-            companyName={companyName}
-          />
-        </aside>
-
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardHeader>
-                  <div className="h-4 w-24 bg-gray-200 rounded" />
-                  <div className="h-6 w-32 bg-gray-200 rounded" />
-                </CardHeader>
-                <CardContent>
-                  <div className="h-32 bg-gray-200 rounded" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="flex-1 overflow-y-auto p-8 space-y-8 bg-gradient-to-b from-transparent to-brand-50/10">
-            {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <MetricCard
-                label={'Growth Rate'}
-                value={
-                  analysisData?.trends.growthRate
-                    ? `${
-                        analysisData.trends.growthRate > 0 ? '+' : ''
-                      }${analysisData.trends.growthRate.toFixed(1)}%`
-                    : 'N/A'
-                }
-                subtitle={'Year-over-year change'}
-                icon={'material-symbols:trending-up'}
-              />
-              <MetricCard
-                label={'Top Location'}
-                value={analysisData?.trends.popularLocation || 'N/A'}
-                subtitle={`Most common ${
-                  filters.searchType === 'lmia' ? 'territory' : 'state'
-                }`}
-                icon={'material-symbols:add-location-alt'}
-              />
-              <MetricCard
-                label={'Top NOC Code'}
-                value={analysisData?.trends.topNocCode || 'N/A'}
-                subtitle={'Most frequent NOC code'}
-                icon={'line-md:hash-small'}
-              />
-
-              {filters.searchType === 'lmia' &&
-              analysisData?.trends.averagePositions ? (
-                <MetricCard
-                  label={'Avg. Positions'}
-                  value={analysisData.trends.averagePositions.toFixed(1)}
-                  subtitle={'Per LMIA application'}
-                  icon={'solar:suitcase-line-duotone'}
-                />
-              ) : (
-                <MetricCard
-                  label={'Common Role'}
-                  value={analysisData?.trends.commonTitle || 'N/A'}
-                  subtitle={'Most frequent job title'}
-                  icon={'solar:suitcase-line-duotone'}
-                />
-              )}
-            </div>
-
-            {/* Two Column Charts - Location & Cities */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div id="chart-location-distribution">
-                <DashboardCard
-                  title="Location Distribution"
-                  subtitle="Job postings by state/territory"
-                  icon={MapPin}
-                  className="h-[400px]"
-                >
-                  <DonutChart
-                    data={analysisData?.locationData.map((d) => ({
-                      name: d.name,
-                      value: d.value,
-                    }))}
-                    centerValue={analysisData?.locationData.length}
-                    centerLabel={'Locations'}
-                  />
-                </DashboardCard>
-              </div>
-              <div id="chart-top-cities">
-                <DashboardCard
-                  title="Top Cities"
-                  subtitle="Most active hiring locations"
-                  icon={Building2}
-                  className="h-[400px]"
-                >
-                  <BarChart
-                    data={analysisData.cityData.map((d) => ({
-                      name: d.name,
-                      value: d.value,
-                    }))}
-                  />
-                </DashboardCard>
-              </div>
-            </div>
-
-            {/* Two Column Charts - NOC Codes & Categories */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div id="chart-noc-codes">
-                <DashboardCard
-                  title="NOC Code Distribution"
-                  subtitle="Most common occupational classifications"
-                  icon={Hash}
-                  className="h-[400px]"
-                >
-                  <ColumnChart data={analysisData.nocCodeData} />
-                </DashboardCard>
-              </div>
-              <div id="chart-categories">
-                <DashboardCard
-                  title="Job Categories"
-                  subtitle="Distribution by job category"
-                  icon={Briefcase}
-                  className="h-[400px]"
-                >
-                  <DonutChart
-                    data={analysisData.categoryData}
-                    centerLabel={'Categories'}
-                    centerValue={analysisData?.categoryData?.length}
-                  />
-                </DashboardCard>
-              </div>
-            </div>
-
-            {/* Full Width Chart - Job Titles */}
-            <div className="grid grid-cols-1 gap-6">
-              <div id="chart-job-titles">
-                <DashboardCard
-                  title="Top Job Titles"
-                  subtitle="Most common positions at this company"
-                  icon={Users}
-                  className="h-[350px]"
-                >
-                  <ColumnChart data={analysisData.jobTitleData} />
-                </DashboardCard>
-              </div>
-            </div>
-
-            {/* Full Width Chart - Hiring Trends */}
-            <div className="grid grid-cols-1 gap-6">
-              <div id="chart-hiring-trends">
-                <DashboardCard
-                  title="Hiring Trends Over Time"
-                  subtitle="Historical job posting activity"
-                  icon={TrendingUp}
-                  className="h-[450px] p-0 overflow-visible"
-                >
-                  <AreaChart data={analysisData?.timeData} color="#10b981" />
-                </DashboardCard>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+      <Footer />
+    </BackgroundWrapper>
   );
 }
 
@@ -1484,50 +1629,160 @@ export default function DeepAnalysis({ params }: PageProps) {
   return (
     <Suspense
       fallback={
-        <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 w-48 bg-gray-200 rounded" />
-            <div className="h-4 w-32 bg-gray-200 rounded" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-200 rounded" />
-              ))}
+        <BackgroundWrapper>
+          <Navbar />
+          <div className="min-h-screen pt-24 pb-20">
+            <div className="container mx-auto px-6">
+              <div className="animate-pulse space-y-8">
+                <div className="h-8 w-48 bg-gray-200 rounded-xl" />
+                <div className="h-4 w-32 bg-gray-200 rounded-xl" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-32 bg-gray-200 rounded-xl" />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+          <Footer />
+        </BackgroundWrapper>
       }
     >
-      <div className="">
-        <CompanyAnalysisContent params={params} />
-      </div>
-      <Footer />
+      <CompanyAnalysisContent params={params} />
     </Suspense>
   );
 }
 
 const MetricCard = ({ label, value, subtitle, trend, icon }) => {
   return (
-    <div className="group bg-white/90 backdrop-blur-sm rounded-xl shadow-sm border border-brand-200/30 p-5 hover:shadow-lg hover:border-brand-400/50 hover:bg-white hover:-translate-y-1 transition-all duration-300">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">
-            {label}
-          </p>
-          <p className="text-2xl font-bold text-gray-900 group-hover:text-brand-700 transition-colors">
-            {value}
-          </p>
-        </div>
-        <div className="p-2.5 bg-gradient-to-br from-brand-50 to-brand-100/80 rounded-xl ring-1 ring-brand-200/40 group-hover:ring-brand-400/50 group-hover:shadow-md transition-all">
-          <Icon
-            icon={icon}
-            className="w-5 h-5 text-brand-600 group-hover:text-brand-700"
-          />
-        </div>
-      </div>
-      <p className="text-xs text-gray-500 group-hover:text-gray-600">
-        {subtitle}
-      </p>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+    >
+      <Card className="group bg-white/90 backdrop-blur-sm border-0 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 transition-all duration-300 overflow-hidden relative">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-500/0 via-brand-500/0 to-brand-500/0 group-hover:from-brand-500/5 group-hover:via-brand-500/5 group-hover:to-brand-500/10 transition-all duration-500" />
+
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+
+        <CardContent className="p-4 relative">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                  {label}
+                </p>
+                {label === 'Growth Rate' && (
+                  <motion.div
+                    animate={{ rotate: value?.includes('+') ? 0 : 180 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <TrendingUp
+                      className={`w-3 h-3 ${
+                        value?.includes('+') ? 'text-green-500' : 'text-red-500'
+                      }`}
+                    />
+                  </motion.div>
+                )}
+              </div>
+              <motion.p
+                className="text-xl font-bold text-gray-900 group-hover:text-brand-700 transition-colors"
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                {value}
+              </motion.p>
+            </div>
+            <motion.div
+              className="p-2 bg-gradient-to-br from-brand-50 to-brand-100/80 rounded-lg ring-1 ring-brand-200/40 group-hover:ring-brand-400/50 group-hover:shadow-md transition-all"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <Icon
+                icon={icon}
+                className="w-4 h-4 text-brand-600 group-hover:text-brand-700"
+              />
+            </motion.div>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-500 group-hover:text-gray-600 transition-colors">
+              {subtitle}
+            </p>
+            {/* Contextual status indicator */}
+            {label === 'Growth Rate' && (
+              <motion.div
+                className="flex items-center gap-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <div
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    value?.includes('+')
+                      ? 'bg-green-500'
+                      : value?.includes('-')
+                      ? 'bg-red-500'
+                      : 'bg-gray-400'
+                  }`}
+                />
+                <span
+                  className={`text-xs font-medium ${
+                    value?.includes('+')
+                      ? 'text-green-600'
+                      : value?.includes('-')
+                      ? 'text-red-600'
+                      : 'text-gray-500'
+                  }`}
+                >
+                  {value?.includes('+')
+                    ? 'Growing'
+                    : value?.includes('-')
+                    ? 'Declining'
+                    : 'Stable'}
+                </span>
+              </motion.div>
+            )}
+            {label === 'Top Location' && (
+              <motion.div
+                className="flex items-center gap-1 text-brand-600"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <MapPin className="w-3 h-3" />
+                <span className="text-xs font-medium">Primary</span>
+              </motion.div>
+            )}
+            {label === 'Top NOC Code' && (
+              <motion.div
+                className="flex items-center gap-1 text-brand-600"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Hash className="w-3 h-3" />
+                <span className="text-xs font-medium">Popular</span>
+              </motion.div>
+            )}
+            {(label === 'Avg. Positions' || label === 'Common Role') && (
+              <motion.div
+                className="flex items-center gap-1 text-brand-600"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Briefcase className="w-3 h-3" />
+                <span className="text-xs font-medium">Key Metric</span>
+              </motion.div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 
@@ -1539,24 +1794,111 @@ const DashboardCard = ({
   className = '',
 }) => {
   return (
-    <div
-      className={`group bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-brand-200/30 hover:border-brand-300/50 hover:shadow-xl transition-all duration-300 flex flex-col ${className}`}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
     >
-      <div className="flex items-center gap-2.5 p-5 pb-3 flex-shrink-0">
-        <div className="p-2 bg-gradient-to-br from-brand-50 to-brand-100/60 rounded-lg ring-1 ring-brand-200/30 group-hover:ring-brand-300/50 transition-all">
-          <Icon className="w-4 h-4 text-brand-600 group-hover:text-brand-700" />
-        </div>
-        <div className="flex-1">
-          <h3 className="text-sm font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
-            {title}
-          </h3>
-          <p className="text-xs text-gray-500 group-hover:text-gray-600 transition-colors">
-            {subtitle}
-          </p>
-        </div>
-      </div>
-      <div className="flex-grow overflow-hidden w-full">{children}</div>
-    </div>
+      <Card
+        className={`group bg-white/90 backdrop-blur-sm border-0 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 transition-all duration-400 flex flex-col overflow-hidden relative ${className}`}
+      >
+        {/* Animated gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-500/0 via-brand-500/0 to-brand-500/0 group-hover:from-brand-500/3 group-hover:via-brand-500/2 group-hover:to-brand-500/5 transition-all duration-600" />
+
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-600" />
+
+        <CardHeader className="flex items-start gap-1 px-6 py-2 flex-shrink-0 relative">
+          <motion.div
+            className="p-1.5 bg-gradient-to-br from-brand-50 to-brand-100/60 rounded-lg ring-1 ring-brand-200/30 group-hover:ring-brand-300/50 transition-all duration-300"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <motion.div
+              animate={{
+                rotate: [0, 5, -5, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                repeatType: 'reverse',
+              }}
+            >
+              <Icon className="w-3.5 h-3.5 text-brand-600 group-hover:text-brand-700 transition-colors" />
+            </motion.div>
+          </motion.div>
+          <div className="flex-1 min-w-0">
+            <motion.h3
+              className="text-xs font-bold text-gray-900 group-hover:text-brand-700 transition-colors"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              {title}
+            </motion.h3>
+            <motion.p
+              className="text-[10px] text-gray-500 group-hover:text-gray-600 transition-colors mt-0.5"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              {subtitle}
+            </motion.p>
+          </div>
+
+          {/* Contextual action indicator */}
+          <motion.div
+            className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex items-center gap-0.5 text-[10px] text-brand-600">
+              <motion.div
+                className="w-1 h-1 rounded-full bg-brand-500"
+                animate={{
+                  scale: [1, 1.3, 1],
+                  opacity: [0.7, 1, 0.7],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                }}
+              />
+              <span className="font-medium">
+                {title.includes('Location')
+                  ? 'Geographic'
+                  : title.includes('Job Titles')
+                  ? 'Roles'
+                  : title.includes('NOC')
+                  ? 'Classification'
+                  : title.includes('Categories')
+                  ? 'Segmented'
+                  : title.includes('Trends')
+                  ? 'Timeline'
+                  : 'Analytics'}
+              </span>
+            </div>
+          </motion.div>
+        </CardHeader>
+
+        <CardContent className="flex-grow overflow-hidden w-full p-0 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+            className="h-full"
+          >
+            {children}
+          </motion.div>
+        </CardContent>
+
+        {/* Bottom gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white/20 to-transparent pointer-events-none" />
+      </Card>
+    </motion.div>
   );
 };
 
