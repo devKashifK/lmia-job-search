@@ -33,7 +33,6 @@ import {
   CalendarDays,
   Filter,
   X,
-  Home,
   Check,
   ChevronsUpDown,
   Users,

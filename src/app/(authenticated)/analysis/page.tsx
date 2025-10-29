@@ -10,6 +10,7 @@ import BackgroundWrapper from '@/components/ui/background-wrapper';
 
 function Analysis() {
   return (
+    <>
     <BackgroundWrapper>
       <Navbar />
       <div className="min-h-screen pt-32 pb-20">
@@ -125,9 +126,9 @@ function Analysis() {
             </CardContent>
           </Card>
         </div>
-      </div>
       <Footer />
     </BackgroundWrapper>
+    </>
   );
 }
 
