@@ -1,45 +1,45 @@
-import { useSession } from "@/hooks/use-session";
-import React, { useState } from "react";
+import { useSession } from '@/hooks/use-session';
+import React, { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
-import { User, Settings, LogOut, Palette } from "lucide-react";
-import db from "@/db";
-import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import CustomLink from "./CustomLink";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
-import { updateThemeColor } from "@/lib/colors";
+} from './dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from './avatar';
+import { User, Settings, LogOut, Palette } from 'lucide-react';
+import db from '@/db';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import CustomLink from './CustomLink';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
+import { updateThemeColor } from '@/lib/colors';
 
 export default function UserDropdown({ className }: { className?: string }) {
   const { session } = useSession();
   const { toast } = useToast();
   const [showColorPalette, setShowColorPalette] = useState(false);
   const [brandColor, setBrandColor] = useState(
-    session?.user?.user_metadata?.brandColor || "brand"
+    session?.user?.user_metadata?.brandColor || 'brand'
   );
 
   const colorPalette = [
-    { name: "Brand", value: "brand", color: "#4ade80" },
-    { name: "Blue", value: "blue", color: "#3b82f6" },
-    { name: "Purple", value: "purple", color: "#a855f7" },
-    { name: "Pink", value: "pink", color: "#ec4899" },
-    { name: "Red", value: "red", color: "#ef4444" },
-    { name: "Orange", value: "orange", color: "#f97316" },
-    { name: "Yellow", value: "yellow", color: "#eab308" },
-    { name: "Teal", value: "teal", color: "#14b8a6" },
-    { name: "Cyan", value: "cyan", color: "#06b6d4" },
-    { name: "Indigo", value: "indigo", color: "#6366f1" },
-    { name: "Violet", value: "violet", color: "#8b5cf6" },
-    { name: "Fuchsia", value: "fuchsia", color: "#d946ef" },
-    { name: "Rose", value: "rose", color: "#f43f5e" },
-    { name: "Amber", value: "amber", color: "#f59e0b" },
-    { name: "Lime", value: "lime", color: "#84cc16" },
-    { name: "Emerald", value: "emerald", color: "#10b981" },
+    { name: 'Brand', value: 'brand', color: '#4ade80' },
+    { name: 'Blue', value: 'blue', color: '#3b82f6' },
+    { name: 'Purple', value: 'purple', color: '#a855f7' },
+    { name: 'Pink', value: 'pink', color: '#ec4899' },
+    { name: 'Red', value: 'red', color: '#ef4444' },
+    { name: 'Orange', value: 'orange', color: '#f97316' },
+    { name: 'Yellow', value: 'yellow', color: '#eab308' },
+    { name: 'Teal', value: 'teal', color: '#14b8a6' },
+    { name: 'Cyan', value: 'cyan', color: '#06b6d4' },
+    { name: 'Indigo', value: 'indigo', color: '#6366f1' },
+    { name: 'Violet', value: 'violet', color: '#8b5cf6' },
+    { name: 'Fuchsia', value: 'fuchsia', color: '#d946ef' },
+    { name: 'Rose', value: 'rose', color: '#f43f5e' },
+    { name: 'Amber', value: 'amber', color: '#f59e0b' },
+    { name: 'Lime', value: 'lime', color: '#84cc16' },
+    { name: 'Emerald', value: 'emerald', color: '#10b981' },
   ];
 
   const handleColorChange = async (color: string) => {
@@ -62,42 +62,42 @@ export default function UserDropdown({ className }: { className?: string }) {
       window.location.reload();
 
       toast({
-        title: "Success",
-        description: "Brand color updated successfully",
+        title: 'Success',
+        description: 'Brand color updated successfully',
       });
     } catch (error) {
-      console.error("Error updating brand color:", error);
+      console.error('Error updating brand color:', error);
       toast({
-        title: "Error",
-        description: "Failed to update brand color",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to update brand color',
+        variant: 'destructive',
       });
     }
   };
 
   const handleSignOut = async () => {
     try {
-      localStorage.removeItem("brandColor");
+      localStorage.removeItem('brandColor');
       const { error } = await db.auth.signOut();
       if (error) {
-        console.error("Sign-out error:", error.message);
+        console.error('Sign-out error:', error.message);
         toast({
-          title: "Error Signing Out: ",
+          title: 'Error Signing Out: ',
           description: error.message,
         });
       } else {
         toast({
-          title: "Signing Out",
-          description: "Sign Out Successfully",
+          title: 'Signing Out',
+          description: 'Sign Out Successfully',
         });
         window.location.reload();
       }
     } catch (err: unknown) {
-      console.error("Unexpected error during sign-out:", err);
+      console.error('Unexpected error during sign-out:', err);
       toast({
-        title: "Error Signing Out: ",
+        title: 'Error Signing Out: ',
         description:
-          err instanceof Error ? err.message : "An unknown error occurred",
+          err instanceof Error ? err.message : 'An unknown error occurred',
       });
     }
   };
@@ -110,7 +110,7 @@ export default function UserDropdown({ className }: { className?: string }) {
           ) : (
             <AvatarFallback
               className={cn(
-                "bg-gradient-to-br from-brand-500 to-brand-600 text-white",
+                'bg-gradient-to-br from-brand-500 to-brand-600 text-white',
                 className
               )}
             >
@@ -144,8 +144,7 @@ export default function UserDropdown({ className }: { className?: string }) {
         </DropdownMenuItem>
         <DropdownMenuItem
           className="flex items-center gap-2 cursor-pointer"
-          onMouseEnter={() => setShowColorPalette(true)}
-          onMouseLeave={() => setShowColorPalette(false)}
+          onClick={() => setShowColorPalette(true)}
         >
           <Popover open={showColorPalette}>
             <PopoverTrigger asChild>
@@ -184,7 +183,7 @@ export default function UserDropdown({ className }: { className?: string }) {
                         borderColor:
                           brandColor === color.value
                             ? color.color
-                            : "transparent",
+                            : 'transparent',
                       }}
                     />
                     <span className="text-xs text-zinc-600 capitalize">
