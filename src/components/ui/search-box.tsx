@@ -1051,9 +1051,7 @@ export function SearchBox() {
                 <h3 className="font-bold text-gray-800 text-lg">
                   Trending Searches
                 </h3>
-                <p className="text-sm text-gray-500">
-                  Popular job categories right now
-                </p>
+                <p className="text-sm text-gray-500">Popular jobs right now</p>
               </div>
             </div>
 
