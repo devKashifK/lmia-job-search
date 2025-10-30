@@ -11,8 +11,28 @@ export function useCompareData(type: ComparisonType) {
   return useQuery({
     queryKey: ['compare-options', table, type],
     queryFn: async () => {
-      let q = db.from(table).select(type);
-      const { data, error } = await q.limit(10000);
+      // Use RPC function for efficient server-side aggregation
+      try {
+        const { data: rpcData, error: rpcError } = await db.rpc('get_distinct_values_with_count', {
+          table_name: table,
+          column_name: type
+        });
+        
+        if (!rpcError && rpcData) {
+          return rpcData
+            .filter((item: any) => item.name && item.name.trim())
+            .sort((a: any, b: any) => b.count - a.count);
+        }
+      } catch {
+        console.warn('RPC function not available, falling back to client-side aggregation');
+      }
+
+      // Fallback: Fetch with limit and aggregate client-side
+      const { data, error } = await db
+        .from(table)
+        .select(type)
+        .limit(50000); // Reasonable limit for fallback
+      
       if (error) throw new Error(error.message);
 
       // Count occurrences
@@ -27,12 +47,11 @@ export function useCompareData(type: ComparisonType) {
       // Convert to array and sort by count
       const result = Array.from(countMap.entries())
         .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 100); // Top 100 options
+        .sort((a, b) => b.count - a.count);
 
       return result;
     },
-    staleTime: 300_000, // 5 minutes
+    staleTime: 600_000, // 10 minutes - cache longer since this is expensive
   });
 }
 

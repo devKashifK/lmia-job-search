@@ -19,7 +19,7 @@ import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { cn } from '@/lib/utils';
 import { useCompareData } from '@/components/compare/use-compare-data';
 import ComparisonResults from '@/components/compare/comparison-results';
-import { SearchableSelector } from '@/components/compare/searchable-selector';
+import { VirtualizedSearchableSelector } from '@/components/compare/virtualized-searchable-selector';
 
 type ComparisonType = 'job_title' | 'state' | 'city' | 'employer';
 
@@ -222,7 +222,7 @@ export default function ComparePage() {
                         )}
                         {selectedType?.label} #1
                       </label>
-                      <SearchableSelector
+                      <VirtualizedSearchableSelector
                         value={entity1}
                         onValueChange={setEntity1}
                         options={options || []}
@@ -276,7 +276,7 @@ export default function ComparePage() {
                         )}
                         {selectedType?.label} #2
                       </label>
-                      <SearchableSelector
+                      <VirtualizedSearchableSelector
                         value={entity2}
                         onValueChange={setEntity2}
                         options={options || []}
