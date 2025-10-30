@@ -244,22 +244,40 @@ const FilterSidebar = ({
 
       if (error) throw error;
 
-      const result: Record<string, Set<string>> = {
-        locations: new Set(),
-        cities: new Set(),
-        nocCodes: new Set(),
+      const result: Record<string, Map<string, number>> = {
+        locations: new Map(),
+        cities: new Map(),
+        nocCodes: new Map(),
       };
 
       data?.forEach((row: any) => {
-        if (row[locationColumn]) result.locations.add(row[locationColumn]);
-        if (row.city) result.cities.add(row.city);
-        if (row.noc_code) result.nocCodes.add(row.noc_code);
+        if (row[locationColumn]) {
+          result.locations.set(
+            row[locationColumn],
+            (result.locations.get(row[locationColumn]) || 0) + 1
+          );
+        }
+        if (row.city) {
+          result.cities.set(row.city, (result.cities.get(row.city) || 0) + 1);
+        }
+        if (row.noc_code) {
+          result.nocCodes.set(
+            row.noc_code,
+            (result.nocCodes.get(row.noc_code) || 0) + 1
+          );
+        }
       });
 
       return {
-        locations: Array.from(result.locations).sort(),
-        cities: Array.from(result.cities).sort(),
-        nocCodes: Array.from(result.nocCodes).sort(),
+        locations: Array.from(result.locations.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count),
+        cities: Array.from(result.cities.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count),
+        nocCodes: Array.from(result.nocCodes.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count),
       };
     },
     enabled: !!companyName,
@@ -283,39 +301,36 @@ const FilterSidebar = ({
     <div className="bg-white/95 border-brand-200/40 h-full flex flex-col ">
       {/* Applied Filters Display */}
       {activeFiltersCount > 0 && (
-        <div className="border-b border-brand-200/40 bg-gradient-to-r from-emerald-50 to-white px-4 py-3">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Filter className="h-3.5 w-3.5 text-emerald-600" />
-              <span className="text-xs font-semibold text-gray-700">
-                Active Filters
+        <div className="border-b border-gray-200 bg-gray-50 px-2 py-1.5">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-1.5">
+              <Filter className="h-3 w-3 text-gray-600" />
+              <span className="text-[10px] font-semibold text-gray-700">
+                Active ({activeFiltersCount})
               </span>
-              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 px-2 py-0.5 text-xs">
-                {activeFiltersCount}
-              </Badge>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="h-6 px-2 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="h-5 px-1.5 text-[10px] text-red-600 hover:text-red-700 hover:bg-red-50"
             >
-              <X className="h-3 w-3 mr-1" />
-              Clear All
+              <X className="h-2.5 w-2.5 mr-0.5" />
+              Clear
             </Button>
           </div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1">
             {(currentFilters.dateFrom || currentFilters.dateTo) && (
               <Badge
                 variant="outline"
-                className="flex items-center gap-1 px-2 py-0.5 bg-blue-50 border-blue-200 text-blue-700 text-xs"
+                className="flex items-center gap-0.5 px-1.5 py-0 h-5 bg-blue-50 border-blue-200 text-blue-700 text-[10px]"
               >
-                <CalendarDays className="h-3 w-3" />
-                Date Range
+                <CalendarDays className="h-2.5 w-2.5" />
+                <span className="text-[10px]">Date</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-3 w-3 p-0 hover:bg-blue-200 rounded-full ml-1"
+                  className="h-3 w-3 p-0 hover:bg-blue-200 rounded-full ml-0.5"
                   onClick={() =>
                     updateFilters({ date_from: undefined, date_to: undefined })
                   }
@@ -328,14 +343,14 @@ const FilterSidebar = ({
               <Badge
                 key={loc}
                 variant="outline"
-                className="flex items-center gap-1 px-2 py-0.5 bg-purple-50 border-purple-200 text-purple-700 text-xs"
+                className="flex items-center gap-0.5 px-1.5 py-0 h-5 bg-purple-50 border-purple-200 text-purple-700 text-[10px]"
               >
-                <MapPin className="h-3 w-3" />
-                {loc}
+                <MapPin className="h-2.5 w-2.5" />
+                <span className="text-[10px] max-w-[60px] truncate">{loc}</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-3 w-3 p-0 hover:bg-purple-200 rounded-full ml-1"
+                  className="h-3 w-3 p-0 hover:bg-purple-200 rounded-full ml-0.5"
                   onClick={() => removeFilter('location', loc)}
                 >
                   <X className="h-2 w-2" />
@@ -346,14 +361,16 @@ const FilterSidebar = ({
               <Badge
                 key={city}
                 variant="outline"
-                className="flex items-center gap-1 px-2 py-0.5 bg-orange-50 border-orange-200 text-orange-700 text-xs"
+                className="flex items-center gap-0.5 px-1.5 py-0 h-5 bg-orange-50 border-orange-200 text-orange-700 text-[10px]"
               >
-                <Building2 className="h-3 w-3" />
-                {city}
+                <Building2 className="h-2.5 w-2.5" />
+                <span className="text-[10px] max-w-[60px] truncate">
+                  {city}
+                </span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-3 w-3 p-0 hover:bg-orange-200 rounded-full ml-1"
+                  className="h-3 w-3 p-0 hover:bg-orange-200 rounded-full ml-0.5"
                   onClick={() => removeFilter('city', city)}
                 >
                   <X className="h-2 w-2" />
@@ -364,14 +381,14 @@ const FilterSidebar = ({
               <Badge
                 key={noc}
                 variant="outline"
-                className="flex items-center gap-1 px-2 py-0.5 bg-violet-50 border-violet-200 text-violet-700 text-xs"
+                className="flex items-center gap-0.5 px-1.5 py-0 h-5 bg-violet-50 border-violet-200 text-violet-700 text-[10px]"
               >
-                <Hash className="h-3 w-3" />
-                {noc}
+                <Hash className="h-2.5 w-2.5" />
+                <span className="text-[10px] max-w-[60px] truncate">{noc}</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-3 w-3 p-0 hover:bg-violet-200 rounded-full ml-1"
+                  className="h-3 w-3 p-0 hover:bg-violet-200 rounded-full ml-0.5"
                   onClick={() => removeFilter('noc_code', noc)}
                 >
                   <X className="h-2 w-2" />
@@ -383,8 +400,8 @@ const FilterSidebar = ({
       )}
 
       {/* Company Switcher */}
-      <div className="border-b border-brand-200/40 bg-gradient-to-r from-brand-50/60 to-white px-4 py-3">
-        <div className="flex items-center justify-between mb-2">
+      <div className="border-b border-brand-200/40 bg-gradient-to-r from-brand-50/60 to-white px-3 py-2">
+        <div className="flex items-center justify-between mb-1.5">
           <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2">
             <Building2 className="h-3.5 w-3.5 text-brand-600" />
             Company
@@ -404,7 +421,7 @@ const FilterSidebar = ({
               variant="outline"
               role="combobox"
               aria-expanded={companySearchOpen}
-              className="w-full h-9 justify-between bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-sm font-normal"
+              className="w-full h-8 justify-between bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-xs font-normal"
             >
               <span className="truncate">
                 {companyName || 'Select company...'}
@@ -419,7 +436,7 @@ const FilterSidebar = ({
             <Command shouldFilter={false}>
               <CommandInput
                 placeholder="Search companies..."
-                className="h-9"
+                className="h-8 text-xs"
                 value={companySearchQuery}
                 onValueChange={setCompanySearchQuery}
               />
@@ -477,10 +494,10 @@ const FilterSidebar = ({
       </div>
 
       {/* Horizontal Filter Bar - Top of L */}
-      <div className="border-b border-brand-200/40 bg-gradient-to-r from-brand-50/60 to-white px-6 py-4">
-        <div className="flex items-center justify-between gap-6 flex-col">
+      <div className="border-b border-brand-200/40 bg-gradient-to-r from-brand-50/60 to-white px-3 py-2">
+        <div className="flex items-center justify-between gap-3 flex-col">
           {/* Data Source */}
-          <div className="flex flex-col items-start w-full gap-3">
+          <div className="flex flex-col items-start w-full gap-1.5">
             <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2 whitespace-nowrap">
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
               Data Source
@@ -489,20 +506,26 @@ const FilterSidebar = ({
               value={currentFilters.searchType}
               onValueChange={(value) => updateFilters({ t: value })}
             >
-              <SelectTrigger className="w-full h-9 bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+              <SelectTrigger className="w-full h-8 bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-xs">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="hot_leads">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    Trending Jobs
+              <SelectContent className="min-w-[160px] [&>*]:p-0.5">
+                <SelectItem
+                  value="hot_leads"
+                  className="text-xs !py-1 !pl-1.5 !pr-6 min-h-0 h-7"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                    <span className="text-xs">Trending Jobs</span>
                   </div>
                 </SelectItem>
-                <SelectItem value="lmia">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    LMIA
+                <SelectItem
+                  value="lmia"
+                  className="text-xs !py-1 !pl-1.5 !pr-6 min-h-0 h-7"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                    <span className="text-xs">LMIA</span>
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -510,7 +533,7 @@ const FilterSidebar = ({
           </div>
 
           {/* Date Range */}
-          <div className="flex flex-col items-start w-full gap-3">
+          <div className="flex flex-col items-start w-full gap-1.5">
             <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2 whitespace-nowrap">
               <CalendarDays className="h-3.5 w-3.5 text-orange-500" />
               Date Range
@@ -521,14 +544,14 @@ const FilterSidebar = ({
                 value={currentFilters.dateFrom || ''}
                 onChange={(e) => updateFilters({ date_from: e.target.value })}
                 placeholder="From"
-                className="w-full h-9 bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-xs"
+                className="w-full h-8 bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-xs"
               />
               <Input
                 type="date"
                 value={currentFilters.dateTo || ''}
                 onChange={(e) => updateFilters({ date_to: e.target.value })}
                 placeholder="To"
-                className="w-full h-9 bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-xs"
+                className="w-full h-8 bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-xs"
               />
             </div>
           </div>
@@ -536,7 +559,7 @@ const FilterSidebar = ({
       </div>
 
       {/* Vertical Filter Panel - Vertical part of L */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-white via-brand-50/20 to-brand-50/30">
+      <div className="flex-1 overflow-y-auto p-3 space-y-4 bg-gradient-to-b from-white via-brand-50/20 to-brand-50/30">
         {/* Date Range Display (when not in top bar due to space) */}
         {(currentFilters.dateFrom || currentFilters.dateTo) && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
@@ -583,7 +606,7 @@ const FilterSidebar = ({
                   {currentFilters.searchType === 'lmia' ? 'Territory' : 'State'}
                 </Label>
                 <Select onValueChange={(value) => addFilter('location', value)}>
-                  <SelectTrigger className="h-9 bg-white border-gray-200 shadow-sm hover:border-emerald-300 transition-colors">
+                  <SelectTrigger className="h-8 bg-white border-gray-200 shadow-sm hover:border-emerald-300 transition-colors text-xs">
                     <SelectValue
                       placeholder={`Select ${
                         currentFilters.searchType === 'lmia'
@@ -592,16 +615,22 @@ const FilterSidebar = ({
                       }...`}
                     />
                   </SelectTrigger>
-                  <SelectContent className="max-h-48">
+                  <SelectContent className="max-h-48 [&>*]:p-0.5">
                     {filterOptions.locations.map((location) => (
                       <SelectItem
-                        key={location}
-                        value={location}
+                        key={location.name}
+                        value={location.name}
                         disabled={(currentFilters.location || []).includes(
-                          location
+                          location.name
                         )}
+                        className="text-xs !py-1 !pl-1.5 !pr-6 min-h-0 h-7"
                       >
-                        {location}
+                        <div className="flex items-center justify-between w-full gap-2">
+                          <span>{location.name}</span>
+                          <span className="text-[10px] text-gray-500 bg-gray-100 px-1 py-0.5 rounded">
+                            {location.count.toLocaleString()}
+                          </span>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -615,17 +644,25 @@ const FilterSidebar = ({
                   City
                 </Label>
                 <Select onValueChange={(value) => addFilter('city', value)}>
-                  <SelectTrigger className="h-9 bg-white border-gray-200 shadow-sm hover:border-sky-300 transition-colors">
+                  <SelectTrigger className="h-8 bg-white border-gray-200 shadow-sm hover:border-sky-300 transition-colors text-xs">
                     <SelectValue placeholder="Select city..." />
                   </SelectTrigger>
-                  <SelectContent className="max-h-48">
+                  <SelectContent className="max-h-48 [&>*]:p-0.5">
                     {filterOptions.cities.map((city) => (
                       <SelectItem
-                        key={city}
-                        value={city}
-                        disabled={(currentFilters.city || []).includes(city)}
+                        key={city.name}
+                        value={city.name}
+                        disabled={(currentFilters.city || []).includes(
+                          city.name
+                        )}
+                        className="text-xs !py-1 !pl-1.5 !pr-6 min-h-0 h-7"
                       >
-                        {city}
+                        <div className="flex items-center justify-between w-full gap-2">
+                          <span>{city.name}</span>
+                          <span className="text-[10px] text-gray-500 bg-gray-100 px-1 py-0.5 rounded">
+                            {city.count.toLocaleString()}
+                          </span>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -639,19 +676,25 @@ const FilterSidebar = ({
                   NOC Code
                 </Label>
                 <Select onValueChange={(value) => addFilter('noc_code', value)}>
-                  <SelectTrigger className="h-9 bg-white border-gray-200 shadow-sm hover:border-violet-300 transition-colors">
+                  <SelectTrigger className="h-8 bg-white border-gray-200 shadow-sm hover:border-violet-300 transition-colors text-xs">
                     <SelectValue placeholder="Select NOC code..." />
                   </SelectTrigger>
-                  <SelectContent className="max-h-48">
+                  <SelectContent className="max-h-48 [&>*]:p-0.5">
                     {filterOptions.nocCodes.map((nocCode) => (
                       <SelectItem
-                        key={nocCode}
-                        value={nocCode}
+                        key={nocCode.name}
+                        value={nocCode.name}
                         disabled={(currentFilters.nocCode || []).includes(
-                          nocCode
+                          nocCode.name
                         )}
+                        className="text-xs !py-1 !pl-1.5 !pr-6 min-h-0 h-7"
                       >
-                        {nocCode}
+                        <div className="flex items-center justify-between w-full gap-2">
+                          <span>{nocCode.name}</span>
+                          <span className="text-[10px] text-gray-500 bg-gray-100 px-1 py-0.5 rounded">
+                            {nocCode.count.toLocaleString()}
+                          </span>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1268,188 +1311,145 @@ function CompanyAnalysisContent({
   return (
     <BackgroundWrapper>
       <Navbar />
-      <div className="min-h-screen pt-20 pb-16">
-        <div className="max-w-[1600px] mx-auto px-12">
+      <div className="min-h-screen pt-[8rem] pb-12">
+        <div className="max-w-[1600px] mx-auto px-8">
           {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white/90   rounded-2xl  p-6 mb-6 relative overflow-hidden"
+            transition={{ duration: 0.3 }}
+            className="flex items-center justify-between gap-4 mb-3 pb-3 border-b border-gray-200"
           >
-            {/* Animated background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 via-transparent to-brand-600/5 opacity-0 hover:opacity-100 transition-opacity duration-500" />
+            {/* Left Section: Filter Toggle, Company Icon & Name */}
+            <div className="flex items-center gap-4 flex-1 min-w-0">
+              {/* Filter Toggle Button */}
+              <Button
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                variant="outline"
+                size="sm"
+                className={cn(
+                  'h-8 w-8 p-0 rounded-lg transition-all',
+                  isFilterOpen
+                    ? 'bg-brand-500 text-white border-brand-500'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-brand-300 hover:bg-brand-50'
+                )}
+              >
+                {isFilterOpen ? (
+                  <X className="w-4 h-4" />
+                ) : (
+                  <Filter className="w-4 h-4" />
+                )}
+              </Button>
 
-            {/* Top accent line */}
-
-            <div className="relative flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    onClick={() => setIsFilterOpen(!isFilterOpen)}
-                    variant="outline"
-                    size="sm"
-                    className={`h-10 w-10 p-0 rounded-xl transition-all duration-300 shadow-md ${
-                      isFilterOpen
-                        ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white border-brand-500 shadow-lg shadow-brand-500/30'
-                        : 'bg-white text-gray-700 border-brand-200 hover:border-brand-300 hover:bg-brand-50 hover:shadow-brand-500/20'
-                    }`}
-                  >
-                    <motion.div
-                      animate={{ rotate: isFilterOpen ? 180 : 0 }}
-                      transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    >
-                      {isFilterOpen ? (
-                        <X className="w-4 h-4" />
-                      ) : (
-                        <Filter className="w-4 h-4" />
-                      )}
-                    </motion.div>
-                  </Button>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="flex items-center gap-3"
-                >
-                  <motion.div
-                    className="p-3 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl shadow-lg shadow-brand-500/30 ring-2 ring-brand-200/50"
-                    whileHover={{ scale: 1.05, rotate: 5 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Building2 className="w-5 h-5 text-white" />
-                  </motion.div>
-                  <div>
-                    <motion.h1
-                      className="text-2xl font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-brand-700 bg-clip-text text-transparent"
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      {companyName}
-                    </motion.h1>
-                    <motion.p
-                      className="text-sm text-gray-600 flex items-center gap-2 mt-1"
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                    >
-                      <span>Company Analysis</span>
-                    </motion.p>
-                  </div>
-                </motion.div>
-              </div>
-
+              {/* Company Name with Icon */}
               <div className="flex items-center gap-3">
                 <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
+                  className="p-2 bg-brand-100 rounded-lg"
                 >
-                  <Button
-                    variant="outline"
-                    onClick={goBack}
-                    className="bg-white/80 backdrop-blur-sm border-brand-200 hover:border-brand-300 hover:bg-brand-50 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-brand-500/20"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back
-                  </Button>
+                  <Building2 className="w-5 h-5 text-brand-600" />
                 </motion.div>
+
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-900">
+                    {companyName}
+                  </h1>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Company Analysis
+                  </p>
+                </div>
               </div>
+
+              {/* Data Source Badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <Badge
+                  variant="outline"
+                  className="text-xs font-medium border-gray-300 text-gray-700"
+                >
+                  <TrendingUp className="w-3 h-3 mr-1 inline" />
+                  {filters.searchType === 'lmia' ? 'LMIA' : 'Trending Jobs'}
+                </Badge>
+              </motion.div>
             </div>
+
+            {/* Right Section: Back Button */}
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.15 }}
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goBack}
+                className="border-gray-300 hover:border-brand-300 hover:bg-brand-50 transition-all"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            </motion.div>
           </motion.div>
 
           <div className="flex gap-4">
             {/* Sidebar */}
             {isFilterOpen && (
               <motion.div
-                initial={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                className="w-80 flex-shrink-0"
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="w-64 flex-shrink-0"
               >
-                <motion.div
-                  className="bg-white/90 backdrop-blur-sm border border-brand-200/30 rounded-2xl shadow-xl shadow-brand-500/15 overflow-hidden relative"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  {/* Animated background gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-brand-500/3 via-transparent to-brand-600/3" />
-
+                <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
                   {/* Header */}
-                  <div className="relative bg-gradient-to-r from-brand-50 to-brand-100/60 px-4 py-3 border-b border-brand-200/30">
-                    <div className="flex items-center gap-3">
-                      <motion.div
-                        className="p-2 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl shadow-lg shadow-brand-500/30 ring-2 ring-brand-200/50"
-                        whileHover={{ scale: 1.05, rotate: 5 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Filter className="w-4 h-4 text-white" />
-                      </motion.div>
-                      <div className="flex-1">
-                        <h3 className="text-sm font-bold text-gray-900 bg-gradient-to-r from-gray-900 to-brand-700 bg-clip-text text-transparent">
+                  <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="p-1 bg-brand-500 rounded">
+                          <Filter className="w-3 h-3 text-white" />
+                        </div>
+                        <h3 className="text-xs font-semibold text-gray-900">
                           Filters
                         </h3>
-                        <p className="text-xs text-gray-600 mt-0.5">
-                          Customize your analysis view
-                        </p>
                       </div>
-                      <motion.div
-                        className="flex flex-col items-end"
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.3 }}
+                      <Badge
+                        variant="outline"
+                        className="text-xs px-1.5 py-0.5"
                       >
-                        <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-brand-100 to-brand-200 text-brand-700 border border-brand-300/50">
-                          <div className="w-1.5 h-1.5 bg-brand-500 rounded-full mr-1.5 animate-pulse" />
-                          {
-                            Object.values(filters).filter(
-                              (v) =>
-                                v &&
-                                (typeof v === 'string' ||
-                                  (Array.isArray(v) && v.length > 0))
-                            ).length
-                          }{' '}
-                          active
-                        </div>
-                      </motion.div>
+                        {
+                          Object.values(filters).filter(
+                            (v) =>
+                              v &&
+                              (typeof v === 'string' ||
+                                (Array.isArray(v) && v.length > 0))
+                          ).length
+                        }
+                      </Badge>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="relative p-4">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <FilterSidebar
-                        currentFilters={filters}
-                        tableName={tableName}
-                        companyName={companyName}
-                      />
-                    </motion.div>
+                  <div className="p-3">
+                    <FilterSidebar
+                      currentFilters={filters}
+                      tableName={tableName}
+                      companyName={companyName}
+                    />
                   </div>
-
-                  {/* Bottom accent */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500" />
-                </motion.div>
+                </div>
               </motion.div>
             )}
 
             {/* Main Content */}
             <div className="flex-1 min-w-0">
               {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[...Array(6)].map((_, i) => (
                     <Card
                       key={i}
@@ -1466,9 +1466,9 @@ function CompanyAnalysisContent({
                   ))}
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Key Metrics */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 mb-4">
                     <MetricCard
                       label={'Growth Rate'}
                       value={
@@ -1652,7 +1652,7 @@ export default function DeepAnalysis({ params }: PageProps) {
   );
 }
 
-const MetricCard = ({ label, value, subtitle, trend, icon }) => {
+const MetricCard = ({ label, value, subtitle, icon }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

@@ -25,6 +25,7 @@ import {
   getJobRecordId,
 } from '@/utils/saved-jobs';
 import { JobSortPopover, sortJobs, type SortConfig } from './job-sort-popover';
+import { AttributeName } from '@/helpers/attribute';
 
 interface Job {
   id?: number;
@@ -147,7 +148,7 @@ export function AllJobsList({
                     Job Listings
                   </h3>
                   <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <Tooltip>
+                    {/* <Tooltip>
                       <TooltipTrigger asChild>
                         <span className="cursor-help">
                           {totalCount !== undefined ? (
@@ -182,7 +183,7 @@ export function AllJobsList({
                           <p>Jobs available on this page</p>
                         )}
                       </TooltipContent>
-                    </Tooltip>
+                    </Tooltip> */}
                     {savedCount > 0 && (
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -259,7 +260,9 @@ export function AllJobsList({
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Company: {job.employer}</p>
+                            <p>
+                              Company: <AttributeName name={job.employer} />
+                            </p>
                             {job.employer_type && (
                               <p>Type: {job.employer_type}</p>
                             )}
@@ -271,11 +274,13 @@ export function AllJobsList({
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <h4 className="font-semibold text-gray-900 truncate cursor-help text-sm group-hover:text-brand-700 transition-colors">
-                                  {jobTitle}
+                                  <AttributeName name={jobTitle} />
                                 </h4>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p className="max-w-xs">{jobTitle}</p>
+                                <p className="max-w-xs">
+                                  <AttributeName name={jobTitle} />
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                             {isRecent && (
@@ -301,7 +306,7 @@ export function AllJobsList({
                             )}?field=employer&t=trending_job`}
                             className="text-xs text-gray-600 truncate hover:text-brand-600 hover:underline transition-colors font-medium"
                           >
-                            {job.employer}
+                            <AttributeName name={job.employer} />
                           </Link>
                         </div>
                       </div>
@@ -313,7 +318,8 @@ export function AllJobsList({
                             <div className="flex items-center gap-1 cursor-help">
                               <MapPin className="w-3 h-3" />
                               <span className="text-xs">
-                                {job.city}, {job.state}
+                                <AttributeName name={job.city} />,
+                                <AttributeName name={job.state} />
                               </span>
                             </div>
                           </TooltipTrigger>

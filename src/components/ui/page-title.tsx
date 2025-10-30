@@ -4,6 +4,8 @@ import { Badge } from './badge';
 import { useData } from './dynamic-data-view';
 import { useSearchParams } from 'next/navigation';
 import CompactSearch from './compact-search';
+import { motion } from 'framer-motion';
+import { Briefcase, TrendingUp } from 'lucide-react';
 
 interface PageTitleProps {
   title: string;
@@ -23,78 +25,80 @@ export default function PageTitle({
   searchPlaceholder = 'Quick search...',
   defaultSearchType = 'hot_leads',
 }: PageTitleProps) {
-  const { data } = useData('');
+  const { data } = useData(title);
   const sp = useSearchParams();
 
   // table from URL (fallback to trending_job)
   const tableName = (sp?.get('t') ?? 'trending_job').trim();
   const count = data?.count;
+
   return (
-    <div className={`flex flex-col gap-2 mb-2 w-full ${className}`}>
-      <div className="flex items-center justify-between gap-3 w-full">
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`flex items-center justify-between gap-4 mb-3 pb-3 border-b border-gray-200 w-full ${className}`}
+    >
+      {/* Left Section: Title and Metadata */}
+      <div className="flex items-center gap-4 flex-1 min-w-0">
+        {/* Title with Icon */}
         <div className="flex items-center gap-3">
-          <div className="w-1 h-6 bg-brand-600 rounded-full"></div>
-          <AttributeName
-            className="text-2xl font-bold text-gray-900"
-            name={title}
-          />
-          <Badge variant="outline">
-            <AttributeName name={tableName} />
-          </Badge>
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
+            className="p-2 bg-brand-100 rounded-lg"
+          >
+            <Briefcase className="w-5 h-5 text-brand-600" />
+          </motion.div>
+          
+          <h1 className="text-2xl font-semibold text-gray-900 truncate">
+            <AttributeName name={title} />
+          </h1>
         </div>
 
-        {showSearch && (
+        {/* Metadata Pills */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="flex items-center gap-2"
+        >
+          {/* Type Badge */}
+          <Badge variant="outline" className="text-xs font-medium border-gray-300 text-gray-700">
+            <TrendingUp className="w-3 h-3 mr-1 inline" />
+            <AttributeName name={tableName} />
+          </Badge>
+
+          {/* Count Badge */}
+          {count !== undefined && (
+            <motion.div
+              key={count}
+              initial={{ scale: 1.1 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Badge className="text-xs font-medium bg-brand-100 text-brand-700 border-brand-200 hover:bg-brand-200 transition-colors">
+                {count.toLocaleString()} results
+              </Badge>
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
+
+      {/* Search Component */}
+      {showSearch && (
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.15 }}
+        >
           <CompactSearch
-            className="ml-auto"
             placeholder={searchPlaceholder}
             defaultSearchType={defaultSearchType}
           />
-        )}
-      </div>
-      <div className="flex items-center gap-2 text-sm text-gray-500">
-        {/* {count !== undefined && (
-          <span className="flex items-center gap-1.5">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-brand-500"
-            >
-              <path d="M21 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            {count} job opportunities
-          </span>
-        )} */}
-        {/* {count !== undefined && showVerified && (
-          <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-        )} */}
-        {/* {showVerified && (
-          <span className="flex items-center gap-1.5">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-brand-500"
-            >
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
-            </svg>
-            Verified employers
-          </span>
-        )} */}
-      </div>
-    </div>
+        </motion.div>
+      )}
+    </motion.div>
   );
 }
