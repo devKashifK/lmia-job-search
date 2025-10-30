@@ -24,7 +24,7 @@ import AppliedFilters from '@/components/ui/applied-filters';
 import { useTableStore } from '@/context/store';
 import db from '@/db';
 import { useQuery } from '@tanstack/react-query';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams, ReadonlyURLSearchParams } from 'next/navigation';
 
 type DataType = 'lmia' | 'hotLeads';
 
@@ -37,24 +37,17 @@ interface DynamicDataViewProps {
   field: string;
 }
 
-const ALLOWED_FIELDS = [
-  'state',
-  'city',
-  'category',
-  'job_title',
-  'noc_code',
-  'employer',
-] as const;
-
 function toPositiveInt(v: string | null, fallback: number) {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
 }
 
-function stableFiltersKey(sp: URLSearchParams) {
+function stableFiltersKey(sp: ReadonlyURLSearchParams | URLSearchParams | null, allowedFields: string[]) {
   // Build a stable JSON key of allowed filter arrays (sorted)
   const obj: Record<string, string[]> = {};
-  for (const k of ALLOWED_FIELDS) {
+  if (!sp) return JSON.stringify(obj);
+  
+  for (const k of allowedFields) {
     const vals = sp
       .getAll(k)
       .map((s) => s.trim())
@@ -143,7 +136,7 @@ export function useData(query: string, fieldFromProp?: string) {
   const sp = useSearchParams();
 
   // table from URL (fallback to trending_job)
-  const tableName = (sp.get('t') ?? 'trending_job').trim();
+  const tableName = (sp?.get('t') ?? 'trending_job').trim();
 
   // ---- table-specific helpers
   const pk = getPrimaryKey(tableName); // 'id' | 'RecordID'
@@ -153,17 +146,17 @@ export function useData(query: string, fieldFromProp?: string) {
   const normMap = getNormMap(tableName); // only trending_job has *_norm
 
   // from URL
-  const fieldParam = (sp.get('field') ?? 'all').toLowerCase();
+  const fieldParam = (sp?.get('field') ?? 'all').toLowerCase();
   const field = (fieldFromProp ?? fieldParam).toLowerCase();
 
-  const page = toPositiveInt(sp.get('page'), 1);
-  const pageSize = toPositiveInt(sp.get('pageSize'), 20);
+  const page = toPositiveInt(sp?.get('page') ?? null, 1);
+  const pageSize = toPositiveInt(sp?.get('pageSize') ?? null, 20);
 
-  const filtersKey = stableFiltersKey(sp);
+  const filtersKey = stableFiltersKey(sp, allowedFields);
 
   // 🔹 date range from URL (YYYY-MM-DD)
-  const rawDateFrom = sp.get('date_from') ?? undefined;
-  const rawDateTo = sp.get('date_to') ?? undefined;
+  const rawDateFrom = sp?.get('date_from') ?? undefined;
+  const rawDateTo = sp?.get('date_to') ?? undefined;
 
   const isISO = (s?: string) => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s);
   let dateFrom = isISO(rawDateFrom) ? rawDateFrom : undefined;
@@ -322,12 +315,17 @@ export default function DynamicDataView({
     searchParams?.get('t') === 'lmia' ? 'lmia' : 'hot_leads'
   ) as 'lmia' | 'hot_leads';
 
+  // Call useData once here to get the filtered count
+  const { data } = useData(title, field);
+  const count = data?.count;
+
   return (
     <div className=" mx-auto px-16 py-8">
       <div className="py-0">
         <div className="flex justify-between items-center mb-0">
           <PageTitle
             title={title}
+            count={count}
             showSearch={true}
             searchPlaceholder={
               searchType === 'lmia'
@@ -341,8 +339,8 @@ export default function DynamicDataView({
 
       <AppliedFilters />
 
-      <div className="relative flex gap-1">
-        <div className="w-1/5">
+      <div className="relative flex gap-0">
+        <div className="">
           <NewFilterPanel />
         </div>
         <NewDataPanel

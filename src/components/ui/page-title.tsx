@@ -19,6 +19,7 @@ interface PageTitleProps {
 
 export default function PageTitle({
   title,
+  count: countProp,
   showVerified = true,
   className = '',
   showSearch = false,
@@ -30,7 +31,8 @@ export default function PageTitle({
 
   // table from URL (fallback to trending_job)
   const tableName = (sp?.get('t') ?? 'trending_job').trim();
-  const count = data?.count;
+  // Use prop if provided, otherwise fall back to useData
+  const count = countProp !== undefined ? countProp : data?.count;
 
   return (
     <motion.div

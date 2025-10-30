@@ -99,17 +99,66 @@ export function useFilterColumnAttributes(
   const searchTerm =
     typeof params?.search === 'string' ? decodeURIComponent(params.search) : '';
 
+  // Get all active filters from URL (excluding the current column to show available options)
+  const activeFilters = React.useMemo(() => {
+    const filters: Record<string, string[]> = {};
+    const filterKeys = ['state', 'city', 'category', 'job_title', 'noc_code', 'employer', 'territory'];
+    
+    filterKeys.forEach((key) => {
+      // Skip the column we're getting facets for
+      if (key === column) return;
+      const values = sp?.getAll(key) ?? [];
+      if (values.length > 0) {
+        filters[key] = values;
+      }
+    });
+    return filters;
+  }, [sp, column]);
+
+  // Get date filters
+  const dateFrom = sp?.get('date_from');
+  const dateTo = sp?.get('date_to');
+
+  // Create a stable key for all filters
+  const filtersKey = JSON.stringify({ activeFilters, dateFrom, dateTo });
+
   return useQuery({
-    queryKey: ['facet-values', table, column, field, searchTerm, stateFilter],
+    queryKey: ['facet-values', table, column, field, searchTerm, stateFilter, filtersKey],
     queryFn: async () => {
       let q = db.from(table).select(column);
+      
+      // Apply search term filter
       if (searchTerm && field && field !== 'all') {
         q = q.ilike(field as any, `%${searchTerm}%`);
       }
-      // If column is city and stateFilter is provided, filter by that state
+      
+      // Apply stateFilter for city column
       if (column === 'city' && stateFilter) {
         q = q.eq('state', stateFilter);
       }
+
+      // Apply all other active filters
+      Object.entries(activeFilters).forEach(([key, values]) => {
+        if (values.length > 0) {
+          if (values.length === 1) {
+            q = q.eq(key, values[0]);
+          } else {
+            q = q.in(key, values);
+          }
+        }
+      });
+
+      // Apply date range filters
+      if (table === 'trending_job') {
+        if (dateFrom) q = q.gte('date_of_job_posting', dateFrom);
+        if (dateTo) q = q.lte('date_of_job_posting', dateTo);
+      } else if (table === 'lmia') {
+        const yf = dateFrom ? Number(dateFrom.slice(0, 4)) : undefined;
+        const yt = dateTo ? Number(dateTo.slice(0, 4)) : undefined;
+        if (Number.isFinite(yf)) q = q.gte('lmia_year', yf as number);
+        if (Number.isFinite(yt)) q = q.lte('lmia_year', yt as number);
+      }
+
       const { data, error } = await q.limit(10000);
       if (error) throw new Error(error.message);
 
@@ -437,7 +486,9 @@ function FilterAttributes({ column }: { column: string }) {
                       : 'text-gray-700 hover:bg-gray-50'
                   )}
                 >
-                  <span className="truncate text-[11px] flex-1">{item.name}</span>
+                  <span className="truncate text-[11px] flex-1">
+                    {item.name}
+                  </span>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <span className="text-[9px] text-gray-500 bg-gray-100 px-1 py-0.5 rounded">
                       {item.count.toLocaleString()}
