@@ -1,7 +1,5 @@
 import React from 'react';
-import Navbar from '@/components/ui/nabvar';
-import DynamicDataView from '@/components/ui/dynamic-data-view';
-import Footer from '@/pages/homepage/footer';
+import { SearchResultsLayout } from '@/components/ui/search-result-layout';
 
 type PageProps = {
   params: { segment: string; search: string };
@@ -15,14 +13,11 @@ export default async function Engine({ params, searchParams }: PageProps) {
   const field = searchParams.field;
   return (
     <>
-      <Navbar className="" />
-      <div className="pt-24">
-        <DynamicDataView
-          title={decodeURIComponent(searchKey)}
-          field={decodeURIComponent(field as string)}
-        />
-      </div>
-      <Footer />
+      <SearchResultsLayout
+        searchKey={searchKey}
+        field={field as string}
+        searchType="lmia" // or "lmia"
+      />
     </>
   );
 }

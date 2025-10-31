@@ -1,4 +1,4 @@
-import DynamicDataView from '@/components/ui/dynamic-data-view';
+import { SearchResultsLayout } from '@/components/ui/search-result-layout';
 
 type PageProps = {
   params: { segment: string; keyword: string };
@@ -11,9 +11,10 @@ export default function CompanyPage({ params, searchParams }: PageProps) {
   const field = searchParams.field;
 
   return (
-    <DynamicDataView
-      title={decodeURIComponent(searchKey)}
-      field={decodeURIComponent(field as string)}
+    <SearchResultsLayout
+      searchKey={searchKey}
+      field={field as string}
+      searchType="company" // or "lmia"
     />
   );
 }
