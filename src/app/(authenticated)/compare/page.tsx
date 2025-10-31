@@ -22,10 +22,24 @@ import ComparisonResults from '@/components/compare/comparison-results';
 import { VirtualizedSearchableSelector } from '@/components/compare/virtualized-searchable-selector';
 import { useSavedJobs } from '@/hooks/use-saved-jobs';
 import { useSession } from '@/hooks/use-session';
-import { Bookmark, Search, X, ChevronDown, ChevronUp, Clock, Trash2, Info } from 'lucide-react';
+import {
+  Bookmark,
+  Search,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Trash2,
+  Info,
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import db from '@/db';
 
@@ -143,7 +157,7 @@ export default function ComparePage() {
     if (stored) {
       setRecentComparisons(JSON.parse(stored));
     }
-    
+
     const saved = localStorage.getItem('savedComparisons');
     if (saved) {
       setSavedComparisons(JSON.parse(saved));
@@ -203,20 +217,23 @@ export default function ComparePage() {
   };
 
   // Get entity value from job based on comparison type
-  const getEntityValue = React.useCallback((job: any) => {
-    switch (comparisonType) {
-      case 'job_title':
-        return job.job_title || job.occupation_title;
-      case 'employer':
-        return job.operating_name || job.employer;
-      case 'city':
-        return job.city;
-      case 'state':
-        return job.state || job.territory;
-      default:
-        return '';
-    }
-  }, [comparisonType]);
+  const getEntityValue = React.useCallback(
+    (job: any) => {
+      switch (comparisonType) {
+        case 'job_title':
+          return job.job_title || job.occupation_title;
+        case 'employer':
+          return job.operating_name || job.employer;
+        case 'city':
+          return job.city;
+        case 'state':
+          return job.state || job.territory;
+        default:
+          return '';
+      }
+    },
+    [comparisonType]
+  );
 
   // Filter saved jobs based on search
   const filteredSavedJobs = React.useMemo(() => {
@@ -258,7 +275,11 @@ export default function ComparePage() {
     }
   };
 
-  const saveToRecentComparisons = (val1: string, val2: string, type: ComparisonType) => {
+  const saveToRecentComparisons = (
+    val1: string,
+    val2: string,
+    type: ComparisonType
+  ) => {
     const newComparison = {
       entity1: val1,
       entity2: val2,
@@ -266,9 +287,12 @@ export default function ComparePage() {
       timestamp: Date.now(),
     };
 
-    const updated = [newComparison, ...recentComparisons.filter(
-      (c) => !(c.entity1 === val1 && c.entity2 === val2 && c.type === type)
-    )].slice(0, 5); // Keep only last 5
+    const updated = [
+      newComparison,
+      ...recentComparisons.filter(
+        (c) => !(c.entity1 === val1 && c.entity2 === val2 && c.type === type)
+      ),
+    ].slice(0, 5); // Keep only last 5
 
     setRecentComparisons(updated);
     localStorage.setItem('recentComparisons', JSON.stringify(updated));
@@ -312,10 +336,13 @@ export default function ComparePage() {
     setShowResults(true);
   };
 
-  const handleRemoveSavedJob = async (recordId: string, e: React.MouseEvent) => {
+  const handleRemoveSavedJob = async (
+    recordId: string,
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation();
     if (!session?.user?.id) return;
-    
+
     try {
       const { error } = await db
         .from('saved_jobs')
@@ -342,7 +369,7 @@ export default function ComparePage() {
     if (!savedJobs || savedJobs.length < 2) return [];
 
     const suggestions: any[] = [];
-    
+
     // Same job in different cities
     const jobsByTitle = new Map<string, any[]>();
     savedJobs.forEach((job: any) => {
@@ -411,15 +438,15 @@ export default function ComparePage() {
     <BackgroundWrapper>
       <Navbar />
       <div className="min-h-screen pt-[6.5rem] pb-12">
-        <div className="max-w-7xl mx-auto px-8">
+        <div className=" mx-auto px-20">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-8"
+            className="text-left mb-8"
           >
-            <div className="inline-flex items-center gap-3 mb-4">
+            <div className="inline-flex items-start gap-3 mb-4">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -428,14 +455,16 @@ export default function ComparePage() {
               >
                 <ArrowLeftRight className="w-8 h-8 text-white" />
               </motion.div>
-              <h1 className="text-4xl font-bold text-gray-900">
-                Compare & Analyze
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-4xl font-bold text-gray-900">
+                  Compare & Analyze
+                </h1>
+                <p className="text-gray-600 max-w-2xl ">
+                  Get detailed insights by comparing job titles, locations, or
+                  companies side by side
+                </p>
+              </div>
             </div>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Get detailed insights by comparing job titles, locations, or
-              companies side by side
-            </p>
           </motion.div>
 
           {/* Comparison Queue Banner */}
@@ -453,8 +482,14 @@ export default function ComparePage() {
                       <h3 className="font-semibold text-gray-900">
                         Comparison Queue
                       </h3>
-                      <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-                        {comparedCompanies.length} {comparedCompanies.length === 1 ? 'company' : 'companies'}
+                      <Badge
+                        variant="secondary"
+                        className="bg-purple-100 text-purple-700"
+                      >
+                        {comparedCompanies.length}{' '}
+                        {comparedCompanies.length === 1
+                          ? 'company'
+                          : 'companies'}
                       </Badge>
                     </div>
                     <Button
@@ -469,10 +504,7 @@ export default function ComparePage() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {comparedCompanies.map((company, idx) => (
-                      <div
-                        key={idx}
-                        className="group relative"
-                      >
+                      <div key={idx} className="group relative">
                         <Badge
                           variant="outline"
                           className="bg-white border-purple-200 text-gray-700 pl-3 pr-8 py-1.5 text-sm cursor-pointer hover:bg-purple-50 hover:border-purple-300 transition-colors"
@@ -496,7 +528,8 @@ export default function ComparePage() {
                   </div>
                   {comparedCompanies.length >= 2 && (
                     <p className="text-xs text-purple-600 mt-3 flex items-center gap-1">
-                      <span className="font-medium">💡 Tip:</span> Click on any company to add it to the comparison
+                      <span className="font-medium">💡 Tip:</span> Click on any
+                      company to add it to the comparison
                     </p>
                   )}
                 </div>
@@ -600,7 +633,9 @@ export default function ComparePage() {
                   <Card className="p-4 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 border-blue-200">
                     <div className="flex items-center gap-2 mb-3">
                       <Clock className="w-4 h-4 text-blue-600" />
-                      <h3 className="text-sm font-bold text-gray-900">Recently Compared</h3>
+                      <h3 className="text-sm font-bold text-gray-900">
+                        Recently Compared
+                      </h3>
                       <Badge variant="outline" className="ml-auto text-xs">
                         {recentComparisons.length}
                       </Badge>
@@ -614,9 +649,13 @@ export default function ComparePage() {
                           onClick={() => handleQuickCompare(comp)}
                           className="flex items-center gap-2 px-3 py-1.5 bg-white border border-blue-200 rounded-lg text-xs hover:border-blue-400 hover:shadow-sm transition-all"
                         >
-                          <span className="font-medium text-gray-700">{comp.entity1}</span>
+                          <span className="font-medium text-gray-700">
+                            {comp.entity1}
+                          </span>
                           <span className="text-gray-400">vs</span>
-                          <span className="font-medium text-gray-700">{comp.entity2}</span>
+                          <span className="font-medium text-gray-700">
+                            {comp.entity2}
+                          </span>
                         </motion.button>
                       ))}
                     </div>
@@ -635,7 +674,9 @@ export default function ComparePage() {
                   <Card className="p-4 bg-gradient-to-br from-purple-50/50 to-pink-50/50 border-purple-200">
                     <div className="flex items-center gap-2 mb-3">
                       <Bookmark className="w-4 h-4 text-purple-600 fill-purple-600" />
-                      <h3 className="text-sm font-bold text-gray-900">Saved Comparisons</h3>
+                      <h3 className="text-sm font-bold text-gray-900">
+                        Saved Comparisons
+                      </h3>
                       <Badge variant="outline" className="ml-auto text-xs">
                         {savedComparisons.length}
                       </Badge>
@@ -653,13 +694,20 @@ export default function ComparePage() {
                           >
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-bold text-gray-900">{comp.name}</span>
-                                <Badge variant="outline" className="text-[10px] px-1">
+                                <span className="text-xs font-bold text-gray-900">
+                                  {comp.name}
+                                </span>
+                                <Badge
+                                  variant="outline"
+                                  className="text-[10px] px-1"
+                                >
                                   {comp.type}
                                 </Badge>
                               </div>
                               {comp.notes && (
-                                <p className="text-[10px] text-gray-500 line-clamp-1">{comp.notes}</p>
+                                <p className="text-[10px] text-gray-500 line-clamp-1">
+                                  {comp.notes}
+                                </p>
                               )}
                               <p className="text-[10px] text-gray-400 mt-0.5">
                                 {new Date(comp.timestamp).toLocaleDateString()}
@@ -700,7 +748,7 @@ export default function ComparePage() {
                           Save jobs to quickly compare them here
                         </p>
                         <Button
-                          onClick={() => window.location.href = '/'}
+                          onClick={() => (window.location.href = '/')}
                           variant="outline"
                           className="border-amber-300 hover:bg-amber-50"
                         >
@@ -727,8 +775,12 @@ export default function ComparePage() {
                         <Bookmark className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">Compare Your Saved Jobs</h3>
-                        <p className="text-sm text-gray-600">Select 2 jobs to compare side by side</p>
+                        <h3 className="text-lg font-bold text-gray-900">
+                          Compare Your Saved Jobs
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          Select 2 jobs to compare side by side
+                        </p>
                       </div>
                       <Badge variant="outline" className="ml-auto bg-white">
                         {savedJobs.length} saved
@@ -776,7 +828,10 @@ export default function ComparePage() {
                     {savedJobsLoading && (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
-                          <div key={i} className="rounded-lg border-2 border-gray-200 p-3">
+                          <div
+                            key={i}
+                            className="rounded-lg border-2 border-gray-200 p-3"
+                          >
                             <div className="flex items-start gap-2">
                               <Skeleton className="w-10 h-10 rounded-lg" />
                               <div className="flex-1 space-y-2">
@@ -794,88 +849,115 @@ export default function ComparePage() {
                     {!savedJobsLoading && (
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
                         {visibleSavedJobs.map((job: any) => {
-                        const jobValue = getEntityValue(job);
-                        const isSelected1 = selectedSavedJob1?.RecordID === job.RecordID;
-                        const isSelected2 = selectedSavedJob2?.RecordID === job.RecordID;
-                        const isSelected = isSelected1 || isSelected2;
+                          const jobValue = getEntityValue(job);
+                          const isSelected1 =
+                            selectedSavedJob1?.RecordID === job.RecordID;
+                          const isSelected2 =
+                            selectedSavedJob2?.RecordID === job.RecordID;
+                          const isSelected = isSelected1 || isSelected2;
 
-                        return (
-                          <TooltipProvider key={job.RecordID}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <motion.div
-                                  whileHover={{ scale: 1.02 }}
-                                  whileTap={{ scale: 0.98 }}
-                                  onClick={() => {
-                                    if (isSelected1) {
-                                      setSelectedSavedJob1(null);
-                                    } else if (isSelected2) {
-                                      setSelectedSavedJob2(null);
-                                    } else if (!selectedSavedJob1) {
-                                      handleSavedJobSelect(job, 1);
-                                    } else if (!selectedSavedJob2) {
-                                      handleSavedJobSelect(job, 2);
-                                    }
-                                  }}
-                                  className={cn(
-                                    'group relative cursor-pointer rounded-lg border-2 p-3 transition-all',
-                                    isSelected
-                                      ? 'border-brand-500 bg-brand-50 shadow-md'
-                                      : 'border-gray-200 bg-white hover:border-brand-300 hover:shadow-sm'
-                                  )}
-                                >
-                                  {/* Remove Button */}
-                                  <button
-                                    onClick={(e) => handleRemoveSavedJob(job.RecordID, e)}
-                                    className="absolute top-2 right-2 p-1 rounded-md hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100"
+                          return (
+                            <TooltipProvider key={job.RecordID}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <motion.div
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => {
+                                      if (isSelected1) {
+                                        setSelectedSavedJob1(null);
+                                      } else if (isSelected2) {
+                                        setSelectedSavedJob2(null);
+                                      } else if (!selectedSavedJob1) {
+                                        handleSavedJobSelect(job, 1);
+                                      } else if (!selectedSavedJob2) {
+                                        handleSavedJobSelect(job, 2);
+                                      }
+                                    }}
+                                    className={cn(
+                                      'group relative cursor-pointer rounded-lg border-2 p-3 transition-all',
+                                      isSelected
+                                        ? 'border-brand-500 bg-brand-50 shadow-md'
+                                        : 'border-gray-200 bg-white hover:border-brand-300 hover:shadow-sm'
+                                    )}
                                   >
-                                    <Trash2 className="w-3 h-3 text-red-500" />
-                                  </button>
+                                    {/* Remove Button */}
+                                    <button
+                                      onClick={(e) =>
+                                        handleRemoveSavedJob(job.RecordID, e)
+                                      }
+                                      className="absolute top-2 right-2 p-1 rounded-md hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100"
+                                    >
+                                      <Trash2 className="w-3 h-3 text-red-500" />
+                                    </button>
 
-                                  {isSelected && (
-                                    <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shadow-lg">
-                                      {isSelected1 ? '1' : '2'}
+                                    {isSelected && (
+                                      <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shadow-lg">
+                                        {isSelected1 ? '1' : '2'}
+                                      </div>
+                                    )}
+                                    <div className="flex items-start gap-2">
+                                      <div
+                                        className={cn(
+                                          'p-2 rounded-lg shrink-0',
+                                          isSelected
+                                            ? 'bg-brand-100'
+                                            : 'bg-gray-100'
+                                        )}
+                                      >
+                                        <TypeIcon
+                                          className={cn(
+                                            'w-4 h-4',
+                                            isSelected
+                                              ? 'text-brand-600'
+                                              : 'text-gray-600'
+                                          )}
+                                        />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-sm text-gray-900 truncate">
+                                          {jobValue}
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-0.5 truncate">
+                                          {job.operating_name || job.employer}
+                                        </p>
+                                        <p className="text-xs text-gray-400 mt-0.5">
+                                          {job.city},{' '}
+                                          {job.state || job.territory}
+                                        </p>
+                                      </div>
                                     </div>
-                                  )}
-                                  <div className="flex items-start gap-2">
-                                    <div className={cn(
-                                      'p-2 rounded-lg shrink-0',
-                                      isSelected ? 'bg-brand-100' : 'bg-gray-100'
-                                    )}>
-                                      <TypeIcon className={cn(
-                                        'w-4 h-4',
-                                        isSelected ? 'text-brand-600' : 'text-gray-600'
-                                      )} />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-semibold text-sm text-gray-900 truncate">
-                                        {jobValue}
+                                  </motion.div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-xs">
+                                  <div className="space-y-1">
+                                    <p className="font-semibold text-xs">
+                                      {job.job_title || job.occupation_title}
+                                    </p>
+                                    {job.noc_code && (
+                                      <p className="text-xs text-gray-600">
+                                        NOC: {job.noc_code || job['2021_noc']}
                                       </p>
-                                      <p className="text-xs text-gray-500 mt-0.5 truncate">
-                                        {job.operating_name || job.employer}
+                                    )}
+                                    {job.date_of_job_posting && (
+                                      <p className="text-xs text-gray-600">
+                                        Posted:{' '}
+                                        {new Date(
+                                          job.date_of_job_posting
+                                        ).toLocaleDateString()}
                                       </p>
-                                      <p className="text-xs text-gray-400 mt-0.5">
-                                        {job.city}, {job.state || job.territory}
-                                      </p>
-                                    </div>
+                                    )}
+                                    <p className="text-xs text-gray-500">
+                                      Type:{' '}
+                                      {job.type === 'lmia'
+                                        ? 'LMIA'
+                                        : 'Hot Leads'}
+                                    </p>
                                   </div>
-                                </motion.div>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="max-w-xs">
-                                <div className="space-y-1">
-                                  <p className="font-semibold text-xs">{job.job_title || job.occupation_title}</p>
-                                  {job.noc_code && (
-                                    <p className="text-xs text-gray-600">NOC: {job.noc_code || job['2021_noc']}</p>
-                                  )}
-                                  {job.date_of_job_posting && (
-                                    <p className="text-xs text-gray-600">Posted: {new Date(job.date_of_job_posting).toLocaleDateString()}</p>
-                                  )}
-                                  <p className="text-xs text-gray-500">Type: {job.type === 'lmia' ? 'LMIA' : 'Hot Leads'}</p>
-                                </div>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        );
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          );
                         })}
                       </div>
                     )}
@@ -905,19 +987,23 @@ export default function ComparePage() {
                     )}
 
                     {/* No Results Message */}
-                    {!savedJobsLoading && savedJobsSearch && filteredSavedJobs.length === 0 && (
-                      <div className="text-center py-8 text-gray-500">
-                        <p className="text-sm">No saved jobs match &ldquo;{savedJobsSearch}&rdquo;</p>
-                        <Button
-                          variant="link"
-                          size="sm"
-                          onClick={() => setSavedJobsSearch('')}
-                          className="text-brand-600"
-                        >
-                          Clear search
-                        </Button>
-                      </div>
-                    )}
+                    {!savedJobsLoading &&
+                      savedJobsSearch &&
+                      filteredSavedJobs.length === 0 && (
+                        <div className="text-center py-8 text-gray-500">
+                          <p className="text-sm">
+                            No saved jobs match &ldquo;{savedJobsSearch}&rdquo;
+                          </p>
+                          <Button
+                            variant="link"
+                            size="sm"
+                            onClick={() => setSavedJobsSearch('')}
+                            className="text-brand-600"
+                          >
+                            Clear search
+                          </Button>
+                        </div>
+                      )}
 
                     {/* Compare Button for Saved Jobs */}
                     {selectedSavedJob1 && selectedSavedJob2 && (
@@ -941,7 +1027,9 @@ export default function ComparePage() {
                       <div className="mt-6 pt-6 border-t border-amber-200">
                         <div className="flex items-center gap-2 mb-3">
                           <Info className="w-4 h-4 text-amber-600" />
-                          <h4 className="text-sm font-bold text-gray-900">Suggested Comparisons</h4>
+                          <h4 className="text-sm font-bold text-gray-900">
+                            Suggested Comparisons
+                          </h4>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {suggestedComparisons.map((suggestion, idx) => (
@@ -961,7 +1049,9 @@ export default function ComparePage() {
                               className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-300 rounded-lg text-xs hover:shadow-md transition-all"
                             >
                               <Sparkles className="w-3 h-3 text-amber-600" />
-                              <span className="font-medium text-gray-700">{suggestion.label}</span>
+                              <span className="font-medium text-gray-700">
+                                {suggestion.label}
+                              </span>
                             </motion.button>
                           ))}
                         </div>
@@ -972,7 +1062,9 @@ export default function ComparePage() {
                   {/* Divider */}
                   <div className="flex items-center gap-4 my-6">
                     <div className="flex-1 border-t border-gray-200" />
-                    <span className="text-sm text-gray-500 font-medium">OR</span>
+                    <span className="text-sm text-gray-500 font-medium">
+                      OR
+                    </span>
                     <div className="flex-1 border-t border-gray-200" />
                   </div>
                 </motion.div>
@@ -988,8 +1080,12 @@ export default function ComparePage() {
                   {/* 3-Way Toggle */}
                   <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
                     <div>
-                      <h3 className="text-sm font-bold text-gray-900 mb-1">Comparison Mode</h3>
-                      <p className="text-xs text-gray-600">Compare 2 or 3 entities side-by-side</p>
+                      <h3 className="text-sm font-bold text-gray-900 mb-1">
+                        Comparison Mode
+                      </h3>
+                      <p className="text-xs text-gray-600">
+                        Compare 2 or 3 entities side-by-side
+                      </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <label className="flex items-center gap-2 cursor-pointer">
@@ -1002,9 +1098,13 @@ export default function ComparePage() {
                           }}
                           className="w-4 h-4 text-brand-600 bg-gray-100 border-gray-300 rounded focus:ring-brand-500"
                         />
-                        <span className="text-sm font-medium text-gray-700">3-Way Comparison</span>
+                        <span className="text-sm font-medium text-gray-700">
+                          3-Way Comparison
+                        </span>
                         {enable3Way && (
-                          <Badge className="bg-brand-100 text-brand-700 text-[10px]">Beta</Badge>
+                          <Badge className="bg-brand-100 text-brand-700 text-[10px]">
+                            Beta
+                          </Badge>
                         )}
                       </label>
                     </div>
@@ -1149,7 +1249,9 @@ export default function ComparePage() {
                   >
                     <Button
                       onClick={handleCompare}
-                      disabled={!entity1 || !entity2 || (enable3Way && !entity3)}
+                      disabled={
+                        !entity1 || !entity2 || (enable3Way && !entity3)
+                      }
                       size="lg"
                       className="px-8 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                     >

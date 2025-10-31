@@ -6,42 +6,81 @@ Fetching all companies and job titles was causing severe performance issues beca
 - JavaScript was counting/aggregating on the client-side
 - Network transfer was massive
 - Browser memory usage was high
+- Filter counts were inaccurate due to fetch limits
 
 ## Solution
-Created a PostgreSQL RPC function that performs server-side aggregation, which is **10-100x faster**.
+Created PostgreSQL RPC functions that perform server-side aggregation with filter support, which is **10-100x faster** and provides **accurate counts**.
 
 ## Installation
 
-### Step 1: Run the SQL Function
+### Step 1: Run the SQL Functions
 1. Go to your Supabase Dashboard
 2. Navigate to **SQL Editor**
-3. Copy and paste the contents of `get_distinct_values_with_count.sql`
-4. Click **Run**
+3. Run **both** functions:
+   - Copy and paste the contents of `get_distinct_values_with_count.sql` → Click **Run**
+   - Copy and paste the contents of `get_facet_counts_with_filters.sql` → Click **Run**
 
 ### Step 2: Verify Installation
-Run this test query in SQL Editor:
+
+**Test basic function:**
 ```sql
 SELECT * FROM get_distinct_values_with_count('trending_job', 'employer') LIMIT 10;
 ```
 
-You should see a list of employers with their counts.
+**Test filtered function (recommended for NewFilterPanel):**
+```sql
+-- Get city counts for California
+SELECT * FROM get_facet_counts_with_filters('trending_job', 'city', '{"state": "California"}', NULL, NULL);
+
+-- Get state counts where job_title contains 'cook'
+SELECT * FROM get_facet_counts_with_filters('trending_job', 'state', '{}', 'job_title', 'cook');
+
+-- Get employer counts with search + filter (job_title='cook' AND state='California')
+SELECT * FROM get_facet_counts_with_filters('trending_job', 'employer', 
+  '{"state": "California"}', 'job_title', 'cook'
+);
+
+-- Get employer counts with multiple filters
+SELECT * FROM get_facet_counts_with_filters('trending_job', 'employer', 
+  '{"state": ["California", "Texas"], "city": ["San Francisco", "Austin"]}', NULL, NULL
+);
+```
+
+You should see lists with accurate counts.
 
 ## How It Works
 
-### Before (Slow ❌):
+### Before (Slow & Inaccurate ❌):
 ```
-1. Fetch ALL 500,000 records from database → Network transfer
-2. Send 500,000 rows over network → Slow
-3. Count in JavaScript → CPU intensive
-4. Memory usage → Browser crash risk
+1. Fetch limited 10,000 records from database → Network transfer
+2. Count in JavaScript on those 10,000 rows → CPU intensive
+3. PROBLEM: Counts are wrong if actual data > 10,000 rows
+4. PROBLEM: Memory issues if we remove the limit
 ```
 
-### After (Fast ✅):
+### After (Fast & Accurate ✅):
 ```
-1. Database counts and groups → Server-side (fast)
-2. Send only unique values with counts → Small payload
-3. Display immediately → Instant
+1. Database performs GROUP BY aggregation with filters → Server-side (fast)
+2. Returns only unique values with accurate total counts → Small payload
+3. Supports all active filters dynamically → Correct results
+4. Display immediately → Instant & Accurate
 ```
+
+## Available Functions
+
+### 1. `get_distinct_values_with_count` (Basic)
+- **Use case**: Simple aggregation without filters
+- **Parameters**: `table_name`, `column_name`
+- **Used in**: Compare page
+
+### 2. `get_facet_counts_with_filters` (Advanced - **Recommended**)
+- **Use case**: Filter panel with dynamic filters and search
+- **Parameters**: `table_name`, `column_name`, `filters` (JSONB), `search_field`, `search_term`
+- **Used in**: NewFilterPanel
+- **Key benefits**: 
+  - Returns accurate counts even with multiple active filters
+  - Respects search queries (e.g., if searching for "cook", only counts matching rows)
+  - Combines both filter selections AND search terms correctly
 
 ## Performance Gains
 

@@ -102,8 +102,16 @@ export function useFilterColumnAttributes(
   // Get all active filters from URL (excluding the current column to show available options)
   const activeFilters = React.useMemo(() => {
     const filters: Record<string, string[]> = {};
-    const filterKeys = ['state', 'city', 'category', 'job_title', 'noc_code', 'employer', 'territory'];
-    
+    const filterKeys = [
+      'state',
+      'city',
+      'category',
+      'job_title',
+      'noc_code',
+      'employer',
+      'territory',
+    ];
+
     filterKeys.forEach((key) => {
       // Skip the column we're getting facets for
       if (key === column) return;
@@ -123,15 +131,78 @@ export function useFilterColumnAttributes(
   const filtersKey = JSON.stringify({ activeFilters, dateFrom, dateTo });
 
   return useQuery({
-    queryKey: ['facet-values', table, column, field, searchTerm, stateFilter, filtersKey],
+    queryKey: [
+      'facet-values',
+      table,
+      column,
+      field,
+      searchTerm,
+      stateFilter,
+      filtersKey,
+    ],
     queryFn: async () => {
+      // Build filters object for RPC function
+      const filters: Record<string, string | string[] | { gte?: string | number; lte?: string | number }> = {};
+
+      // Add stateFilter for city column
+      if (column === 'city' && stateFilter) {
+        filters.state = stateFilter;
+      }
+
+      // Add all other active filters
+      Object.entries(activeFilters).forEach(([key, values]) => {
+        if (values.length > 0) {
+          filters[key] = values.length === 1 ? values[0] : values;
+        }
+      });
+
+      // Add date range filters
+      if (table === 'trending_job') {
+        if (dateFrom || dateTo) {
+          filters.date_of_job_posting = {};
+          if (dateFrom) filters.date_of_job_posting.gte = dateFrom;
+          if (dateTo) filters.date_of_job_posting.lte = dateTo;
+        }
+      } else if (table === 'lmia') {
+        const yf = dateFrom ? Number(dateFrom.slice(0, 4)) : undefined;
+        const yt = dateTo ? Number(dateTo.slice(0, 4)) : undefined;
+        if (Number.isFinite(yf) || Number.isFinite(yt)) {
+          filters.lmia_year = {};
+          if (Number.isFinite(yf)) filters.lmia_year.gte = yf;
+          if (Number.isFinite(yt)) filters.lmia_year.lte = yt;
+        }
+      }
+
+      // Try RPC function first (fast and accurate)
+      try {
+        const { data: rpcData, error: rpcError } = await db.rpc(
+          'get_facet_counts_with_filters',
+          {
+            p_table_name: table,
+            p_column_name: column,
+            p_filters: filters,
+            p_search_field: searchTerm && field !== 'all' ? field : null,
+            p_search_term: searchTerm || null,
+          }
+        );
+
+        if (!rpcError && rpcData) {
+          return rpcData
+            .filter((item: { name: string; count: number }) => item.name && item.name.trim())
+            .sort((a: { name: string; count: number }, b: { name: string; count: number }) => b.count - a.count);
+        }
+      } catch (err) {
+        console.warn('RPC function not available, falling back to client-side aggregation', err);
+      }
+
+      // Fallback: Client-side aggregation
       let q = db.from(table).select(column);
-      
+
       // Apply search term filter
       if (searchTerm && field && field !== 'all') {
         q = q.ilike(field as any, `%${searchTerm}%`);
       }
-      
+
       // Apply stateFilter for city column
       if (column === 'city' && stateFilter) {
         q = q.eq('state', stateFilter);
@@ -159,7 +230,7 @@ export function useFilterColumnAttributes(
         if (Number.isFinite(yt)) q = q.lte('lmia_year', yt as number);
       }
 
-      const { data, error } = await q.limit(10000);
+      const { data, error } = await q.limit(50000); // Higher limit for fallback
       if (error) throw new Error(error.message);
 
       // Count occurrences of each value
@@ -409,7 +480,7 @@ function FilterAttributes({ column }: { column: string }) {
   const [searchQuery, setSearchQuery] = React.useState('');
   const filteredData = React.useMemo(() => {
     if (!data) return [];
-    return data.filter((item) =>
+    return data.filter((item: { name: string; count: number }) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [data, searchQuery]);
