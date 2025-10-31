@@ -446,20 +446,20 @@ export default function ComparePage() {
             transition={{ duration: 0.5 }}
             className="text-left mb-8"
           >
-            <div className="inline-flex items-start gap-3 mb-4">
+            <div className="inline-flex items-start gap-3 mb-4 border-b w-full pb-2 border-brand-100">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
                 className="p-3 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl shadow-lg"
               >
-                <ArrowLeftRight className="w-8 h-8 text-white" />
+                <ArrowLeftRight className="w-5 h-5 text-white" />
               </motion.div>
               <div className="flex flex-col">
-                <h1 className="text-4xl font-bold text-gray-900">
+                <h1 className="text-xl font-bold text-gray-900">
                   Compare & Analyze
                 </h1>
-                <p className="text-gray-600 max-w-2xl ">
+                <p className="text-gray-600 text-sm max-w-2xl ">
                   Get detailed insights by comparing job titles, locations, or
                   companies side by side
                 </p>
