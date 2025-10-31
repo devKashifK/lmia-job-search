@@ -58,28 +58,103 @@ export function useCompareData(type: ComparisonType) {
 export function useComparisonData(
   type: ComparisonType,
   entity1: string,
-  entity2: string
+  entity2: string,
+  entity3?: string
 ) {
   const sp = useSearchParams();
   const table = (sp?.get('t') ?? 'trending_job').trim();
 
   return useQuery({
-    queryKey: ['comparison', table, type, entity1, entity2],
+    queryKey: ['comparison', table, type, entity1, entity2, entity3],
     queryFn: async () => {
-      // Fetch data for both entities
-      const [data1, data2] = await Promise.all([
+      // Fetch data for entities (2 or 3)
+      const promises = [
         fetchEntityData(table, type, entity1),
         fetchEntityData(table, type, entity2),
-      ]);
-
-      return {
-        entity1: data1,
-        entity2: data2,
+      ];
+      
+      if (entity3) {
+        promises.push(fetchEntityData(table, type, entity3));
+      }
+      
+      // Also fetch benchmark data
+      const benchmarkPromise = fetchBenchmarkData(table, type);
+      
+      const results = await Promise.all([...promises, benchmarkPromise]);
+      const benchmark = results.pop();
+      
+      const response: any = {
+        entity1: results[0],
+        entity2: results[1],
+        benchmark,
       };
+      
+      if (entity3 && results[2]) {
+        response.entity3 = results[2];
+      }
+
+      return response;
     },
     enabled: !!entity1 && !!entity2,
     staleTime: 60_000,
   });
+}
+
+// Fetch benchmark/average data for context
+async function fetchBenchmarkData(table: string, type: ComparisonType) {
+  // Get total count first
+  const { count: totalCount } = await db
+    .from(table)
+    .select('*', { count: 'exact', head: true });
+
+  // Sample larger set for better accuracy
+  const { data, error } = await db
+    .from(table)
+    .select('*')
+    .limit(50000); // Increased sample size
+
+  if (error || !data || !totalCount) return null;
+
+  // Count unique values
+  const valueMap = new Map<string, number>();
+  data.forEach((row: any) => {
+    const value = row[type];
+    if (value) {
+      valueMap.set(value, (valueMap.get(value) || 0) + 1);
+    }
+  });
+
+  const uniqueValues = valueMap.size;
+  // Use median instead of mean for more realistic benchmark
+  const counts = Array.from(valueMap.values()).sort((a, b) => a - b);
+  const medianJobs = counts[Math.floor(counts.length / 2)] || 1;
+  
+  // Also calculate mean for reference
+  const totalJobs = counts.reduce((sum, c) => sum + c, 0);
+  const avgJobsPerValue = Math.round(totalJobs / uniqueValues);
+
+  return {
+    totalJobs: totalCount,
+    uniqueValues,
+    avgJobsPerValue: Math.max(avgJobsPerValue, medianJobs), // Use higher of avg or median
+    medianJobs,
+    topValues: calculateTopValues(data, type),
+  };
+}
+
+function calculateTopValues(data: any[], type: ComparisonType) {
+  const valueMap = new Map<string, number>();
+  data.forEach((row: any) => {
+    const value = row[type];
+    if (value) {
+      valueMap.set(value, (valueMap.get(value) || 0) + 1);
+    }
+  });
+  
+  return Array.from(valueMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
 }
 
 async function fetchEntityData(table: string, type: ComparisonType, value: string) {
@@ -156,6 +231,17 @@ async function fetchEntityData(table: string, type: ComparisonType, value: strin
     .map(([month, count]) => ({ month, count }))
     .sort((a, b) => a.month.localeCompare(b.month));
 
+  // Calculate growth trend (last 3 months vs previous 3 months)
+  const recentMonths = monthlyTrends.slice(-6);
+  let growthRate = 0;
+  if (recentMonths.length >= 6) {
+    const recent3 = recentMonths.slice(-3).reduce((sum, m) => sum + m.count, 0);
+    const previous3 = recentMonths.slice(0, 3).reduce((sum, m) => sum + m.count, 0);
+    if (previous3 > 0) {
+      growthRate = ((recent3 - previous3) / previous3) * 100;
+    }
+  }
+
   return {
     totalJobs,
     uniqueCities,
@@ -167,6 +253,7 @@ async function fetchEntityData(table: string, type: ComparisonType, value: strin
     topEmployers,
     topNOC,
     monthlyTrends,
+    growthRate: Math.round(growthRate * 10) / 10, // Round to 1 decimal
     rawData: data?.slice(0, 100) ?? [], // Sample data
   };
 }

@@ -54,10 +54,10 @@ export default function Navbar({ className }: { className?: string }) {
                 <NavigationMenuList className="flex flex-row items-center gap-2">
                   <NavigationMenuItem>
                     <CustomLink
-                      href="/search"
+                      href="/compare"
                       className="relative inline-flex h-9 items-center justify-center rounded-xl px-5 py-2 text-sm font-semibold text-gray-700 hover:text-brand-700 hover:bg-gradient-to-r hover:from-brand-50 hover:to-brand-100/50 transition-all duration-200 group overflow-hidden"
                     >
-                      <span className="relative z-10">Search</span>
+                      <span className="relative z-10">Compare</span>
                       <div className="absolute inset-0 bg-gradient-to-r from-brand-500/0 to-brand-600/0 group-hover:from-brand-500/5 group-hover:to-brand-600/5 transition-all duration-300" />
                     </CustomLink>
                   </NavigationMenuItem>

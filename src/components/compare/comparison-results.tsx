@@ -14,12 +14,38 @@ import {
   Hash,
   Calendar,
   Sparkles,
+  Download,
+  Share2,
+  Save,
+  Copy,
+  Link,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useComparisonData } from './use-compare-data';
+import { toast } from 'sonner';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import {
   BarChart,
   Bar,
@@ -39,6 +65,7 @@ interface ComparisonResultsProps {
   type: ComparisonType;
   entity1: string;
   entity2: string;
+  entity3?: string;
   onReset: () => void;
 }
 
@@ -63,9 +90,82 @@ export default function ComparisonResults({
   type,
   entity1,
   entity2,
+  entity3,
   onReset,
 }: ComparisonResultsProps) {
-  const { data, isLoading } = useComparisonData(type, entity1, entity2);
+  const { data, isLoading } = useComparisonData(type, entity1, entity2, entity3);
+  const [saveDialogOpen, setSaveDialogOpen] = React.useState(false);
+  const [comparisonName, setComparisonName] = React.useState('');
+  const [comparisonNotes, setComparisonNotes] = React.useState('');
+  const resultsRef = React.useRef<HTMLDivElement>(null);
+
+  // Export as PDF
+  const handleExportPDF = async () => {
+    if (!resultsRef.current) return;
+    
+    try {
+      toast.loading('Generating PDF...');
+      const canvas = await html2canvas(resultsRef.current, {
+        logging: false,
+        useCORS: true,
+      } as any);
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`comparison-${entity1}-vs-${entity2}.pdf`);
+      
+      toast.dismiss();
+      toast.success('PDF downloaded successfully!');
+    } catch (error) {
+      toast.dismiss();
+      toast.error('Failed to generate PDF');
+      console.error(error);
+    }
+  };
+
+  // Share link
+  const handleShareLink = () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('type', type);
+    url.searchParams.set('entity1', entity1);
+    url.searchParams.set('entity2', entity2);
+    
+    navigator.clipboard.writeText(url.toString());
+    toast.success('Share link copied to clipboard!');
+  };
+
+  // Copy summary
+  const handleCopySummary = () => {
+    const summary = `Comparison: ${entity1} vs ${entity2}\nType: ${type}\nTotal Jobs: ${data?.entity1.totalJobs} vs ${data?.entity2.totalJobs}`;
+    navigator.clipboard.writeText(summary);
+    toast.success('Summary copied to clipboard!');
+  };
+
+  // Save comparison
+  const handleSaveComparison = () => {
+    const saved = {
+      id: Date.now().toString(),
+      name: comparisonName || `${entity1} vs ${entity2}`,
+      notes: comparisonNotes,
+      type,
+      entity1,
+      entity2,
+      timestamp: Date.now(),
+    };
+
+    const existing = JSON.parse(localStorage.getItem('savedComparisons') || '[]');
+    existing.unshift(saved);
+    localStorage.setItem('savedComparisons', JSON.stringify(existing.slice(0, 20))); // Keep last 20
+    
+    toast.success('Comparison saved!');
+    setSaveDialogOpen(false);
+    setComparisonName('');
+    setComparisonNotes('');
+  };
 
   if (isLoading) {
     return (
@@ -120,16 +220,59 @@ export default function ComparisonResults({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Back Button */}
-      <Button
-        onClick={onReset}
-        variant="outline"
-        className="mb-6"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        New Comparison
-      </Button>
+      {/* Action Bar */}
+      <div className="flex items-center justify-between mb-6">
+        <Button
+          onClick={onReset}
+          variant="outline"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          New Comparison
+        </Button>
 
+        {/* Export/Share Actions */}
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleCopySummary}
+            variant="outline"
+            size="sm"
+          >
+            <Copy className="w-4 h-4 mr-2" />
+            Copy Summary
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Share2 className="w-4 h-4 mr-2" />
+                Share
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleShareLink}>
+                <Link className="w-4 h-4 mr-2" />
+                Copy Link
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportPDF}>
+                <Download className="w-4 h-4 mr-2" />
+                Export as PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button
+            onClick={() => setSaveDialogOpen(true)}
+            size="sm"
+            className="bg-brand-500 hover:bg-brand-600"
+          >
+            <Save className="w-4 h-4 mr-2" />
+            Save Comparison
+          </Button>
+        </div>
+      </div>
+
+      {/* Results Container */}
+      <div ref={resultsRef}>
       {/* Header */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -146,7 +289,27 @@ export default function ComparisonResults({
                 <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
                 <span className="text-xs font-semibold text-blue-700">Entity 1</span>
               </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-1">{entity1}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold text-gray-900">{entity1}</h2>
+                {data1.growthRate !== undefined && (
+                  data1.growthRate > 0 ? (
+                    <Badge className="bg-green-100 text-green-700 border-green-200 flex items-center gap-1 text-[10px] px-1.5 py-0.5">
+                      <TrendingUp className="w-3 h-3" />
+                      +{data1.growthRate}%
+                    </Badge>
+                  ) : data1.growthRate < 0 ? (
+                    <Badge className="bg-red-100 text-red-700 border-red-200 flex items-center gap-1 text-[10px] px-1.5 py-0.5">
+                      <TrendingDown className="w-3 h-3" />
+                      {data1.growthRate}%
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-gray-100 text-gray-700 border-gray-200 flex items-center gap-1 text-[10px] px-1.5 py-0.5">
+                      <Minus className="w-3 h-3" />
+                      0%
+                    </Badge>
+                  )
+                )}
+              </div>
               <p className="text-xs text-gray-600 font-medium">
                 {data1.totalJobs.toLocaleString()} jobs
               </p>
@@ -163,7 +326,27 @@ export default function ComparisonResults({
                 <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
                 <span className="text-xs font-semibold text-green-700">Entity 2</span>
               </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-1">{entity2}</h2>
+              <div className="flex items-center gap-2 justify-end">
+                <h2 className="text-xl font-bold text-gray-900">{entity2}</h2>
+                {data2.growthRate !== undefined && (
+                  data2.growthRate > 0 ? (
+                    <Badge className="bg-green-100 text-green-700 border-green-200 flex items-center gap-1 text-[10px] px-1.5 py-0.5">
+                      <TrendingUp className="w-3 h-3" />
+                      +{data2.growthRate}%
+                    </Badge>
+                  ) : data2.growthRate < 0 ? (
+                    <Badge className="bg-red-100 text-red-700 border-red-200 flex items-center gap-1 text-[10px] px-1.5 py-0.5">
+                      <TrendingDown className="w-3 h-3" />
+                      {data2.growthRate}%
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-gray-100 text-gray-700 border-gray-200 flex items-center gap-1 text-[10px] px-1.5 py-0.5">
+                      <Minus className="w-3 h-3" />
+                      0%
+                    </Badge>
+                  )
+                )}
+              </div>
               <p className="text-xs text-gray-600 font-medium">
                 {data2.totalJobs.toLocaleString()} jobs
               </p>
@@ -190,7 +373,8 @@ export default function ComparisonResults({
               <p className="text-xs text-gray-600">Key differences analyzed</p>
             </div>
           </div>
-          <div className="relative space-y-2.5 text-xs text-gray-700">
+          <div className="relative space-y-2.5 text-xs text-gray-700 leading-relaxed">
+            {/* Volume comparison */}
             <p>
               <strong>{entity1}</strong> has{' '}
               <strong className={cn(
@@ -201,23 +385,75 @@ export default function ComparisonResults({
               job postings than <strong>{entity2}</strong> (
               {jobsDiff > 0 ? '+' : ''}{jobsDiffPercent}% difference).
             </p>
-            <p>
-              In terms of geographic spread, <strong>{entity1}</strong> is present in{' '}
-              <strong>{data1.uniqueCities}</strong> {data1.uniqueCities === 1 ? 'city' : 'cities'} while{' '}
-              <strong>{entity2}</strong> is in <strong>{data2.uniqueCities}</strong>{' '}
-              {data2.uniqueCities === 1 ? 'city' : 'cities'}.
-            </p>
-            <p>
-              The employer landscape shows <strong>{entity1}</strong> with{' '}
-              <strong>{data1.uniqueEmployers}</strong> unique employers compared to{' '}
-              <strong>{data2.uniqueEmployers}</strong> for <strong>{entity2}</strong>.
-            </p>
-            {data1.topCategories[0] && data2.topCategories[0] && (
+            
+            {/* Growth trend insight */}
+            {(data1.growthRate !== undefined && data2.growthRate !== undefined) && (
               <p>
-                The most common category for <strong>{entity1}</strong> is{' '}
-                <strong className="text-blue-600">{data1.topCategories[0].name}</strong> ({data1.topCategories[0].count} jobs),
-                while for <strong>{entity2}</strong> it's{' '}
-                <strong className="text-green-600">{data2.topCategories[0].name}</strong> ({data2.topCategories[0].count} jobs).
+                <strong>Growth Trend:</strong>{' '}
+                {Math.abs(data1.growthRate) > Math.abs(data2.growthRate) ? (
+                  <>
+                    <strong>{entity1}</strong> is growing{' '}
+                    <strong className="text-green-600">
+                      {Math.abs(data1.growthRate - data2.growthRate).toFixed(1)}% faster
+                    </strong>{' '}
+                    {data1.growthRate > 0 ? '(expanding market)' : '(declining slower)'}
+                  </>
+                ) : Math.abs(data2.growthRate) > Math.abs(data1.growthRate) ? (
+                  <>
+                    <strong>{entity2}</strong> is growing{' '}
+                    <strong className="text-green-600">
+                      {Math.abs(data2.growthRate - data1.growthRate).toFixed(1)}% faster
+                    </strong>{' '}
+                    {data2.growthRate > 0 ? '(expanding market)' : '(declining slower)'}
+                  </>
+                ) : (
+                  <>Both showing similar growth patterns</>
+                )}
+              </p>
+            )}
+            
+            {/* Benchmark comparison */}
+            {data.benchmark && (
+              <p>
+                <strong>Market Position:</strong>{' '}
+                {data1.totalJobs > data.benchmark.avgJobsPerValue ? (
+                  <>
+                    <strong>{entity1}</strong> is{' '}
+                    <strong className="text-blue-600">
+                      {Math.round((data1.totalJobs / data.benchmark.avgJobsPerValue - 1) * 100)}% above
+                    </strong>{' '}
+                    national average
+                  </>
+                ) : (
+                  <>
+                    <strong>{entity1}</strong> is below national average
+                  </>
+                )}
+                , while{' '}
+                {data2.totalJobs > data.benchmark.avgJobsPerValue ? (
+                  <>
+                    <strong>{entity2}</strong> is{' '}
+                    <strong className="text-blue-600">
+                      {Math.round((data2.totalJobs / data.benchmark.avgJobsPerValue - 1) * 100)}% above
+                    </strong>{' '}
+                    average
+                  </>
+                ) : (
+                  <>
+                    <strong>{entity2}</strong> is below average
+                  </>
+                )}.
+              </p>
+            )}
+            
+            {/* Top location insight */}
+            {data1.topCities[0] && data2.topCities[0] && (
+              <p>
+                <strong>Top Locations:</strong> Highest demand for <strong>{entity1}</strong> in{' '}
+                <strong className="text-blue-600">{data1.topCities[0].name}</strong>{' '}
+                ({data1.topCities[0].count} jobs), while <strong>{entity2}</strong> peaks in{' '}
+                <strong className="text-green-600">{data2.topCities[0].name}</strong>{' '}
+                ({data2.topCities[0].count} jobs).
               </p>
             )}
           </div>
@@ -256,6 +492,75 @@ export default function ComparisonResults({
           entity2={entity2}
         />
       </motion.div>
+
+      {/* Benchmark Card */}
+      {data.benchmark && (
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="mb-6"
+        >
+          <Card className="p-5 bg-gradient-to-br from-gray-50 via-slate-50 to-gray-50 border-gray-200">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-2 bg-gray-200 rounded-lg">
+                <BarChart3 className="w-4 h-4 text-gray-700" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-900">National Benchmark</h3>
+                <p className="text-xs text-gray-600">Comparison to market average</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              {/* National Average */}
+              <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
+                <p className="text-[10px] text-gray-600 mb-1">Market Average</p>
+                <p className="text-2xl font-bold text-gray-900">{data.benchmark.avgJobsPerValue.toLocaleString()}</p>
+                <p className="text-[10px] text-gray-500">jobs per {type.replace('_', ' ')}</p>
+              </div>
+              
+              {/* Entity 1 vs Average */}
+              <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-[10px] text-gray-600 mb-1">{entity1}</p>
+                <p className="text-2xl font-bold text-blue-700">
+                  {data1.totalJobs > data.benchmark.avgJobsPerValue ? '+' : ''}
+                  {Math.round((data1.totalJobs / data.benchmark.avgJobsPerValue - 1) * 100)}%
+                </p>
+                <p className="text-[10px] text-gray-600">
+                  {data1.totalJobs > data.benchmark.avgJobsPerValue ? 'above' : 'below'} average
+                </p>
+              </div>
+              
+              {/* Entity 2 vs Average */}
+              <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-[10px] text-gray-600 mb-1">{entity2}</p>
+                <p className="text-2xl font-bold text-green-700">
+                  {data2.totalJobs > data.benchmark.avgJobsPerValue ? '+' : ''}
+                  {Math.round((data2.totalJobs / data.benchmark.avgJobsPerValue - 1) * 100)}%
+                </p>
+                <p className="text-[10px] text-gray-600">
+                  {data2.totalJobs > data.benchmark.avgJobsPerValue ? 'above' : 'below'} average
+                </p>
+              </div>
+            </div>
+            
+            {/* Top 5 in market */}
+            {data.benchmark.topValues && data.benchmark.topValues.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-[10px] text-gray-600 mb-2 font-medium">Top 5 in Market:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {data.benchmark.topValues.map((val: any, idx: number) => (
+                    <Badge key={idx} variant="outline" className="text-[10px] bg-white">
+                      {val.name} ({val.count})
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </Card>
+        </motion.div>
+      )}
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -479,6 +784,49 @@ export default function ComparisonResults({
           </div>
         </motion.div>
       </div>
+      </div>
+      {/* Close Results Container */}
+
+      {/* Save Comparison Dialog */}
+      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save Comparison</DialogTitle>
+            <DialogDescription>
+              Save this comparison for quick access later
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Comparison Name</Label>
+              <Input
+                id="name"
+                placeholder={`${entity1} vs ${entity2}`}
+                value={comparisonName}
+                onChange={(e) => setComparisonName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes (Optional)</Label>
+              <Textarea
+                id="notes"
+                placeholder="Add any notes about this comparison..."
+                value={comparisonNotes}
+                onChange={(e) => setComparisonNotes(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveComparison}>
+              Save Comparison
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
