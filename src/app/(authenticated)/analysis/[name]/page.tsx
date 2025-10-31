@@ -28,6 +28,31 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from 'sonner';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableHead,
+  TableRow,
+} from '@/components/ui/table';
+import {
   ArrowLeft,
   Briefcase,
   CalendarDays,
@@ -36,8 +61,31 @@ import {
   Check,
   ChevronsUpDown,
   Users,
+  Download,
+  Share2,
+  Table as TableIcon,
+  BarChart3,
+  Search,
+  Star,
+  StarOff,
+  ExternalLink,
+  Copy,
+  FileSpreadsheet,
+  Save,
+  FolderOpen,
+  GitCompare,
+  Plus,
+  Trash2,
+  TrendingUp,
+  TrendingDown,
+  MapPin,
+  Building2,
+  Hash,
+  AlertCircle,
+  FileDown,
+  RefreshCw,
+  ChevronDown,
 } from 'lucide-react';
-import { Building2, TrendingUp, MapPin, Hash, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -80,8 +128,17 @@ interface AnalysisFilters {
   category?: string[];
   program?: string[];
   city?: string[];
+  searchQuery?: string;
   [key: string]: any;
 }
+
+const DATE_PRESETS = [
+  { label: 'Last 30 days', days: 30 },
+  { label: 'Last 3 months', days: 90 },
+  { label: 'Last 6 months', days: 180 },
+  { label: 'Last year', days: 365 },
+  { label: 'All time', days: null },
+];
 
 const FilterSidebar = ({
   currentFilters,
@@ -133,6 +190,7 @@ const FilterSidebar = ({
     ...(currentFilters.location || []),
     ...(currentFilters.city || []),
     ...(currentFilters.nocCode || []),
+    ...(currentFilters.jobTitle || []),
   ].filter(Boolean).length;
 
   // Fetch companies with matching job title
@@ -234,8 +292,8 @@ const FilterSidebar = ({
 
       const selectCols =
         currentFilters.searchType === 'lmia'
-          ? [locationColumn, 'city', 'noc_code'].join(', ')
-          : [locationColumn, 'city', 'noc_code'].join(', ');
+          ? [locationColumn, 'city', 'noc_code', 'job_title'].join(', ')
+          : [locationColumn, 'city', 'noc_code', 'job_title'].join(', ');
 
       const { data, error } = await db
         .from(tableName)
@@ -248,6 +306,7 @@ const FilterSidebar = ({
         locations: new Map(),
         cities: new Map(),
         nocCodes: new Map(),
+        jobTitles: new Map(),
       };
 
       data?.forEach((row: any) => {
@@ -266,6 +325,12 @@ const FilterSidebar = ({
             (result.nocCodes.get(row.noc_code) || 0) + 1
           );
         }
+        if (row.job_title) {
+          result.jobTitles.set(
+            row.job_title,
+            (result.jobTitles.get(row.job_title) || 0) + 1
+          );
+        }
       });
 
       return {
@@ -276,6 +341,9 @@ const FilterSidebar = ({
           .map(([name, count]) => ({ name, count }))
           .sort((a, b) => b.count - a.count),
         nocCodes: Array.from(result.nocCodes.entries())
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => b.count - a.count),
+        jobTitles: Array.from(result.jobTitles.entries())
           .map(([name, count]) => ({ name, count }))
           .sort((a, b) => b.count - a.count),
       };
@@ -339,6 +407,26 @@ const FilterSidebar = ({
                 </Button>
               </Badge>
             )}
+            {currentFilters.jobTitle?.map((title) => (
+              <Badge
+                key={title}
+                variant="outline"
+                className="flex items-center gap-0.5 px-1.5 py-0 h-5 bg-blue-50 border-blue-200 text-blue-700 text-[10px]"
+              >
+                <Briefcase className="h-2.5 w-2.5" />
+                <span className="text-[10px] max-w-[60px] truncate">
+                  {title}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-3 w-3 p-0 hover:bg-blue-200 rounded-full ml-0.5"
+                  onClick={() => removeFilter('job_title', title)}
+                >
+                  <X className="h-2 w-2" />
+                </Button>
+              </Badge>
+            ))}
             {currentFilters.location?.map((loc) => (
               <Badge
                 key={loc}
@@ -538,6 +626,35 @@ const FilterSidebar = ({
               <CalendarDays className="h-3.5 w-3.5 text-orange-500" />
               Date Range
             </Label>
+            {/* Quick Presets */}
+            <div className="flex flex-wrap gap-1 w-full">
+              {DATE_PRESETS.map((preset) => (
+                <Button
+                  key={preset.label}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (preset.days === null) {
+                      updateFilters({
+                        date_from: undefined,
+                        date_to: undefined,
+                      });
+                    } else {
+                      const today = new Date();
+                      const pastDate = new Date(today);
+                      pastDate.setDate(today.getDate() - preset.days);
+                      updateFilters({
+                        date_from: pastDate.toISOString().split('T')[0],
+                        date_to: today.toISOString().split('T')[0],
+                      });
+                    }
+                  }}
+                  className="h-6 px-2 text-[10px] border-gray-200 hover:bg-brand-50 hover:border-brand-300"
+                >
+                  {preset.label}
+                </Button>
+              ))}
+            </div>
             <div className="flex flex-col w-full items-start gap-2">
               <Input
                 type="date"
@@ -599,6 +716,40 @@ const FilterSidebar = ({
 
           {!filtersLoading && filterOptions ? (
             <div className="space-y-5">
+              {/* Job Title Filter */}
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2">
+                  <Briefcase className="h-3.5 w-3.5 text-blue-500" />
+                  Job Title
+                </Label>
+                <Select
+                  onValueChange={(value) => addFilter('job_title', value)}
+                >
+                  <SelectTrigger className="h-8 bg-white border-gray-200 shadow-sm hover:border-blue-300 transition-colors text-xs">
+                    <SelectValue placeholder="Select job title..." />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-48 [&>*]:p-0.5">
+                    {filterOptions.jobTitles.map((jobTitle) => (
+                      <SelectItem
+                        key={jobTitle.name}
+                        value={jobTitle.name}
+                        disabled={(currentFilters.jobTitle || []).includes(
+                          jobTitle.name
+                        )}
+                        className="text-xs !py-1 !pl-1.5 !pr-6 min-h-0 h-7"
+                      >
+                        <div className="flex items-center justify-between w-full gap-2">
+                          <span>{jobTitle.name}</span>
+                          <span className="text-[10px] text-gray-500 bg-gray-100 px-1 py-0.5 rounded">
+                            {jobTitle.count.toLocaleString()}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Location Filter */}
               <div className="space-y-2">
                 <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2">
@@ -793,11 +944,34 @@ function CompanyAnalysisContent({
   const companyName = decodeURIComponent(resolvedParams.name);
   const router = useRouter();
 
+  const pathname = usePathname();
   const goBack = () => {
     router.back();
   };
   const [isFilterOpen, setIsFilterOpen] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const [viewMode, setViewMode] = useState<'charts' | 'table'>('charts');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilterPresets, setShowFilterPresets] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
+  const [showSavePresetDialog, setShowSavePresetDialog] = useState(false);
+  const [presetName, setPresetName] = useState('');
+
+  // Load saved filter presets from localStorage
+  const [savedPresets, setSavedPresets] = useState<
+    Array<{
+      name: string;
+      filters: AnalysisFilters;
+      createdAt: string;
+    }>
+  >([]);
+
+  React.useEffect(() => {
+    const presets = localStorage.getItem('analysisFilterPresets');
+    if (presets) {
+      setSavedPresets(JSON.parse(presets));
+    }
+  }, []);
 
   // Get filters from URL parameters
   const filters = useMemo((): AnalysisFilters => {
@@ -1378,12 +1552,351 @@ function CompanyAnalysisContent({
               </motion.div>
             </div>
 
-            {/* Right Section: Back Button */}
+            {/* Right Section: Action Buttons */}
             <motion.div
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: 0.15 }}
+              className="flex items-center gap-2"
             >
+              {/* Refresh Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  window.location.reload();
+                  toast.success('Refreshing data...');
+                }}
+                className="border-gray-300 hover:border-blue-300 hover:bg-blue-50 transition-all"
+                title="Refresh data"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </Button>
+
+              {/* Bookmark Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const saved = localStorage.getItem('savedCompanies');
+                  const savedList = saved ? JSON.parse(saved) : [];
+                  const isBookmarked = savedList.some(
+                    (c: any) =>
+                      c.name === companyName && c.type === filters.searchType
+                  );
+
+                  if (isBookmarked) {
+                    const updated = savedList.filter(
+                      (c: any) =>
+                        !(
+                          c.name === companyName &&
+                          c.type === filters.searchType
+                        )
+                    );
+                    localStorage.setItem(
+                      'savedCompanies',
+                      JSON.stringify(updated)
+                    );
+                    toast.success('Company removed from bookmarks');
+                  } else {
+                    savedList.push({
+                      name: companyName,
+                      type: filters.searchType,
+                      savedAt: new Date().toISOString(),
+                    });
+                    localStorage.setItem(
+                      'savedCompanies',
+                      JSON.stringify(savedList)
+                    );
+                    toast.success('Company bookmarked!');
+                  }
+                  // Force re-render
+                  setIsFilterOpen((prev) => prev);
+                }}
+                className="border-gray-300 hover:border-yellow-300 hover:bg-yellow-50 transition-all"
+                title="Bookmark this company"
+              >
+                {(() => {
+                  const saved = localStorage.getItem('savedCompanies');
+                  const savedList = saved ? JSON.parse(saved) : [];
+                  const isBookmarked = savedList.some(
+                    (c: any) =>
+                      c.name === companyName && c.type === filters.searchType
+                  );
+                  return isBookmarked ? (
+                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  ) : (
+                    <StarOff className="w-4 h-4" />
+                  );
+                })()}
+              </Button>
+
+              {/* Export Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isExporting}
+                    className="border-gray-300 hover:border-green-300 hover:bg-green-50 transition-all"
+                  >
+                    {isExporting ? (
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: 'linear',
+                        }}
+                        className="mr-2"
+                      >
+                        <Download className="w-4 h-4" />
+                      </motion.div>
+                    ) : (
+                      <Download className="w-4 h-4 mr-2" />
+                    )}
+                    Export
+                    <ChevronDown className="w-4 h-4 ml-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem
+                    onClick={handleExportReport}
+                    disabled={isExporting}
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Export as PDF
+                    <span className="ml-auto text-xs text-gray-500">
+                      Recommended
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      try {
+                        // Get table data from analysisData
+                        const tableData = analysisData?.cityData || [];
+                        if (!tableData.length) {
+                          toast.error('No data to export');
+                          return;
+                        }
+
+                        // Prepare CSV data from available chart data
+                        const headers = ['Name', 'Count', 'Percentage'];
+                        const total = tableData.reduce(
+                          (sum, item) => sum + item.value,
+                          0
+                        );
+
+                        const csvRows = [
+                          headers.join(','),
+                          ...tableData.map((item) =>
+                            [
+                              `"${item.name}"`,
+                              item.value,
+                              `${((item.value / total) * 100).toFixed(2)}%`,
+                            ].join(',')
+                          ),
+                        ];
+
+                        const csvContent = csvRows.join('\n');
+                        const blob = new Blob([csvContent], {
+                          type: 'text/csv',
+                        });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `${companyName}-analysis-${
+                          new Date().toISOString().split('T')[0]
+                        }.csv`;
+                        link.click();
+                        URL.revokeObjectURL(url);
+
+                        toast.success('CSV file downloaded!');
+                      } catch (error) {
+                        console.error('Export CSV failed:', error);
+                        toast.error('Failed to export CSV');
+                      }
+                    }}
+                  >
+                    <FileSpreadsheet className="w-4 h-4 mr-2" />
+                    Export as CSV
+                    <span className="ml-auto text-xs text-gray-500">Excel</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => {
+                      try {
+                        // Generate JSON export
+                        const exportData = {
+                          company: companyName,
+                          exportDate: new Date().toISOString(),
+                          filters: filters,
+                          data: {
+                            totalJobs: analysisData?.totalJobs,
+                            locations: analysisData?.locationData,
+                            cities: analysisData?.cityData,
+                            categories: analysisData?.categoryData,
+                            nocCodes: analysisData?.nocCodeData,
+                            jobTitles: analysisData?.jobTitleData,
+                          },
+                        };
+
+                        const jsonContent = JSON.stringify(exportData, null, 2);
+                        const blob = new Blob([jsonContent], {
+                          type: 'application/json',
+                        });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `${companyName}-analysis-${
+                          new Date().toISOString().split('T')[0]
+                        }.json`;
+                        link.click();
+                        URL.revokeObjectURL(url);
+
+                        toast.success('JSON file downloaded!');
+                      } catch (error) {
+                        console.error('Export JSON failed:', error);
+                        toast.error('Failed to export JSON');
+                      }
+                    }}
+                  >
+                    <FileDown className="w-4 h-4 mr-2" />
+                    Export as JSON
+                    <span className="ml-auto text-xs text-gray-500">API</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Share Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  try {
+                    const url = window.location.href;
+                    if (navigator.clipboard && window.isSecureContext) {
+                      await navigator.clipboard.writeText(url);
+                      toast.success('Link copied to clipboard!');
+                    } else {
+                      // Fallback for non-secure contexts
+                      const textArea = document.createElement('textarea');
+                      textArea.value = url;
+                      textArea.style.position = 'fixed';
+                      textArea.style.left = '-999999px';
+                      document.body.appendChild(textArea);
+                      textArea.focus();
+                      textArea.select();
+                      try {
+                        document.execCommand('copy');
+                        toast.success('Link copied to clipboard!');
+                      } catch (err) {
+                        toast.error('Failed to copy link');
+                      }
+                      document.body.removeChild(textArea);
+                    }
+                  } catch (err) {
+                    console.error('Share failed:', err);
+                    toast.error('Failed to copy link');
+                  }
+                }}
+                className="border-gray-300 hover:border-blue-300 hover:bg-blue-50 transition-all"
+                title="Share analysis"
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
+
+              {/* Add to Compare Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  try {
+                    const compared = localStorage.getItem('comparedCompanies');
+                    const comparedList = compared ? JSON.parse(compared) : [];
+
+                    const exists = comparedList.some(
+                      (c: any) =>
+                        c.name === companyName && c.type === filters.searchType
+                    );
+
+                    if (exists) {
+                      toast.info('Company already in comparison list', {
+                        action: {
+                          label: 'View Comparison',
+                          onClick: () => router.push('/compare'),
+                        },
+                      });
+                      return;
+                    }
+
+                    if (comparedList.length >= 5) {
+                      toast.error(
+                        'Maximum 5 companies can be compared. Remove one to add more.',
+                        {
+                          action: {
+                            label: 'View Comparison',
+                            onClick: () => router.push('/compare'),
+                          },
+                        }
+                      );
+                      return;
+                    }
+
+                    comparedList.push({
+                      name: companyName,
+                      type: filters.searchType,
+                      addedAt: new Date().toISOString(),
+                    });
+                    localStorage.setItem(
+                      'comparedCompanies',
+                      JSON.stringify(comparedList)
+                    );
+
+                    // Show success toast with navigation option
+                    toast.success(
+                      `${companyName} added to comparison (${comparedList.length}/5)`,
+                      {
+                        description:
+                          comparedList.length >= 2
+                            ? 'Ready to compare multiple companies'
+                            : 'Add more companies to start comparing',
+                        action: {
+                          label: 'View Comparison',
+                          onClick: () => router.push('/compare'),
+                        },
+                        duration: 5000,
+                      }
+                    );
+                  } catch (err) {
+                    console.error('Compare failed:', err);
+                    toast.error('Failed to add to comparison');
+                  }
+                }}
+                className="border-purple-300 bg-purple-50 hover:bg-purple-100 hover:border-purple-400 transition-all"
+                title="Add to comparison"
+              >
+                <GitCompare className="w-4 h-4 mr-1" />
+                Compare
+              </Button>
+
+              {/* View Jobs Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const searchParams = new URLSearchParams();
+                  searchParams.set('employer', companyName);
+                  searchParams.set('t', filters.searchType);
+                  router.push(`/search?${searchParams.toString()}`);
+                }}
+                className="border-brand-300 bg-brand-50 hover:bg-brand-100 hover:border-brand-400 transition-all"
+                title="View all jobs"
+              >
+                <ExternalLink className="w-4 h-4 mr-1" />
+                View Jobs
+              </Button>
+
               <Button
                 variant="outline"
                 size="sm"
@@ -1465,149 +1978,788 @@ function CompanyAnalysisContent({
                     </Card>
                   ))}
                 </div>
+              ) : analysisData && analysisData.totalJobs === 0 ? (
+                <Card className="border-2 border-dashed border-gray-300 bg-gray-50/50">
+                  <CardContent className="flex flex-col items-center justify-center py-16 px-6">
+                    <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center mb-6">
+                      <Search className="w-10 h-10 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      No Data Found
+                    </h3>
+                    <p className="text-gray-600 text-center mb-6 max-w-md">
+                      No job postings found matching your current filters for{' '}
+                      <span className="font-semibold">{companyName}</span>.
+                    </p>
+                    <div className="flex flex-col items-center gap-4 w-full max-w-md">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 w-full">
+                        <h4 className="text-sm font-semibold text-blue-900 mb-2">
+                          Active Filters:
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {filters.dateFrom && (
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-white"
+                            >
+                              Date: {filters.dateFrom} → {filters.dateTo}
+                            </Badge>
+                          )}
+                          {filters.jobTitle?.map((t) => (
+                            <Badge
+                              key={t}
+                              variant="outline"
+                              className="text-xs bg-white"
+                            >
+                              Title: {t}
+                            </Badge>
+                          ))}
+                          {filters.location?.map((l) => (
+                            <Badge
+                              key={l}
+                              variant="outline"
+                              className="text-xs bg-white"
+                            >
+                              Location: {l}
+                            </Badge>
+                          ))}
+                          {filters.city?.map((c) => (
+                            <Badge
+                              key={c}
+                              variant="outline"
+                              className="text-xs bg-white"
+                            >
+                              City: {c}
+                            </Badge>
+                          ))}
+                          {filters.nocCode?.map((n) => (
+                            <Badge
+                              key={n}
+                              variant="outline"
+                              className="text-xs bg-white"
+                            >
+                              NOC: {n}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          const newSearchParams = new URLSearchParams();
+                          if (searchParams?.get('t')) {
+                            newSearchParams.set('t', searchParams.get('t')!);
+                          }
+                          router.push(
+                            `${pathname}?${newSearchParams.toString()}`
+                          );
+                        }}
+                        className="w-full bg-brand-600 hover:bg-brand-700"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Clear All Filters
+                      </Button>
+                      <p className="text-xs text-gray-500 text-center">
+                        Try adjusting your filters or clearing them to see
+                        available data
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
               ) : (
                 <div className="space-y-4">
-                  {/* Key Metrics */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 mb-4">
-                    <MetricCard
-                      label={'Growth Rate'}
-                      value={
-                        analysisData?.trends.growthRate
-                          ? `${
-                              analysisData.trends.growthRate > 0 ? '+' : ''
-                            }${analysisData.trends.growthRate.toFixed(1)}%`
-                          : 'N/A'
-                      }
-                      subtitle={'Year-over-year change'}
-                      icon={'material-symbols:trending-up'}
-                    />
-                    <MetricCard
-                      label={'Top Location'}
-                      value={analysisData?.trends.popularLocation || 'N/A'}
-                      subtitle={`Most common ${
-                        filters.searchType === 'lmia' ? 'territory' : 'state'
-                      }`}
-                      icon={'material-symbols:add-location-alt'}
-                    />
-                    <MetricCard
-                      label={'Top NOC Code'}
-                      value={analysisData?.trends.topNocCode || 'N/A'}
-                      subtitle={'Most frequent NOC code'}
-                      icon={'line-md:hash-small'}
-                    />
+                  {/* View Toggle and Search */}
+                  <div className="flex items-center justify-between gap-4 mb-4">
+                    <div className="flex items-center gap-2 flex-1">
+                      <div className="relative flex-1 max-w-md">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input
+                          placeholder="Search in charts..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10 h-9 text-sm"
+                        />
+                      </div>
 
-                    {filters.searchType === 'lmia' &&
-                    analysisData?.trends.averagePositions ? (
-                      <MetricCard
-                        label={'Avg. Positions'}
-                        value={analysisData.trends.averagePositions.toFixed(1)}
-                        subtitle={'Per LMIA application'}
-                        icon={'solar:suitcase-line-duotone'}
-                      />
-                    ) : (
-                      <MetricCard
-                        label={'Common Role'}
-                        value={analysisData?.trends.commonTitle || 'N/A'}
-                        subtitle={'Most frequent job title'}
-                        icon={'solar:suitcase-line-duotone'}
-                      />
+                      {/* Filter Presets Dropdown */}
+                      <Popover
+                        open={showFilterPresets}
+                        onOpenChange={setShowFilterPresets}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-9">
+                            <FolderOpen className="w-4 h-4 mr-1.5" />
+                            Presets
+                            {savedPresets.length > 0 && (
+                              <Badge className="ml-2 bg-brand-600 text-white h-5 px-1.5 text-xs">
+                                {savedPresets.length}
+                              </Badge>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 p-3" align="start">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-sm font-semibold">
+                                Filter Presets
+                              </h4>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setPresetName('');
+                                  setShowSavePresetDialog(true);
+                                }}
+                                className="h-7 text-xs"
+                              >
+                                <Save className="w-3 h-3 mr-1" />
+                                Save Current
+                              </Button>
+                            </div>
+
+                            {savedPresets.length === 0 ? (
+                              <p className="text-xs text-gray-500 text-center py-4">
+                                No saved presets. Save your current filters to
+                                reuse them later.
+                              </p>
+                            ) : (
+                              <div className="space-y-2 max-h-60 overflow-y-auto">
+                                {savedPresets.map((preset, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="flex items-center justify-between p-2 rounded bg-gray-50 hover:bg-gray-100 transition-colors"
+                                  >
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium truncate">
+                                        {preset.name}
+                                      </p>
+                                      <p className="text-xs text-gray-500">
+                                        {new Date(
+                                          preset.createdAt
+                                        ).toLocaleDateString()}
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          const newSearchParams =
+                                            new URLSearchParams();
+                                          newSearchParams.set(
+                                            't',
+                                            preset.filters.searchType
+                                          );
+                                          if (preset.filters.dateFrom)
+                                            newSearchParams.set(
+                                              'date_from',
+                                              preset.filters.dateFrom
+                                            );
+                                          if (preset.filters.dateTo)
+                                            newSearchParams.set(
+                                              'date_to',
+                                              preset.filters.dateTo
+                                            );
+                                          preset.filters.location?.forEach(
+                                            (l) =>
+                                              newSearchParams.append(
+                                                'location',
+                                                l
+                                              )
+                                          );
+                                          preset.filters.jobTitle?.forEach(
+                                            (j) =>
+                                              newSearchParams.append(
+                                                'job_title',
+                                                j
+                                              )
+                                          );
+                                          preset.filters.city?.forEach((c) =>
+                                            newSearchParams.append('city', c)
+                                          );
+                                          preset.filters.nocCode?.forEach((n) =>
+                                            newSearchParams.append(
+                                              'noc_code',
+                                              n
+                                            )
+                                          );
+
+                                          router.push(
+                                            `${pathname}?${newSearchParams.toString()}`
+                                          );
+                                          setShowFilterPresets(false);
+                                          toast.success(
+                                            `Applied preset: ${preset.name}`
+                                          );
+                                        }}
+                                        className="h-7 px-2 text-xs"
+                                      >
+                                        Apply
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          const newPresets =
+                                            savedPresets.filter(
+                                              (_, i) => i !== idx
+                                            );
+                                          setSavedPresets(newPresets);
+                                          localStorage.setItem(
+                                            'analysisFilterPresets',
+                                            JSON.stringify(newPresets)
+                                          );
+                                          toast.success('Preset deleted');
+                                        }}
+                                        className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <Tabs
+                      value={viewMode}
+                      onValueChange={(v) =>
+                        setViewMode(v as 'charts' | 'table')
+                      }
+                      className="w-auto"
+                    >
+                      <TabsList className="h-9">
+                        <TabsTrigger value="charts" className="text-xs px-3">
+                          <BarChart3 className="w-4 h-4 mr-1.5" />
+                          Charts
+                        </TabsTrigger>
+                        {/* <TabsTrigger value="table" className="text-xs px-3">
+                          <TableIcon className="w-4 h-4 mr-1.5" />
+                          Table
+                        </TabsTrigger> */}
+                      </TabsList>
+                    </Tabs>
+                  </div>
+
+                  {/* Data Freshness & Quick Stats - Compact */}
+                  {/* <div className="flex items-center justify-between mb-3">
+                    <Badge variant="outline" className="text-xs text-gray-600 border-gray-300">
+                      <CalendarDays className="w-3 h-3 mr-1" />
+                      Updated: {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </Badge>
+                  </div> */}
+
+                  {/* Quick Stats Cards - Compact */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                    {/* Total Jobs Card */}
+                    <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl hover:shadow-md transition-all duration-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="p-2 bg-blue-500 rounded-xl">
+                          <Briefcase className="w-4 h-4 text-white" />
+                        </div>
+                        <TrendingUp className="w-4 h-4 text-green-600" />
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">Total Jobs</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {analysisData?.totalJobs?.toLocaleString() || 0}
+                      </p>
+                    </Card>
+
+                    {/* Locations Card */}
+                    <Card className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl hover:shadow-md transition-all duration-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="p-2 bg-emerald-500 rounded-xl">
+                          <MapPin className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-[10px] font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">
+                          {analysisData?.locationData?.length || 0}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">Cities</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {analysisData?.cityData?.length || 0}
+                      </p>
+                    </Card>
+
+                    {/* Categories Card */}
+                    <Card className="p-4 bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-100 rounded-2xl hover:shadow-md transition-all duration-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="p-2 bg-purple-500 rounded-xl">
+                          <BarChart3 className="w-4 h-4 text-white" />
+                        </div>
+                        <TrendingUp className="w-4 h-4 text-green-600" />
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">Categories</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {analysisData?.categoryData?.length || 0}
+                      </p>
+                    </Card>
+
+                    {/* Job Titles Card */}
+                    <Card className="p-4 bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 rounded-2xl hover:shadow-md transition-all duration-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="p-2 bg-orange-500 rounded-xl">
+                          <Users className="w-4 h-4 text-white" />
+                        </div>
+                        <TrendingUp className="w-4 h-4 text-green-600" />
+                      </div>
+                      <p className="text-xs text-gray-600 mb-1">Job Titles</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {analysisData?.jobTitleData?.length || 0}
+                      </p>
+                    </Card>
+                  </div>
+
+                  {/* Quick Filter Chips */}
+                  <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+                    <span className="text-xs font-medium text-gray-600 whitespace-nowrap">
+                      Quick Filters:
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs rounded-full border-gray-300 hover:bg-blue-50 hover:border-blue-400"
+                      onClick={() => {
+                        const topCity = analysisData?.cityData?.[0]?.name;
+                        if (topCity) {
+                          const newSearchParams = new URLSearchParams(
+                            searchParams?.toString() || ''
+                          );
+                          newSearchParams.set('city', topCity);
+                          router.push(
+                            `${pathname}?${newSearchParams.toString()}`
+                          );
+                          toast.success(`Filtered by top city: ${topCity}`);
+                        }
+                      }}
+                    >
+                      <MapPin className="w-3 h-3 mr-1" />
+                      Top City
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs rounded-full border-gray-300 hover:bg-purple-50 hover:border-purple-400"
+                      onClick={() => {
+                        const topCategory =
+                          analysisData?.categoryData?.[0]?.name;
+                        if (topCategory) {
+                          const newSearchParams = new URLSearchParams(
+                            searchParams?.toString() || ''
+                          );
+                          newSearchParams.set('category', topCategory);
+                          router.push(
+                            `${pathname}?${newSearchParams.toString()}`
+                          );
+                          toast.success(
+                            `Filtered by top category: ${topCategory}`
+                          );
+                        }
+                      }}
+                    >
+                      <BarChart3 className="w-3 h-3 mr-1" />
+                      Top Category
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs rounded-full border-gray-300 hover:bg-orange-50 hover:border-orange-400"
+                      onClick={() => {
+                        const topTitle = analysisData?.jobTitleData?.[0]?.title;
+                        if (topTitle) {
+                          const newSearchParams = new URLSearchParams(
+                            searchParams?.toString() || ''
+                          );
+                          newSearchParams.set('jobTitle', topTitle);
+                          router.push(
+                            `${pathname}?${newSearchParams.toString()}`
+                          );
+                          toast.success(`Filtered by top job: ${topTitle}`);
+                        }
+                      }}
+                    >
+                      <Briefcase className="w-3 h-3 mr-1" />
+                      Top Job
+                    </Button>
+                    {searchParams?.toString() && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs rounded-full border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+                        onClick={() => {
+                          router.push(pathname || '/analysis');
+                          toast.info('All filters cleared');
+                        }}
+                      >
+                        <X className="w-3 h-3 mr-1" />
+                        Clear
+                      </Button>
                     )}
                   </div>
 
-                  {/* Two Column Charts - Location & Cities */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div id="chart-location-distribution">
-                      <DashboardCard
-                        title="Location Distribution"
-                        subtitle="Job postings by state/territory"
-                        icon={MapPin}
-                        className="h-[450px]"
-                      >
-                        <DonutChart
-                          data={analysisData?.locationData.map((d) => ({
-                            name: d.name,
-                            value: d.value,
-                          }))}
-                          centerValue={analysisData?.locationData.length}
-                          centerLabel={'Locations'}
+                  {viewMode === 'table' ? (
+                    <Card className="border-0 shadow-sm">
+                      <CardHeader className="pb-3">
+                        <h3 className="text-sm font-semibold text-gray-900">
+                          Job Data Table
+                        </h3>
+                        <p className="text-xs text-gray-500">
+                          Detailed view of all metrics
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="w-[200px]">
+                                  Location
+                                </TableHead>
+                                <TableHead className="text-right">
+                                  Job Count
+                                </TableHead>
+                                <TableHead className="text-right">
+                                  Percentage
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {analysisData?.locationData
+                                .filter((d) =>
+                                  searchQuery
+                                    ? d.name
+                                        .toLowerCase()
+                                        .includes(searchQuery.toLowerCase())
+                                    : true
+                                )
+                                .map((location) => (
+                                  <TableRow key={location.name}>
+                                    <TableCell className="font-medium">
+                                      {location.name}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {location.value}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {(
+                                        (location.value /
+                                          analysisData.totalJobs) *
+                                        100
+                                      ).toFixed(1)}
+                                      %
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                        <div className="mt-6">
+                          <h4 className="text-sm font-semibold mb-3">
+                            Top Cities
+                          </h4>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="w-[200px]">
+                                  City
+                                </TableHead>
+                                <TableHead className="text-right">
+                                  Job Count
+                                </TableHead>
+                                <TableHead className="text-right">
+                                  Percentage
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {analysisData?.cityData
+                                .filter((d) =>
+                                  searchQuery
+                                    ? d.name
+                                        .toLowerCase()
+                                        .includes(searchQuery.toLowerCase())
+                                    : true
+                                )
+                                .map((city) => (
+                                  <TableRow key={city.name}>
+                                    <TableCell className="font-medium">
+                                      {city.name}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {city.value}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {(
+                                        (city.value / analysisData.totalJobs) *
+                                        100
+                                      ).toFixed(1)}
+                                      %
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                        <div className="mt-6">
+                          <h4 className="text-sm font-semibold mb-3">
+                            Top Job Titles
+                          </h4>
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Job Title</TableHead>
+                                <TableHead className="text-right">
+                                  Count
+                                </TableHead>
+                                <TableHead className="text-right">
+                                  Percentage
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {analysisData?.jobTitleData
+                                .filter((d) =>
+                                  searchQuery
+                                    ? d.title
+                                        .toLowerCase()
+                                        .includes(searchQuery.toLowerCase())
+                                    : true
+                                )
+                                .map((job) => (
+                                  <TableRow key={job.title}>
+                                    <TableCell className="font-medium">
+                                      {job.title}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {job.count}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      {(
+                                        (job.count / analysisData.totalJobs) *
+                                        100
+                                      ).toFixed(1)}
+                                      %
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <>
+                      {/* Key Metrics */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 mb-4">
+                        <MetricCard
+                          label={'Growth Rate'}
+                          value={
+                            analysisData?.trends.growthRate
+                              ? `${
+                                  analysisData.trends.growthRate > 0 ? '+' : ''
+                                }${analysisData.trends.growthRate.toFixed(1)}%`
+                              : 'N/A'
+                          }
+                          subtitle={'Year-over-year change'}
+                          icon={'material-symbols:trending-up'}
                         />
-                      </DashboardCard>
-                    </div>
-                    <div id="chart-top-cities">
-                      <DashboardCard
-                        title="Top Cities"
-                        subtitle="Most active hiring locations"
-                        icon={Building2}
-                        className="h-[450px]"
-                      >
-                        <BarChart
-                          data={analysisData.cityData.map((d) => ({
-                            name: d.name,
-                            value: d.value,
-                          }))}
+                        <MetricCard
+                          label={'Top Location'}
+                          value={analysisData?.trends.popularLocation || 'N/A'}
+                          subtitle={`Most common ${
+                            filters.searchType === 'lmia'
+                              ? 'territory'
+                              : 'state'
+                          }`}
+                          icon={'material-symbols:add-location-alt'}
                         />
-                      </DashboardCard>
-                    </div>
-                  </div>
+                        <MetricCard
+                          label={'Top NOC Code'}
+                          value={analysisData?.trends.topNocCode || 'N/A'}
+                          subtitle={'Most frequent NOC code'}
+                          icon={'line-md:hash-small'}
+                        />
 
-                  {/* Two Column Charts - NOC Codes & Categories */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div id="chart-noc-codes">
-                      <DashboardCard
-                        title="NOC Code Distribution"
-                        subtitle="Most common occupational classifications"
-                        icon={Hash}
-                        className="h-[450px]"
-                      >
-                        <ColumnChart data={analysisData.nocCodeData} />
-                      </DashboardCard>
-                    </div>
-                    <div id="chart-categories">
-                      <DashboardCard
-                        title="Job Categories"
-                        subtitle="Distribution by job category"
-                        icon={Briefcase}
-                        className="h-[450px]"
-                      >
-                        <DonutChart
-                          data={analysisData.categoryData}
-                          centerLabel={'Categories'}
-                          centerValue={analysisData?.categoryData?.length}
-                        />
-                      </DashboardCard>
-                    </div>
-                  </div>
+                        {filters.searchType === 'lmia' &&
+                        analysisData?.trends.averagePositions ? (
+                          <MetricCard
+                            label={'Avg. Positions'}
+                            value={analysisData.trends.averagePositions.toFixed(
+                              1
+                            )}
+                            subtitle={'Per LMIA application'}
+                            icon={'solar:suitcase-line-duotone'}
+                          />
+                        ) : (
+                          <MetricCard
+                            label={'Common Role'}
+                            value={analysisData?.trends.commonTitle || 'N/A'}
+                            subtitle={'Most frequent job title'}
+                            icon={'solar:suitcase-line-duotone'}
+                          />
+                        )}
+                      </div>
 
-                  {/* Full Width Chart - Job Titles */}
-                  <div className="grid grid-cols-1 gap-4">
-                    <div id="chart-job-titles">
-                      <DashboardCard
-                        title="Top Job Titles"
-                        subtitle="Most common positions at this company"
-                        icon={Users}
-                        className="h-[450px]"
-                      >
-                        <ColumnChart data={analysisData.jobTitleData} />
-                      </DashboardCard>
-                    </div>
-                  </div>
+                      {/* Two Column Charts - Location & Cities */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div id="chart-location-distribution">
+                          <DashboardCard
+                            title="Location Distribution"
+                            subtitle="Job postings by state/territory (click to filter)"
+                            icon={MapPin}
+                            className="h-[450px]"
+                          >
+                            <DonutChart
+                              data={analysisData?.locationData.map((d) => ({
+                                name: d.name,
+                                value: d.value,
+                              }))}
+                              centerValue={analysisData?.locationData.length}
+                              centerLabel={'Locations'}
+                              onSegmentClick={(location: string) => {
+                                const newSearchParams = new URLSearchParams(
+                                  searchParams?.toString() || ''
+                                );
+                                newSearchParams.append('location', location);
+                                router.push(
+                                  `${pathname}?${newSearchParams.toString()}`
+                                );
+                                toast.success(
+                                  `Filtered by location: ${location}`
+                                );
+                              }}
+                            />
+                          </DashboardCard>
+                        </div>
+                        <div id="chart-top-cities">
+                          <DashboardCard
+                            title="Top Cities"
+                            subtitle="Most active hiring locations (click to filter)"
+                            icon={Building2}
+                            className="h-[450px]"
+                          >
+                            <BarChart
+                              data={analysisData.cityData.map((d) => ({
+                                name: d.name,
+                                value: d.value,
+                              }))}
+                              onBarClick={(city: string) => {
+                                const newSearchParams = new URLSearchParams(
+                                  searchParams?.toString() || ''
+                                );
+                                newSearchParams.append('city', city);
+                                router.push(
+                                  `${pathname}?${newSearchParams.toString()}`
+                                );
+                                toast.success(`Filtered by city: ${city}`);
+                              }}
+                            />
+                          </DashboardCard>
+                        </div>
+                      </div>
 
-                  {/* Full Width Chart - Hiring Trends */}
-                  <div className="grid grid-cols-1 gap-4">
-                    <div id="chart-hiring-trends">
-                      <DashboardCard
-                        title="Hiring Trends Over Time"
-                        subtitle="Historical job posting activity"
-                        icon={TrendingUp}
-                        className="h-[450px] p-0 overflow-visible"
-                      >
-                        <AreaChart
-                          data={analysisData?.timeData}
-                          color="#10b981"
-                        />
-                      </DashboardCard>
-                    </div>
-                  </div>
+                      {/* Two Column Charts - NOC Codes & Categories */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div id="chart-noc-codes">
+                          <DashboardCard
+                            title="NOC Code Distribution"
+                            subtitle="Most common occupational classifications (click to filter)"
+                            icon={Hash}
+                            className="h-[450px]"
+                          >
+                            <ColumnChart
+                              data={analysisData.nocCodeData}
+                              onColumnClick={(nocCode: string) => {
+                                const newSearchParams = new URLSearchParams(
+                                  searchParams?.toString() || ''
+                                );
+                                newSearchParams.append('noc', nocCode);
+                                router.push(
+                                  `${pathname}?${newSearchParams.toString()}`
+                                );
+                                toast.success(
+                                  `Filtered by NOC code: ${nocCode}`
+                                );
+                              }}
+                            />
+                          </DashboardCard>
+                        </div>
+                        <div id="chart-categories">
+                          <DashboardCard
+                            title="Job Categories"
+                            subtitle="Distribution by job category (click to filter)"
+                            icon={Briefcase}
+                            className="h-[450px]"
+                          >
+                            <DonutChart
+                              data={analysisData.categoryData}
+                              centerLabel={'Categories'}
+                              centerValue={analysisData?.categoryData?.length}
+                              onSegmentClick={(category: string) => {
+                                const newSearchParams = new URLSearchParams(
+                                  searchParams?.toString() || ''
+                                );
+                                newSearchParams.append('category', category);
+                                router.push(
+                                  `${pathname}?${newSearchParams.toString()}`
+                                );
+                                toast.success(
+                                  `Filtered by category: ${category}`
+                                );
+                              }}
+                            />
+                          </DashboardCard>
+                        </div>
+                      </div>
+
+                      {/* Full Width Chart - Job Titles */}
+                      <div className="grid grid-cols-1 gap-4">
+                        <div id="chart-job-titles">
+                          <DashboardCard
+                            title="Top Job Titles"
+                            subtitle="Most common positions at this company (click to filter)"
+                            icon={Users}
+                            className="h-[450px]"
+                          >
+                            <ColumnChart
+                              data={analysisData.jobTitleData}
+                              onColumnClick={(jobTitle: string) => {
+                                const newSearchParams = new URLSearchParams(
+                                  searchParams?.toString() || ''
+                                );
+                                newSearchParams.append('jobTitle', jobTitle);
+                                router.push(
+                                  `${pathname}?${newSearchParams.toString()}`
+                                );
+                                toast.success(
+                                  `Filtered by job title: ${jobTitle}`
+                                );
+                              }}
+                            />
+                          </DashboardCard>
+                        </div>
+                      </div>
+
+                      {/* Full Width Chart - Hiring Trends */}
+                      <div className="grid grid-cols-1 gap-4">
+                        <div id="chart-hiring-trends">
+                          <DashboardCard
+                            title="Hiring Trends Over Time"
+                            subtitle="Historical job posting activity"
+                            icon={TrendingUp}
+                            className="h-[450px] p-0 overflow-visible"
+                          >
+                            <AreaChart
+                              data={analysisData?.timeData}
+                              color="#10b981"
+                            />
+                          </DashboardCard>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -1615,6 +2767,116 @@ function CompanyAnalysisContent({
         </div>
       </div>
       <Footer />
+
+      {/* Save Preset Dialog */}
+      <Dialog
+        open={showSavePresetDialog}
+        onOpenChange={setShowSavePresetDialog}
+      >
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Save Filter Preset</DialogTitle>
+            <DialogDescription>
+              Give your current filter configuration a memorable name to reuse
+              it later.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="preset-name">Preset Name</Label>
+              <Input
+                id="preset-name"
+                placeholder="e.g., Toronto Tech Jobs"
+                value={presetName}
+                onChange={(e) => setPresetName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (presetName.trim()) {
+                      try {
+                        const newPresets = [
+                          ...savedPresets,
+                          {
+                            name: presetName.trim(),
+                            filters: filters,
+                            createdAt: new Date().toISOString(),
+                          },
+                        ];
+                        setSavedPresets(newPresets);
+                        localStorage.setItem(
+                          'analysisFilterPresets',
+                          JSON.stringify(newPresets)
+                        );
+                        toast.success('Filter preset saved!');
+                        setShowSavePresetDialog(false);
+                        setPresetName('');
+                      } catch (err) {
+                        console.error('Save preset failed:', err);
+                        toast.error('Failed to save preset');
+                      }
+                    }
+                  }
+                }}
+                autoFocus
+              />
+              <p className="text-xs text-gray-500">
+                Current filters:{' '}
+                {
+                  Object.keys(filters).filter(
+                    (k) => filters[k as keyof AnalysisFilters]
+                  ).length
+                }{' '}
+                active
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setShowSavePresetDialog(false);
+                setPresetName('');
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              onClick={() => {
+                if (!presetName.trim()) {
+                  toast.error('Please enter a preset name');
+                  return;
+                }
+                try {
+                  const newPresets = [
+                    ...savedPresets,
+                    {
+                      name: presetName.trim(),
+                      filters: filters,
+                      createdAt: new Date().toISOString(),
+                    },
+                  ];
+                  setSavedPresets(newPresets);
+                  localStorage.setItem(
+                    'analysisFilterPresets',
+                    JSON.stringify(newPresets)
+                  );
+                  toast.success('Filter preset saved!');
+                  setShowSavePresetDialog(false);
+                  setPresetName('');
+                } catch (err) {
+                  console.error('Save preset failed:', err);
+                  toast.error('Failed to save preset');
+                }
+              }}
+              disabled={!presetName.trim()}
+            >
+              Save Preset
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </BackgroundWrapper>
   );
 }
@@ -2062,7 +3324,7 @@ const COLOR_PALETTE = [
   '#3b82f6',
   '#10b981',
 ];
-const DonutChart = ({ data, centerValue, centerLabel }) => {
+const DonutChart = ({ data, centerValue, centerLabel, onSegmentClick }) => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const total = (data && data.reduce((sum, item) => sum + item.value, 0)) || 0;
   let currentAngle = -90;
@@ -2133,6 +3395,7 @@ const DonutChart = ({ data, centerValue, centerLabel }) => {
               }}
               onMouseEnter={() => setHoveredIndex(path.index)}
               onMouseLeave={() => setHoveredIndex(null)}
+              onClick={() => onSegmentClick && onSegmentClick(path.name)}
             />
           ))}
           <circle cx="50" cy="50" r="25" fill="white" />
@@ -2185,7 +3448,7 @@ const DonutChart = ({ data, centerValue, centerLabel }) => {
   );
 };
 
-const BarChart = ({ data, maxValue }) => {
+const BarChart = ({ data, maxValue, onBarClick }) => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const max =
     maxValue || (data.length > 0 ? Math.max(...data.map((d) => d.value)) : 1);
@@ -2201,9 +3464,10 @@ const BarChart = ({ data, maxValue }) => {
           return (
             <div
               key={index}
-              className="space-y-1 transition-all duration-200"
+              className="space-y-1 transition-all duration-200 cursor-pointer"
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
+              onClick={() => onBarClick && onBarClick(item.name)}
               style={{ opacity: hoveredIndex === null || isHovered ? 1 : 0.5 }}
             >
               <div className="flex items-center justify-between text-xs">
@@ -2237,7 +3501,7 @@ const BarChart = ({ data, maxValue }) => {
   );
 };
 
-const ColumnChart = ({ data }) => {
+const ColumnChart = ({ data, onColumnClick }) => {
   // Expects data with 'title' and 'count'
   const [hoveredIndex, setHoveredIndex] = useState(null);
   // Use 'count' instead of 'value' for maxValue calculation
@@ -2269,13 +3533,14 @@ const ColumnChart = ({ data }) => {
                 </div>
               )}
               <div
-                className="w-full rounded-t-lg transition-all duration-500 ease-out cursor-pointer relative overflow-hidden"
+                className="w-full rounded-t-lg transition-all duration-500 ease-out cursor-pointer relative overflow-hidden hover:shadow-lg"
                 style={{
                   height: `${heightPercentage}%`,
                   backgroundColor: assignedColor, // Use assigned color
                   minHeight: '2px',
                   transform: isHovered ? 'scaleX(1.05)' : 'scaleX(1)',
                 }}
+                onClick={() => onColumnClick && onColumnClick(item.title)}
               >
                 <div className="absolute inset-0 bg-white opacity-0 hover:opacity-10 transition-opacity" />
               </div>

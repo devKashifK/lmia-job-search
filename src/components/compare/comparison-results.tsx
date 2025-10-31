@@ -57,6 +57,9 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
 
 type ComparisonType = 'job_title' | 'state' | 'city' | 'employer';
@@ -744,8 +747,240 @@ export default function ComparisonResults({
         </motion.div>
       )}
 
+      {/* Location Distribution - Side by Side Donut Charts */}
+      {(data1.topStates || data2.topStates) && (
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.42 }}
+          className="mb-6"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Entity 1 Donut */}
+            <div className="relative overflow-hidden rounded-xl border border-blue-200 bg-white p-4 shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-1.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                    <MapPin className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900">{entity1}</h3>
+                    <p className="text-xs text-gray-500">Location Distribution</p>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={data1.topStates?.slice(0, 6).map((item: any) => ({
+                        name: item.name,
+                        value: item.count
+                      })) || []}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      paddingAngle={2}
+                      dataKey="value"
+                      label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
+                    >
+                      {data1.topStates?.slice(0, 6).map((_: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe'][index % 6]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Entity 2 Donut */}
+            <div className="relative overflow-hidden rounded-xl border border-green-200 bg-white p-4 shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-3xl" />
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-1.5 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+                    <MapPin className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-900">{entity2}</h3>
+                    <p className="text-xs text-gray-500">Location Distribution</p>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={data2.topStates?.slice(0, 6).map((item: any) => ({
+                        name: item.name,
+                        value: item.count
+                      })) || []}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      paddingAngle={2}
+                      dataKey="value"
+                      label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      labelLine={false}
+                    >
+                      {data2.topStates?.slice(0, 6).map((_: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={['#10b981', '#14b8a6', '#2dd4bf', '#5eead4', '#99f6e4', '#ccfbf1'][index % 6]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* NOC Code Distribution - Side by Side */}
+      {(data1.topNOC || data2.topNOC) && (
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.44 }}
+          className="mb-6"
+        >
+          <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="absolute top-0 left-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl" />
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg">
+                  <Hash className="w-3.5 h-3.5 text-white" />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900">NOC Code Distribution</h3>
+              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart 
+                  data={prepareComparisonChartData(
+                    data1.topNOC?.slice(0, 8) || [],
+                    data2.topNOC?.slice(0, 8) || [],
+                    entity1,
+                    entity2
+                  )} 
+                  barGap={8}
+                >
+                  <defs>
+                    <linearGradient id="colorNOC1" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#6366f1" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="#818cf8" stopOpacity={0.8}/>
+                    </linearGradient>
+                    <linearGradient id="colorNOC2" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#14b8a6" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="#2dd4bf" stopOpacity={0.8}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 10, fill: '#6b7280' }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={100}
+                    stroke="#e5e7eb"
+                  />
+                  <YAxis tick={{ fontSize: 10, fill: '#6b7280' }} stroke="#e5e7eb" />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend
+                    wrapperStyle={{ paddingTop: '15px', fontSize: '11px' }}
+                    iconType="circle"
+                  />
+                  <Bar
+                    dataKey={entity1}
+                    fill="url(#colorNOC1)"
+                    radius={[6, 6, 0, 0]}
+                    maxBarSize={40}
+                  />
+                  <Bar
+                    dataKey={entity2}
+                    fill="url(#colorNOC2)"
+                    radius={[6, 6, 0, 0]}
+                    maxBarSize={40}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Top Job Titles Comparison - NEW */}
+      {(data1.topJobTitles || data2.topJobTitles) && (
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="mb-6"
+        >
+          <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl" />
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg">
+                  <Briefcase className="w-3.5 h-3.5 text-white" />
+                </div>
+                <h3 className="text-sm font-bold text-gray-900">Top Job Titles</h3>
+              </div>
+              <ResponsiveContainer width="100%" height={320}>
+                <BarChart 
+                  data={prepareComparisonChartData(
+                    data1.topJobTitles?.slice(0, 8) || [],
+                    data2.topJobTitles?.slice(0, 8) || [],
+                    entity1,
+                    entity2
+                  )} 
+                  barGap={8}
+                  layout="vertical"
+                >
+                  <defs>
+                    <linearGradient id="colorJob1" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#f97316" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="#fb923c" stopOpacity={0.8}/>
+                    </linearGradient>
+                    <linearGradient id="colorJob2" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#3b82f6" stopOpacity={1}/>
+                      <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.8}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize: 10, fill: '#6b7280' }} stroke="#e5e7eb" />
+                  <YAxis 
+                    dataKey="name" 
+                    type="category"
+                    width={150}
+                    tick={{ fontSize: 10, fill: '#6b7280' }}
+                    stroke="#e5e7eb"
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend
+                    wrapperStyle={{ paddingTop: '10px', fontSize: '11px' }}
+                    iconType="circle"
+                  />
+                  <Bar
+                    dataKey={entity1}
+                    fill="url(#colorJob1)"
+                    radius={[0, 6, 6, 0]}
+                    maxBarSize={25}
+                  />
+                  <Bar
+                    dataKey={entity2}
+                    fill="url(#colorJob2)"
+                    radius={[0, 6, 6, 0]}
+                    maxBarSize={25}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Side-by-Side Lists */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
         <motion.div
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
@@ -761,6 +996,12 @@ export default function ComparisonResults({
               <DataList title="Top Employers" data={data1.topEmployers.slice(0, 5)} icon={Building2} color="indigo" />
               <div className="my-3 border-t border-gray-100" />
               <DataList title="Top NOC Codes" data={data1.topNOC.slice(0, 5)} icon={Hash} color="purple" />
+              {data1.topStates && data1.topStates.length > 0 && (
+                <>
+                  <div className="my-3 border-t border-gray-100" />
+                  <DataList title="Top States/Provinces" data={data1.topStates.slice(0, 5)} icon={MapPin} color="blue" />
+                </>
+              )}
             </div>
           </div>
         </motion.div>
@@ -780,10 +1021,75 @@ export default function ComparisonResults({
               <DataList title="Top Employers" data={data2.topEmployers.slice(0, 5)} icon={Building2} color="green" />
               <div className="my-3 border-t border-gray-100" />
               <DataList title="Top NOC Codes" data={data2.topNOC.slice(0, 5)} icon={Hash} color="teal" />
+              {data2.topStates && data2.topStates.length > 0 && (
+                <>
+                  <div className="my-3 border-t border-gray-100" />
+                  <DataList title="Top States/Provinces" data={data2.topStates.slice(0, 5)} icon={MapPin} color="emerald" />
+                </>
+              )}
             </div>
           </div>
         </motion.div>
       </div>
+
+      {/* Key Takeaways Section - NEW */}
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.55 }}
+        className="mb-6"
+      >
+        <Card className="p-5 bg-gradient-to-br from-amber-50/50 via-yellow-50/30 to-orange-50/40 border-amber-200/50">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg shadow-md">
+              <TrendingUp className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-gray-900">Key Takeaways</h3>
+              <p className="text-xs text-gray-600">Quick insights for decision making</p>
+            </div>
+          </div>
+          
+          <div className="space-y-2.5">
+            <div className="flex items-start gap-2 p-2.5 bg-white/60 rounded-lg">
+              <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-blue-600 font-bold text-xs">1</span>
+              </div>
+              <p className="text-xs text-gray-700 leading-relaxed">
+                <strong>{data1.totalJobs > data2.totalJobs ? entity1 : entity2}</strong> has{' '}
+                <strong className="text-blue-600">
+                  {Math.abs(jobsDiff).toLocaleString()} more opportunities
+                </strong>, making it the {data1.totalJobs > data2.totalJobs ? 'larger' : 'smaller'} market.
+              </p>
+            </div>
+            
+            {data1.uniqueCities && data2.uniqueCities && (
+              <div className="flex items-start gap-2 p-2.5 bg-white/60 rounded-lg">
+                <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-purple-600 font-bold text-xs">2</span>
+                </div>
+                <p className="text-xs text-gray-700 leading-relaxed">
+                  <strong>{entity1}</strong> is available in <strong className="text-purple-600">{data1.uniqueCities} cities</strong> vs{' '}
+                  <strong>{entity2}</strong> in <strong className="text-purple-600">{data2.uniqueCities} cities</strong>,{' '}
+                  showing {data1.uniqueCities > data2.uniqueCities ? 'wider' : 'more concentrated'} geographic distribution.
+                </p>
+              </div>
+            )}
+            
+            {data1.topCities[0] && data2.topCities[0] && data1.topCities[0].name !== data2.topCities[0].name && (
+              <div className="flex items-start gap-2 p-2.5 bg-white/60 rounded-lg">
+                <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-green-600 font-bold text-xs">3</span>
+                </div>
+                <p className="text-xs text-gray-700 leading-relaxed">
+                  Different hot spots: <strong className="text-green-600">{data1.topCities[0].name}</strong> leads for {entity1}, while{' '}
+                  <strong className="text-green-600">{data2.topCities[0].name}</strong> dominates {entity2} market.
+                </p>
+              </div>
+            )}
+          </div>
+        </Card>
+      </motion.div>
       </div>
       {/* Close Results Container */}
 

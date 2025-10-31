@@ -79,19 +79,47 @@ export default function ComparePage() {
   const [showResults, setShowResults] = useState(false);
   const [enable3Way, setEnable3Way] = useState(false);
 
-  // Load comparison from URL parameters
+  // Load comparison from URL parameters or localStorage
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const urlType = params.get('type') as ComparisonType;
       const urlEntity1 = params.get('entity1');
       const urlEntity2 = params.get('entity2');
+      const urlEntity3 = params.get('entity3');
 
       if (urlType && urlEntity1 && urlEntity2) {
         setComparisonType(urlType);
         setEntity1(urlEntity1);
         setEntity2(urlEntity2);
+        if (urlEntity3) {
+          setEntity3(urlEntity3);
+          setEnable3Way(true);
+        }
         setShowResults(true);
+      } else {
+        // Load from comparedCompanies localStorage
+        const compared = localStorage.getItem('comparedCompanies');
+        if (compared) {
+          try {
+            const comparedList = JSON.parse(compared);
+            if (comparedList.length >= 2) {
+              setComparisonType('employer');
+              setEntity1(comparedList[0].name);
+              setEntity2(comparedList[1].name);
+              if (comparedList.length >= 3) {
+                setEntity3(comparedList[2].name);
+                setEnable3Way(true);
+              }
+              // Show a helpful toast
+              toast.info(`Comparing ${comparedList.length} companies`, {
+                description: 'You can modify selections or add more below',
+              });
+            }
+          } catch (err) {
+            console.error('Failed to load compared companies:', err);
+          }
+        }
       }
     }
   }, []);
@@ -101,6 +129,7 @@ export default function ComparePage() {
   const [savedJobsSearch, setSavedJobsSearch] = useState('');
   const [recentComparisons, setRecentComparisons] = useState<any[]>([]);
   const [savedComparisons, setSavedComparisons] = useState<any[]>([]);
+  const [comparedCompanies, setComparedCompanies] = useState<any[]>([]);
 
   const { data: options, isLoading } = useCompareData(comparisonType);
   const { data: savedJobs, isLoading: savedJobsLoading } = useSavedJobs();
@@ -108,7 +137,7 @@ export default function ComparePage() {
 
   const hasSavedJobs = savedJobs && savedJobs.length > 0;
 
-  // Load recent comparisons and saved comparisons from localStorage
+  // Load recent comparisons, saved comparisons, and compared companies from localStorage
   React.useEffect(() => {
     const stored = localStorage.getItem('recentComparisons');
     if (stored) {
@@ -119,6 +148,15 @@ export default function ComparePage() {
     if (saved) {
       setSavedComparisons(JSON.parse(saved));
     }
+
+    const compared = localStorage.getItem('comparedCompanies');
+    if (compared) {
+      try {
+        setComparedCompanies(JSON.parse(compared));
+      } catch (err) {
+        console.error('Failed to parse compared companies:', err);
+      }
+    }
   }, []);
 
   // Handle deleting saved comparison
@@ -127,6 +165,41 @@ export default function ComparePage() {
     setSavedComparisons(updated);
     localStorage.setItem('savedComparisons', JSON.stringify(updated));
     toast.success('Comparison deleted');
+  };
+
+  // Handle removing company from comparison queue
+  const handleRemoveFromQueue = (companyName: string) => {
+    const updated = comparedCompanies.filter((c) => c.name !== companyName);
+    setComparedCompanies(updated);
+    localStorage.setItem('comparedCompanies', JSON.stringify(updated));
+    toast.success(`${companyName} removed from comparison queue`);
+  };
+
+  // Clear all companies from queue
+  const handleClearQueue = () => {
+    setComparedCompanies([]);
+    localStorage.removeItem('comparedCompanies');
+    toast.success('Comparison queue cleared');
+  };
+
+  // Handle selecting company from queue
+  const handleSelectFromQueue = (companyName: string) => {
+    setComparisonType('employer');
+    if (!entity1) {
+      setEntity1(companyName);
+      toast.success(`${companyName} selected as first company`);
+    } else if (!entity2) {
+      setEntity2(companyName);
+      toast.success(`${companyName} selected as second company`);
+    } else if (!entity3 && enable3Way) {
+      setEntity3(companyName);
+      toast.success(`${companyName} selected as third company`);
+    } else if (!enable3Way) {
+      setEntity2(companyName);
+      toast.success(`${companyName} selected as second company`);
+    } else {
+      toast.info('All slots filled. Remove a company to add this one.');
+    }
   };
 
   // Get entity value from job based on comparison type
@@ -364,6 +437,72 @@ export default function ComparePage() {
               companies side by side
             </p>
           </motion.div>
+
+          {/* Comparison Queue Banner */}
+          {comparedCompanies.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <Card className="border-purple-200 bg-purple-50">
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-5 h-5 text-purple-600" />
+                      <h3 className="font-semibold text-gray-900">
+                        Comparison Queue
+                      </h3>
+                      <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                        {comparedCompanies.length} {comparedCompanies.length === 1 ? 'company' : 'companies'}
+                      </Badge>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClearQueue}
+                      className="text-purple-600 hover:text-purple-700 hover:bg-purple-100"
+                    >
+                      <X className="w-4 h-4 mr-1" />
+                      Clear All
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {comparedCompanies.map((company, idx) => (
+                      <div
+                        key={idx}
+                        className="group relative"
+                      >
+                        <Badge
+                          variant="outline"
+                          className="bg-white border-purple-200 text-gray-700 pl-3 pr-8 py-1.5 text-sm cursor-pointer hover:bg-purple-50 hover:border-purple-300 transition-colors"
+                          onClick={() => handleSelectFromQueue(company.name)}
+                        >
+                          {company.name}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveFromQueue(company.name);
+                          }}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-5 w-5 p-0 hover:bg-purple-100 rounded-full"
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  {comparedCompanies.length >= 2 && (
+                    <p className="text-xs text-purple-600 mt-3 flex items-center gap-1">
+                      <span className="font-medium">💡 Tip:</span> Click on any company to add it to the comparison
+                    </p>
+                  )}
+                </div>
+              </Card>
+            </motion.div>
+          )}
 
           {!showResults ? (
             <>
