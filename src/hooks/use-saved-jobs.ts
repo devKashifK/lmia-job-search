@@ -8,6 +8,8 @@ export function useSavedJobs() {
   return useQuery({
     queryKey: ['saved-jobs', session?.user?.id],
     queryFn: async () => {
+      console.log('📊 Fetching saved jobs for user:', session?.user?.id);
+
       if (!session?.user?.id) {
         return [];
       }
@@ -45,17 +47,17 @@ export function useSavedJobs() {
               };
             }
 
-            // If not in LMIA, try hot leads table
-            const { data: hotLeadsData, error: hotLeadsError } = await db
-              .from('hot_leads')
+            // If not in LMIA, try trending_job table
+            const { data: trendingJobData, error: trendingJobError } = await db
+              .from('trending_job')
               .select('*')
-              .eq('RecordID', savedJob.record_id)
+              .eq('id', savedJob.record_id)
               .single();
 
-            if (!hotLeadsError && hotLeadsData) {
+            if (!trendingJobError && trendingJobData) {
               return {
                 ...savedJob,
-                job_data: { ...hotLeadsData, type: 'hotLeads' },
+                job_data: { ...trendingJobData, type: 'hotLeads' },
               };
             }
 
@@ -69,6 +71,7 @@ export function useSavedJobs() {
           .filter((job): job is NonNullable<typeof job> => job !== null)
           .map((job) => job.job_data);
 
+        console.log('✅ Saved jobs fetched:', validJobs.length, 'jobs');
         return validJobs;
       } catch (error) {
         console.error('Error in useSavedJobs:', error);
@@ -76,6 +79,6 @@ export function useSavedJobs() {
       }
     },
     enabled: !!session?.user?.id,
-    staleTime: 60_000, // 1 minute
+    staleTime: 0, // Always refetch when invalidated for real-time updates
   });
 }

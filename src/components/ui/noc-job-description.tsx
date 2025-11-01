@@ -13,9 +13,10 @@ import {
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from '@/hooks/use-session';
-import { handleSave, checkIfSaved, getJobRecordId } from '@/utils/saved-jobs';
+import { getJobRecordId } from '@/utils/saved-jobs';
 import { NocJobDescriptionSkeleton } from './skeletons';
 import { ShareButton } from './share-button';
+import { useSaveJob } from '@/hooks/use-save-job';
 import {
   Star,
   ExternalLink,
@@ -109,62 +110,30 @@ export function NocJobDescription({
 }: NocJobDescriptionProps) {
   const { session } = useSession();
   const router = useRouter();
+  const recordId = job ? getJobRecordId(job) : undefined;
+  const {
+    isSaved: dbSaved,
+    toggleSave,
+    isLoading: savingJob,
+    checkSavedStatus,
+    LoginAlertComponent,
+  } = useSaveJob(recordId);
+  
   const [nocProfile, setNocProfile] = useState<NocProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showAllRequirements, setShowAllRequirements] = useState(false);
   const [showAllResponsibilities, setShowAllResponsibilities] = useState(false);
-  const [showAllAdditionalInfo, setShowAllAdditionalInfo] = useState(false); // ✅ keep this name everywhere
+  const [showAllAdditionalInfo, setShowAllAdditionalInfo] = useState(false);
   const [openPremium, setOpenPremium] = useState(false);
-  const [dbSaved, setDbSaved] = useState(false);
-  const [savingJob, setSavingJob] = useState(false);
 
   useEffect(() => {
-    const checkSavedState = async () => {
-      if (!job || !session?.user?.id) {
-        setDbSaved(false);
-        return;
-      }
-      const recordId = getJobRecordId(job);
-      if (!recordId) {
-        setDbSaved(false);
-        return;
-      }
-      try {
-        const saved = await checkIfSaved(recordId, session);
-        setDbSaved(saved);
-      } catch (error) {
-        console.error('Failed to check if job is saved:', error);
-        setDbSaved(false);
-      }
-    };
-    checkSavedState();
-  }, [job, session?.user?.id]);
+    checkSavedStatus();
+  }, [checkSavedStatus]);
 
   const handleSaveJob = async () => {
-    if (!job || !session?.user?.id) {
-      onSaveJob?.();
-      return;
-    }
-    const recordId = getJobRecordId(job);
-    if (!recordId) {
-      console.warn('No record ID found for job, using fallback');
-      onSaveJob?.();
-      return;
-    }
-    setSavingJob(true);
-    try {
-      const result = await handleSave(recordId, session);
-      if (result) {
-        setDbSaved(result.saved);
-        onSaveJob?.();
-      }
-    } catch (error) {
-      console.error('Failed to save/unsave job:', error);
-      onSaveJob?.();
-    } finally {
-      setSavingJob(false);
-    }
+    await toggleSave();
+    onSaveJob?.();
   };
 
   const copyNOCCode = async () => {
@@ -902,6 +871,7 @@ export function NocJobDescription({
           </div>
         </ScrollArea>
       </motion.div>
+      <LoginAlertComponent />
     </TooltipProvider>
   );
 }

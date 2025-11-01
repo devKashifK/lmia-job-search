@@ -6,12 +6,9 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/dashboard/sidebar";
-import { Menu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import BackgroundWrapper from "@/components/ui/background-wrapper";
-import { Notifications } from "@/components/search-components.tsx/topbar";
-import Link from "next/link";
-import UserDropdown from "@/components/ui/user-dropdown";
-import Logo from "@/components/ui/logo";
+import Navbar from "@/components/ui/nabvar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -33,73 +30,79 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <BackgroundWrapper>
-      <div className="flex h-screen w-full bg-white/50 backdrop-blur-sm overflow-hidden">
-        {/* Navbar */}
-        <div className="fixed top-0 left-0 right-0 h-16 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-          <div className="flex h-full items-center justify-between px-4 md:px-6">
-            <div className="flex h-full items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-9 w-9 p-0 hover:bg-brand-50"
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              >
-                <Menu className="h-5 w-5 text-gray-600" />
-                <span className="sr-only">Toggle sidebar</span>
-              </Button>
-              <Link href="/" className="flex items-center">
-                <Logo className="h-12 w-12 rounded-lg text-brand-600" />
-                <span className="text-xl font-bold bg-gradient-to-r from-brand-600 to-brand-500 text-transparent bg-clip-text leading-none">
-                  Job Maze
-                </span>
-              </Link>
-            </div>
-            <div className="flex items-center gap-4">
-              <Notifications />
-              <UserDropdown />
-            </div>
-          </div>
+      <Navbar />
+      <div className="min-h-screen">
+        {/* Sidebar Toggle Button */}
+        <div className="fixed top-[7rem] left-4 z-40">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-9 w-9 p-0 bg-white/90 backdrop-blur-sm border-gray-200 hover:bg-brand-50 hover:border-brand-300 shadow-sm"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            {isSidebarOpen ? (
+              <X className="h-4 w-4 text-gray-600" />
+            ) : (
+              <Menu className="h-4 w-4 text-gray-600" />
+            )}
+            <span className="sr-only">Toggle sidebar</span>
+          </Button>
         </div>
 
         {/* Sidebar */}
-        <div
-          className={cn(
-            "fixed top-16 left-0 h-[calc(100vh-4rem)] z-40 bg-white/80 backdrop-blur-sm border-r border-gray-200",
-            isSidebarOpen ? "w-[280px]" : "w-0"
+        <AnimatePresence>
+          {isSidebarOpen && (
+            <>
+              {/* Mobile backdrop */}
+              {isMobile && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm z-30"
+                  onClick={() => setIsSidebarOpen(false)}
+                />
+              )}
+              {/* Sidebar panel */}
+              <motion.div
+                initial={{ x: -280 }}
+                animate={{ x: 0 }}
+                exit={{ x: -280 }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className={cn(
+                  "fixed top-[6.5rem] left-0 bottom-0 w-[280px] z-40 bg-white/90 backdrop-blur-xl border-r border-gray-200 shadow-lg",
+                  isMobile && "shadow-2xl"
+                )}
+              >
+                <Sidebar
+                  isOpen={isSidebarOpen}
+                  isMobile={isMobile}
+                  onClose={() => setIsSidebarOpen(false)}
+                />
+              </motion.div>
+            </>
           )}
-        >
-          <Sidebar
-            isOpen={isSidebarOpen}
-            isMobile={isMobile}
-            onClose={() => setIsSidebarOpen(false)}
-          />
-        </div>
+        </AnimatePresence>
 
         {/* Main Content */}
         <div
           className={cn(
-            "flex-1 transition-all duration-300",
+            "transition-all duration-300 pt-[6.5rem]",
             isSidebarOpen && !isMobile ? "ml-[280px]" : "ml-0"
           )}
         >
-          <div className="h-screen overflow-y-auto">
-            <AnimatePresence mode="wait">
-              <motion.main
-                key={pathname}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 30,
-                }}
-                className="w-full min-h-full"
-              >
-                {children}
-              </motion.main>
-            </AnimatePresence>
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.main
+              key={pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="min-h-[calc(100vh-6.5rem)] pb-12"
+            >
+              {children}
+            </motion.main>
+          </AnimatePresence>
         </div>
       </div>
     </BackgroundWrapper>

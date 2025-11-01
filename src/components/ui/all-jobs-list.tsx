@@ -20,12 +20,12 @@ import {
 import Link from 'next/link';
 import { useSession } from '@/hooks/use-session';
 import {
-  handleSave,
   checkMultipleSavedJobs,
   getJobRecordId,
 } from '@/utils/saved-jobs';
 import { JobSortPopover, sortJobs, type SortConfig } from './job-sort-popover';
 import { AttributeName } from '@/helpers/attribute';
+import { useSaveJobList } from '@/hooks/use-save-job';
 
 interface Job {
   id?: number;
@@ -66,9 +66,14 @@ export function AllJobsList({
   className = '',
   totalCount,
 }: AllJobsListProps) {
-  const { session, isLoading: sessionLoading } = useSession();
-  const [dbSavedJobs, setDbSavedJobs] = useState<Set<string>>(new Set());
-  const [isLoadingSavedJobs, setIsLoadingSavedJobs] = useState(false);
+  const { session } = useSession();
+  const {
+    savedJobs: dbSavedJobs,
+    toggleSave,
+    setSavedJobs: setDbSavedJobs,
+    isLoading: isLoadingSavedJobs,
+    LoginAlertComponent,
+  } = useSaveJobList();
   const [sortConfig, setSortConfig] = useState<SortConfig>(null);
 
   // Load saved jobs from database on mount or when jobs change
@@ -76,17 +81,11 @@ export function AllJobsList({
     let isCancelled = false;
 
     const loadSavedJobs = async () => {
-      // Wait for session to load and both session and jobs to be available
-      if (sessionLoading) {
-        return;
-      }
-
       if (!session?.user?.id || !jobs.length) {
         setDbSavedJobs(new Set());
         return;
       }
 
-      setIsLoadingSavedJobs(true);
       try {
         const recordIds = jobs
           .map((job) => getJobRecordId(job))
@@ -106,10 +105,6 @@ export function AllJobsList({
         if (!isCancelled) {
           setDbSavedJobs(new Set());
         }
-      } finally {
-        if (!isCancelled) {
-          setIsLoadingSavedJobs(false);
-        }
       }
     };
 
@@ -119,7 +114,8 @@ export function AllJobsList({
     return () => {
       isCancelled = true;
     };
-  }, [session?.user?.id, jobs, sessionLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.id, jobs.length]);
 
   // Sort jobs if sort config is set
   const sortedJobs = useMemo(() => {
@@ -472,37 +468,14 @@ export function AllJobsList({
                           onClick={async (e) => {
                             e.stopPropagation();
 
-                            if (!session?.user?.id) {
-                              // Fallback to local state if no session
-                              onToggleSaved(index);
-                              return;
-                            }
-
                             if (!recordId) {
-                              console.warn(
-                                'No record ID found for job, using local state'
-                              );
-                              onToggleSaved(index);
+                              console.warn('No record ID found for job');
                               return;
                             }
 
                             try {
-                              const result = await handleSave(
-                                recordId,
-                                session
-                              );
-                              if (result) {
-                                // Update database saved jobs state
-                                setDbSavedJobs((prev) => {
-                                  const newSet = new Set(prev);
-                                  if (result.saved) {
-                                    newSet.add(recordId);
-                                  } else {
-                                    newSet.delete(recordId);
-                                  }
-                                  return newSet;
-                                });
-
+                              const success = await toggleSave(recordId);
+                              if (success) {
                                 // Also update local state for consistency
                                 onToggleSaved(index);
                               }
@@ -563,6 +536,7 @@ export function AllJobsList({
           )}
         </div>
       </div>
+      <LoginAlertComponent />
     </TooltipProvider>
   );
 }

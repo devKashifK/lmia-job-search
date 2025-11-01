@@ -12,11 +12,17 @@ export interface SavedJobsUtils {
 
 /**
  * Save or unsave a job in the database
+ * Returns { requiresLogin: true } if user is not logged in
  */
 export const handleSave = async (recordID: string, session: any) => {
-  if (!recordID || !session?.user?.id) {
-    console.error('Missing recordID or session');
-    return;
+  if (!recordID) {
+    console.error('Missing recordID');
+    return { error: 'Missing record ID' };
+  }
+
+  // Check if user is logged in
+  if (!session?.user?.id) {
+    return { requiresLogin: true };
   }
 
   try {
@@ -43,6 +49,7 @@ export const handleSave = async (recordID: string, session: any) => {
       const { error } = await db.from('saved_jobs').insert({
         record_id: recordID,
         user_id: session.user.id,
+        created_at: new Date().toISOString(), // Explicitly set timestamp
       });
 
       if (error) {

@@ -33,10 +33,6 @@ export default function RecentSearches() {
   const [newQuery, setNewQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  useEffect(() => {
-    fetchSavedSearches();
-  }, [session?.user?.id]);
-
   const fetchSavedSearches = async () => {
     if (!session?.user?.id) return;
 
@@ -44,12 +40,12 @@ export default function RecentSearches() {
       const { data, error } = await db
         .from("searches")
         .select("*")
-        .eq("id", session.user.id)
+        .eq("user_id", session.user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       setRecentSearches(data || []);
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error",
@@ -59,6 +55,11 @@ export default function RecentSearches() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchSavedSearches();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.id]);
 
   const handleDelete = async (id: string) => {
     try {
@@ -71,7 +72,7 @@ export default function RecentSearches() {
         title: "Search Deleted",
         description: "Your saved search has been removed",
       });
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error",
@@ -86,7 +87,7 @@ export default function RecentSearches() {
     try {
       const { error } = await db
         .from("searches")
-        .update({ query: newQuery })
+        .update({ keyword: newQuery })
         .eq("id", editingSearch.id);
 
       if (error) throw error;
@@ -94,7 +95,7 @@ export default function RecentSearches() {
       setRecentSearches((prev) =>
         prev.map((search) =>
           search.id === editingSearch.id
-            ? { ...search, query: newQuery }
+            ? { ...search, keyword: newQuery }
             : search
         )
       );
@@ -106,7 +107,7 @@ export default function RecentSearches() {
         title: "Search Renamed",
         description: "Your saved search has been updated",
       });
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error",
@@ -120,7 +121,7 @@ export default function RecentSearches() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6 mt-20">
+    <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -261,7 +262,7 @@ export default function RecentSearches() {
                                 className="h-8 w-8 p-0 hover:bg-white hover:text-blue-600"
                                 onClick={() => {
                                   setEditingSearch(search);
-                                  setNewQuery(search.query);
+                                  setNewQuery(search.keyword);
                                   setIsDialogOpen(true);
                                 }}
                               >
@@ -269,7 +270,6 @@ export default function RecentSearches() {
                               </Button>
                               <Button
                                 variant="ghost"
-                                size="sm"
                                 className="h-8 w-8 p-0 hover:bg-white hover:text-red-600"
                                 onClick={() => handleDelete(search.id)}
                               >

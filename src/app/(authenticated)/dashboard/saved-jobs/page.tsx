@@ -1,10 +1,10 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useSession } from "@/hooks/use-session";
-import db from "@/db";
-import JobCard from "@/components/ui/job-card";
-import { Building2 } from "lucide-react";
-import { toast } from "sonner";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { useSession } from '@/hooks/use-session';
+import db from '@/db';
+import JobCard from '@/components/ui/job-card';
+import { Building2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface LMIAJob {
   RecordID: string;
@@ -17,14 +17,14 @@ interface LMIAJob {
   lmia_year: string;
   priority_occupation: string;
   approved_positions: string;
-  type: "lmia";
+  type: 'lmia';
   // Optional fields that might come from HotLeads
   occupation_title?: string;
   state?: string;
   job_status?: string;
   employer_type?: string;
   date_of_job_posting?: string;
-  "2021_noc"?: string;
+  '2021_noc'?: string;
 }
 
 interface HotLeadsJob {
@@ -34,11 +34,11 @@ interface HotLeadsJob {
   occupation_title: string;
   city: string;
   state: string;
-  "2021_noc": string;
+  '2021_noc': string;
   job_status: string;
   employer_type: string;
   date_of_job_posting: string;
-  type: "hotLeads";
+  type: 'hotLeads';
   // Optional fields that might come from LMIA
   territory?: string;
   noc_code?: string;
@@ -69,9 +69,9 @@ export default function SavedJobs() {
     try {
       // First get all saved job IDs
       const { data: savedJobsData, error: savedJobsError } = await db
-        .from("saved_jobs")
-        .select("*")
-        .eq("user_id", session.user.id);
+        .from('saved_jobs')
+        .select('*')
+        .eq('user_id', session.user.id);
 
       if (savedJobsError) throw savedJobsError;
 
@@ -80,29 +80,29 @@ export default function SavedJobs() {
         savedJobsData.map(async (savedJob) => {
           // Try to fetch from LMIA table first
           const { data: lmiaData, error: lmiaError } = await db
-            .from("lmia_records")
-            .select("*")
-            .eq("RecordID", savedJob.record_id)
+            .from('lmia_records')
+            .select('*')
+            .eq('RecordID', savedJob.record_id)
             .single();
 
           if (!lmiaError && lmiaData) {
             return {
               ...savedJob,
-              job_data: { ...lmiaData, type: "lmia" } as LMIAJob,
+              job_data: { ...lmiaData, type: 'lmia' } as LMIAJob,
             };
           }
 
           // If not in LMIA, try hot leads table
           const { data: hotLeadsData, error: hotLeadsError } = await db
-            .from("hot_leads")
-            .select("*")
-            .eq("RecordID", savedJob.record_id)
+            .from('trending_job')
+            .select('*')
+            .eq('id', savedJob.record_id)
             .single();
 
           if (!hotLeadsError && hotLeadsData) {
             return {
               ...savedJob,
-              job_data: { ...hotLeadsData, type: "hotLeads" } as HotLeadsJob,
+              job_data: { ...hotLeadsData, type: 'hotLeads' } as HotLeadsJob,
             };
           }
 
@@ -114,8 +114,8 @@ export default function SavedJobs() {
       // Filter out any null values and update state
       setSavedJobs(jobsWithData.filter(Boolean));
     } catch (error) {
-      console.error("Error fetching saved jobs:", error);
-      toast.error("Failed to fetch saved jobs");
+      console.error('Error fetching saved jobs:', error);
+      toast.error('Failed to fetch saved jobs');
     } finally {
       setIsLoading(false);
     }
@@ -124,19 +124,19 @@ export default function SavedJobs() {
   const handleToggleSave = async (recordId: string) => {
     try {
       const { error } = await db
-        .from("saved_jobs")
+        .from('saved_jobs')
         .delete()
-        .eq("record_id", recordId)
-        .eq("user_id", session.user.id);
+        .eq('record_id', recordId)
+        .eq('user_id', session.user.id);
 
       if (error) throw error;
 
       // Update local state
       setSavedJobs((prev) => prev.filter((job) => job.record_id !== recordId));
-      toast.success("Job removed from saved jobs");
+      toast.success('Job removed from saved jobs');
     } catch (error) {
-      console.error("Error removing job:", error);
-      toast.error("Failed to remove job");
+      console.error('Error removing job:', error);
+      toast.error('Failed to remove job');
     }
   };
 
@@ -165,12 +165,13 @@ export default function SavedJobs() {
               logoIcon={Building2}
               saved={true}
               onToggleSaved={() => handleToggleSave(savedJob.record_id)}
-              employerName={job.operating_name}
+              employerName={job.employer}
               jobTitle={job.job_title || job.occupation_title}
               city={job.city}
               state={job.state}
+              category={job.category}
               territory={job.territory}
-              noc={job.noc_code || job["2021_noc"]}
+              noc={job.noc_code || job['2021_noc']}
               jobStatus={job.job_status}
               employerType={job.employer_type}
               datePosted={job.date_of_job_posting}
@@ -178,14 +179,14 @@ export default function SavedJobs() {
               onKnowMore={() => {
                 /* Implement know more functionality */
               }}
-              type={job.type}
-              program={job.type === "lmia" ? job.program : undefined}
-              lmiaYear={job.type === "lmia" ? job.lmia_year : undefined}
+              type={job.category}
+              program={job.type === 'lmia' ? job.program : undefined}
+              lmiaYear={job.type === 'lmia' ? job.lmia_year : undefined}
               priorityOccupation={
-                job.type === "lmia" ? job.priority_occupation : undefined
+                job.type === 'lmia' ? job.priority_occupation : undefined
               }
               approvedPositions={
-                job.type === "lmia" ? job.approved_positions : undefined
+                job.type === 'lmia' ? job.approved_positions : undefined
               }
             />
           );

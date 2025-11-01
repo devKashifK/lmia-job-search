@@ -219,7 +219,7 @@ export default function Credits() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6 mt-20">
+    <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
