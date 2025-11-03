@@ -15,6 +15,7 @@ import { motion } from 'framer-motion';
 import { HoverCard } from '@/components/ui/hover-card';
 import SectionTitle from '@/components/ui/section-title';
 import { cn } from '@/lib/utils';
+import useMobile from '@/hooks/use-mobile';
 
 type Currency = 'CAD' | 'INR';
 
@@ -149,7 +150,7 @@ const employerPlans: Plan[] = [
   },
 ];
 
-function Price({ plan, currency }: { plan: Plan; currency: Currency }) {
+function Price({ plan, currency, isMobile }: { plan: Plan; currency: Currency; isMobile: boolean }) {
   // “Custom” stays “Custom”, otherwise show currency-specific price
   const value =
     plan.cadPrice === 'Custom' || plan.inrPrice === 'Custom'
@@ -159,8 +160,8 @@ function Price({ plan, currency }: { plan: Plan; currency: Currency }) {
       : plan.inrPrice ?? '—';
 
   return (
-    <div className="mb-6">
-      <span className="text-4xl font-bold text-gray-900">{value}</span>
+    <div className={isMobile ? "mb-4" : "mb-6"}>
+      <span className={isMobile ? "text-3xl font-bold text-gray-900" : "text-4xl font-bold text-gray-900"}>{value}</span>
       {plan.period ? (
         <span className="text-gray-600 ml-2">{plan.period}</span>
       ) : null}
@@ -168,7 +169,7 @@ function Price({ plan, currency }: { plan: Plan; currency: Currency }) {
   );
 }
 
-function PlanCard({ plan, currency }: { plan: Plan; currency: Currency }) {
+function PlanCard({ plan, currency, isMobile }: { plan: Plan; currency: Currency; isMobile: boolean }) {
   const Icon = plan.name.includes('Enterprise')
     ? Building2
     : plan.period?.includes('search')
@@ -189,7 +190,7 @@ function PlanCard({ plan, currency }: { plan: Plan; currency: Currency }) {
           )}
         >
           {plan.popular && (
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-500 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg">
+            <div className={isMobile ? "absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-500 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg" : "absolute -top-4 left-1/2 -translate-x-1/2 bg-brand-500 text-white px-6 py-2 rounded-full text-sm font-semibold shadow-lg"}>
               Most Popular
             </div>
           )}
@@ -199,36 +200,36 @@ function PlanCard({ plan, currency }: { plan: Plan; currency: Currency }) {
             </div>
           )}
 
-          <CardHeader className="p-8">
+          <CardHeader className={isMobile ? "p-4" : "p-8"}>
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 border border-brand-100">
               <Icon className="w-4 h-4" />
               {plan.name}
             </div>
 
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <h3 className={isMobile ? "text-xl font-bold text-gray-900 mb-3" : "text-2xl font-bold text-gray-900 mb-4"}>
               {plan.name}
             </h3>
-            <Price plan={plan} currency={currency} />
+            <Price plan={plan} currency={currency} isMobile={isMobile} />
             {plan.description ? (
               <p className="text-gray-600">{plan.description}</p>
             ) : null}
           </CardHeader>
 
-          <CardContent>
-            <ul className="space-y-4 mb-8">
+          <CardContent className={isMobile ? "p-4 pt-0" : ""}>
+            <ul className={isMobile ? "space-y-3 mb-6" : "space-y-4 mb-8"}>
               {plan.features.map((feature) => (
                 <li key={feature} className="flex items-start">
-                  <div className="mt-0.5 w-6 h-6 bg-brand-100 rounded-full flex items-center justify-center mr-3">
-                    <Check className="w-4 h-4 text-brand-600" />
+                  <div className={isMobile ? "mt-0.5 w-5 h-5 bg-brand-100 rounded-full flex items-center justify-center mr-2" : "mt-0.5 w-6 h-6 bg-brand-100 rounded-full flex items-center justify-center mr-3"}>
+                    <Check className={isMobile ? "w-3 h-3 text-brand-600" : "w-4 h-4 text-brand-600"} />
                   </div>
-                  <span className="text-gray-700">{feature}</span>
+                  <span className={isMobile ? "text-sm text-gray-700" : "text-gray-700"}>{feature}</span>
                 </li>
               ))}
             </ul>
 
             <Button
               className={cn(
-                'w-full rounded-full py-6 text-lg font-semibold transition-all duration-300',
+                isMobile ? 'w-full rounded-full py-4 text-base font-semibold transition-all duration-300' : 'w-full rounded-full py-6 text-lg font-semibold transition-all duration-300',
                 plan.tone === 'primary'
                   ? 'bg-brand-600 hover:bg-brand-700'
                   : 'bg-gray-900 hover:bg-gray-800'
@@ -249,17 +250,22 @@ function PlanCard({ plan, currency }: { plan: Plan; currency: Currency }) {
 
 export default function Pricing() {
   const [currency, setCurrency] = useState<Currency>('CAD');
+  const { isMobile, isMounted } = useMobile();
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
-    <section id="pricing" className="py-16 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="pricing" className={isMobile ? "py-10 relative" : "py-16 relative"}>
+      <div className={isMobile ? "max-w-7xl mx-auto px-4" : "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"}>
         <SectionTitle
           title="Simple, Transparent Pricing"
           subtitle="Choose the plan that works best for you"
         />
 
         {/* Currency toggle */}
-        <div className="flex items-center justify-center gap-2 mt-6 mb-10">
+        <div className={isMobile ? "flex items-center justify-center gap-2 mt-4 mb-6" : "flex items-center justify-center gap-2 mt-6 mb-10"}>
           <span
             className={cn(
               'text-sm font-medium',
@@ -291,7 +297,7 @@ export default function Pricing() {
         </div>
 
         {/* Individuals */}
-        <div className="mb-6">
+        <div className={isMobile ? "mb-8" : "mb-6"}>
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-5 h-5 text-brand-600" />
             <h4 className="text-lg font-semibold text-gray-900">
@@ -304,16 +310,16 @@ export default function Pricing() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+            className={isMobile ? "grid grid-cols-1 gap-6" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"}
           >
             {individualPlans.map((plan) => (
-              <PlanCard key={plan.name} plan={plan} currency={currency} />
+              <PlanCard key={plan.name} plan={plan} currency={currency} isMobile={isMobile} />
             ))}
           </motion.div>
         </div>
 
         {/* Employers */}
-        <div className="mt-14">
+        <div className={isMobile ? "mt-10" : "mt-14"}>
           <div className="flex items-center gap-2 mb-4">
             <Building2 className="w-5 h-5 text-brand-600" />
             <h4 className="text-lg font-semibold text-gray-900">
@@ -326,10 +332,10 @@ export default function Pricing() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className={isMobile ? "grid grid-cols-1 gap-6" : "grid grid-cols-1 md:grid-cols-3 gap-8"}
           >
             {employerPlans.map((plan) => (
-              <PlanCard key={plan.name} plan={plan} currency={currency} />
+              <PlanCard key={plan.name} plan={plan} currency={currency} isMobile={isMobile} />
             ))}
           </motion.div>
         </div>

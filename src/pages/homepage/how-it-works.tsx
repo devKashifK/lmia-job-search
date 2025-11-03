@@ -3,6 +3,7 @@
 import { Lightbulb, MousePointerClick, Sparkles, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SectionTitle from '@/components/ui/section-title';
+import useMobile from '@/hooks/use-mobile';
 
 const steps = [
   {
@@ -47,9 +48,15 @@ const item = {
 };
 
 export default function HowItWorks() {
+  const { isMobile, isMounted } = useMobile();
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <section className="py-16 relative">
-      <div className="max-w-5xl mx-auto px-4 relative z-10">
+    <section className={isMobile ? "py-10 relative" : "py-16 relative"}>
+      <div className={isMobile ? "max-w-5xl mx-auto px-4 relative z-10" : "max-w-5xl mx-auto px-4 relative z-10"}>
         <SectionTitle
           title="How it works"
           subtitle="Get started in minutes with our simple yet powerful search process"
@@ -69,10 +76,10 @@ export default function HowItWorks() {
             <motion.div
               key={step.title}
               variants={item}
-              className="relative w-full mb-16 last:mb-0"
+              className={isMobile ? "relative w-full mb-10 last:mb-0" : "relative w-full mb-16 last:mb-0"}
             >
               <div
-                className={`flex flex-col md:flex-row items-center gap-8 ${
+                className={isMobile ? "flex flex-col items-center gap-4" : `flex flex-col md:flex-row items-center gap-8 ${
                   i % 2 === 0 ? 'md:flex-row-reverse' : ''
                 }`}
               >
@@ -81,14 +88,14 @@ export default function HowItWorks() {
                   whileHover={{ scale: 1.05 }}
                   className="relative flex-shrink-0"
                 >
-                  <div className="w-24 h-24 rounded-2xl flex items-center justify-center bg-gradient-to-br from-brand-500 to-brand-600 group relative">
+                  <div className={isMobile ? "w-16 h-16 rounded-xl flex items-center justify-center bg-gradient-to-br from-brand-500 to-brand-600 group relative" : "w-24 h-24 rounded-2xl flex items-center justify-center bg-gradient-to-br from-brand-500 to-brand-600 group relative"}>
                     <div className="absolute inset-0.5 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 opacity-75 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-brand-400 to-brand-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
-                    <step.icon className="w-12 h-12 text-white relative z-10 transition-transform duration-300 group-hover:scale-110" />
+                    <step.icon className={isMobile ? "w-8 h-8 text-white relative z-10" : "w-12 h-12 text-white relative z-10 transition-transform duration-300 group-hover:scale-110"} />
                   </div>
                   {/* Step number */}
-                  <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-br from-white to-brand-50 shadow-lg flex items-center justify-center border border-brand-100">
-                    <span className="text-sm font-bold bg-gradient-to-br from-brand-500 to-brand-600 bg-clip-text text-transparent">
+                  <div className={isMobile ? "absolute -top-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-br from-white to-brand-50 shadow-lg flex items-center justify-center border border-brand-100" : "absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-br from-white to-brand-50 shadow-lg flex items-center justify-center border border-brand-100"}>
+                    <span className={isMobile ? "text-xs font-bold bg-gradient-to-br from-brand-500 to-brand-600 bg-clip-text text-transparent" : "text-sm font-bold bg-gradient-to-br from-brand-500 to-brand-600 bg-clip-text text-transparent"}>
                       {i + 1}
                     </span>
                   </div>
@@ -97,22 +104,22 @@ export default function HowItWorks() {
                 {/* Content container */}
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className={`flex-1 relative group ${
+                  className={isMobile ? "flex-1 relative group" : `flex-1 relative group ${
                     i % 2 === 0 ? 'md:text-right' : ''
                   }`}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-brand-600/5 rounded-2xl transform -rotate-1 transition-transform duration-300 group-hover:rotate-0" />
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 to-brand-600/5 rounded-2xl transform rotate-1 transition-transform duration-300 group-hover:rotate-0" />
-                  <div className="relative bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-brand-100/20">
+                  <div className={isMobile ? "relative bg-white rounded-xl p-4 shadow-sm border border-brand-100/20" : "relative bg-white rounded-2xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-brand-100/20"}>
                     <div className="absolute inset-0 bg-gradient-to-br from-brand-50/50 to-brand-100/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="relative z-10">
-                      <span className="inline-block text-sm font-semibold text-brand-500 mb-2 uppercase tracking-wider">
+                      <span className={isMobile ? "inline-block text-xs font-semibold text-brand-500 mb-1 uppercase tracking-wider" : "inline-block text-sm font-semibold text-brand-500 mb-2 uppercase tracking-wider"}>
                         Step {i + 1}
                       </span>
-                      <h3 className="text-2xl font-bold bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent mb-4">
+                      <h3 className={isMobile ? "text-lg font-bold bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent mb-2" : "text-2xl font-bold bg-gradient-to-br from-gray-900 to-gray-700 bg-clip-text text-transparent mb-4"}>
                         {step.title}
                       </h3>
-                      <p className="text-lg text-gray-600 leading-relaxed">
+                      <p className={isMobile ? "text-sm text-gray-600 leading-relaxed" : "text-lg text-gray-600 leading-relaxed"}>
                         {step.description}
                       </p>
                     </div>
@@ -120,7 +127,9 @@ export default function HowItWorks() {
                 </motion.div>
 
                 {/* Timeline dot */}
-                <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 border-4 border-white shadow-md" />
+                {!isMobile && (
+                  <div className="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 border-4 border-white shadow-md" />
+                )}
               </div>
             </motion.div>
           ))}

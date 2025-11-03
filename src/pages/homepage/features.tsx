@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SectionTitle from '@/components/ui/section-title';
+import useMobile from '@/hooks/use-mobile';
 
 const features = [
   {
@@ -75,9 +76,15 @@ const item = {
 };
 
 export default function Features() {
+  const { isMobile, isMounted } = useMobile();
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <section className="py-20 relative bg-gradient-to-b from-white to-gray-50/50">
-      <div className="max-w-full mx-auto px-16">
+    <section className={isMobile ? "py-10 relative bg-gradient-to-b from-white to-gray-50/50" : "py-20 relative bg-gradient-to-b from-white to-gray-50/50"}>
+      <div className={isMobile ? "max-w-full mx-auto px-4" : "max-w-full mx-auto px-16"}>
         <SectionTitle
           title="Powerful Features for Enhanced Job Search"
           subtitle="Everything you need to streamline your job search experience"
@@ -87,27 +94,27 @@ export default function Features() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="mt-12 grid grid-cols-1 md:grid-cols-3 grid-rows-6 md:grid-rows-3 gap-10 auto-rows-[minmax(160px,1fr)]"
+          className={isMobile ? "mt-6 grid grid-cols-1 gap-4" : "mt-12 grid grid-cols-1 md:grid-cols-3 grid-rows-6 md:grid-rows-3 gap-10 auto-rows-[minmax(160px,1fr)]"}
         >
           {features.map((feature) => (
             <motion.div
               key={feature.title}
               variants={item}
-              className={`relative group rounded-2xl shadow-sm ${feature.span} p-0 flex flex-col`}
+              className={isMobile ? "relative group rounded-xl shadow-sm p-0 flex flex-col" : `relative group rounded-2xl shadow-sm ${feature.span} p-0 flex flex-col`}
             >
               {/* Tilted brand background effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/10 via-brand-400/10 to-brand-300/10 rounded-2xl -rotate-2 group-hover:rotate-0 transition-transform duration-300 pointer-events-none" />
+              <div className={isMobile ? "absolute inset-0 bg-gradient-to-br from-brand-500/10 via-brand-400/10 to-brand-300/10 rounded-xl pointer-events-none" : "absolute inset-0 bg-gradient-to-br from-brand-500/10 via-brand-400/10 to-brand-300/10 rounded-2xl -rotate-2 group-hover:rotate-0 transition-transform duration-300 pointer-events-none"} />
               {/* Card content */}
-              <div className="relative bg-white rounded-2xl p-6 flex flex-col h-full border border-brand-100/20 overflow-hidden group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="rounded-lg p-2 bg-gradient-to-br from-brand-500 to-brand-600 shadow text-white">
-                    <feature.icon className="w-6 h-6" />
+              <div className={isMobile ? "relative bg-white rounded-xl p-4 flex flex-col h-full border border-brand-100/20 overflow-hidden" : "relative bg-white rounded-2xl p-6 flex flex-col h-full border border-brand-100/20 overflow-hidden group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]"}>
+                <div className={isMobile ? "flex items-center gap-2 mb-3" : "flex items-center gap-3 mb-4"}>
+                  <div className={isMobile ? "rounded-lg p-1.5 bg-gradient-to-br from-brand-500 to-brand-600 shadow text-white" : "rounded-lg p-2 bg-gradient-to-br from-brand-500 to-brand-600 shadow text-white"}>
+                    <feature.icon className={isMobile ? "w-4 h-4" : "w-6 h-6"} />
                   </div>
-                  <h3 className="font-bold text-lg text-brand-600">
+                  <h3 className={isMobile ? "font-bold text-sm text-brand-600" : "font-bold text-lg text-brand-600"}>
                     {feature.title}
                   </h3>
                 </div>
-                <p className="text-sm mb-3 opacity-80 text-gray-700">
+                <p className={isMobile ? "text-xs mb-2 opacity-80 text-gray-700" : "text-sm mb-3 opacity-80 text-gray-700"}>
                   {feature.description}
                 </p>
                 {feature.content && (

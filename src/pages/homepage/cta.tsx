@@ -2,10 +2,17 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Zap, Search } from "lucide-react";
+import useMobile from "@/hooks/use-mobile";
 
 export default function CTA() {
+  const { isMobile, isMounted } = useMobile();
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <section className="py-16 relative">
+    <section className={isMobile ? "py-10 relative" : "py-16 relative"}>
       {/* Background with diagonal split */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br " />
@@ -18,8 +25,8 @@ export default function CTA() {
       </div>
 
       {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <div className={isMobile ? "relative max-w-7xl mx-auto px-4" : "relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"}>
+        <div className={isMobile ? "flex flex-col gap-8" : "grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"}>
           {/* Left Column */}
           <div className="text-gray-900">
             <motion.div
@@ -35,35 +42,36 @@ export default function CTA() {
                   <span>No Credit Card Required</span>
                 </div>
               </div>
-              <h2 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+              <h2 className={isMobile ? "text-3xl font-bold mb-4 leading-tight" : "text-5xl md:text-6xl font-bold mb-6 leading-tight"}>
                 Start Your Search{" "}
                 <span className="text-brand-600">Journey Today</span>
               </h2>
-              <p className="text-xl text-gray-700 mb-12 max-w-lg">
+              <p className={isMobile ? "text-sm text-gray-700 mb-6 max-w-lg" : "text-xl text-gray-700 mb-12 max-w-lg"}>
                 Get instant access to premium insights with 5 free credits. Join
                 thousands of professionals making data-driven decisions.
               </p>
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="group relative inline-flex items-center justify-center bg-brand-600 text-white text-lg font-semibold px-8 py-4 rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-500/20">
+                <button className={isMobile ? "group relative inline-flex items-center justify-center bg-brand-600 text-white text-base font-semibold px-6 py-3 rounded-xl overflow-hidden transition-all duration-300" : "group relative inline-flex items-center justify-center bg-brand-600 text-white text-lg font-semibold px-8 py-4 rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-500/20"}>
                   <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
                   <span className="relative flex items-center gap-2">
                     Get Started Free
-                    <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className={isMobile ? "w-4 h-4" : "w-5 h-5 transform group-hover:translate-x-1 transition-transform"} />
                   </span>
                 </button>
-                <button className="group inline-flex items-center justify-center bg-white text-brand-600 text-lg font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:bg-brand-50">
+                <button className={isMobile ? "group inline-flex items-center justify-center bg-white text-brand-600 text-base font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:bg-brand-50" : "group inline-flex items-center justify-center bg-white text-brand-600 text-lg font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:bg-brand-50"}>
                   <span className="flex items-center gap-2">
                     Watch Demo
-                    <Zap className="w-5 h-5" />
+                    <Zap className={isMobile ? "w-4 h-4" : "w-5 h-5"} />
                   </span>
                 </button>
               </div>
             </motion.div>
           </div>
 
-          {/* Right Column */}
+          {/* Right Column - Hide on mobile */}
+          {!isMobile && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -144,6 +152,7 @@ export default function CTA() {
               </div>
             </div>
           </motion.div>
+          )}
         </div>
       </div>
     </section>

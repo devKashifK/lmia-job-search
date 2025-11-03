@@ -15,6 +15,8 @@ import { SearchFeatures } from '@/components/search/features';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { MobileHeader } from '@/components/mobile/mobile-header';
+import { BottomNav } from '@/components/mobile/bottom-nav';
 import {
   Select,
   SelectContent,
@@ -23,29 +25,29 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import Category from '@/components/ui/category';
-import {
-  applyDataConfig,
-  applyFilterPanelConfig,
-} from '@/components/ui/dynamic-data-view';
 import Navbar from '@/components/ui/nabvar';
+import useMobile from '@/hooks/use-mobile';
 
 export default function Page() {
   const [input, setInput] = useState('');
   const [isChecking, setIsChecking] = useState(false);
-  const [suggestions, setSuggestions] = useState<{ suggestion: string }[]>([]);
+  const [suggestions, setSuggestions] = useState<
+    { suggestion: string; field?: string }[]
+  >([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>(
     'hot_leads'
   );
   const searchParams = useSearchParams();
-  const sp = new URLSearchParams(searchParams.toString());
+  const sp = new URLSearchParams(searchParams?.toString() || '');
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { updateCreditsAndSearch } = useUpdateCredits();
   const navigate = useRouter();
   const { toast } = useToast();
   const { session } = useSession();
+  const { isMobile, isMounted } = useMobile();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -102,7 +104,10 @@ export default function Page() {
     fetchSuggestions(value);
   };
 
-  const handleSuggestionClick = async (suggestion: object) => {
+  const handleSuggestionClick = async (suggestion: {
+    suggestion: string;
+    field?: string;
+  }) => {
     if (!session?.session) {
       updateCreditsAndSearch(suggestion?.suggestion);
       if (searchType === 'hot_leads') {
@@ -124,7 +129,7 @@ export default function Page() {
       }
       return;
     }
-    setInput(suggestion);
+    setInput(suggestion.suggestion);
     setShowSuggestions(false);
   };
 
@@ -269,11 +274,16 @@ export default function Page() {
           'Transport Truck Drivers',
         ];
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <div className="bg-gradient-to-b from-brand-50 to-white min-h-screen">
-      <Navbar className="" />
+      {!isMobile && <Navbar className="" />}
+      {isMobile && <MobileHeader title="Search Jobs" />}
 
-      <main className="pt-24 pb-16">
+      <main className={isMobile ? 'pt-4 pb-20' : 'pt-24 pb-16'}>
         {/* Hero section with animated background */}
         <div className="relative ">
           <div className="absolute inset-0 bg-gradient-to-br from-brand-500/10 via-brand-300/5 to-transparent rounded-b-[50%] h-[500px] -z-10"></div>
@@ -303,9 +313,21 @@ export default function Page() {
             }}
           />
 
-          <div className="max-w-7xl mx-auto px-6 pt-12 pb-20">
+          <div
+            className={
+              isMobile
+                ? 'max-w-full mx-auto px-4 pt-6 pb-12'
+                : 'max-w-7xl mx-auto px-6 pt-12 pb-20'
+            }
+          >
             <div className="text-center space-y-6 max-w-4xl mx-auto">
-              <Badge className="px-4 py-1.5 text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 border-brand-200 mb-4">
+              <Badge
+                className={
+                  isMobile
+                    ? 'px-3 py-1 text-xs font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 border-brand-200 mb-2'
+                    : 'px-4 py-1.5 text-sm font-medium bg-brand-100 text-brand-800 hover:bg-brand-200 border-brand-200 mb-4'
+                }
+              >
                 Find Top Opportunities
               </Badge>
 
@@ -313,7 +335,11 @@ export default function Page() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight"
+                className={
+                  isMobile
+                    ? 'text-3xl font-bold text-gray-900 tracking-tight leading-tight'
+                    : 'text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight'
+                }
               >
                 Discover{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-700">
@@ -322,27 +348,39 @@ export default function Page() {
                 <span>Career</span>
               </motion.h1>
 
-              <div className="h-10">
-                <TypewriterEffect
-                  title="Search With"
-                  words={[
-                    'Noc Code',
-                    'Program',
-                    'Employer',
-                    'Address',
-                    'Occupation',
-                    'City',
-                    'Employer Name',
-                    'Province Mapping',
-                    '',
-                  ]}
-                />
-              </div>
+              {!isMobile && (
+                <div className="h-10">
+                  <TypewriterEffect
+                    title="Search With"
+                    words={[
+                      'Noc Code',
+                      'Program',
+                      'Employer',
+                      'Address',
+                      'Occupation',
+                      'City',
+                      'Employer Name',
+                      'Province Mapping',
+                      '',
+                    ]}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Search Input with surrounding glow */}
-            <div className="w-full max-w-7xl mx-auto mt-8 relative flex flex-col gap-14">
-              <div className="w-full max-w-3xl mx-auto ">
+            <div
+              className={
+                isMobile
+                  ? 'w-full mx-auto mt-6 relative flex flex-col gap-8'
+                  : 'w-full max-w-7xl mx-auto mt-8 relative flex flex-col gap-14'
+              }
+            >
+              <div
+                className={
+                  isMobile ? 'w-full mx-auto' : 'w-full max-w-3xl mx-auto'
+                }
+              >
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -350,30 +388,67 @@ export default function Page() {
                 >
                   <div className="relative group ">
                     {/* Remove the gradient glow effect */}
-                    <div className="relative flex items-center bg-white rounded-full shadow-xl">
-                      <div className="pl-5 pr-3 py-2 text-brand-500">
-                        <Search className="w-6 h-6" />
+                    <div
+                      className={
+                        isMobile
+                          ? 'relative flex flex-col bg-white rounded-2xl shadow-xl'
+                          : 'relative flex items-center bg-white rounded-full shadow-xl'
+                      }
+                    >
+                      <div
+                        className={
+                          isMobile
+                            ? 'flex items-center px-4 py-3'
+                            : 'flex items-center'
+                        }
+                      >
+                        {!isMobile && (
+                          <div className="pl-5 pr-3 py-2 text-brand-500">
+                            <Search className="w-6 h-6" />
+                          </div>
+                        )}
+
+                        <Input
+                          ref={searchInputRef}
+                          className={
+                            isMobile
+                              ? 'flex-1 border-0 bg-transparent text-base py-3 h-12 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400'
+                              : 'flex-1 border-0 bg-transparent text-lg py-6 h-16 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400'
+                          }
+                          placeholder={
+                            isMobile
+                              ? 'Search jobs...'
+                              : 'Job title, company, or keyword...'
+                          }
+                          value={input}
+                          onChange={handleChange}
+                          onFocus={() => setShowSuggestions(true)}
+                        />
                       </div>
 
-                      <Input
-                        ref={searchInputRef}
-                        className="flex-1 border-0 bg-transparent text-lg py-6 h-16 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400"
-                        placeholder="Job title, company, or keyword..."
-                        value={input}
-                        onChange={handleChange}
-                        // onKeyDown={handleKeyPress}
-                        onFocus={() => setShowSuggestions(true)}
-                      />
-
-                      <div className="flex items-center gap-2 mr-2">
-                        <span className="h-8 border-l border-gray-300 mx-2" />
+                      <div
+                        className={
+                          isMobile
+                            ? 'flex flex-col gap-3 px-4 pb-4'
+                            : 'flex items-center gap-2 mr-2'
+                        }
+                      >
+                        {!isMobile && (
+                          <span className="h-8 border-l border-gray-300 mx-2" />
+                        )}
                         <Select
                           value={searchType}
                           onValueChange={(value: 'hot_leads' | 'lmia') =>
                             setSearchType(value)
                           }
                         >
-                          <SelectTrigger className="w-[160px] bg-transparent border-none shadow-none text-gray-500 font-medium focus:ring-0 focus:ring-offset-0 px-2">
+                          <SelectTrigger
+                            className={
+                              isMobile
+                                ? 'w-full bg-gray-50 border border-gray-200 shadow-none text-gray-700 font-medium focus:ring-0 focus:ring-offset-0 px-4 py-3 rounded-xl'
+                                : 'w-[160px] bg-transparent border-none shadow-none text-gray-500 font-medium focus:ring-0 focus:ring-offset-0 px-2'
+                            }
+                          >
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                           <SelectContent>
@@ -383,16 +458,30 @@ export default function Page() {
                             <SelectItem value="lmia">LMIA</SelectItem>
                           </SelectContent>
                         </Select>
-                        <span className="h-8 border-l border-gray-300 mx-2" />
+                        {!isMobile && (
+                          <span className="h-8 border-l border-gray-300 mx-2" />
+                        )}
 
                         <motion.button
-                          className="bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium px-6 py-3 rounded-full hover:shadow-lg hover:shadow-brand-500/25 transition-all duration-300"
+                          className={
+                            isMobile
+                              ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white font-semibold px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-brand-500/25 transition-all duration-300 w-full'
+                              : 'bg-gradient-to-r from-brand-500 to-brand-600 text-white font-medium px-6 py-3 rounded-full hover:shadow-lg hover:shadow-brand-500/25 transition-all duration-300'
+                          }
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={startSearch}
                         >
                           {isChecking ? (
-                            <div className="h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            <div
+                              className={
+                                isMobile
+                                  ? 'h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto'
+                                  : 'h-6 w-6 border-2 border-white border-t-transparent rounded-full animate-spin'
+                              }
+                            />
+                          ) : isMobile ? (
+                            'Search Jobs'
                           ) : (
                             'Search'
                           )}
@@ -401,8 +490,20 @@ export default function Page() {
                     </div>
 
                     {/* Trending searches */}
-                    <div className="mt-4 flex flex-wrap justify-center gap-2">
-                      <span className="text-sm text-gray-500 pt-1">
+                    <div
+                      className={
+                        isMobile
+                          ? 'mt-3 flex flex-wrap justify-start gap-2'
+                          : 'mt-4 flex flex-wrap justify-center gap-2'
+                      }
+                    >
+                      <span
+                        className={
+                          isMobile
+                            ? 'text-xs text-gray-500 pt-1'
+                            : 'text-sm text-gray-500 pt-1'
+                        }
+                      >
                         Trending:
                       </span>
                       {trendingSearches.map((term, index) => (
@@ -410,7 +511,11 @@ export default function Page() {
                           key={index}
                           variant="outline"
                           size="sm"
-                          className="bg-white/70 border-brand-100 text-gray-700 hover:bg-brand-50 hover:text-brand-700"
+                          className={
+                            isMobile
+                              ? 'bg-white/70 border-brand-100 text-gray-700 hover:bg-brand-50 hover:text-brand-700 text-xs px-3 py-1 h-7'
+                              : 'bg-white/70 border-brand-100 text-gray-700 hover:bg-brand-50 hover:text-brand-700'
+                          }
                           onClick={() => handleTrendingClick(term)}
                         >
                           {term}
@@ -480,26 +585,29 @@ export default function Page() {
         </div>
 
         {/* Features section with animation */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="max-w-7xl mx-auto px-6"
-        >
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Why Use Our Job Search?
-            </h2>
-            <p className="text-gray-600 mt-2">
-              Discover what makes our platform different
-            </p>
-          </div>
+        {!isMobile && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="max-w-7xl mx-auto px-6"
+          >
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900">
+                Why Use Our Job Search?
+              </h2>
+              <p className="text-gray-600 mt-2">
+                Discover what makes our platform different
+              </p>
+            </div>
 
-          <SearchFeatures />
-        </motion.div>
+            <SearchFeatures />
+          </motion.div>
+        )}
       </main>
 
-      <Footer />
+      {!isMobile && <Footer />}
+      {isMobile && <BottomNav />}
     </div>
   );
 }

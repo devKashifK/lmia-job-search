@@ -1,19 +1,52 @@
-import * as React from "react"
+'use client';
 
-const MOBILE_BREAKPOINT = 768
+import { useState, useEffect } from 'react';
 
-export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+type DeviceType = 'mobile' | 'tablet' | 'desktop';
 
-  React.useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    }
-    mql.addEventListener("change", onChange)
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    return () => mql.removeEventListener("change", onChange)
-  }, [])
+export default function useMobile() {
+  const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [deviceType, setDeviceType] = useState<DeviceType>('desktop');
 
-  return !!isMobile
+  useEffect(() => {
+    setIsMounted(true);
+
+    const checkDevice = () => {
+      if (typeof window === 'undefined') return;
+
+      const width = window.innerWidth;
+
+      if (width < 768) {
+        setDeviceType('mobile');
+        setIsMobile(true);
+        setIsTablet(false);
+        setIsDesktop(false);
+      } else if (width < 1024) {
+        setDeviceType('tablet');
+        setIsMobile(false);
+        setIsTablet(true);
+        setIsDesktop(false);
+      } else {
+        setDeviceType('desktop');
+        setIsMobile(false);
+        setIsTablet(false);
+        setIsDesktop(true);
+      }
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  return {
+    isMobile,
+    isTablet,
+    isDesktop,
+    deviceType,
+    isMounted,
+  };
 }

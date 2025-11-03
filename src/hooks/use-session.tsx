@@ -48,13 +48,17 @@ export const SessionProvider = ({
     fetchSession();
 
     // Listen for auth state changes
-    const { data: subscription } = db.auth.onAuthStateChange(
+    const { data: authListener } = db.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (authListener?.subscription) {
+        authListener.subscription.unsubscribe();
+      }
+    };
   }, []);
 
   return (

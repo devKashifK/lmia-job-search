@@ -10,10 +10,17 @@ import {
   Users,
   CheckCircle2,
 } from 'lucide-react';
+import useMobile from '@/hooks/use-mobile';
 
 export default function Hero() {
+  const { isMobile, isMounted } = useMobile();
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <section className="py-10 relative overflow-hidden">
+    <section className={isMobile ? "py-6 relative overflow-hidden" : "py-10 relative overflow-hidden"}>
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
         <motion.div
@@ -43,44 +50,44 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative z-10 max-w-full w-full mx-auto px-16">
+      <div className={isMobile ? "relative z-10 max-w-full w-full mx-auto px-4" : "relative z-10 max-w-full w-full mx-auto px-16"}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
+          className={isMobile ? "bg-white/95 backdrop-blur-2xl rounded-2xl shadow-sm border border-gray-100 overflow-hidden" : "bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden"}
         >
-          <div className="flex flex-col md:flex-row items-center justify-between p-10 md:p-20 gap-10">
+          <div className={isMobile ? "flex flex-col items-center justify-between p-6 gap-6" : "flex flex-col md:flex-row items-center justify-between p-10 md:p-20 gap-10"}>
             {/* Text Content */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="md:w-1/2 mb-10 md:mb-0"
+              className={isMobile ? "w-full mb-6" : "md:w-1/2 mb-10 md:mb-0"}
             >
               {/* Badge */}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-100 to-brand-200 px-4 py-2 rounded-full mb-6"
+                className={isMobile ? "inline-flex items-center gap-2 bg-gradient-to-r from-brand-100 to-brand-200 px-3 py-1.5 rounded-full mb-4" : "inline-flex items-center gap-2 bg-gradient-to-r from-brand-100 to-brand-200 px-4 py-2 rounded-full mb-6"}
               >
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                 >
-                  <Sparkles className="w-4 h-4 text-brand-600" />
+                  <Sparkles className={isMobile ? "w-3 h-3 text-brand-600" : "w-4 h-4 text-brand-600"} />
                 </motion.div>
-                <span className="text-sm font-semibold text-brand-700">
+                <span className={isMobile ? "text-xs font-semibold text-brand-700" : "text-sm font-semibold text-brand-700"}>
                   Next-Gen Job Search Platform
                 </span>
               </motion.div>
 
-              <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight bg-gradient-to-r from-gray-900 via-brand-700 to-gray-900 bg-clip-text text-transparent">
+              <h1 className={isMobile ? "text-3xl font-bold mb-4 leading-tight bg-gradient-to-r from-gray-900 via-brand-700 to-gray-900 bg-clip-text text-transparent" : "text-5xl md:text-7xl font-bold mb-6 leading-tight bg-gradient-to-r from-gray-900 via-brand-700 to-gray-900 bg-clip-text text-transparent"}>
                 Empowering Your Search Experience
               </h1>
 
-              <p className="text-xl md:text-2xl mb-10 text-gray-700">
+              <p className={isMobile ? "text-sm mb-6 text-gray-700" : "text-xl md:text-2xl mb-10 text-gray-700"}>
                 Advanced search, dynamic insights, and seamless monetization—
                 <span className="font-semibold text-brand-600">
                   all in one platform.
@@ -88,7 +95,7 @@ export default function Hero() {
               </p>
 
               {/* Features List */}
-              <div className="space-y-3 mb-10">
+              <div className={isMobile ? "space-y-2 mb-6" : "space-y-3 mb-10"}>
                 {[
                   'AI-Powered Job Matching',
                   'Real-Time LMIA Updates',
@@ -101,18 +108,18 @@ export default function Hero() {
                     transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
                     className="flex items-center gap-3"
                   >
-                    <div className="p-1 rounded-full bg-brand-100">
-                      <CheckCircle2 className="w-5 h-5 text-brand-600" />
+                    <div className={isMobile ? "p-0.5 rounded-full bg-brand-100" : "p-1 rounded-full bg-brand-100"}>
+                      <CheckCircle2 className={isMobile ? "w-4 h-4 text-brand-600" : "w-5 h-5 text-brand-600"} />
                     </div>
-                    <span className="text-gray-700 font-medium">{feature}</span>
+                    <span className={isMobile ? "text-sm text-gray-700 font-medium" : "text-gray-700 font-medium"}>{feature}</span>
                   </motion.div>
                 ))}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className={isMobile ? "flex flex-col gap-3" : "flex flex-col sm:flex-row gap-4"}>
                 <CustomLink href="/search">
                   <motion.button
-                    className="relative px-8 py-4 rounded-2xl font-bold text-white overflow-hidden group bg-gradient-to-r from-brand-600 to-brand-700 shadow-xl shadow-brand-500/30"
+                    className={isMobile ? "relative px-6 py-3 rounded-xl font-bold text-white overflow-hidden group bg-gradient-to-r from-brand-600 to-brand-700 shadow-lg shadow-brand-500/30 w-full" : "relative px-8 py-4 rounded-2xl font-bold text-white overflow-hidden group bg-gradient-to-r from-brand-600 to-brand-700 shadow-xl shadow-brand-500/30"}
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -125,27 +132,28 @@ export default function Hero() {
                         ease: 'linear',
                       }}
                     />
-                    <span className="relative z-10 flex items-center gap-2">
+                    <span className={isMobile ? "relative z-10 flex items-center justify-center gap-2" : "relative z-10 flex items-center gap-2"}>
                       Get Started
-                      <ArrowRight className="w-5 h-5" />
+                      <ArrowRight className={isMobile ? "w-4 h-4" : "w-5 h-5"} />
                     </span>
                   </motion.button>
                 </CustomLink>
 
                 <motion.button
-                  className="px-8 py-4 rounded-2xl font-bold text-brand-700 border-2 border-brand-300 bg-brand-50 hover:bg-brand-100 transition-all duration-300"
+                  className={isMobile ? "px-6 py-3 rounded-xl font-bold text-brand-700 border-2 border-brand-300 bg-brand-50 hover:bg-brand-100 transition-all duration-300 w-full" : "px-8 py-4 rounded-2xl font-bold text-brand-700 border-2 border-brand-300 bg-brand-50 hover:bg-brand-100 transition-all duration-300"}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <span className="flex items-center gap-2">
-                    <Search className="w-5 h-5" />
+                  <span className={isMobile ? "flex items-center justify-center gap-2" : "flex items-center gap-2"}>
+                    <Search className={isMobile ? "w-4 h-4" : "w-5 h-5"} />
                     Explore Features
                   </span>
                 </motion.button>
               </div>
             </motion.div>
 
-            {/* Visual/Animation Placeholder */}
+            {/* Visual/Animation Placeholder - Hide on mobile */}
+            {!isMobile && (
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -225,6 +233,7 @@ export default function Hero() {
                 </motion.div>
               </div>
             </motion.div>
+            )}
           </div>
         </motion.div>
 
@@ -233,7 +242,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"
+          className={isMobile ? "grid grid-cols-1 gap-3 mt-6" : "grid grid-cols-1 md:grid-cols-3 gap-6 mt-8"}
         >
           {[
             {
@@ -263,20 +272,20 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
                 whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-sm border border-brand-100 hover:shadow-2xl transition-all duration-300"
+                className={isMobile ? "bg-white/90 backdrop-blur-xl rounded-xl p-4 shadow-sm border border-brand-100" : "bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-sm border border-brand-100 hover:shadow-2xl transition-all duration-300"}
               >
                 <div className="flex items-center gap-4">
                   <motion.div
-                    className={`p-3 bg-gradient-to-r ${stat.color} rounded-xl`}
-                    whileHover={{ rotate: 15, scale: 1.1 }}
+                    className={isMobile ? `p-2 bg-gradient-to-r ${stat.color} rounded-lg` : `p-3 bg-gradient-to-r ${stat.color} rounded-xl`}
+                    whileHover={isMobile ? {} : { rotate: 15, scale: 1.1 }}
                   >
-                    <Icon className="w-6 h-6 text-brand-600" />
+                    <Icon className={isMobile ? "w-5 h-5 text-brand-600" : "w-6 h-6 text-brand-600"} />
                   </motion.div>
                   <div>
-                    <h3 className="text-3xl font-bold text-brand-700">
+                    <h3 className={isMobile ? "text-2xl font-bold text-brand-700" : "text-3xl font-bold text-brand-700"}>
                       {stat.value}
                     </h3>
-                    <p className="text-gray-600 font-medium">{stat.label}</p>
+                    <p className={isMobile ? "text-xs text-gray-600 font-medium" : "text-gray-600 font-medium"}>{stat.label}</p>
                   </div>
                 </div>
               </motion.div>

@@ -36,6 +36,9 @@ import { Button } from './button';
 import CategoryBox from './category-box';
 import TrendingSearchBox from './trending-search-box';
 import { AttributeName } from '@/helpers/attribute';
+import useMobile from '@/hooks/use-mobile';
+import { MobileHeader } from '@/components/mobile/mobile-header';
+import { BottomNav } from '@/components/mobile/bottom-nav';
 
 interface Suggestion {
   suggestion: string;
@@ -82,6 +85,7 @@ const categories = [
 ];
 
 export function SearchBox() {
+  const { isMobile, isMounted } = useMobile();
   const [input, setInput] = useState('');
   const [location, setLocation] = useState('');
   const [city, setCity] = useState('');
@@ -367,23 +371,29 @@ export function SearchBox() {
     }
   };
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
-    <div className="w-full max-w-full mx-auto px-16 pt-28">
+    <>
+      {isMobile && <MobileHeader title="Job Search" />}
+      <div className={isMobile ? "w-full max-w-full mx-auto px-4 pt-4 pb-20" : "w-full max-w-full mx-auto px-16 pt-28"}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
+        className={isMobile ? "bg-white/95 backdrop-blur-2xl rounded-2xl shadow-sm border border-gray-100 overflow-hidden" : "bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden"}
       >
         {/* Hero */}
-        <div className="bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6">
+        <div className={isMobile ? "bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-4 pt-4 pb-4" : "bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6"}>
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-center mb-6"
+            className={isMobile ? "text-left mb-3" : "text-center mb-6"}
           >
-            <Badge className="px-6 py-2 text-sm font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 hover:from-brand-200 hover:to-brand-300 border-brand-200 shadow-md">
+            <Badge className={isMobile ? "px-3 py-1 text-xs font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border-brand-200" : "px-6 py-2 text-sm font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 hover:from-brand-200 hover:to-brand-300 border-brand-200 shadow-md"}>
               Find Top Opportunities
             </Badge>
           </motion.div>
@@ -392,7 +402,7 @@ export function SearchBox() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-6"
+            className={isMobile ? "text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-3" : "text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-6"}
           >
             Discover{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-700 to-brand-600">
@@ -401,24 +411,26 @@ export function SearchBox() {
             <span>Career</span>
           </motion.h1>
 
-          <TypewriterEffect
-            title="Search With"
-            words={[
-              'Noc Code',
-              'Program',
-              'Employer',
-              'Address',
-              'Occupation',
-              'City',
-              'Employer Name',
-              'Province Mapping',
-              '',
-            ]}
-          />
+          {!isMobile && (
+            <TypewriterEffect
+              title="Search With"
+              words={[
+                'Noc Code',
+                'Program',
+                'Employer',
+                'Address',
+                'Occupation',
+                'City',
+                'Employer Name',
+                'Province Mapping',
+                '',
+              ]}
+            />
+          )}
         </div>
 
         {/* Search Section */}
-        <div className="p-10 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20">
+        <div className={isMobile ? "p-4 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20" : "p-10 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20"}>
           <motion.div
             className="relative"
             initial={{ opacity: 0, y: 10 }}
@@ -429,46 +441,93 @@ export function SearchBox() {
               {/* main search bar */}
               <div
                 className={cn(
-                  'relative flex items-stretch rounded-2xl transition-all duration-500 border-2 overflow-visible group',
-                  showSuggestions || showLocationMenu
+                  isMobile 
+                    ? 'relative flex flex-col gap-3 rounded-xl transition-all duration-300 bg-white' 
+                    : 'relative flex items-stretch rounded-2xl transition-all duration-500 border-2 overflow-visible group',
+                  !isMobile && (showSuggestions || showLocationMenu
                     ? 'bg-white border-brand-500 shadow-lg shadow-brand-500/20 ring-2 ring-brand-500/10'
-                    : 'bg-white border-gray-200 shadow-md hover:border-brand-300 hover:shadow-lg'
+                    : 'bg-white border-gray-200 shadow-md hover:border-brand-300 hover:shadow-lg')
                 )}
               >
-                {/* left icon */}
-                <motion.div
-                  className="pl-5 pr-3 py-4 flex items-center"
-                  animate={{ scale: showSuggestions ? 1.1 : 1 }}
-                  transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
-                >
-                  <div
-                    className={cn(
-                      'p-2.5 rounded-xl transition-all duration-300 relative overflow-hidden',
-                      showSuggestions
-                        ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-lg'
-                        : 'bg-brand-100 text-brand-600 group-hover:bg-brand-200'
-                    )}
-                  >
-                    <Search className="w-5 h-5 relative z-10" />
-                  </div>
-                </motion.div>
+                {isMobile ? (
+                  <>
+                    {/* Mobile: Simple search input */}
+                    <div className="flex items-center gap-2 p-3 border-2 border-gray-200 rounded-xl focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20">
+                      <Search className="w-4 h-4 text-brand-600 flex-shrink-0" />
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        value={input}
+                        onChange={handleChange}
+                        onFocus={() => setShowSuggestions(true)}
+                        placeholder="Search jobs, companies..."
+                        className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-sm focus:outline-none"
+                        onKeyDown={(e) => e.key === 'Enter' && startSearch()}
+                      />
+                      {input && (
+                        <button
+                          onClick={() => {
+                            setInput('');
+                            setShowSuggestions(false);
+                          }}
+                          className="p-1 text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Desktop: Complex layout */}
+                    <motion.div
+                      className="pl-5 pr-3 py-4 flex items-center"
+                      animate={{ scale: showSuggestions ? 1.1 : 1 }}
+                      transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
+                    >
+                      <div
+                        className={cn(
+                          'p-2.5 rounded-xl transition-all duration-300 relative overflow-hidden',
+                          showSuggestions
+                            ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-lg'
+                            : 'bg-brand-100 text-brand-600 group-hover:bg-brand-200'
+                        )}
+                      >
+                        <Search className="w-5 h-5 relative z-10" />
+                      </div>
+                    </motion.div>
 
-                {/* input */}
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  value={input}
-                  onChange={handleChange}
-                  onFocus={() => setShowSuggestions(true)}
-                  placeholder="Search for jobs, companies, NOC, keywords…"
-                  className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-base py-4 px-2 focus:outline-none"
-                  onKeyDown={(e) => e.key === 'Enter' && startSearch()}
-                />
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      value={input}
+                      onChange={handleChange}
+                      onFocus={() => setShowSuggestions(true)}
+                      placeholder="Search for jobs, companies, NOC, keywords…"
+                      className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-base py-4 px-2 focus:outline-none"
+                      onKeyDown={(e) => e.key === 'Enter' && startSearch()}
+                    />
 
-                {/* divider */}
-                <div className="my-2 w-px bg-gray-200" />
+                    <div className="my-2 w-px bg-gray-200" />
+                  </>
+                )}
 
                 {/* location block */}
+                {isMobile ? (
+                  <Button
+                    type="button"
+                    onClick={() => setShowLocationMenu((v) => !v)}
+                    className="w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 border-2 border-gray-200"
+                  >
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-brand-600" />
+                      <span className="text-sm font-medium">
+                        {location.trim() ? location : 'Add Location'}
+                      </span>
+                    </div>
+                    <ChevronDown className="w-4 h-4" />
+                  </Button>
+                ) : (
                 <div className="relative flex items-center gap-2 px-4">
                   <Button
                     type="button"
@@ -578,8 +637,31 @@ export function SearchBox() {
                     )}
                   </AnimatePresence>
                 </div>
+                )}
 
                 {/* trailing controls */}
+                {isMobile ? (
+                  <Button
+                    type="button"
+                    onClick={startSearch}
+                    disabled={isSearching || !input.trim()}
+                    className={cn(
+                      'w-full px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300',
+                      isSearching || !input.trim()
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md'
+                    )}
+                  >
+                    {isSearching ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        Searching...
+                      </div>
+                    ) : (
+                      'Search Jobs'
+                    )}
+                  </Button>
+                ) : (
                 <div className="flex items-center gap-3 pr-4">
                   <AnimatePresence>
                     {input && (
@@ -661,6 +743,7 @@ export function SearchBox() {
                     )}
                   </motion.button>
                 </div>
+                )}
               </div>
             </div>
 
@@ -673,9 +756,9 @@ export function SearchBox() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute left-0 right-0 top-full mt-3 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-white/30 overflow-hidden z-[9999]"
+                  className={isMobile ? "absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-[9999]" : "absolute left-0 right-0 top-full mt-3 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-white/30 overflow-hidden z-[9999]"}
                 >
-                  <div className="max-h-[400px] overflow-y-auto">
+                  <div className={isMobile ? "max-h-[300px] overflow-y-auto" : "max-h-[400px] overflow-y-auto"}>
                     {isLoadingSuggestions ? (
                       <div className="p-6 space-y-3">
                         {[...Array(4)].map((_, index) => (
@@ -823,10 +906,10 @@ export function SearchBox() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="px-10"
+          className={isMobile ? "px-4" : "px-10"}
         >
-          <div className="flex items-center gap-6">
-            <span className="text-sm font-semibold text-gray-700">
+          <div className={isMobile ? "flex flex-col gap-3" : "flex items-center gap-6"}>
+            <span className={isMobile ? "text-xs font-semibold text-gray-700" : "text-sm font-semibold text-gray-700"}>
               Search Type:
             </span>
             <div className="flex items-center gap-4">
@@ -912,10 +995,10 @@ export function SearchBox() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.35 }}
-              className="mt-6"
+              className={isMobile ? "mt-3" : "mt-6"}
             >
-              <div className="flex items-center gap-4 flex-wrap">
-                <span className="text-sm font-semibold text-gray-700 min-w-[64px]">
+              <div className={isMobile ? "flex flex-col gap-2" : "flex items-center gap-4 flex-wrap"}>
+                <span className={isMobile ? "text-xs font-semibold text-gray-700" : "text-sm font-semibold text-gray-700 min-w-[64px]"}>
                   Sort by:
                 </span>
 
@@ -1041,27 +1124,27 @@ export function SearchBox() {
         </motion.div>
 
         {/* Trending */}
-        <div className="px-10 pb-10 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent">
+        <div className={isMobile ? "px-4 pb-6 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent" : "px-10 pb-10 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent"}>
           <motion.div
-            className="mt-8"
+            className={isMobile ? "mt-4" : "mt-8"}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            <div className="flex items-center gap-3 mb-4">
+            <div className={isMobile ? "flex items-center gap-2 mb-3" : "flex items-center gap-3 mb-4"}>
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
               >
-                <div className="p-2 rounded-xl bg-gradient-to-r from-brand-100 to-brand-200 shadow-lg shadow-brand-500/20">
-                  <TrendingUp className="w-5 h-5 text-brand-600" />
+                <div className={isMobile ? "p-1.5 rounded-lg bg-gradient-to-r from-brand-100 to-brand-200" : "p-2 rounded-xl bg-gradient-to-r from-brand-100 to-brand-200 shadow-lg shadow-brand-500/20"}>
+                  <TrendingUp className={isMobile ? "w-4 h-4 text-brand-600" : "w-5 h-5 text-brand-600"} />
                 </div>
               </motion.div>
               <div>
-                <h3 className="font-bold text-gray-800 text-lg">
+                <h3 className={isMobile ? "font-bold text-gray-800 text-sm" : "font-bold text-gray-800 text-lg"}>
                   Trending Searches
                 </h3>
-                <p className="text-sm text-gray-500">Popular jobs right now</p>
+                {!isMobile && <p className="text-sm text-gray-500">Popular jobs right now</p>}
               </div>
             </div>
 
@@ -1087,6 +1170,8 @@ export function SearchBox() {
         />
       </motion.div>
     </div>
+    {isMobile && <BottomNav />}
+    </>
   );
 }
 
