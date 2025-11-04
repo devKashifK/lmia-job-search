@@ -9,6 +9,9 @@ import Footer from '@/pages/homepage/footer';
 import { HoverCard } from '@/components/ui/hover-card';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { cn } from '@/lib/utils';
+import useMobile from '@/hooks/use-mobile';
+import { MobileHeader } from '@/components/mobile/mobile-header';
+import { BottomNav } from '@/components/mobile/bottom-nav';
 
 type Currency = 'CAD' | 'INR';
 
@@ -247,12 +250,17 @@ function PlanCard({
 }
 
 const PricingPage = () => {
+  const { isMobile } = useMobile();
   const [currency, setCurrency] = useState<Currency>('CAD');
 
   return (
     <BackgroundWrapper>
       <div className="bg-brand-50/80">
-        <Navbar />
+        {isMobile ? (
+          <MobileHeader title="Pricing Plans" showBack={true} />
+        ) : (
+          <Navbar />
+        )}
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
           {/* Header */}
@@ -403,7 +411,8 @@ const PricingPage = () => {
           </motion.div>
         </main>
 
-        <Footer />
+        {!isMobile && <Footer />}
+        {isMobile && <BottomNav />}
       </div>
     </BackgroundWrapper>
   );

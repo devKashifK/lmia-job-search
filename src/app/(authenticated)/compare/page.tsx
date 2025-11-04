@@ -477,6 +477,18 @@ export default function ComparePage() {
             </motion.div>
           )}
 
+          {/* Mobile: Page Title */}
+          {isMobile && (
+            <div className="mb-6">
+              <h1 className="text-xl font-bold text-gray-900 mb-2">
+                Compare & Analyze
+              </h1>
+              <p className="text-sm text-gray-600">
+                Compare jobs, locations, or companies side by side
+              </p>
+            </div>
+          )}
+
           {/* Comparison Queue Banner */}
           {comparedCompanies.length > 0 && (
             <motion.div
@@ -556,11 +568,14 @@ export default function ComparePage() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="mb-8"
               >
-                <h2 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-brand-500" />
+                <h2 className={cn(
+                  "font-semibold text-gray-700 mb-4 flex items-center gap-2",
+                  isMobile ? "text-xs" : "text-sm"
+                )}>
+                  <Sparkles className={cn(isMobile ? "w-3 h-3" : "w-4 h-4", "text-brand-500")} />
                   Choose Comparison Type
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                   {COMPARISON_TYPES.map((type, index) => {
                     const Icon = type.icon;
                     const isSelected = comparisonType === type.value;
@@ -579,16 +594,18 @@ export default function ComparePage() {
                           setEntity2('');
                         }}
                         className={cn(
-                          'relative p-6 rounded-xl border-2 transition-all duration-300 group text-left',
+                          'relative rounded-xl border-2 transition-all duration-300 group text-left',
+                          isMobile ? 'p-3' : 'p-6',
                           isSelected
                             ? `${type.borderColor} ${type.bgColor} shadow-lg scale-105`
                             : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
                         )}
                       >
-                        <div className="flex items-start gap-3">
+                        <div className={cn("flex items-start", isMobile ? "gap-2" : "gap-3")}>
                           <div
                             className={cn(
-                              'p-2 rounded-lg transition-colors',
+                              'rounded-lg transition-colors',
+                              isMobile ? 'p-1.5' : 'p-2',
                               isSelected
                                 ? type.bgColor
                                 : 'bg-gray-50 group-hover:bg-gray-100'
@@ -596,16 +613,23 @@ export default function ComparePage() {
                           >
                             <Icon
                               className={cn(
-                                'w-5 h-5 transition-colors',
+                                'transition-colors',
+                                isMobile ? 'w-4 h-4' : 'w-5 h-5',
                                 isSelected ? type.color : 'text-gray-600'
                               )}
                             />
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900 mb-1">
+                            <h3 className={cn(
+                              "font-semibold text-gray-900",
+                              isMobile ? "text-sm mb-0.5" : "mb-1"
+                            )}>
                               {type.label}
                             </h3>
-                            <p className="text-xs text-gray-600">
+                            <p className={cn(
+                              "text-gray-600",
+                              isMobile ? "text-[10px]" : "text-xs"
+                            )}>
                               {type.description}
                             </p>
                           </div>
@@ -779,22 +803,39 @@ export default function ComparePage() {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="mb-6"
                 >
-                  <Card className="p-6 bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-amber-50/50 border-amber-200">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl">
-                        <Bookmark className="w-5 h-5 text-white" />
+                  <Card className={cn(
+                    "bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-amber-50/50 border-amber-200",
+                    isMobile ? "p-4" : "p-6"
+                  )}>
+                    <div className={cn(
+                      "flex items-center mb-4",
+                      isMobile ? "gap-2" : "gap-3"
+                    )}>
+                      <div className={cn(
+                        "bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl",
+                        isMobile ? "p-1.5" : "p-2"
+                      )}>
+                        <Bookmark className={cn(isMobile ? "w-4 h-4" : "w-5 h-5", "text-white")} />
                       </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900">
+                      <div className="flex-1 min-w-0">
+                        <h3 className={cn(
+                          "font-bold text-gray-900",
+                          isMobile ? "text-sm" : "text-lg"
+                        )}>
                           Compare Your Saved Jobs
                         </h3>
-                        <p className="text-sm text-gray-600">
-                          Select 2 jobs to compare side by side
+                        <p className={cn(
+                          "text-gray-600",
+                          isMobile ? "text-xs" : "text-sm"
+                        )}>
+                          Select 2 jobs to compare
                         </p>
                       </div>
-                      <Badge variant="outline" className="ml-auto bg-white">
-                        {savedJobs.length} saved
-                      </Badge>
+                      {!isMobile && (
+                        <Badge variant="outline" className="bg-white">
+                          {savedJobs.length} saved
+                        </Badge>
+                      )}
                     </div>
 
                     {/* Search Bar */}
@@ -857,13 +898,14 @@ export default function ComparePage() {
 
                     {/* Saved Jobs Grid */}
                     {!savedJobsLoading && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+                      <div className={cn(
+                        "grid mb-4",
+                        isMobile ? "grid-cols-1 gap-2" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+                      )}>
                         {visibleSavedJobs.map((job: any) => {
                           const jobValue = getEntityValue(job);
-                          const isSelected1 =
-                            selectedSavedJob1?.RecordID === job.RecordID;
-                          const isSelected2 =
-                            selectedSavedJob2?.RecordID === job.RecordID;
+                          const isSelected1 = selectedSavedJob1 && selectedSavedJob1.RecordID === job.RecordID;
+                          const isSelected2 = selectedSavedJob2 && selectedSavedJob2.RecordID === job.RecordID;
                           const isSelected = isSelected1 || isSelected2;
 
                           return (
@@ -885,7 +927,8 @@ export default function ComparePage() {
                                       }
                                     }}
                                     className={cn(
-                                      'group relative cursor-pointer rounded-lg border-2 p-3 transition-all',
+                                      'group relative cursor-pointer rounded-lg border-2 transition-all',
+                                      isMobile ? 'p-2' : 'p-3',
                                       isSelected
                                         ? 'border-brand-500 bg-brand-50 shadow-md'
                                         : 'border-gray-200 bg-white hover:border-brand-300 hover:shadow-sm'
@@ -906,10 +949,11 @@ export default function ComparePage() {
                                         {isSelected1 ? '1' : '2'}
                                       </div>
                                     )}
-                                    <div className="flex items-start gap-2">
+                                    <div className={cn("flex items-start", isMobile ? "gap-1.5" : "gap-2")}>
                                       <div
                                         className={cn(
-                                          'p-2 rounded-lg shrink-0',
+                                          'rounded-lg shrink-0',
+                                          isMobile ? 'p-1.5' : 'p-2',
                                           isSelected
                                             ? 'bg-brand-100'
                                             : 'bg-gray-100'
@@ -917,7 +961,7 @@ export default function ComparePage() {
                                       >
                                         <TypeIcon
                                           className={cn(
-                                            'w-4 h-4',
+                                            isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4',
                                             isSelected
                                               ? 'text-brand-600'
                                               : 'text-gray-600'
@@ -925,13 +969,22 @@ export default function ComparePage() {
                                         />
                                       </div>
                                       <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-sm text-gray-900 truncate">
+                                        <p className={cn(
+                                          "font-semibold text-gray-900 truncate",
+                                          isMobile ? "text-xs" : "text-sm"
+                                        )}>
                                           {jobValue}
                                         </p>
-                                        <p className="text-xs text-gray-500 mt-0.5 truncate">
+                                        <p className={cn(
+                                          "text-gray-500 mt-0.5 truncate",
+                                          isMobile ? "text-[10px]" : "text-xs"
+                                        )}>
                                           {job.operating_name || job.employer}
                                         </p>
-                                        <p className="text-xs text-gray-400 mt-0.5">
+                                        <p className={cn(
+                                          "text-gray-400 mt-0.5",
+                                          isMobile ? "text-[10px]" : "text-xs"
+                                        )}>
                                           {job.city},{' '}
                                           {job.state || job.territory}
                                         </p>
@@ -1086,14 +1139,26 @@ export default function ComparePage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <Card className="p-8 bg-white shadow-xl border-2 border-gray-100">
+                <Card className={cn(
+                  "bg-white shadow-xl border-2 border-gray-100",
+                  isMobile ? "p-4" : "p-8"
+                )}>
                   {/* 3-Way Toggle */}
-                  <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
+                  <div className={cn(
+                    "flex items-center justify-between border-b border-gray-200",
+                    isMobile ? "mb-4 pb-4 flex-col gap-3 items-start" : "mb-6 pb-6"
+                  )}>
                     <div>
-                      <h3 className="text-sm font-bold text-gray-900 mb-1">
+                      <h3 className={cn(
+                        "font-bold text-gray-900",
+                        isMobile ? "text-xs mb-0.5" : "text-sm mb-1"
+                      )}>
                         Comparison Mode
                       </h3>
-                      <p className="text-xs text-gray-600">
+                      <p className={cn(
+                        "text-gray-600",
+                        isMobile ? "text-[10px]" : "text-xs"
+                      )}>
                         Compare 2 or 3 entities side-by-side
                       </p>
                     </div>
@@ -1106,9 +1171,15 @@ export default function ComparePage() {
                             setEnable3Way(e.target.checked);
                             if (!e.target.checked) setEntity3('');
                           }}
-                          className="w-4 h-4 text-brand-600 bg-gray-100 border-gray-300 rounded focus:ring-brand-500"
+                          className={cn(
+                            "text-brand-600 bg-gray-100 border-gray-300 rounded focus:ring-brand-500",
+                            isMobile ? "w-3.5 h-3.5" : "w-4 h-4"
+                          )}
                         />
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className={cn(
+                          "font-medium text-gray-700",
+                          isMobile ? "text-xs" : "text-sm"
+                        )}>
                           3-Way Comparison
                         </span>
                         {enable3Way && (
@@ -1120,17 +1191,23 @@ export default function ComparePage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-center gap-8">
+                  <div className={cn(
+                    "flex items-center justify-center",
+                    isMobile ? "flex-col gap-3" : "gap-8"
+                  )}>
                     {/* Entity 1 */}
                     <motion.div
                       initial={{ x: -50, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ duration: 0.5, delay: 0.4 }}
-                      className="flex-1 max-w-md"
+                      className={isMobile ? "w-full" : "flex-1 max-w-md"}
                     >
-                      <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                      <label className={cn(
+                        "block font-semibold text-gray-700 mb-3 flex items-center gap-2",
+                        isMobile ? "text-xs" : "text-sm"
+                      )}>
                         {selectedType && (
-                          <selectedType.icon className="w-4 h-4 text-brand-600" />
+                          <selectedType.icon className={cn(isMobile ? "w-3.5 h-3.5" : "w-4 h-4", "text-brand-600")} />
                         )}
                         {selectedType?.label} #1
                       </label>

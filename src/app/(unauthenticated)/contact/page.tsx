@@ -5,14 +5,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Mail, Phone, Building2 } from "lucide-react";
 import Navbar from "@/components/ui/nabvar";
 import { HoverCard } from "@/components/ui/hover-card";
+import useMobile from "@/hooks/use-mobile";
+import { MobileHeader } from "@/components/mobile/mobile-header";
+import { BottomNav } from "@/components/mobile/bottom-nav";
 
 // Dynamically import the Map component with SSR disabled
 const DynamicMap = dynamic(() => import("./map"), { ssr: false });
 
 export default function ContactPage() {
+  const { isMobile } = useMobile();
+
   return (
     <div className="min-h-screen bg-brand-50/80 flex flex-col">
-      <Navbar />
+      {isMobile ? (
+        <MobileHeader title="Contact Us" showBack={true} />
+      ) : (
+        <Navbar />
+      )}
 
       {/* Unified Hero + Get in Touch Section */}
       <section className="relative py-24 bg-white overflow-hidden">
@@ -143,7 +152,8 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <Footer />
+      {!isMobile && <Footer />}
+      {isMobile && <BottomNav />}
     </div>
   );
 }

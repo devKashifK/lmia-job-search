@@ -26,6 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useComparisonData } from './use-compare-data';
 import { toast } from 'sonner';
+import useMobile from '@/hooks/use-mobile';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import {
@@ -96,6 +97,7 @@ export default function ComparisonResults({
   entity3,
   onReset,
 }: ComparisonResultsProps) {
+  const { isMobile } = useMobile();
   const { data, isLoading } = useComparisonData(type, entity1, entity2, entity3);
   const [saveDialogOpen, setSaveDialogOpen] = React.useState(false);
   const [comparisonName, setComparisonName] = React.useState('');
@@ -224,29 +226,38 @@ export default function ComparisonResults({
       transition={{ duration: 0.5 }}
     >
       {/* Action Bar */}
-      <div className="flex items-center justify-between mb-6">
+      <div className={cn(
+        "flex mb-6",
+        isMobile ? "flex-col gap-3" : "items-center justify-between"
+      )}>
         <Button
           onClick={onReset}
           variant="outline"
+          size={isMobile ? "sm" : "default"}
+          className={isMobile ? "w-full" : ""}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           New Comparison
         </Button>
 
         {/* Export/Share Actions */}
-        <div className="flex items-center gap-2">
+        <div className={cn(
+          "flex items-center gap-2",
+          isMobile && "w-full"
+        )}>
           <Button
             onClick={handleCopySummary}
             variant="outline"
             size="sm"
+            className={isMobile ? "flex-1" : ""}
           >
             <Copy className="w-4 h-4 mr-2" />
-            Copy Summary
+            {isMobile ? "Copy" : "Copy Summary"}
           </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className={isMobile ? "flex-1" : ""}>
                 <Share2 className="w-4 h-4 mr-2" />
                 Share
               </Button>
@@ -263,14 +274,16 @@ export default function ComparisonResults({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button
-            onClick={() => setSaveDialogOpen(true)}
-            size="sm"
-            className="bg-brand-500 hover:bg-brand-600"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            Save Comparison
-          </Button>
+          {!isMobile && (
+            <Button
+              onClick={() => setSaveDialogOpen(true)}
+              size="sm"
+              className="bg-brand-500 hover:bg-brand-600"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Save Comparison
+            </Button>
+          )}
         </div>
       </div>
 
@@ -283,17 +296,26 @@ export default function ComparisonResults({
         transition={{ duration: 0.5 }}
         className="mb-6"
       >
-        <div className="relative overflow-hidden rounded-xl border-2 border-brand-200/50 bg-gradient-to-br from-blue-50 via-white to-green-50 p-6 shadow-lg">
+        <div className={cn(
+          "relative overflow-hidden rounded-xl border-2 border-brand-200/50 bg-gradient-to-br from-blue-50 via-white to-green-50 shadow-lg",
+          isMobile ? "p-4" : "p-6"
+        )}>
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/5 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-500/5 rounded-full blur-3xl" />
-          <div className="relative flex items-center justify-between">
+          <div className={cn(
+            "relative flex",
+            isMobile ? "flex-col gap-4" : "items-center justify-between"
+          )}>
             <div className="flex-1">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 rounded-full mb-2">
                 <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
                 <span className="text-xs font-semibold text-blue-700">Entity 1</span>
               </div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-gray-900">{entity1}</h2>
+                <h2 className={cn(
+                  "font-bold text-gray-900",
+                  isMobile ? "text-base" : "text-xl"
+                )}>{entity1}</h2>
                 {data1.growthRate !== undefined && (
                   data1.growthRate > 0 ? (
                     <Badge className="bg-green-100 text-green-700 border-green-200 flex items-center gap-1 text-[10px] px-1.5 py-0.5">
@@ -504,29 +526,59 @@ export default function ComparisonResults({
           transition={{ duration: 0.5, delay: 0.25 }}
           className="mb-6"
         >
-          <Card className="p-5 bg-gradient-to-br from-gray-50 via-slate-50 to-gray-50 border-gray-200">
+          <Card className={cn(
+            "bg-gradient-to-br from-gray-50 via-slate-50 to-gray-50 border-gray-200",
+            isMobile ? "p-4" : "p-5"
+          )}>
             <div className="flex items-center gap-2 mb-4">
-              <div className="p-2 bg-gray-200 rounded-lg">
-                <BarChart3 className="w-4 h-4 text-gray-700" />
+              <div className={cn(
+                "bg-gray-200 rounded-lg",
+                isMobile ? "p-1.5" : "p-2"
+              )}>
+                <BarChart3 className={cn(
+                  "text-gray-700",
+                  isMobile ? "w-3.5 h-3.5" : "w-4 h-4"
+                )} />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-gray-900">National Benchmark</h3>
-                <p className="text-xs text-gray-600">Comparison to market average</p>
+                <h3 className={cn(
+                  "font-bold text-gray-900",
+                  isMobile ? "text-xs" : "text-sm"
+                )}>National Benchmark</h3>
+                <p className={cn(
+                  "text-gray-600",
+                  isMobile ? "text-[10px]" : "text-xs"
+                )}>Comparison to market average</p>
               </div>
             </div>
             
-            <div className="grid grid-cols-3 gap-4">
+            <div className={cn(
+              "grid gap-3",
+              isMobile ? "grid-cols-1" : "grid-cols-3 gap-4"
+            )}>
               {/* National Average */}
-              <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
+              <div className={cn(
+                "text-center bg-white rounded-lg border border-gray-200",
+                isMobile ? "p-2" : "p-3"
+              )}>
                 <p className="text-[10px] text-gray-600 mb-1">Market Average</p>
-                <p className="text-2xl font-bold text-gray-900">{data.benchmark.avgJobsPerValue.toLocaleString()}</p>
+                <p className={cn(
+                  "font-bold text-gray-900",
+                  isMobile ? "text-xl" : "text-2xl"
+                )}>{data.benchmark.avgJobsPerValue.toLocaleString()}</p>
                 <p className="text-[10px] text-gray-500">jobs per {type.replace('_', ' ')}</p>
               </div>
               
               {/* Entity 1 vs Average */}
-              <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-[10px] text-gray-600 mb-1">{entity1}</p>
-                <p className="text-2xl font-bold text-blue-700">
+              <div className={cn(
+                "text-center bg-blue-50 rounded-lg border border-blue-200",
+                isMobile ? "p-2" : "p-3"
+              )}>
+                <p className="text-[10px] text-gray-600 mb-1 truncate">{entity1}</p>
+                <p className={cn(
+                  "font-bold text-blue-700",
+                  isMobile ? "text-xl" : "text-2xl"
+                )}>
                   {data1.totalJobs > data.benchmark.avgJobsPerValue ? '+' : ''}
                   {Math.round((data1.totalJobs / data.benchmark.avgJobsPerValue - 1) * 100)}%
                 </p>
@@ -536,9 +588,15 @@ export default function ComparisonResults({
               </div>
               
               {/* Entity 2 vs Average */}
-              <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-[10px] text-gray-600 mb-1">{entity2}</p>
-                <p className="text-2xl font-bold text-green-700">
+              <div className={cn(
+                "text-center bg-green-50 rounded-lg border border-green-200",
+                isMobile ? "p-2" : "p-3"
+              )}>
+                <p className="text-[10px] text-gray-600 mb-1 truncate">{entity2}</p>
+                <p className={cn(
+                  "font-bold text-green-700",
+                  isMobile ? "text-xl" : "text-2xl"
+                )}>
                   {data2.totalJobs > data.benchmark.avgJobsPerValue ? '+' : ''}
                   {Math.round((data2.totalJobs / data.benchmark.avgJobsPerValue - 1) * 100)}%
                 </p>

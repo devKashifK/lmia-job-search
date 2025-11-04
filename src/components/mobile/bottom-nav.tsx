@@ -29,7 +29,7 @@ const navItems: NavItem[] = [
   {
     name: 'Search',
     icon: Search,
-    href: '/search',
+    href: '/',
   },
   {
     name: 'Compare',
