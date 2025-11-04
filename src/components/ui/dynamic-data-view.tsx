@@ -327,7 +327,7 @@ export default function DynamicDataView({
   field,
 }: DynamicDataViewProps) {
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
-  const { isMobile } = useMobile();
+  const { isMobile, isMounted } = useMobile();
 
   // Get search type from URL parameter
   const searchParams = useSearchParams();
@@ -338,6 +338,11 @@ export default function DynamicDataView({
   // Call useData once here to get the filtered count
   const { data } = useData(title, field);
   const count = data?.count;
+
+  // Wait for client-side mounting to determine device type
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <>
