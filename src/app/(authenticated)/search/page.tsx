@@ -280,7 +280,7 @@ export default function Page() {
 
   return (
     <div className="bg-gradient-to-b from-brand-50 to-white min-h-screen">
-      {!isMobile && <Navbar className="" />}
+      <Navbar className="" />
       {isMobile && <MobileHeader title="Search Jobs" />}
 
       <main className={isMobile ? 'pt-4 pb-20' : 'pt-24 pb-16'}>

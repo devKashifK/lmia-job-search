@@ -42,6 +42,9 @@ import {
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import db from '@/db';
+import useMobile from '@/hooks/use-mobile';
+import { MobileHeader } from '@/components/mobile/mobile-header';
+import { BottomNav } from '@/components/mobile/bottom-nav';
 
 type ComparisonType = 'job_title' | 'state' | 'city' | 'employer';
 
@@ -85,6 +88,7 @@ const COMPARISON_TYPES = [
 ];
 
 export default function ComparePage() {
+  const { isMobile } = useMobile();
   const [comparisonType, setComparisonType] =
     useState<ComparisonType>('job_title');
   const [entity1, setEntity1] = useState<string>('');
@@ -436,36 +440,42 @@ export default function ComparePage() {
 
   return (
     <BackgroundWrapper>
-      <Navbar />
-      <div className="min-h-screen pt-[6.5rem] pb-12">
-        <div className=" mx-auto px-20">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-left mb-8"
-          >
-            <div className="inline-flex items-start gap-3 mb-4 border-b w-full pb-2 border-brand-100">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-                className="p-3 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl shadow-lg"
-              >
-                <ArrowLeftRight className="w-5 h-5 text-white" />
-              </motion.div>
-              <div className="flex flex-col">
-                <h1 className="text-xl font-bold text-gray-900">
-                  Compare & Analyze
-                </h1>
-                <p className="text-gray-600 text-sm max-w-2xl ">
-                  Get detailed insights by comparing job titles, locations, or
-                  companies side by side
-                </p>
+      {isMobile ? (
+        <MobileHeader title="Compare & Analyze" showBack={true} />
+      ) : (
+        <Navbar />
+      )}
+      <div className={isMobile ? "min-h-screen pb-20" : "min-h-screen pt-[6.5rem] pb-12"}>
+        <div className={isMobile ? "mx-auto px-4" : "mx-auto px-20"}>
+          {/* Header - Desktop Only */}
+          {!isMobile && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-left mb-8"
+            >
+              <div className="inline-flex items-start gap-3 mb-4 border-b w-full pb-2 border-brand-100">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                  className="p-3 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl shadow-lg"
+                >
+                  <ArrowLeftRight className="w-5 h-5 text-white" />
+                </motion.div>
+                <div className="flex flex-col">
+                  <h1 className="text-xl font-bold text-gray-900">
+                    Compare & Analyze
+                  </h1>
+                  <p className="text-gray-600 text-sm max-w-2xl ">
+                    Get detailed insights by comparing job titles, locations, or
+                    companies side by side
+                  </p>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
 
           {/* Comparison Queue Banner */}
           {comparedCompanies.length > 0 && (
@@ -1273,6 +1283,9 @@ export default function ComparePage() {
           )}
         </div>
       </div>
+      
+      {/* Mobile: Bottom Navigation */}
+      {isMobile && <BottomNav />}
     </BackgroundWrapper>
   );
 }

@@ -142,7 +142,10 @@ export function useFilterColumnAttributes(
     ],
     queryFn: async () => {
       // Build filters object for RPC function
-      const filters: Record<string, string | string[] | { gte?: string | number; lte?: string | number }> = {};
+      const filters: Record<
+        string,
+        string | string[] | { gte?: string | number; lte?: string | number }
+      > = {};
 
       // Add stateFilter for city column
       if (column === 'city' && stateFilter) {
@@ -188,11 +191,22 @@ export function useFilterColumnAttributes(
 
         if (!rpcError && rpcData) {
           return rpcData
-            .filter((item: { name: string; count: number }) => item.name && item.name.trim())
-            .sort((a: { name: string; count: number }, b: { name: string; count: number }) => b.count - a.count);
+            .filter(
+              (item: { name: string; count: number }) =>
+                item.name && item.name.trim()
+            )
+            .sort(
+              (
+                a: { name: string; count: number },
+                b: { name: string; count: number }
+              ) => b.count - a.count
+            );
         }
       } catch (err) {
-        console.warn('RPC function not available, falling back to client-side aggregation', err);
+        console.warn(
+          'RPC function not available, falling back to client-side aggregation',
+          err
+        );
       }
 
       // Fallback: Client-side aggregation
@@ -300,7 +314,7 @@ export default function NewFilterPanel() {
     setCollapsedSections((prev) => ({ ...prev, [column]: !prev[column] }));
 
   return (
-    <div className="w-48 bg-white border-r border-gray-200 h-full flex flex-col">
+    <div className="w-full lg:w-48 bg-white lg:border-r lg:border-gray-200 h-full flex flex-col">
       {/* Header */}
       <div className="px-2 py-2 border-b border-gray-100">
         <div className="flex items-center gap-1.5">

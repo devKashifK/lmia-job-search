@@ -96,6 +96,16 @@ import { Icon } from '@iconify/react/dist/iconify.js';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { useQuery } from '@tanstack/react-query';
 import db from '@/db';
+import useMobile from '@/hooks/use-mobile';
+import { MobileHeader } from '@/components/mobile/mobile-header';
+import { BottomNav } from '@/components/mobile/bottom-nav';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 
 interface CompanyAnalysisData {
   companyName: string;
@@ -943,12 +953,13 @@ function CompanyAnalysisContent({
   const searchParams = useSearchParams();
   const companyName = decodeURIComponent(resolvedParams.name);
   const router = useRouter();
+  const { isMobile } = useMobile();
 
   const pathname = usePathname();
   const goBack = () => {
     router.back();
   };
-  const [isFilterOpen, setIsFilterOpen] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(!isMobile);
   const [isExporting, setIsExporting] = useState(false);
   const [viewMode, setViewMode] = useState<'charts' | 'table'>('charts');
   const [searchQuery, setSearchQuery] = useState('');
@@ -956,6 +967,7 @@ function CompanyAnalysisContent({
   const [showComparison, setShowComparison] = useState(false);
   const [showSavePresetDialog, setShowSavePresetDialog] = useState(false);
   const [presetName, setPresetName] = useState('');
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Load saved filter presets from localStorage
   const [savedPresets, setSavedPresets] = useState<
@@ -1484,36 +1496,41 @@ function CompanyAnalysisContent({
 
   return (
     <BackgroundWrapper>
-      <Navbar />
-      <div className="min-h-screen pt-[8rem] pb-12">
-        <div className="max-w-[1600px] mx-auto px-8">
+      {isMobile ? (
+        <MobileHeader title={companyName} showBack={true} />
+      ) : (
+        <Navbar />
+      )}
+      <div className={isMobile ? "min-h-screen pb-20" : "min-h-screen pt-[8rem] pb-12"}>
+        <div className={isMobile ? "mx-auto px-4" : "max-w-[1600px] mx-auto px-8"}>
           {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="flex items-center justify-between gap-4 mb-3 pb-3 border-b border-gray-200"
-          >
-            {/* Left Section: Filter Toggle, Company Icon & Name */}
-            <div className="flex items-center gap-4 flex-1 min-w-0">
-              {/* Filter Toggle Button */}
-              <Button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                variant="outline"
-                size="sm"
-                className={cn(
-                  'h-8 w-8 p-0 rounded-lg transition-all',
-                  isFilterOpen
-                    ? 'bg-brand-500 text-white border-brand-500'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-brand-300 hover:bg-brand-50'
-                )}
-              >
-                {isFilterOpen ? (
-                  <X className="w-4 h-4" />
-                ) : (
-                  <Filter className="w-4 h-4" />
-                )}
-              </Button>
+          {!isMobile && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center justify-between gap-4 mb-3 pb-3 border-b border-gray-200"
+            >
+              {/* Left Section: Filter Toggle, Company Icon & Name */}
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                {/* Filter Toggle Button */}
+                <Button
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    'h-8 w-8 p-0 rounded-lg transition-all',
+                    isFilterOpen
+                      ? 'bg-brand-500 text-white border-brand-500'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-brand-300 hover:bg-brand-50'
+                  )}
+                >
+                  {isFilterOpen ? (
+                    <X className="w-4 h-4" />
+                  ) : (
+                    <Filter className="w-4 h-4" />
+                  )}
+                </Button>
 
               {/* Company Name with Icon */}
               <div className="flex items-center gap-3">
@@ -1908,10 +1925,34 @@ function CompanyAnalysisContent({
               </Button>
             </motion.div>
           </motion.div>
+          )}
+
+          {/* Mobile: Company Title Section */}
+          {isMobile && (
+            <div className="mb-4 pb-3 border-b border-gray-200">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-brand-100 rounded-lg">
+                  <Building2 className="w-5 h-5 text-brand-600" />
+                </div>
+                <div className="flex-1">
+                  <h1 className="text-lg font-bold text-gray-900">
+                    {companyName}
+                  </h1>
+                  <Badge
+                    variant="outline"
+                    className="text-xs font-medium border-gray-300 text-gray-700 mt-1"
+                  >
+                    <TrendingUp className="w-3 h-3 mr-1 inline" />
+                    {filters.searchType === 'lmia' ? 'LMIA' : 'Trending Jobs'}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-4">
-            {/* Sidebar */}
-            {isFilterOpen && (
+            {/* Sidebar - Desktop Only */}
+            {!isMobile && isFilterOpen && (
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -2766,7 +2807,7 @@ function CompanyAnalysisContent({
           </div>
         </div>
       </div>
-      <Footer />
+      {!isMobile && <Footer />}
 
       {/* Save Preset Dialog */}
       <Dialog
@@ -2877,6 +2918,57 @@ function CompanyAnalysisContent({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Mobile: Floating Filter Button & Drawer */}
+      {isMobile && (
+        <>
+          <div className="fixed bottom-24 right-4 z-30">
+            <button
+              onClick={() => setShowMobileFilters(true)}
+              className="group flex items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all px-4 py-3"
+            >
+              <Filter className="w-5 h-5" />
+              <span className="text-sm font-semibold">Filters</span>
+            </button>
+          </div>
+
+          <Drawer open={showMobileFilters} onOpenChange={setShowMobileFilters}>
+            <DrawerContent className="max-h-[85vh] flex flex-col">
+              <DrawerHeader className="flex-shrink-0 border-b rounded-t-2xl border-gray-200 bg-gradient-to-r from-brand-50 to-blue-50 py-4 px-4">
+                <div className="flex items-center justify-between">
+                  <DrawerTitle className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl shadow-md">
+                      <Filter className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-lg font-bold text-gray-900">
+                        Filters
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Refine analysis
+                      </span>
+                    </div>
+                  </DrawerTitle>
+                  <DrawerClose asChild>
+                    <button className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-white rounded-xl transition-all shadow-sm hover:shadow-md">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </DrawerClose>
+                </div>
+              </DrawerHeader>
+              <div className="flex-1 overflow-y-auto">
+                <FilterSidebar
+                  currentFilters={filters}
+                  tableName={tableName}
+                  companyName={companyName}
+                />
+              </div>
+            </DrawerContent>
+          </Drawer>
+
+          <BottomNav />
+        </>
+      )}
     </BackgroundWrapper>
   );
 }

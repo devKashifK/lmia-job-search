@@ -89,7 +89,7 @@ function CategoryBox({
     }
   };
   return (
-    <div className="pb-6 px-10">
+    <div className="pb-6 px-4 lg:px-10">
       <div className="flex items-center gap-3 mb-4">
         <motion.div
           animate={{ rotate: 360 }}
@@ -123,7 +123,7 @@ function CategoryBox({
             onClick={() =>
               handleCategoryClick({ noc_priority: category.noc_priority })
             }
-            className="flex flex-col items-center gap-3 p-4 rounded-xl border border-gray-200 bg-white hover:border-brand-300 transition-all duration-200 text-left"
+            className="flex flex-col items-center gap-3 p-2 lg:p-4 rounded-xl border border-gray-200 bg-white hover:border-brand-300 transition-all duration-200 text-left"
           >
             <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-brand-100 text-brand-600">
               {category.icon}

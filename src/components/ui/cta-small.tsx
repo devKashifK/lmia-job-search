@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
 export default function CtaSmall() {
   return (
     <section className="py-16 relative">
-      <div className="w-full max-w-6xl mx-auto bg-white rounded-3xl shadow-[0_4px_32px_0_rgba(80,112,255,0.06)] flex flex-col md:flex-row items-center justify-between px-6 py-10 gap-6 border border-gray-100 relative overflow-hidden">
+      <div className="w-full max-w-6xl mx-auto bg-white rounded-3xl shadow-[0_4px_32px_0_rgba(80,112,255,0.06)] flex flex-col md:flex-row lg:items-center items-start justify-between px-6 py-10 gap-6 border border-gray-100 relative overflow-hidden">
         {/* Illustration */}
         <div className="flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-brand-50 to-brand-100 rounded-2xl w-20 h-20 md:w-24 md:h-24">
           {/* Placeholder SVG illustration */}

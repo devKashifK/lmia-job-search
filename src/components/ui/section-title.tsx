@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
 interface SectionTitleProps {
   title: string;
@@ -9,7 +9,7 @@ interface SectionTitleProps {
 export default function SectionTitle({
   title,
   subtitle,
-  className = "",
+  className = '',
 }: SectionTitleProps) {
   return (
     <motion.div
@@ -19,10 +19,14 @@ export default function SectionTitle({
       transition={{ duration: 0.5 }}
       className={`text-center max-w-3xl mx-auto mb-12 ${className}`}
     >
-      <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+      <h2 className="text-2xl lg:text-5xl text-left lg:text-center  font-bold text-gray-900 mb-1 lg:mb-4">
         {title}
       </h2>
-      {subtitle && <p className="text-xl text-gray-600">{subtitle}</p>}
+      {subtitle && (
+        <p className="text-md lg:text-xl text-left lg:text-center text-gray-600">
+          {subtitle}
+        </p>
+      )}
     </motion.div>
   );
 }

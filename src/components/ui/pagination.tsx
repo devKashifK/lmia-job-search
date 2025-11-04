@@ -1,5 +1,6 @@
 import { useTableStore } from '@/context/store';
 import React from 'react';
+import useMobile from '@/hooks/use-mobile';
 
 interface PaginationProps {
   currentPage: number;
@@ -15,6 +16,7 @@ export default function Pagination({
   className = '',
 }: PaginationProps) {
   const { dataConfig, setDataConfig } = useTableStore();
+  const { isMobile } = useMobile();
 
   const handlePageChange = (page: number) => {
     if (onPageChange) {
@@ -41,15 +43,18 @@ export default function Pagination({
     let start = 1;
     let end = totalPages;
 
-    // Show maximum 7 pages at a time
-    if (totalPages > 7) {
-      if (currentPage <= 4) {
-        end = 7;
-      } else if (currentPage + 3 >= totalPages) {
-        start = totalPages - 6;
+    // Mobile: Show maximum 3 pages, Desktop: 7 pages
+    const maxPages = isMobile ? 3 : 7;
+    const range = isMobile ? 1 : 3;
+    
+    if (totalPages > maxPages) {
+      if (currentPage <= range + 1) {
+        end = maxPages;
+      } else if (currentPage + range >= totalPages) {
+        start = totalPages - (maxPages - 1);
       } else {
-        start = currentPage - 3;
-        end = currentPage + 3;
+        start = currentPage - range;
+        end = currentPage + range;
       }
     }
 
@@ -59,7 +64,7 @@ export default function Pagination({
         <button
           key={1}
           onClick={() => handlePageChange(1)}
-          className="px-3 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+          className={isMobile ? "px-2 py-1.5 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors" : "px-3 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"}
         >
           1
         </button>
@@ -79,7 +84,7 @@ export default function Pagination({
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+          className={`${isMobile ? 'px-2 py-1.5' : 'px-3 py-1.5'} rounded-md ${isMobile ? 'text-xs' : 'text-sm'} font-medium transition-colors ${
             i === currentPage
               ? 'bg-brand-600 text-white hover:bg-brand-700'
               : 'text-gray-600 hover:bg-gray-50'
@@ -104,7 +109,7 @@ export default function Pagination({
         <button
           key={totalPages}
           onClick={() => handlePageChange(totalPages)}
-          className="px-3 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+          className={isMobile ? "px-2 py-1.5 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors" : "px-3 py-1.5 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"}
         >
           {totalPages}
         </button>
@@ -114,18 +119,18 @@ export default function Pagination({
   };
 
   return (
-    <div className={`flex items-center justify-center gap-1 ${className}`}>
-      <div className="flex items-center gap-1 rounded-lg   px-2 py-1">
+    <div className={`flex ${isMobile ? 'flex-col gap-2' : 'items-center justify-center gap-1'} ${className}`}>
+      <div className={`flex items-center ${isMobile ? 'gap-0.5' : 'gap-1'} rounded-lg px-2 py-1 ${isMobile ? 'justify-center' : ''}`}>
         <button
           onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
-          className="p-1.5 rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          className={`${isMobile ? 'p-1' : 'p-1.5'} rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors`}
           aria-label="Previous page"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
+            width={isMobile ? "16" : "20"}
+            height={isMobile ? "16" : "20"}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -142,13 +147,13 @@ export default function Pagination({
             handlePageChange(Math.min(totalPages, currentPage + 1))
           }
           disabled={currentPage === totalPages || totalPages === 0}
-          className="p-1.5 rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors"
+          className={`${isMobile ? 'p-1' : 'p-1.5'} rounded-md text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:hover:bg-transparent transition-colors`}
           aria-label="Next page"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
+            width={isMobile ? "16" : "20"}
+            height={isMobile ? "16" : "20"}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -160,7 +165,7 @@ export default function Pagination({
           </svg>
         </button>
       </div>
-      <span className="text-sm text-gray-500 ml-4">
+      <span className={`${isMobile ? 'text-xs text-center' : 'text-sm ml-4'} text-gray-500`}>
         Page {currentPage} of {totalPages || 1}
       </span>
     </div>

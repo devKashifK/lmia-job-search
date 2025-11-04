@@ -1,6 +1,9 @@
+'use client';
 import Footer from '@/pages/homepage/footer';
 import DynamicDataView from './dynamic-data-view';
 import Navbar from './nabvar';
+import useMobile from '@/hooks/use-mobile';
+import { MobileHeader } from '@/components/mobile/mobile-header';
 
 export function SearchResultsLayout({
   searchKey,
@@ -11,17 +14,23 @@ export function SearchResultsLayout({
   field: string;
   searchType: 'hot_leads' | 'lmia';
 }) {
+  const { isMobile } = useMobile();
+
   return (
     <>
-      <Navbar className="" />
-      <div className="pt-24">
+      {isMobile ? (
+        <MobileHeader title="Search Results" showBack={true} />
+      ) : (
+        <Navbar className="" />
+      )}
+      <div className={isMobile ? '' : 'pt-24'}>
         <DynamicDataView
           title={decodeURIComponent(searchKey)}
           field={decodeURIComponent(field)}
           searchType={searchType}
         />
       </div>
-      <Footer />
+      {!isMobile && <Footer />}
     </>
   );
 }

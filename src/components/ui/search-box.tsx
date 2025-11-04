@@ -378,799 +378,916 @@ export function SearchBox() {
   return (
     <>
       {isMobile && <MobileHeader title="Job Search" />}
-      <div className={isMobile ? "w-full max-w-full mx-auto px-4 pt-4 pb-20" : "w-full max-w-full mx-auto px-16 pt-28"}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className={isMobile ? "bg-white/95 backdrop-blur-2xl rounded-2xl shadow-sm border border-gray-100 overflow-hidden" : "bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden"}
+      <div
+        className={
+          isMobile
+            ? 'w-full max-w-full mx-auto px-4 pt-4 pb-5'
+            : 'w-full max-w-full mx-auto px-16 pt-28'
+        }
       >
-        {/* Hero */}
-        <div className={isMobile ? "bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-4 pt-4 pb-4" : "bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6"}>
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className={isMobile ? "text-left mb-3" : "text-center mb-6"}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className={
+            isMobile
+              ? 'bg-white/95 backdrop-blur-2xl rounded-2xl shadow-sm border border-gray-100 overflow-hidden'
+              : 'bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden'
+          }
+        >
+          {/* Hero */}
+          <div
+            className={
+              isMobile
+                ? 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-4 pt-4 pb-4'
+                : 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6'
+            }
           >
-            <Badge className={isMobile ? "px-3 py-1 text-xs font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border-brand-200" : "px-6 py-2 text-sm font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 hover:from-brand-200 hover:to-brand-300 border-brand-200 shadow-md"}>
-              Find Top Opportunities
-            </Badge>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className={isMobile ? "text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-3" : "text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-6"}
-          >
-            Discover{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-700 to-brand-600">
-              Perfect{' '}
-            </span>
-            <span>Career</span>
-          </motion.h1>
-
-          {!isMobile && (
-            <TypewriterEffect
-              title="Search With"
-              words={[
-                'Noc Code',
-                'Program',
-                'Employer',
-                'Address',
-                'Occupation',
-                'City',
-                'Employer Name',
-                'Province Mapping',
-                '',
-              ]}
-            />
-          )}
-        </div>
-
-        {/* Search Section */}
-        <div className={isMobile ? "p-4 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20" : "p-10 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20"}>
-          <motion.div
-            className="relative"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            <div className="relative">
-              {/* main search bar */}
-              <div
-                className={cn(
-                  isMobile 
-                    ? 'relative flex flex-col gap-3 rounded-xl transition-all duration-300 bg-white' 
-                    : 'relative flex items-stretch rounded-2xl transition-all duration-500 border-2 overflow-visible group',
-                  !isMobile && (showSuggestions || showLocationMenu
-                    ? 'bg-white border-brand-500 shadow-lg shadow-brand-500/20 ring-2 ring-brand-500/10'
-                    : 'bg-white border-gray-200 shadow-md hover:border-brand-300 hover:shadow-lg')
-                )}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className={isMobile ? 'text-left mb-3' : 'text-center mb-6'}
+            >
+              <Badge
+                className={
+                  isMobile
+                    ? 'px-3 py-1 text-xs font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border-brand-200'
+                    : 'px-6 py-2 text-sm font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 hover:from-brand-200 hover:to-brand-300 border-brand-200 shadow-md'
+                }
               >
-                {isMobile ? (
-                  <>
-                    {/* Mobile: Simple search input */}
-                    <div className="flex items-center gap-2 p-3 border-2 border-gray-200 rounded-xl focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20">
-                      <Search className="w-4 h-4 text-brand-600 flex-shrink-0" />
+                Find Top Opportunities
+              </Badge>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className={
+                isMobile
+                  ? 'text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-3'
+                  : 'text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-6'
+              }
+            >
+              Discover{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-700 to-brand-600">
+                Perfect{' '}
+              </span>
+              <span>Career</span>
+            </motion.h1>
+
+            {!isMobile && (
+              <TypewriterEffect
+                title="Search With"
+                words={[
+                  'Noc Code',
+                  'Program',
+                  'Employer',
+                  'Address',
+                  'Occupation',
+                  'City',
+                  'Employer Name',
+                  'Province Mapping',
+                  '',
+                ]}
+              />
+            )}
+          </div>
+
+          {/* Search Section */}
+          <div
+            className={
+              isMobile
+                ? 'p-4 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
+                : 'p-10 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
+            }
+          >
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >
+              <div className="relative">
+                {/* main search bar */}
+                <div
+                  className={cn(
+                    isMobile
+                      ? 'relative flex flex-col gap-3 rounded-xl transition-all duration-300 bg-white'
+                      : 'relative flex items-stretch rounded-2xl transition-all duration-500 border-2 overflow-visible group',
+                    !isMobile &&
+                      (showSuggestions || showLocationMenu
+                        ? 'bg-white border-brand-500 shadow-lg shadow-brand-500/20 ring-2 ring-brand-500/10'
+                        : 'bg-white border-gray-200 shadow-md hover:border-brand-300 hover:shadow-lg')
+                  )}
+                >
+                  {isMobile ? (
+                    <>
+                      {/* Mobile: Simple search input */}
+                      <div className="flex items-center gap-2 p-3 border-2 border-gray-200 rounded-xl focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20">
+                        <Search className="w-4 h-4 text-brand-600 flex-shrink-0" />
+                        <input
+                          ref={searchInputRef}
+                          type="text"
+                          value={input}
+                          onChange={handleChange}
+                          onFocus={() => setShowSuggestions(true)}
+                          placeholder="Search jobs, companies..."
+                          className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-sm focus:outline-none"
+                          onKeyDown={(e) => e.key === 'Enter' && startSearch()}
+                        />
+                        {input && (
+                          <button
+                            onClick={() => {
+                              setInput('');
+                              setShowSuggestions(false);
+                            }}
+                            className="p-1 text-gray-400 hover:text-gray-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Desktop: Complex layout */}
+                      <motion.div
+                        className="pl-5 pr-3 py-4 flex items-center"
+                        animate={{ scale: showSuggestions ? 1.1 : 1 }}
+                        transition={{
+                          duration: 0.3,
+                          type: 'spring',
+                          stiffness: 200,
+                        }}
+                      >
+                        <div
+                          className={cn(
+                            'p-2.5 rounded-xl transition-all duration-300 relative overflow-hidden',
+                            showSuggestions
+                              ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-lg'
+                              : 'bg-brand-100 text-brand-600 group-hover:bg-brand-200'
+                          )}
+                        >
+                          <Search className="w-5 h-5 relative z-10" />
+                        </div>
+                      </motion.div>
+
                       <input
                         ref={searchInputRef}
                         type="text"
                         value={input}
                         onChange={handleChange}
                         onFocus={() => setShowSuggestions(true)}
-                        placeholder="Search jobs, companies..."
-                        className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-sm focus:outline-none"
+                        placeholder="Search for jobs, companies, NOC, keywords…"
+                        className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-base py-4 px-2 focus:outline-none"
                         onKeyDown={(e) => e.key === 'Enter' && startSearch()}
                       />
-                      {input && (
-                        <button
-                          onClick={() => {
-                            setInput('');
-                            setShowSuggestions(false);
-                          }}
-                          className="p-1 text-gray-400 hover:text-gray-600"
+
+                      <div className="my-2 w-px bg-gray-200" />
+                    </>
+                  )}
+
+                  {/* location block */}
+                  {isMobile ? (
+                    <Button
+                      type="button"
+                      onClick={() => setShowLocationMenu((v) => !v)}
+                      className="w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 border-2 border-gray-200"
+                    >
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-brand-600" />
+                        <span className="text-sm font-medium">
+                          {location.trim() ? location : 'Add Location'}
+                        </span>
+                      </div>
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  ) : (
+                    <div className="relative flex items-center gap-2 px-4">
+                      <Button
+                        type="button"
+                        onClick={() => setShowLocationMenu((v) => !v)}
+                        className={cn(
+                          'flex items-center gap-2 rounded-xl shadow-none px-3 py-2 transition-all duration-200',
+                          showLocationMenu
+                            ? 'bg-brand-50 text-brand-700'
+                            : 'hover:bg-gray-100 text-gray-700'
+                        )}
+                      >
+                        <MapPin className="w-4 h-4" />
+                        <span className="text-sm font-medium">
+                          {location.trim() ? location : 'Location'}
+                        </span>
+                      </Button>
+
+                      {location.trim() && (
+                        <Button
+                          type="button"
+                          aria-label="Clear location"
+                          onClick={() => setLocation('')}
+                          className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
                         >
                           <X className="w-4 h-4" />
-                        </button>
+                        </Button>
                       )}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* Desktop: Complex layout */}
-                    <motion.div
-                      className="pl-5 pr-3 py-4 flex items-center"
-                      animate={{ scale: showSuggestions ? 1.1 : 1 }}
-                      transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
-                    >
-                      <div
-                        className={cn(
-                          'p-2.5 rounded-xl transition-all duration-300 relative overflow-hidden',
-                          showSuggestions
-                            ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-lg'
-                            : 'bg-brand-100 text-brand-600 group-hover:bg-brand-200'
-                        )}
-                      >
-                        <Search className="w-5 h-5 relative z-10" />
-                      </div>
-                    </motion.div>
 
-                    <input
-                      ref={searchInputRef}
-                      type="text"
-                      value={input}
-                      onChange={handleChange}
-                      onFocus={() => setShowSuggestions(true)}
-                      placeholder="Search for jobs, companies, NOC, keywords…"
-                      className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-base py-4 px-2 focus:outline-none"
-                      onKeyDown={(e) => e.key === 'Enter' && startSearch()}
-                    />
-
-                    <div className="my-2 w-px bg-gray-200" />
-                  </>
-                )}
-
-                {/* location block */}
-                {isMobile ? (
-                  <Button
-                    type="button"
-                    onClick={() => setShowLocationMenu((v) => !v)}
-                    className="w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 border-2 border-gray-200"
-                  >
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-brand-600" />
-                      <span className="text-sm font-medium">
-                        {location.trim() ? location : 'Add Location'}
-                      </span>
-                    </div>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                ) : (
-                <div className="relative flex items-center gap-2 px-4">
-                  <Button
-                    type="button"
-                    onClick={() => setShowLocationMenu((v) => !v)}
-                    className={cn(
-                      'flex items-center gap-2 rounded-xl shadow-none px-3 py-2 transition-all duration-200',
-                      showLocationMenu
-                        ? 'bg-brand-50 text-brand-700'
-                        : 'hover:bg-gray-100 text-gray-700'
-                    )}
-                  >
-                    <MapPin className="w-4 h-4" />
-                    <span className="text-sm font-medium">
-                      {location.trim() ? location : 'Location'}
-                    </span>
-                  </Button>
-
-                  {location.trim() && (
-                    <Button
-                      type="button"
-                      aria-label="Clear location"
-                      onClick={() => setLocation('')}
-                      className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  )}
-
-                  <AnimatePresence>
-                    {showLocationMenu && (
-                      <motion.div
-                        ref={locationMenuRef}
-                        initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-[calc(100%+10px)] z-[10000] w-80 rounded-2xl border border-gray-200 bg-white shadow-xl"
-                      >
-                        <div className="p-3 border-b border-gray-100">
-                          <Button
-                            type="button"
-                            onClick={() => {
-                              setLocation('Canada');
-                              setShowLocationMenu(false);
-                            }}
-                            className="w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 hover:bg-brand-50 transition"
-                          >
-                            <span className="flex items-center gap-2 text-gray-800">
-                              <MapPin className="w-4 h-4 text-brand-600" />
-                              All of Canada
-                            </span>
-                            <span className="text-xs font-semibold text-brand-700 bg-brand-100 px-2 py-0.5 rounded">
-                              Quick set
-                            </span>
-                          </Button>
-                        </div>
-                        <div className="p-3">
-                          <Label className="block text-xs font-semibold text-gray-500 mb-2">
-                            Type a state / province
-                          </Label>
-                          <Input
-                            type="text"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                            placeholder="e.g., Toronto, ON or British Columbia"
-                            className="w-full mb-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') setShowLocationMenu(false);
-                            }}
-                          />
-                          <Label className="block text-xs font-semibold text-gray-500 mb-2">
-                            Or type a city
-                          </Label>
-                          <Input
-                            type="text"
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                            placeholder="e.g., Edmonton, Abbortsford, Calgary"
-                            className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') setShowLocationMenu(false);
-                            }}
-                          />
-                          <div className="mt-3 flex justify-end gap-2">
-                            <Button
-                              variant={'outline'}
-                              type="button"
-                              onClick={() => {
-                                setLocation('');
-                                setShowLocationMenu(false);
-                              }}
-                              className="text-sm px-3 py-1.5 rounded-lg "
-                            >
-                              Clear
-                            </Button>
-                            <Button
-                              variant={'default'}
-                              type="button"
-                              onClick={() => setShowLocationMenu(false)}
-                              className="text-sm px-3 py-1.5 rounded-lg bg-brand-600 text-white"
-                            >
-                              Done
-                            </Button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-                )}
-
-                {/* trailing controls */}
-                {isMobile ? (
-                  <Button
-                    type="button"
-                    onClick={startSearch}
-                    disabled={isSearching || !input.trim()}
-                    className={cn(
-                      'w-full px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300',
-                      isSearching || !input.trim()
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md'
-                    )}
-                  >
-                    {isSearching ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Searching...
-                      </div>
-                    ) : (
-                      'Search Jobs'
-                    )}
-                  </Button>
-                ) : (
-                <div className="flex items-center gap-3 pr-4">
-                  <AnimatePresence>
-                    {input && (
-                      <motion.button
-                        type="button"
-                        onClick={() => {
-                          setInput('');
-                          setShowSuggestions(false);
-                        }}
-                        className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200"
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0 }}
-                      >
-                        <motion.div
-                          animate={{ rotate: 0 }}
-                          whileHover={{ rotate: 90 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </motion.div>
-                      </motion.button>
-                    )}
-                  </AnimatePresence>
-
-                  <motion.button
-                    type="button"
-                    onClick={startSearch}
-                    disabled={isSearching || !input.trim()}
-                    className={cn(
-                      'px-5 py-2.5 rounded-xl font-medium transition-all duration-300 relative overflow-hidden',
-                      isSearching || !input.trim()
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md hover:shadow-lg hover:scale-105'
-                    )}
-                    whileHover={
-                      !isSearching && input.trim() ? { scale: 1.05 } : undefined
-                    }
-                    whileTap={
-                      !isSearching && input.trim() ? { scale: 0.95 } : undefined
-                    }
-                  >
-                    {isSearching ? (
-                      <motion.div
-                        className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                        animate={{ rotate: 360 }}
-                        transition={{
-                          duration: 1,
-                          repeat: Infinity,
-                          ease: 'linear',
-                        }}
-                      />
-                    ) : (
-                      <span className="flex items-center gap-2">
-                        Search
-                        <motion.div
-                          animate={{ x: [0, 3, 0] }}
-                          transition={{
-                            duration: 1.5,
-                            repeat: Infinity,
-                            repeatDelay: 2,
-                          }}
-                        >
-                          <ArrowRight className="w-4 h-4" />
-                        </motion.div>
-                      </span>
-                    )}
-                  </motion.button>
-                </div>
-                )}
-              </div>
-            </div>
-
-            {/* Suggestions Dropdown (restored) */}
-            <AnimatePresence>
-              {showSuggestions && input.trim() && (
-                <motion.div
-                  ref={suggestionsRef}
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className={isMobile ? "absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-[9999]" : "absolute left-0 right-0 top-full mt-3 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-white/30 overflow-hidden z-[9999]"}
-                >
-                  <div className={isMobile ? "max-h-[300px] overflow-y-auto" : "max-h-[400px] overflow-y-auto"}>
-                    {isLoadingSuggestions ? (
-                      <div className="p-6 space-y-3">
-                        {[...Array(4)].map((_, index) => (
+                      <AnimatePresence>
+                        {showLocationMenu && (
                           <motion.div
-                            key={index}
-                            className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
+                            ref={locationMenuRef}
+                            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute right-0 top-[calc(100%+10px)] z-[10000] w-80 rounded-2xl border border-gray-200 bg-white shadow-xl"
                           >
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
-                            <div className="flex-1 space-y-2">
-                              <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full w-3/4 animate-pulse" />
-                              <div className="h-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full w-1/2 animate-pulse" />
+                            <div className="p-3 border-b border-gray-100">
+                              <Button
+                                type="button"
+                                onClick={() => {
+                                  setLocation('Canada');
+                                  setShowLocationMenu(false);
+                                }}
+                                className="w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 hover:bg-brand-50 transition"
+                              >
+                                <span className="flex items-center gap-2 text-gray-800">
+                                  <MapPin className="w-4 h-4 text-brand-600" />
+                                  All of Canada
+                                </span>
+                                <span className="text-xs font-semibold text-brand-700 bg-brand-100 px-2 py-0.5 rounded">
+                                  Quick set
+                                </span>
+                              </Button>
+                            </div>
+                            <div className="p-3">
+                              <Label className="block text-xs font-semibold text-gray-500 mb-2">
+                                Type a state / province
+                              </Label>
+                              <Input
+                                type="text"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                placeholder="e.g., Toronto, ON or British Columbia"
+                                className="w-full mb-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter')
+                                    setShowLocationMenu(false);
+                                }}
+                              />
+                              <Label className="block text-xs font-semibold text-gray-500 mb-2">
+                                Or type a city
+                              </Label>
+                              <Input
+                                type="text"
+                                value={city}
+                                onChange={(e) => setCity(e.target.value)}
+                                placeholder="e.g., Edmonton, Abbortsford, Calgary"
+                                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter')
+                                    setShowLocationMenu(false);
+                                }}
+                              />
+                              <div className="mt-3 flex justify-end gap-2">
+                                <Button
+                                  variant={'outline'}
+                                  type="button"
+                                  onClick={() => {
+                                    setLocation('');
+                                    setShowLocationMenu(false);
+                                  }}
+                                  className="text-sm px-3 py-1.5 rounded-lg "
+                                >
+                                  Clear
+                                </Button>
+                                <Button
+                                  variant={'default'}
+                                  type="button"
+                                  onClick={() => setShowLocationMenu(false)}
+                                  className="text-sm px-3 py-1.5 rounded-lg bg-brand-600 text-white"
+                                >
+                                  Done
+                                </Button>
+                              </div>
                             </div>
                           </motion.div>
-                        ))}
-                      </div>
-                    ) : suggestions.length > 0 ? (
-                      <div className="p-2">
-                        <div className="px-4 py-3 bg-gradient-to-r from-brand-50 to-brand-100 rounded-2xl mb-2 border-b border-white/20">
-                          <div className="flex items-center gap-2 text-sm text-brand-700 font-medium">
-                            <motion.div
-                              animate={{ rotate: 360 }}
-                              transition={{
-                                duration: 4,
-                                repeat: Infinity,
-                                ease: 'linear',
-                              }}
-                            >
-                              <Clock className="w-4 h-4" />
-                            </motion.div>
-                            <span className="font-medium">
-                              Suggestions based on your search
-                            </span>
-                          </div>
-                        </div>
-
-                        {suggestions.map(
-                          (s, index) => (
-                            console.log(s, 'checkS'),
-                            (
-                              <motion.div
-                                key={`${s.suggestion}-${index}`}
-                                className="group px-4 py-4 hover:bg-gradient-to-r hover:from-brand-50 hover:to-brand-100 cursor-pointer transition-all duration-200 rounded-2xl mx-1 mb-1"
-                                onClick={() => handleSuggestionClick(s)}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                whileHover={{ scale: 1.02, x: 5 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                <div className="flex items-center gap-4">
-                                  <motion.div
-                                    className="p-3 rounded-2xl bg-gradient-to-r from-brand-100 to-brand-200 group-hover:from-brand-200 group-hover:to-brand-300 transition-all duration-200 relative overflow-hidden shadow-lg shadow-brand-500/20"
-                                    whileHover={{ rotate: 15, scale: 1.1 }}
-                                  >
-                                    <motion.div
-                                      className="absolute inset-0 opacity-30"
-                                      animate={{ opacity: [0.3, 0.5, 0.3] }}
-                                      transition={{
-                                        duration: 2,
-                                        repeat: Infinity,
-                                        ease: 'linear',
-                                      }}
-                                    />
-                                    <Search className="w-5 h-5 text-brand-600 relative z-10" />
-                                  </motion.div>
-                                  <div className="flex-1">
-                                    <span className="text-gray-800 group-hover:text-brand-700 transition-colors font-semibold text-base block">
-                                      {s.suggestion}
-                                    </span>
-                                    <span className="text-sm text-gray-500 mt-1 block flex items-center gap-2">
-                                      <span className="flex items-center gap-1">
-                                        <>
-                                          <List className="w-3 h-3" />
-                                          <AttributeName name={s.field || ''} />
-                                        </>
-                                      </span>
-                                      {s.hits && (
-                                        <span className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-0.5 rounded-full">
-                                          <span className="text-gray-600">
-                                            {s.hits.toLocaleString()} results
-                                          </span>
-                                        </span>
-                                      )}
-                                    </span>
-                                  </div>
-                                  <motion.div
-                                    className="opacity-0 group-hover:opacity-100 transition-all duration-200"
-                                    initial={{ x: 10, scale: 0.8 }}
-                                    whileHover={{ x: 0, scale: 1 }}
-                                  >
-                                    <motion.div
-                                      animate={{ x: [0, 3, 0] }}
-                                      transition={{
-                                        duration: 1,
-                                        repeat: Infinity,
-                                        repeatDelay: 1,
-                                      }}
-                                    >
-                                      <ArrowRight className="w-5 h-5 text-brand-500" />
-                                    </motion.div>
-                                  </motion.div>
-                                </div>
-                              </motion.div>
-                            )
-                          )
                         )}
-                      </div>
-                    ) : (
-                      <motion.div
-                        className="p-10 text-center"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                      >
-                        <motion.div
-                          className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center shadow-lg"
-                          animate={{ rotate: 360 }}
-                          transition={{
-                            duration: 20,
-                            repeat: Infinity,
-                            ease: 'linear',
-                          }}
-                        >
-                          <Search className="w-8 h-8 text-gray-400" />
-                        </motion.div>
-                        <p className="font-semibold text-gray-700 text-lg mb-1">
-                          No suggestions found
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Try different keywords or check spelling
-                        </p>
-                      </motion.div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-
-        {/* Search Type */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className={isMobile ? "px-4" : "px-10"}
-        >
-          <div className={isMobile ? "flex flex-col gap-3" : "flex items-center gap-6"}>
-            <span className={isMobile ? "text-xs font-semibold text-gray-700" : "text-sm font-semibold text-gray-700"}>
-              Search Type:
-            </span>
-            <div className="flex items-center gap-4">
-              <motion.label
-                className="flex items-center gap-2 cursor-pointer group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <motion.div className="relative" whileHover={{ scale: 1.1 }}>
-                  <Input
-                    type="checkbox"
-                    checked={searchType === 'lmia'}
-                    onChange={() => setSearchType('lmia')}
-                    className="sr-only"
-                  />
-                  <motion.div
-                    className={cn(
-                      'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200',
-                      searchType === 'lmia'
-                        ? 'bg-brand-600 border-brand-600'
-                        : 'border-gray-300 group-hover:border-brand-400'
-                    )}
-                  >
-                    {searchType === 'lmia' && (
-                      <Check className="w-3 h-3 text-white" />
-                    )}
-                  </motion.div>
-                </motion.div>
-                <span
-                  className={cn(
-                    'text-sm font-medium transition-colors duration-200',
-                    searchType === 'lmia'
-                      ? 'text-brand-700'
-                      : 'text-gray-600 group-hover:text-brand-600'
+                      </AnimatePresence>
+                    </div>
                   )}
-                >
-                  LMIA Approved
-                </span>
-              </motion.label>
 
-              <motion.label
-                className="flex items-center gap-2 cursor-pointer group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <motion.div className="relative" whileHover={{ scale: 1.1 }}>
-                  <Input
-                    type="checkbox"
-                    checked={searchType === 'hot_leads'}
-                    onChange={() => setSearchType('hot_leads')}
-                    className="sr-only"
-                  />
-                  <motion.div
-                    className={cn(
-                      'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200',
-                      searchType === 'hot_leads'
-                        ? 'bg-brand-600 border-brand-600'
-                        : 'border-gray-300 group-hover:border-brand-400'
-                    )}
-                  >
-                    {searchType === 'hot_leads' && (
-                      <Check className="w-3 h-3 text-white" />
-                    )}
-                  </motion.div>
-                </motion.div>
-                <span
-                  className={cn(
-                    'text-sm font-medium transition-colors duration-200',
-                    searchType === 'hot_leads'
-                      ? 'text-brand-700'
-                      : 'text-gray-600 group-hover:text-brand-600'
-                  )}
-                >
-                  Trending Jobs
-                </span>
-              </motion.label>
-            </div>
-          </div>
-
-          {/* Sort by (date posted) – only for Trending Jobs */}
-          {searchType === 'hot_leads' && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.35 }}
-              className={isMobile ? "mt-3" : "mt-6"}
-            >
-              <div className={isMobile ? "flex flex-col gap-2" : "flex items-center gap-4 flex-wrap"}>
-                <span className={isMobile ? "text-xs font-semibold text-gray-700" : "text-sm font-semibold text-gray-700 min-w-[64px]"}>
-                  Sort by:
-                </span>
-
-                {/* Base ranges */}
-                <div className="flex items-center gap-3 flex-wrap">
-                  {baseRanges.map((r) => {
-                    const checked = rangeKey === r.key;
-                    return (
-                      <Label
-                        key={r.key}
-                        className={cn(
-                          'flex items-center gap-2 cursor-pointer rounded-xl border px-3 py-2 text-sm transition-all duration-200',
-                          checked
-                            ? 'bg-brand-50 border-brand-300 text-brand-700'
-                            : 'border-gray-200 hover:border-brand-300 hover:bg-gray-50'
-                        )}
-                      >
-                        <Input
-                          type="checkbox"
-                          className="sr-only"
-                          checked={checked}
-                          onChange={() =>
-                            checked ? clearRange() : applyRange(r.key, r.days)
-                          }
-                        />
-                        <span
-                          className={cn(
-                            'w-4 h-4 rounded-md border flex items-center justify-center',
-                            checked
-                              ? 'bg-brand-600 border-brand-600'
-                              : 'border-gray-300'
-                          )}
-                        >
-                          {checked && <Check className="w-3 h-3 text-white" />}
-                        </span>
-                        <span className="font-medium">{r.label}</span>
-                      </Label>
-                    );
-                  })}
-
-                  {/* Expander */}
-                  <Button
-                    variant={'outline'}
-                    type="button"
-                    onClick={() => setShowMoreRanges((v) => !v)}
-                    className="flex items-center gap-2 rounded-xl border border-gray-200 px-3 py-2 text-sm hover:border-brand-300 hover:bg-gray-50 transition"
-                  >
-                    {showMoreRanges ? (
-                      <>
-                        Hide ranges <ChevronUp className="w-4 h-4" />
-                      </>
-                    ) : (
-                      <>
-                        More ranges <ChevronDown className="w-4 h-4" />
-                      </>
-                    )}
-                  </Button>
-
-                  {/* More ranges */}
-                  <AnimatePresence initial={false}>
-                    {showMoreRanges && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="flex items-center gap-3 overflow-hidden"
-                      >
-                        {moreRanges.map((r) => {
-                          const checked = rangeKey === r.key;
-                          return (
-                            <Label
-                              key={r.key}
-                              className={cn(
-                                'flex items-center gap-2 cursor-pointer rounded-xl border px-3 py-2 text-sm transition-all duration-200',
-                                checked
-                                  ? 'bg-brand-50 border-brand-300 text-brand-700'
-                                  : 'border-gray-200 hover:border-brand-300 hover:bg-gray-50'
-                              )}
-                            >
-                              <Input
-                                type="checkbox"
-                                className="sr-only"
-                                checked={checked}
-                                onChange={() =>
-                                  checked
-                                    ? clearRange()
-                                    : applyRange(r.key, r.days)
-                                }
-                              />
-                              <span
-                                className={cn(
-                                  'w-4 h-4 rounded-md border flex items-center justify-center',
-                                  checked
-                                    ? 'bg-brand-600 border-brand-600'
-                                    : 'border-gray-300'
-                                )}
-                              >
-                                {checked && (
-                                  <Check className="w-3 h-3 text-white" />
-                                )}
-                              </span>
-                              <span className="font-medium">{r.label}</span>
-                            </Label>
-                          );
-                        })}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {(dateFrom || dateTo) && (
+                  {/* trailing controls */}
+                  {isMobile ? (
                     <Button
                       type="button"
-                      onClick={clearRange}
-                      className="ml-1 shadow-none text-sm text-gray-600 underline underline-offset-2 hover:text-gray-800"
+                      onClick={startSearch}
+                      disabled={isSearching || !input.trim()}
+                      className={cn(
+                        'w-full px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300',
+                        isSearching || !input.trim()
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md'
+                      )}
                     >
-                      Clear date filter
+                      {isSearching ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Searching...
+                        </div>
+                      ) : (
+                        'Search Jobs'
+                      )}
                     </Button>
+                  ) : (
+                    <div className="flex items-center gap-3 pr-4">
+                      <AnimatePresence>
+                        {input && (
+                          <motion.button
+                            type="button"
+                            onClick={() => {
+                              setInput('');
+                              setShowSuggestions(false);
+                            }}
+                            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200"
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0 }}
+                          >
+                            <motion.div
+                              animate={{ rotate: 0 }}
+                              whileHover={{ rotate: 90 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </motion.div>
+                          </motion.button>
+                        )}
+                      </AnimatePresence>
+
+                      <motion.button
+                        type="button"
+                        onClick={startSearch}
+                        disabled={isSearching || !input.trim()}
+                        className={cn(
+                          'px-5 py-2.5 rounded-xl font-medium transition-all duration-300 relative overflow-hidden',
+                          isSearching || !input.trim()
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md hover:shadow-lg hover:scale-105'
+                        )}
+                        whileHover={
+                          !isSearching && input.trim()
+                            ? { scale: 1.05 }
+                            : undefined
+                        }
+                        whileTap={
+                          !isSearching && input.trim()
+                            ? { scale: 0.95 }
+                            : undefined
+                        }
+                      >
+                        {isSearching ? (
+                          <motion.div
+                            className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{
+                              duration: 1,
+                              repeat: Infinity,
+                              ease: 'linear',
+                            }}
+                          />
+                        ) : (
+                          <span className="flex items-center gap-2">
+                            Search
+                            <motion.div
+                              animate={{ x: [0, 3, 0] }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                repeatDelay: 2,
+                              }}
+                            >
+                              <ArrowRight className="w-4 h-4" />
+                            </motion.div>
+                          </span>
+                        )}
+                      </motion.button>
+                    </div>
                   )}
                 </div>
               </div>
-            </motion.div>
-          )}
-        </motion.div>
 
-        {/* Trending */}
-        <div className={isMobile ? "px-4 pb-6 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent" : "px-10 pb-10 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent"}>
+              {/* Suggestions Dropdown (restored) */}
+              <AnimatePresence>
+                {showSuggestions && input.trim() && (
+                  <motion.div
+                    ref={suggestionsRef}
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className={
+                      isMobile
+                        ? 'absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-[9999]'
+                        : 'absolute left-0 right-0 top-full mt-3 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-white/30 overflow-hidden z-[9999]'
+                    }
+                  >
+                    <div
+                      className={
+                        isMobile
+                          ? 'max-h-[300px] overflow-y-auto'
+                          : 'max-h-[400px] overflow-y-auto'
+                      }
+                    >
+                      {isLoadingSuggestions ? (
+                        <div className="p-6 space-y-3">
+                          {[...Array(4)].map((_, index) => (
+                            <motion.div
+                              key={index}
+                              className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl"
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                            >
+                              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
+                              <div className="flex-1 space-y-2">
+                                <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full w-3/4 animate-pulse" />
+                                <div className="h-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full w-1/2 animate-pulse" />
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      ) : suggestions.length > 0 ? (
+                        <div className="p-2">
+                          <div className="px-4 py-3 bg-gradient-to-r from-brand-50 to-brand-100 rounded-2xl mb-2 border-b border-white/20">
+                            <div className="flex items-center gap-2 text-sm text-brand-700 font-medium">
+                              <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{
+                                  duration: 4,
+                                  repeat: Infinity,
+                                  ease: 'linear',
+                                }}
+                              >
+                                <Clock className="w-4 h-4" />
+                              </motion.div>
+                              <span className="font-medium">
+                                Suggestions based on your search
+                              </span>
+                            </div>
+                          </div>
+
+                          {suggestions.map(
+                            (s, index) => (
+                              console.log(s, 'checkS'),
+                              (
+                                <motion.div
+                                  key={`${s.suggestion}-${index}`}
+                                  className="group px-4 py-4 hover:bg-gradient-to-r hover:from-brand-50 hover:to-brand-100 cursor-pointer transition-all duration-200 rounded-2xl mx-1 mb-1"
+                                  onClick={() => handleSuggestionClick(s)}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: index * 0.05 }}
+                                  whileHover={{ scale: 1.02, x: 5 }}
+                                  whileTap={{ scale: 0.98 }}
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <motion.div
+                                      className="p-3 rounded-2xl bg-gradient-to-r from-brand-100 to-brand-200 group-hover:from-brand-200 group-hover:to-brand-300 transition-all duration-200 relative overflow-hidden shadow-lg shadow-brand-500/20"
+                                      whileHover={{ rotate: 15, scale: 1.1 }}
+                                    >
+                                      <motion.div
+                                        className="absolute inset-0 opacity-30"
+                                        animate={{ opacity: [0.3, 0.5, 0.3] }}
+                                        transition={{
+                                          duration: 2,
+                                          repeat: Infinity,
+                                          ease: 'linear',
+                                        }}
+                                      />
+                                      <Search className="w-5 h-5 text-brand-600 relative z-10" />
+                                    </motion.div>
+                                    <div className="flex-1">
+                                      <span className="text-gray-800 group-hover:text-brand-700 transition-colors font-semibold text-base block">
+                                        {s.suggestion}
+                                      </span>
+                                      <span className="text-sm text-gray-500 mt-1 block flex items-center gap-2">
+                                        <span className="flex items-center gap-1">
+                                          <>
+                                            <List className="w-3 h-3" />
+                                            <AttributeName
+                                              name={s.field || ''}
+                                            />
+                                          </>
+                                        </span>
+                                        {s.hits && (
+                                          <span className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                                            <span className="text-gray-600">
+                                              {s.hits.toLocaleString()} results
+                                            </span>
+                                          </span>
+                                        )}
+                                      </span>
+                                    </div>
+                                    <motion.div
+                                      className="opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                      initial={{ x: 10, scale: 0.8 }}
+                                      whileHover={{ x: 0, scale: 1 }}
+                                    >
+                                      <motion.div
+                                        animate={{ x: [0, 3, 0] }}
+                                        transition={{
+                                          duration: 1,
+                                          repeat: Infinity,
+                                          repeatDelay: 1,
+                                        }}
+                                      >
+                                        <ArrowRight className="w-5 h-5 text-brand-500" />
+                                      </motion.div>
+                                    </motion.div>
+                                  </div>
+                                </motion.div>
+                              )
+                            )
+                          )}
+                        </div>
+                      ) : (
+                        <motion.div
+                          className="p-10 text-center"
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                        >
+                          <motion.div
+                            className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center shadow-lg"
+                            animate={{ rotate: 360 }}
+                            transition={{
+                              duration: 20,
+                              repeat: Infinity,
+                              ease: 'linear',
+                            }}
+                          >
+                            <Search className="w-8 h-8 text-gray-400" />
+                          </motion.div>
+                          <p className="font-semibold text-gray-700 text-lg mb-1">
+                            No suggestions found
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Try different keywords or check spelling
+                          </p>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+
+          {/* Search Type */}
           <motion.div
-            className={isMobile ? "mt-4" : "mt-8"}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className={isMobile ? 'px-4' : 'px-10'}
           >
-            <div className={isMobile ? "flex items-center gap-2 mb-3" : "flex items-center gap-3 mb-4"}>
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            <div
+              className={
+                isMobile ? 'flex flex-col gap-3' : 'flex items-center gap-6'
+              }
+            >
+              <span
+                className={
+                  isMobile
+                    ? 'text-xs font-semibold text-gray-700'
+                    : 'text-sm font-semibold text-gray-700'
+                }
               >
-                <div className={isMobile ? "p-1.5 rounded-lg bg-gradient-to-r from-brand-100 to-brand-200" : "p-2 rounded-xl bg-gradient-to-r from-brand-100 to-brand-200 shadow-lg shadow-brand-500/20"}>
-                  <TrendingUp className={isMobile ? "w-4 h-4 text-brand-600" : "w-5 h-5 text-brand-600"} />
-                </div>
-              </motion.div>
-              <div>
-                <h3 className={isMobile ? "font-bold text-gray-800 text-sm" : "font-bold text-gray-800 text-lg"}>
-                  Trending Searches
-                </h3>
-                {!isMobile && <p className="text-sm text-gray-500">Popular jobs right now</p>}
+                Search Type:
+              </span>
+              <div className="flex items-center gap-4">
+                <motion.label
+                  className="flex items-center gap-2 cursor-pointer group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <motion.div className="relative" whileHover={{ scale: 1.1 }}>
+                    <Input
+                      type="checkbox"
+                      checked={searchType === 'lmia'}
+                      onChange={() => setSearchType('lmia')}
+                      className="sr-only"
+                    />
+                    <motion.div
+                      className={cn(
+                        'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200',
+                        searchType === 'lmia'
+                          ? 'bg-brand-600 border-brand-600'
+                          : 'border-gray-300 group-hover:border-brand-400'
+                      )}
+                    >
+                      {searchType === 'lmia' && (
+                        <Check className="w-3 h-3 text-white" />
+                      )}
+                    </motion.div>
+                  </motion.div>
+                  <span
+                    className={cn(
+                      'text-sm font-medium transition-colors duration-200',
+                      searchType === 'lmia'
+                        ? 'text-brand-700'
+                        : 'text-gray-600 group-hover:text-brand-600'
+                    )}
+                  >
+                    LMIA Approved
+                  </span>
+                </motion.label>
+
+                <motion.label
+                  className="flex items-center gap-2 cursor-pointer group"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <motion.div className="relative" whileHover={{ scale: 1.1 }}>
+                    <Input
+                      type="checkbox"
+                      checked={searchType === 'hot_leads'}
+                      onChange={() => setSearchType('hot_leads')}
+                      className="sr-only"
+                    />
+                    <motion.div
+                      className={cn(
+                        'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200',
+                        searchType === 'hot_leads'
+                          ? 'bg-brand-600 border-brand-600'
+                          : 'border-gray-300 group-hover:border-brand-400'
+                      )}
+                    >
+                      {searchType === 'hot_leads' && (
+                        <Check className="w-3 h-3 text-white" />
+                      )}
+                    </motion.div>
+                  </motion.div>
+                  <span
+                    className={cn(
+                      'text-sm font-medium transition-colors duration-200',
+                      searchType === 'hot_leads'
+                        ? 'text-brand-700'
+                        : 'text-gray-600 group-hover:text-brand-600'
+                    )}
+                  >
+                    Trending Jobs
+                  </span>
+                </motion.label>
               </div>
             </div>
 
-            <TrendingSearchBox
-              dateFrom={dateFrom}
-              dateTo={dateTo}
-              checkCredits={checkCredits}
-              fetchSuggestions={fetchSuggestions}
-              location={location}
-              searchType={searchType}
-              setInput={setInput}
-              setShowSuggestions={setShowSuggestions}
-            />
-          </motion.div>
-        </div>
+            {/* Sort by (date posted) – only for Trending Jobs */}
+            {searchType === 'hot_leads' && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35, duration: 0.35 }}
+                className={isMobile ? 'mt-3' : 'mt-6'}
+              >
+                <div
+                  className={
+                    isMobile
+                      ? 'flex flex-col gap-2'
+                      : 'flex items-center gap-4 flex-wrap'
+                  }
+                >
+                  <span
+                    className={
+                      isMobile
+                        ? 'text-xs font-semibold text-gray-700'
+                        : 'text-sm font-semibold text-gray-700 min-w-[64px]'
+                    }
+                  >
+                    Sort by:
+                  </span>
 
-        {/* Categories */}
-        <CategoryBox
-          dateFrom={dateFrom}
-          dateTo={dateTo}
-          location={location}
-          searchType={searchType}
-        />
-      </motion.div>
-    </div>
-    {isMobile && <BottomNav />}
+                  {/* Base ranges */}
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {baseRanges.map((r) => {
+                      const checked = rangeKey === r.key;
+                      return (
+                        <Label
+                          key={r.key}
+                          className={cn(
+                            'flex items-center gap-2 cursor-pointer rounded-xl border px-3 py-2 text-sm transition-all duration-200',
+                            checked
+                              ? 'bg-brand-50 border-brand-300 text-brand-700'
+                              : 'border-gray-200 hover:border-brand-300 hover:bg-gray-50'
+                          )}
+                        >
+                          <Input
+                            type="checkbox"
+                            className="sr-only"
+                            checked={checked}
+                            onChange={() =>
+                              checked ? clearRange() : applyRange(r.key, r.days)
+                            }
+                          />
+                          <span
+                            className={cn(
+                              'w-4 h-4 rounded-md border flex items-center justify-center',
+                              checked
+                                ? 'bg-brand-600 border-brand-600'
+                                : 'border-gray-300'
+                            )}
+                          >
+                            {checked && (
+                              <Check className="w-3 h-3 text-white" />
+                            )}
+                          </span>
+                          <span className="font-medium">{r.label}</span>
+                        </Label>
+                      );
+                    })}
+
+                    {/* Expander */}
+                    <Button
+                      variant={'outline'}
+                      type="button"
+                      onClick={() => setShowMoreRanges((v) => !v)}
+                      className="flex items-center gap-2 rounded-xl border border-gray-200 px-3 py-2 text-sm hover:border-brand-300 hover:bg-gray-50 transition"
+                    >
+                      {showMoreRanges ? (
+                        <>
+                          Hide ranges <ChevronUp className="w-4 h-4" />
+                        </>
+                      ) : (
+                        <>
+                          More ranges <ChevronDown className="w-4 h-4" />
+                        </>
+                      )}
+                    </Button>
+
+                    {/* More ranges */}
+                    <AnimatePresence initial={false}>
+                      {showMoreRanges && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="flex items-center gap-3 overflow-hidden"
+                        >
+                          {moreRanges.map((r) => {
+                            const checked = rangeKey === r.key;
+                            return (
+                              <Label
+                                key={r.key}
+                                className={cn(
+                                  'flex items-center gap-2 cursor-pointer rounded-xl border px-3 py-2 text-sm transition-all duration-200',
+                                  checked
+                                    ? 'bg-brand-50 border-brand-300 text-brand-700'
+                                    : 'border-gray-200 hover:border-brand-300 hover:bg-gray-50'
+                                )}
+                              >
+                                <Input
+                                  type="checkbox"
+                                  className="sr-only"
+                                  checked={checked}
+                                  onChange={() =>
+                                    checked
+                                      ? clearRange()
+                                      : applyRange(r.key, r.days)
+                                  }
+                                />
+                                <span
+                                  className={cn(
+                                    'w-4 h-4 rounded-md border flex items-center justify-center',
+                                    checked
+                                      ? 'bg-brand-600 border-brand-600'
+                                      : 'border-gray-300'
+                                  )}
+                                >
+                                  {checked && (
+                                    <Check className="w-3 h-3 text-white" />
+                                  )}
+                                </span>
+                                <span className="font-medium">{r.label}</span>
+                              </Label>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {(dateFrom || dateTo) && (
+                      <Button
+                        type="button"
+                        onClick={clearRange}
+                        className="ml-1 shadow-none text-sm text-gray-600 underline underline-offset-2 hover:text-gray-800"
+                      >
+                        Clear date filter
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Trending */}
+          <div
+            className={
+              isMobile
+                ? 'px-4 pb-6 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent'
+                : 'px-10 pb-10 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent'
+            }
+          >
+            <motion.div
+              className={isMobile ? 'mt-4' : 'mt-8'}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+            >
+              <div
+                className={
+                  isMobile
+                    ? 'flex items-center gap-2 mb-3'
+                    : 'flex items-center gap-3 mb-4'
+                }
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
+                >
+                  <div
+                    className={
+                      isMobile
+                        ? 'p-1.5 rounded-lg bg-gradient-to-r from-brand-100 to-brand-200'
+                        : 'p-2 rounded-xl bg-gradient-to-r from-brand-100 to-brand-200 shadow-lg shadow-brand-500/20'
+                    }
+                  >
+                    <TrendingUp
+                      className={
+                        isMobile
+                          ? 'w-4 h-4 text-brand-600'
+                          : 'w-5 h-5 text-brand-600'
+                      }
+                    />
+                  </div>
+                </motion.div>
+                <div>
+                  <h3
+                    className={
+                      isMobile
+                        ? 'font-bold text-gray-800 text-sm'
+                        : 'font-bold text-gray-800 text-lg'
+                    }
+                  >
+                    Trending Searches
+                  </h3>
+                  {!isMobile && (
+                    <p className="text-sm text-gray-500">
+                      Popular jobs right now
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <TrendingSearchBox
+                dateFrom={dateFrom}
+                dateTo={dateTo}
+                checkCredits={checkCredits}
+                fetchSuggestions={fetchSuggestions}
+                location={location}
+                searchType={searchType}
+                setInput={setInput}
+                setShowSuggestions={setShowSuggestions}
+              />
+            </motion.div>
+          </div>
+
+          {/* Categories */}
+          <CategoryBox
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+            location={location}
+            searchType={searchType}
+          />
+        </motion.div>
+      </div>
+      {isMobile && <BottomNav />}
     </>
   );
 }

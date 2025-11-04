@@ -75,7 +75,7 @@ export default function Company() {
   };
 
   return (
-    <section className="w-full flex flex-col items-center py-16 relative">
+    <section className="w-full flex flex-col items-center py-16 px-4 relative">
       <SectionTitle
         title="Top Companies Hiring Now"
         subtitle="Explore the latest job openings from top companies across various industries"

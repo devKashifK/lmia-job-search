@@ -10,14 +10,17 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import Logo from '@/components/ui/logo';
+import useMobile from '@/hooks/use-mobile';
 
 export default function Navbar({ className }: { className?: string }) {
   const { session, loading } = useSession();
+  const { isMobile } = useMobile();
 
   return (
     <nav
       className={cn(
         'w-full absolute top-0 left-0 z-20 transition-all duration-300',
+        isMobile && 'hidden',
         className
       )}
     >

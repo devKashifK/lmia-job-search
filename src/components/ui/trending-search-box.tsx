@@ -82,7 +82,7 @@ function TrendingSearchBox({
         <motion.button
           key={term}
           className={cn(
-            'group relative px-5 py-3 bg-gradient-to-r from-white to-brand-50 border border-brand-200 text-gray-700 rounded-2xl transition-all duration-300 text-sm font-semibold overflow-hidden shadow-md hover:shadow-xl shadow-brand-500/10',
+            'group relative px-4 py-2 lg:px-5 lg:py-3 bg-gradient-to-r from-white to-brand-50 border border-brand-200 text-gray-700 rounded-2xl transition-all duration-300 text-sm font-semibold overflow-hidden shadow-md hover:shadow-xl shadow-brand-500/10',
             'hover:scale-105 hover:border-brand-300'
           )}
           onClick={() => handleTrendingClick(term)}

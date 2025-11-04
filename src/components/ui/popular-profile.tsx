@@ -1,7 +1,7 @@
-"use client";
-import React from "react";
-import SectionTitle from "./section-title";
-import { motion } from "framer-motion";
+'use client';
+import React from 'react';
+import SectionTitle from './section-title';
+import { motion } from 'framer-motion';
 import {
   Utensils,
   ChefHat,
@@ -13,72 +13,72 @@ import {
   Soup,
   ShoppingBag,
   ArrowRight,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTableStore } from "@/context/store";
-import { useUpdateCredits } from "@/hooks/use-credits";
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useTableStore } from '@/context/store';
+import { useUpdateCredits } from '@/hooks/use-credits';
 const popularProfiles = [
   {
-    job_title: "Food Service Supervisor",
+    job_title: 'Food Service Supervisor',
     count: 15184,
     description:
-      "Supervise, coordinate, and schedule the activities of staff who prepare, portion, and serve food.",
+      'Supervise, coordinate, and schedule the activities of staff who prepare, portion, and serve food.',
     icon: Utensils,
   },
   {
-    job_title: "Cook",
+    job_title: 'Cook',
     count: 14459,
     description:
-      "Prepare and cook complete meals or individual dishes and foods in restaurants or other establishments.",
+      'Prepare and cook complete meals or individual dishes and foods in restaurants or other establishments.',
     icon: ChefHat,
   },
   {
-    job_title: "Administrative Assistant",
+    job_title: 'Administrative Assistant',
     count: 8031,
     description:
-      "Carry out office administrative tasks and support management and staff in daily operations.",
+      'Carry out office administrative tasks and support management and staff in daily operations.',
     icon: Briefcase,
   },
   {
-    job_title: "Food Counter Attendant",
+    job_title: 'Food Counter Attendant',
     count: 7882,
     description:
-      "Take customer orders, serve food and beverages, and handle payments at counters in fast food outlets.",
+      'Take customer orders, serve food and beverages, and handle payments at counters in fast food outlets.',
     icon: Coffee,
   },
   {
-    job_title: "Bookkeeper",
+    job_title: 'Bookkeeper',
     count: 5427,
     description:
-      "Maintain financial records, prepare financial statements, and manage accounts for businesses.",
+      'Maintain financial records, prepare financial statements, and manage accounts for businesses.',
     icon: Calculator,
   },
   {
-    job_title: "Food Service Supervisors",
+    job_title: 'Food Service Supervisors',
     count: 5356,
     description:
-      "Oversee food service operations and ensure quality and safety standards are met.",
+      'Oversee food service operations and ensure quality and safety standards are met.',
     icon: Store,
   },
   {
-    job_title: "Truck Driver",
+    job_title: 'Truck Driver',
     count: 5144,
     description:
-      "Operate heavy trucks to transport goods and materials over urban, interurban, and provincial routes.",
+      'Operate heavy trucks to transport goods and materials over urban, interurban, and provincial routes.',
     icon: Truck,
   },
   {
-    job_title: "Kitchen Helper",
+    job_title: 'Kitchen Helper',
     count: 4953,
     description:
-      "Assist in the kitchen by preparing ingredients, cleaning, and supporting cooks and chefs.",
+      'Assist in the kitchen by preparing ingredients, cleaning, and supporting cooks and chefs.',
     icon: Soup,
   },
   {
-    job_title: "Retail Store Supervisor",
+    job_title: 'Retail Store Supervisor',
     count: 4227,
     description:
-      "Supervise and coordinate the activities of workers in retail sales establishments.",
+      'Supervise and coordinate the activities of workers in retail sales establishments.',
     icon: ShoppingBag,
   },
 ];
@@ -88,13 +88,13 @@ export default function PopularProfile() {
   const { updateCreditsAndSearch } = useUpdateCredits();
   const { setFilterPanelConfig, setDataConfig } = useTableStore();
   return (
-    <section className="w-full flex flex-col items-center py-16 relative bg-gradient-to-b from-white to-gray-50/50">
+    <section className="w-full flex flex-col items-center px-4 py-16 relative bg-gradient-to-b from-white to-gray-50/50">
       <SectionTitle
         title="Popular Profiles"
         subtitle="Explore the latest job openings from top companies across various industries"
       />
 
-      <div className="w-full max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-0 sm:px-0 lg:px-8">
         {popularProfiles.map((group, idx) => {
           const Icon = group.icon;
           return (
@@ -157,23 +157,23 @@ export default function PopularProfile() {
                             `/roles/${encodeURIComponent(group.job_title)}`
                           );
                           setFilterPanelConfig({
-                            column: "job_title",
-                            table: "hot_leads_new",
+                            column: 'job_title',
+                            table: 'hot_leads_new',
                             keyword: group.job_title,
-                            type: "hot_leads",
-                            method: "query",
+                            type: 'hot_leads',
+                            method: 'query',
                           });
                           setDataConfig({
-                            type: "hot_leads",
-                            table: "hot_leads_new",
+                            type: 'hot_leads',
+                            table: 'hot_leads_new',
                             columns: JSON.stringify([
                               {
                                 job_title: group.job_title,
                               },
                             ]),
                             keyword: group.job_title,
-                            method: "query",
-                            year: "",
+                            method: 'query',
+                            year: '',
                             page: 1,
                             pageSize: 100,
                           });

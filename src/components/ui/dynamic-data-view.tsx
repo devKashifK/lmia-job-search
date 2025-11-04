@@ -8,6 +8,7 @@ import {
   Filter,
   RefreshCw,
   TrendingUp,
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LMIA } from '@/components/filters/column-def';
@@ -24,7 +25,21 @@ import AppliedFilters from '@/components/ui/applied-filters';
 import { useTableStore } from '@/context/store';
 import db from '@/db';
 import { useQuery } from '@tanstack/react-query';
-import { usePathname, useRouter, useSearchParams, ReadonlyURLSearchParams } from 'next/navigation';
+import {
+  usePathname,
+  useRouter,
+  useSearchParams,
+  ReadonlyURLSearchParams,
+} from 'next/navigation';
+import useMobile from '@/hooks/use-mobile';
+import { BottomNav } from '@/components/mobile/bottom-nav';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 
 type DataType = 'lmia' | 'hotLeads';
 
@@ -35,6 +50,7 @@ function isValidType(type: string | undefined): type is DataType {
 interface DynamicDataViewProps {
   title: string;
   field: string;
+  searchType?: 'hot_leads' | 'lmia';
 }
 
 function toPositiveInt(v: string | null, fallback: number) {
@@ -42,11 +58,14 @@ function toPositiveInt(v: string | null, fallback: number) {
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
 }
 
-function stableFiltersKey(sp: ReadonlyURLSearchParams | URLSearchParams | null, allowedFields: string[]) {
+function stableFiltersKey(
+  sp: ReadonlyURLSearchParams | URLSearchParams | null,
+  allowedFields: string[]
+) {
   // Build a stable JSON key of allowed filter arrays (sorted)
   const obj: Record<string, string[]> = {};
   if (!sp) return JSON.stringify(obj);
-  
+
   for (const k of allowedFields) {
     const vals = sp
       .getAll(k)
@@ -308,6 +327,7 @@ export default function DynamicDataView({
   field,
 }: DynamicDataViewProps) {
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
+  const { isMobile } = useMobile();
 
   // Get search type from URL parameter
   const searchParams = useSearchParams();
@@ -320,38 +340,53 @@ export default function DynamicDataView({
   const count = data?.count;
 
   return (
-    <div className=" mx-auto px-16 py-8">
-      <div className="py-0">
-        <div className="flex justify-between items-center mb-0">
-          <PageTitle
-            title={title}
-            count={count}
-            showSearch={true}
-            searchPlaceholder={
-              searchType === 'lmia'
-                ? 'Search LMIA jobs...'
-                : 'Search Trending jobs...'
-            }
-            defaultSearchType={searchType}
+    <>
+      <div
+        className={
+          isMobile
+            ? 'mx-auto px-4 py-4 pb-20 overflow-x-hidden'
+            : 'mx-auto px-16 py-8'
+        }
+      >
+        <div className="py-0">
+          <div className="flex justify-between items-center mb-0">
+            <PageTitle
+              title={title}
+              count={count}
+              showSearch={!isMobile}
+              searchPlaceholder={
+                searchType === 'lmia'
+                  ? 'Search LMIA jobs...'
+                  : 'Search Trending jobs...'
+              }
+              defaultSearchType={searchType}
+            />
+          </div>
+        </div>
+
+        <AppliedFilters />
+
+        <div
+          className={
+            isMobile ? 'relative flex flex-col gap-3' : 'relative flex gap-0'
+          }
+        >
+          {!isMobile && (
+            <div className="">
+              <NewFilterPanel />
+            </div>
+          )}
+          <NewDataPanel
+            field={field}
+            query={title}
+            savedSet={savedSet}
+            setSavedSet={setSavedSet}
+            searchType={searchType}
           />
         </div>
       </div>
-
-      <AppliedFilters />
-
-      <div className="relative flex gap-0">
-        <div className="">
-          <NewFilterPanel />
-        </div>
-        <NewDataPanel
-          field={field}
-          query={title}
-          savedSet={savedSet}
-          setSavedSet={setSavedSet}
-          searchType={searchType}
-        />
-      </div>
-    </div>
+      {isMobile && <BottomNav />}
+    </>
   );
 }
 
@@ -513,11 +548,14 @@ export function NewDataPanel({
   setSavedSet: (set: Set<number>) => void;
   searchType: string;
 }) {
+  const { isMobile } = useMobile();
   const { data, error, isLoading, setPage } = useData(query, field);
   const [selectedJob, setSelectedJob] = React.useState<any>(null);
   const [selectedJobId, setSelectedJobId] = React.useState<number | undefined>(
     undefined
   );
+  const [showFilters, setShowFilters] = React.useState(false);
+  const [showJobDetails, setShowJobDetails] = React.useState(false);
   const navigate = useRouter();
 
   // Set first job as selected by default when data loads or changes
@@ -533,6 +571,9 @@ export function NewDataPanel({
   const handleJobSelect = (job: any) => {
     setSelectedJob(job);
     setSelectedJobId(job.id || data?.rows?.indexOf(job));
+    if (isMobile) {
+      setShowJobDetails(true);
+    }
   };
 
   const handleSaveJob = () => {
@@ -649,44 +690,163 @@ export function NewDataPanel({
   }
 
   return (
-    <div className="flex flex-col  h-[1200px]">
-      <div className="flex flex-1 min-h-0">
-        {/* Middle Section - NOC Job Description - Fixed width */}
+    <div
+      className={
+        isMobile ? 'flex flex-col min-h-screen' : 'flex flex-col h-[1200px]'
+      }
+    >
+      <div
+        className={isMobile ? 'flex flex-col flex-1' : 'flex flex-1 min-h-0'}
+      >
+        {/* Mobile: Job list takes full width, details slide in */}
+        {/* Desktop: Side by side layout */}
 
-        {/* Right Sidebar - All Jobs - Fixed width */}
-        <div className="w-[550px] flex-shrink-0 border-r border-gray-200">
-          <AllJobsList
-            jobs={data?.rows || []}
-            selectedJobId={selectedJobId}
-            onJobSelect={handleJobSelect}
-            savedJobs={savedSet}
-            onToggleSaved={(index) => {
-              const next = new Set(savedSet);
-              if (next.has(index)) {
-                next.delete(index);
-              } else {
-                next.add(index);
-              }
-              setSavedSet(next);
-            }}
-            totalCount={data?.count}
-            className="h-full"
-          />
-        </div>
-        <div className="flex-1 min-w-0 max-w-4xl">
-          <NocJobDescription
-            job={selectedJob}
-            onSaveJob={handleSaveJob}
-            onViewNOC={handleViewNOC}
-            isSaved={isJobSaved}
-            className="h-full"
-            searchType={searchType}
-          />
-        </div>
+        {isMobile ? (
+          <>
+            {/* Mobile Job List */}
+            <div className="flex-1 overflow-hidden">
+              <AllJobsList
+                jobs={data?.rows || []}
+                selectedJobId={selectedJobId}
+                onJobSelect={handleJobSelect}
+                savedJobs={savedSet}
+                onToggleSaved={(index) => {
+                  const next = new Set(savedSet);
+                  if (next.has(index)) {
+                    next.delete(index);
+                  } else {
+                    next.add(index);
+                  }
+                  setSavedSet(next);
+                }}
+                totalCount={data?.count}
+                className="h-full"
+              />
+            </div>
+
+            {/* Mobile Filter Drawer */}
+            <Drawer open={showFilters} onOpenChange={setShowFilters}>
+              <div className="fixed bottom-24 right-4 z-30">
+                <button
+                  onClick={() => setShowFilters(true)}
+                  className="group flex items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all px-4 py-3"
+                >
+                  <Filter className="w-5 h-5" />
+                  <span className="text-sm font-semibold">Filters</span>
+                </button>
+              </div>
+
+              <DrawerContent className="max-h-[85vh] flex flex-col">
+                <DrawerHeader className="flex-shrink-0 border-b rounded-t-2xl border-gray-200 bg-gradient-to-r from-brand-50 to-blue-50 py-4 px-4">
+                  <div className="flex items-center justify-between">
+                    <DrawerTitle className="flex items-center gap-3 ">
+                      <div className="p-2 bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl shadow-md">
+                        <Filter className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-lg font-bold text-gray-900">
+                          Filters
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          Refine your search
+                        </span>
+                      </div>
+                    </DrawerTitle>
+                    <DrawerClose asChild>
+                      <button className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-white rounded-xl transition-all shadow-sm hover:shadow-md">
+                        <X className="w-5 h-5" />
+                      </button>
+                    </DrawerClose>
+                  </div>
+                </DrawerHeader>
+                <div className=" overflow-y-auto px-4 py-4 pb-6">
+                  <NewFilterPanel />
+                </div>
+              </DrawerContent>
+            </Drawer>
+
+            {/* Mobile Job Details Drawer */}
+            <Drawer open={showJobDetails} onOpenChange={setShowJobDetails}>
+              <DrawerContent className="max-h-[90vh] flex flex-col">
+                <DrawerHeader className="flex-shrink-0 border-b rounded-t-2xl border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50 py-4 px-4">
+                  <div className="flex items-center justify-between">
+                    <DrawerTitle className="flex items-center gap-3">
+                      <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-md">
+                        <Briefcase className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-lg font-bold text-gray-900">
+                          Job Details
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          Complete information
+                        </span>
+                      </div>
+                    </DrawerTitle>
+                    <DrawerClose asChild>
+                      <button className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-white rounded-xl transition-all shadow-sm hover:shadow-md">
+                        <X className="w-5 h-5" />
+                      </button>
+                    </DrawerClose>
+                  </div>
+                </DrawerHeader>
+                <div className="flex-1 overflow-y-auto pb-6">
+                  <NocJobDescription
+                    job={selectedJob}
+                    onSaveJob={handleSaveJob}
+                    onViewNOC={handleViewNOC}
+                    isSaved={isJobSaved}
+                    className=""
+                    searchType={searchType}
+                  />
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </>
+        ) : (
+          <>
+            {/* Desktop: Side by side */}
+            <div className="w-[550px] flex-shrink-0 border-r border-gray-200">
+              <AllJobsList
+                jobs={data?.rows || []}
+                selectedJobId={selectedJobId}
+                onJobSelect={handleJobSelect}
+                savedJobs={savedSet}
+                onToggleSaved={(index) => {
+                  const next = new Set(savedSet);
+                  if (next.has(index)) {
+                    next.delete(index);
+                  } else {
+                    next.add(index);
+                  }
+                  setSavedSet(next);
+                }}
+                totalCount={data?.count}
+                className="h-full"
+              />
+            </div>
+            <div className="flex-1 min-w-0 max-w-4xl">
+              <NocJobDescription
+                job={selectedJob}
+                onSaveJob={handleSaveJob}
+                onViewNOC={handleViewNOC}
+                isSaved={isJobSaved}
+                className="h-full"
+                searchType={searchType}
+              />
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Pagination Controls - Outside scrollable area */}
-      <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4 shadow-none">
+      {/* Pagination Controls */}
+      <div
+        className={
+          isMobile
+            ? 'flex-shrink-0 border-t border-gray-200 bg-white p-3'
+            : 'flex-shrink-0 border-t border-gray-200 bg-white p-4 shadow-none'
+        }
+      >
         <div className="max-w-4xl mx-auto">
           <Pagination
             currentPage={currentPage}

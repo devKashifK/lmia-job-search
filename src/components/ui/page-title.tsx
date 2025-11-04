@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import CompactSearch from './compact-search';
 import { motion } from 'framer-motion';
 import { Briefcase, TrendingUp } from 'lucide-react';
+import useMobile from '@/hooks/use-mobile';
 
 interface PageTitleProps {
   title: string;
@@ -28,6 +29,7 @@ export default function PageTitle({
 }: PageTitleProps) {
   const { data } = useData(title);
   const sp = useSearchParams();
+  const { isMobile } = useMobile();
 
   // table from URL (fallback to trending_job)
   const tableName = (sp?.get('t') ?? 'trending_job').trim();
@@ -39,22 +41,22 @@ export default function PageTitle({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`flex items-center justify-between gap-4 mb-3 pb-3 border-b border-gray-200 w-full ${className}`}
+      className={`${isMobile ? 'flex flex-col gap-2 mb-3 pb-3 border-b border-gray-200 w-full' : 'flex items-center justify-between gap-4 mb-3 pb-3 border-b border-gray-200 w-full'} ${className}`}
     >
       {/* Left Section: Title and Metadata */}
-      <div className="flex items-center gap-4 flex-1 min-w-0">
+      <div className={isMobile ? "flex flex-col gap-2 w-full" : "flex items-center gap-4 flex-1 min-w-0"}>
         {/* Title with Icon */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
-            className="p-2 bg-brand-100 rounded-lg"
+            className={isMobile ? "p-1.5 bg-brand-100 rounded-lg" : "p-2 bg-brand-100 rounded-lg"}
           >
-            <Briefcase className="w-5 h-5 text-brand-600" />
+            <Briefcase className={isMobile ? "w-4 h-4 text-brand-600" : "w-5 h-5 text-brand-600"} />
           </motion.div>
           
-          <h1 className="text-2xl font-semibold text-gray-900 truncate">
+          <h1 className={isMobile ? "text-lg font-semibold text-gray-900 truncate" : "text-2xl font-semibold text-gray-900 truncate"}>
             <AttributeName name={title} />
           </h1>
         </div>
@@ -64,7 +66,7 @@ export default function PageTitle({
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 flex-wrap"
         >
           {/* Type Badge */}
           <Badge variant="outline" className="text-xs font-medium border-gray-300 text-gray-700">
