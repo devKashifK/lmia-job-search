@@ -68,7 +68,7 @@ export default function Footer() {
               </li> */}
               <li>
                 <Link
-                  href="#pricing"
+                  href="/pricing"
                   className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Pricing
@@ -100,12 +100,12 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <a
+                {/* <a
                   href="#"
                   className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Help Center
-                </a>
+                </a> */}
               </li>
               {/* <li>
                 <a
