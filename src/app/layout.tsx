@@ -9,6 +9,7 @@ import { SheetProvider } from '@/context/sheet-context';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import ClientLayout from './client-layout';
 import Script from 'next/script'; // 👈 add this
+import { ControlContextProvider } from '@/context/control';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -40,7 +41,7 @@ export default function RootLayout({
             });
           `}
         </Script>
-
+        {/* <ControlContextProvider> */}
         <SessionProvider>
           <ReactQueryProvider>
             <SheetProvider>
@@ -57,6 +58,7 @@ export default function RootLayout({
             </SheetProvider>
           </ReactQueryProvider>
         </SessionProvider>
+        {/* </ControlContextProvider> */}
       </body>
     </html>
   );

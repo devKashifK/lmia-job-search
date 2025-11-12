@@ -1,8 +1,8 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-brand-50">
+    <footer className="bg-brand-50 ">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -58,14 +58,14 @@ export default function Footer() {
               Quick Links
             </h4>
             <ul className="space-y-2">
-              <li>
+              {/* <li>
                 <Link
                   href="#features"
                   className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Features
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
                   href="#pricing"
@@ -74,22 +74,22 @@ export default function Footer() {
                   Pricing
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="#demo"
                   className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Demo
                 </Link>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <Link
                   href="#testimonials"
                   className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Testimonials
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -107,7 +107,7 @@ export default function Footer() {
                   Help Center
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a
                   href="#"
                   className="text-gray-600 hover:text-brand-600 transition-colors"
@@ -122,10 +122,10 @@ export default function Footer() {
                 >
                   API Status
                 </a>
-              </li>
+              </li> */}
               <li>
                 <a
-                  href="#"
+                  href="/contact"
                   className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
                   Contact Us
@@ -142,10 +142,10 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="mailto:support@jobmaze.ca"
+                  href="mailto:info@jobmaze.ca"
                   className="text-gray-600 hover:text-brand-600 transition-colors"
                 >
-                  support@jobmaze.ca
+                  info@jobmaze.ca
                 </a>
               </li>
               <li className="text-gray-600">
@@ -164,24 +164,24 @@ export default function Footer() {
               © {new Date().getFullYear()} Job Maze. All rights reserved.
             </div>
             <div className="flex space-x-6">
-              <a
+              {/* <a
                 href="#"
                 className="text-gray-600 hover:text-brand-600 transition-colors text-sm"
               >
                 Privacy Policy
-              </a>
-              <a
+              </a> */}
+              {/* <a
                 href="#"
                 className="text-gray-600 hover:text-brand-600 transition-colors text-sm"
               >
                 Terms of Service
-              </a>
-              <a
-                href="#"
+              </a> */}
+              <Link
+                href="/refund-policy"
                 className="text-gray-600 hover:text-brand-600 transition-colors text-sm"
               >
-                Cookie Policy
-              </a>
+                No-Refund Policy
+              </Link>
             </div>
           </div>
         </div>

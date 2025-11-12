@@ -1,16 +1,16 @@
-"use client";
-import dynamic from "next/dynamic";
-import Footer from "@/pages/homepage/footer";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Mail, Phone, Building2 } from "lucide-react";
-import Navbar from "@/components/ui/nabvar";
-import { HoverCard } from "@/components/ui/hover-card";
-import useMobile from "@/hooks/use-mobile";
-import { MobileHeader } from "@/components/mobile/mobile-header";
-import { BottomNav } from "@/components/mobile/bottom-nav";
+'use client';
+import dynamic from 'next/dynamic';
+import Footer from '@/pages/homepage/footer';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MapPin, Mail, Phone, Building2 } from 'lucide-react';
+import Navbar from '@/components/ui/nabvar';
+import { HoverCard } from '@/components/ui/hover-card';
+import useMobile from '@/hooks/use-mobile';
+import { MobileHeader } from '@/components/mobile/mobile-header';
+import { BottomNav } from '@/components/mobile/bottom-nav';
 
 // Dynamically import the Map component with SSR disabled
-const DynamicMap = dynamic(() => import("./map"), { ssr: false });
+const DynamicMap = dynamic(() => import('./map'), { ssr: false });
 
 export default function ContactPage() {
   const { isMobile } = useMobile();
@@ -82,7 +82,7 @@ export default function ContactPage() {
                   Call us for immediate assistance.
                 </p>
                 <span className="text-brand-600 font-semibold">
-                  +1 234 567 8901
+                  +918810686447
                 </span>
               </div>
             </HoverCard>
@@ -101,13 +101,7 @@ export default function ContactPage() {
                     href="mailto:hello@jobmaze.ca"
                     className="text-brand-600 hover:underline font-medium"
                   >
-                    hello@jobmaze.ca
-                  </a>
-                  <a
-                    href="mailto:business@jobmaze.ca"
-                    className="text-brand-600 hover:underline font-medium"
-                  >
-                    business@jobmaze.ca
+                    info@jobmaze.ca
                   </a>
                   <a
                     href="mailto:support@jobmaze.ca"
@@ -125,9 +119,10 @@ export default function ContactPage() {
                   <Building2 className="w-7 h-7 text-brand-600" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Office</h3>
-                <p className="text-gray-600 mb-2">Visit our London office.</p>
+                <p className="text-gray-600 mb-2">Visit our office.</p>
                 <span className="text-brand-600 font-semibold">
-                  123 Business Street, London, SW1A 1AA
+                  Kankaria Estate, 6, Little Russel St, Maidan, Midleton Row,
+                  Park Street area, Kolkata, West Bengal 700071
                 </span>
               </div>
             </HoverCard>
