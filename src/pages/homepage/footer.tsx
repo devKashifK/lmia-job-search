@@ -177,6 +177,12 @@ export default function Footer() {
                 Terms of Service
               </a> */}
               <Link
+                href="/terms"
+                className="text-gray-600 hover:text-brand-600 transition-colors text-sm"
+              >
+                Terms and Conditions
+              </Link>
+              <Link
                 href="/refund-policy"
                 className="text-gray-600 hover:text-brand-600 transition-colors text-sm"
               >
