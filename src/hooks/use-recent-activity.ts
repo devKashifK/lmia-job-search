@@ -17,10 +17,15 @@ export function useRecentActivity(limit: number = 10) {
   const { session } = useSession();
 
   return useQuery({
-    queryKey: ['recent-activity', session?.user?.id, limit],
+    queryKey: ['recent-activity', session, session?.user?.id, limit],
     queryFn: async () => {
-      console.log('🎯 Fetching recent activity for user:', session?.user?.id, 'limit:', limit);
-      
+      console.log(
+        '🎯 Fetching recent activity for user:',
+        session?.user?.id,
+        'limit:',
+        limit
+      );
+
       if (!session?.user?.id) {
         return [];
       }

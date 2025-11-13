@@ -10,6 +10,7 @@ import { ThemeProvider } from '@/components/ui/theme-provider';
 import ClientLayout from './client-layout';
 import Script from 'next/script'; // 👈 add this
 import { ControlContextProvider } from '@/context/control';
+import { TrialProvider } from '@/context/trail';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -55,24 +56,26 @@ export default function RootLayout({
             });
           `}
         </Script>
-        {/* <ControlContextProvider> */}
-        <SessionProvider>
-          <ReactQueryProvider>
-            <SheetProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <ClientLayout>{children}</ClientLayout>
-                <Toaster />
-                <Sonner position="top-right" richColors closeButton />
-              </ThemeProvider>
-            </SheetProvider>
-          </ReactQueryProvider>
-        </SessionProvider>
-        {/* </ControlContextProvider> */}
+        <TrialProvider>
+          <SessionProvider>
+            <ControlContextProvider>
+              <ReactQueryProvider>
+                <SheetProvider>
+                  <ThemeProvider
+                    attribute="class"
+                    defaultTheme="light"
+                    enableSystem
+                    disableTransitionOnChange
+                  >
+                    <ClientLayout>{children}</ClientLayout>
+                    <Toaster />
+                    <Sonner position="top-right" richColors closeButton />
+                  </ThemeProvider>
+                </SheetProvider>
+              </ReactQueryProvider>
+            </ControlContextProvider>
+          </SessionProvider>
+        </TrialProvider>
       </body>
     </html>
   );

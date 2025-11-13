@@ -17,14 +17,14 @@ export interface VisitorInfo {
 export async function getVisitorInfo(): Promise<VisitorInfo | null> {
   try {
     // Try to get IP and location from ipapi.co
-    const response = await fetch('https://ipapi.co/json/');
-    
+    const response = await fetch('https://ipwho.is/');
+
     if (!response.ok) {
       throw new Error('Failed to fetch IP info');
     }
-    
+
     const data = await response.json();
-    
+
     return {
       ip: data.ip || 'unknown',
       location: {
@@ -38,12 +38,12 @@ export async function getVisitorInfo(): Promise<VisitorInfo | null> {
     };
   } catch (error) {
     console.error('Error fetching visitor info:', error);
-    
+
     // Fallback: Try to get just the IP from a simpler API
     try {
       const fallbackResponse = await fetch('https://api.ipify.org?format=json');
       const fallbackData = await fallbackResponse.json();
-      
+
       return {
         ip: fallbackData.ip || 'unknown',
         location: {},

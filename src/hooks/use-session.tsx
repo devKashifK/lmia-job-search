@@ -1,6 +1,7 @@
-"use client";
-import { createContext, useContext, useEffect, useState } from "react";
-import db from "@/db"; // Supabase client
+'use client';
+import { createContext, useContext, useEffect, useState } from 'react';
+import db from '@/db'; // Supabase client
+import { useTrial } from '@/context/trail';
 
 // export function useSession() {
 //   const [session, setSession] = useState(null);
@@ -18,6 +19,8 @@ import db from "@/db"; // Supabase client
 interface SessionContextType {
   session: any | null;
   loading: boolean;
+  isTrialActive: boolean;
+  setIsTrialActive: (value: boolean) => void;
 }
 
 export const getSession = async (db) => {
@@ -36,6 +39,7 @@ export const SessionProvider = ({
 }) => {
   const [session, setSession] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const { isTrialActive, setIsTrialActive } = useTrial();
 
   useEffect(() => {
     // Fetch the current session
@@ -62,7 +66,9 @@ export const SessionProvider = ({
   }, []);
 
   return (
-    <SessionContext.Provider value={{ session, loading }}>
+    <SessionContext.Provider
+      value={{ session, loading, isTrialActive, setIsTrialActive }}
+    >
       {children}
     </SessionContext.Provider>
   );
@@ -71,9 +77,17 @@ export const SessionProvider = ({
 export const useSession = () => {
   const context = useContext(SessionContext);
   if (!context) {
-    throw new Error("useSession must be used within a SessionProvider");
+    throw new Error('useSession must be used within a SessionProvider');
   }
-  return context;
+  const { isTrialActive } = useTrial();
+  const { session, loading } = context;
+
+  console.log('useSession - isTrialActive:', isTrialActive);
+  // If trial is active and no Supabase session exists,
+  // simulate a pseudo-session for access control.
+  const effectiveSession = session || (isTrialActive ? { trial: true } : null);
+
+  return { session: effectiveSession, loading };
 };
 
 export const useGetuser = () => {

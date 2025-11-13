@@ -16,6 +16,7 @@ export function SearchResultsLayout({
 }) {
   const { isMobile } = useMobile();
 
+  console.log('SearchResultsLayout Render:', { searchKey, field, searchType });
   return (
     <>
       {isMobile ? (

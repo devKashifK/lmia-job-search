@@ -445,8 +445,12 @@ export default function ComparePage() {
       ) : (
         <Navbar />
       )}
-      <div className={isMobile ? "min-h-screen pb-20" : "min-h-screen pt-[6.5rem] pb-12"}>
-        <div className={isMobile ? "mx-auto px-4" : "mx-auto px-20"}>
+      <div
+        className={
+          isMobile ? 'min-h-screen pb-20' : 'min-h-screen pt-[6.5rem] pb-12'
+        }
+      >
+        <div className={isMobile ? 'mx-auto px-4' : 'mx-auto px-20'}>
           {/* Header - Desktop Only */}
           {!isMobile && (
             <motion.div
@@ -568,11 +572,18 @@ export default function ComparePage() {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="mb-8"
               >
-                <h2 className={cn(
-                  "font-semibold text-gray-700 mb-4 flex items-center gap-2",
-                  isMobile ? "text-xs" : "text-sm"
-                )}>
-                  <Sparkles className={cn(isMobile ? "w-3 h-3" : "w-4 h-4", "text-brand-500")} />
+                <h2
+                  className={cn(
+                    'font-semibold text-gray-700 mb-4 flex items-center gap-2',
+                    isMobile ? 'text-xs' : 'text-sm'
+                  )}
+                >
+                  <Sparkles
+                    className={cn(
+                      isMobile ? 'w-3 h-3' : 'w-4 h-4',
+                      'text-brand-500'
+                    )}
+                  />
                   Choose Comparison Type
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -601,7 +612,12 @@ export default function ComparePage() {
                             : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
                         )}
                       >
-                        <div className={cn("flex items-start", isMobile ? "gap-2" : "gap-3")}>
+                        <div
+                          className={cn(
+                            'flex items-start',
+                            isMobile ? 'gap-2' : 'gap-3'
+                          )}
+                        >
                           <div
                             className={cn(
                               'rounded-lg transition-colors',
@@ -620,16 +636,20 @@ export default function ComparePage() {
                             />
                           </div>
                           <div className="flex-1">
-                            <h3 className={cn(
-                              "font-semibold text-gray-900",
-                              isMobile ? "text-sm mb-0.5" : "mb-1"
-                            )}>
+                            <h3
+                              className={cn(
+                                'font-semibold text-gray-900',
+                                isMobile ? 'text-sm mb-0.5' : 'mb-1'
+                              )}
+                            >
                               {type.label}
                             </h3>
-                            <p className={cn(
-                              "text-gray-600",
-                              isMobile ? "text-[10px]" : "text-xs"
-                            )}>
+                            <p
+                              className={cn(
+                                'text-gray-600',
+                                isMobile ? 'text-[10px]' : 'text-xs'
+                              )}
+                            >
                               {type.description}
                             </p>
                           </div>
@@ -803,31 +823,46 @@ export default function ComparePage() {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="mb-6"
                 >
-                  <Card className={cn(
-                    "bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-amber-50/50 border-amber-200",
-                    isMobile ? "p-4" : "p-6"
-                  )}>
-                    <div className={cn(
-                      "flex items-center mb-4",
-                      isMobile ? "gap-2" : "gap-3"
-                    )}>
-                      <div className={cn(
-                        "bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl",
-                        isMobile ? "p-1.5" : "p-2"
-                      )}>
-                        <Bookmark className={cn(isMobile ? "w-4 h-4" : "w-5 h-5", "text-white")} />
+                  <Card
+                    className={cn(
+                      'bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-amber-50/50 border-amber-200',
+                      isMobile ? 'p-4' : 'p-6'
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        'flex items-center mb-4',
+                        isMobile ? 'gap-2' : 'gap-3'
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          'bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl',
+                          isMobile ? 'p-1.5' : 'p-2'
+                        )}
+                      >
+                        <Bookmark
+                          className={cn(
+                            isMobile ? 'w-4 h-4' : 'w-5 h-5',
+                            'text-white'
+                          )}
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className={cn(
-                          "font-bold text-gray-900",
-                          isMobile ? "text-sm" : "text-lg"
-                        )}>
+                        <h3
+                          className={cn(
+                            'font-bold text-gray-900',
+                            isMobile ? 'text-sm' : 'text-lg'
+                          )}
+                        >
                           Compare Your Saved Jobs
                         </h3>
-                        <p className={cn(
-                          "text-gray-600",
-                          isMobile ? "text-xs" : "text-sm"
-                        )}>
+                        <p
+                          className={cn(
+                            'text-gray-600',
+                            isMobile ? 'text-xs' : 'text-sm'
+                          )}
+                        >
                           Select 2 jobs to compare
                         </p>
                       </div>
@@ -898,14 +933,22 @@ export default function ComparePage() {
 
                     {/* Saved Jobs Grid */}
                     {!savedJobsLoading && (
-                      <div className={cn(
-                        "grid mb-4",
-                        isMobile ? "grid-cols-1 gap-2" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
-                      )}>
+                      <div
+                        className={cn(
+                          'grid mb-4',
+                          isMobile
+                            ? 'grid-cols-1 gap-2'
+                            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'
+                        )}
+                      >
                         {visibleSavedJobs.map((job: any) => {
                           const jobValue = getEntityValue(job);
-                          const isSelected1 = selectedSavedJob1 && selectedSavedJob1.RecordID === job.RecordID;
-                          const isSelected2 = selectedSavedJob2 && selectedSavedJob2.RecordID === job.RecordID;
+                          const isSelected1 =
+                            selectedSavedJob1 &&
+                            selectedSavedJob1.RecordID === job.RecordID;
+                          const isSelected2 =
+                            selectedSavedJob2 &&
+                            selectedSavedJob2.RecordID === job.RecordID;
                           const isSelected = isSelected1 || isSelected2;
 
                           return (
@@ -949,7 +992,12 @@ export default function ComparePage() {
                                         {isSelected1 ? '1' : '2'}
                                       </div>
                                     )}
-                                    <div className={cn("flex items-start", isMobile ? "gap-1.5" : "gap-2")}>
+                                    <div
+                                      className={cn(
+                                        'flex items-start',
+                                        isMobile ? 'gap-1.5' : 'gap-2'
+                                      )}
+                                    >
                                       <div
                                         className={cn(
                                           'rounded-lg shrink-0',
@@ -961,7 +1009,9 @@ export default function ComparePage() {
                                       >
                                         <TypeIcon
                                           className={cn(
-                                            isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4',
+                                            isMobile
+                                              ? 'w-3.5 h-3.5'
+                                              : 'w-4 h-4',
                                             isSelected
                                               ? 'text-brand-600'
                                               : 'text-gray-600'
@@ -969,22 +1019,28 @@ export default function ComparePage() {
                                         />
                                       </div>
                                       <div className="flex-1 min-w-0">
-                                        <p className={cn(
-                                          "font-semibold text-gray-900 truncate",
-                                          isMobile ? "text-xs" : "text-sm"
-                                        )}>
+                                        <p
+                                          className={cn(
+                                            'font-semibold text-gray-900 truncate',
+                                            isMobile ? 'text-xs' : 'text-sm'
+                                          )}
+                                        >
                                           {jobValue}
                                         </p>
-                                        <p className={cn(
-                                          "text-gray-500 mt-0.5 truncate",
-                                          isMobile ? "text-[10px]" : "text-xs"
-                                        )}>
+                                        <p
+                                          className={cn(
+                                            'text-gray-500 mt-0.5 truncate',
+                                            isMobile ? 'text-[10px]' : 'text-xs'
+                                          )}
+                                        >
                                           {job.operating_name || job.employer}
                                         </p>
-                                        <p className={cn(
-                                          "text-gray-400 mt-0.5",
-                                          isMobile ? "text-[10px]" : "text-xs"
-                                        )}>
+                                        <p
+                                          className={cn(
+                                            'text-gray-400 mt-0.5',
+                                            isMobile ? 'text-[10px]' : 'text-xs'
+                                          )}
+                                        >
                                           {job.city},{' '}
                                           {job.state || job.territory}
                                         </p>
@@ -1139,26 +1195,36 @@ export default function ComparePage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <Card className={cn(
-                  "bg-white shadow-xl border-2 border-gray-100",
-                  isMobile ? "p-4" : "p-8"
-                )}>
+                <Card
+                  className={cn(
+                    'bg-white shadow-xl border-2 border-gray-100',
+                    isMobile ? 'p-4' : 'p-8'
+                  )}
+                >
                   {/* 3-Way Toggle */}
-                  <div className={cn(
-                    "flex items-center justify-between border-b border-gray-200",
-                    isMobile ? "mb-4 pb-4 flex-col gap-3 items-start" : "mb-6 pb-6"
-                  )}>
+                  <div
+                    className={cn(
+                      'flex items-center justify-between border-b border-gray-200',
+                      isMobile
+                        ? 'mb-4 pb-4 flex-col gap-3 items-start'
+                        : 'mb-6 pb-6'
+                    )}
+                  >
                     <div>
-                      <h3 className={cn(
-                        "font-bold text-gray-900",
-                        isMobile ? "text-xs mb-0.5" : "text-sm mb-1"
-                      )}>
+                      <h3
+                        className={cn(
+                          'font-bold text-gray-900',
+                          isMobile ? 'text-xs mb-0.5' : 'text-sm mb-1'
+                        )}
+                      >
                         Comparison Mode
                       </h3>
-                      <p className={cn(
-                        "text-gray-600",
-                        isMobile ? "text-[10px]" : "text-xs"
-                      )}>
+                      <p
+                        className={cn(
+                          'text-gray-600',
+                          isMobile ? 'text-[10px]' : 'text-xs'
+                        )}
+                      >
                         Compare 2 or 3 entities side-by-side
                       </p>
                     </div>
@@ -1172,14 +1238,16 @@ export default function ComparePage() {
                             if (!e.target.checked) setEntity3('');
                           }}
                           className={cn(
-                            "text-brand-600 bg-gray-100 border-gray-300 rounded focus:ring-brand-500",
-                            isMobile ? "w-3.5 h-3.5" : "w-4 h-4"
+                            'text-brand-600 bg-gray-100 border-gray-300 rounded focus:ring-brand-500',
+                            isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'
                           )}
                         />
-                        <span className={cn(
-                          "font-medium text-gray-700",
-                          isMobile ? "text-xs" : "text-sm"
-                        )}>
+                        <span
+                          className={cn(
+                            'font-medium text-gray-700',
+                            isMobile ? 'text-xs' : 'text-sm'
+                          )}
+                        >
                           3-Way Comparison
                         </span>
                         {enable3Way && (
@@ -1191,23 +1259,32 @@ export default function ComparePage() {
                     </div>
                   </div>
 
-                  <div className={cn(
-                    "flex items-center justify-center",
-                    isMobile ? "flex-col gap-3" : "gap-8"
-                  )}>
+                  <div
+                    className={cn(
+                      'flex items-center justify-center',
+                      isMobile ? 'flex-col gap-3' : 'gap-8'
+                    )}
+                  >
                     {/* Entity 1 */}
                     <motion.div
                       initial={{ x: -50, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ duration: 0.5, delay: 0.4 }}
-                      className={isMobile ? "w-full" : "flex-1 max-w-md"}
+                      className={isMobile ? 'w-full' : 'flex-1 max-w-md'}
                     >
-                      <label className={cn(
-                        "block font-semibold text-gray-700 mb-3 flex items-center gap-2",
-                        isMobile ? "text-xs" : "text-sm"
-                      )}>
+                      <label
+                        className={cn(
+                          'block font-semibold text-gray-700 mb-3 flex items-center gap-2',
+                          isMobile ? 'text-xs' : 'text-sm'
+                        )}
+                      >
                         {selectedType && (
-                          <selectedType.icon className={cn(isMobile ? "w-3.5 h-3.5" : "w-4 h-4", "text-brand-600")} />
+                          <selectedType.icon
+                            className={cn(
+                              isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4',
+                              'text-brand-600'
+                            )}
+                          />
                         )}
                         {selectedType?.label} #1
                       </label>
@@ -1360,7 +1437,7 @@ export default function ComparePage() {
           )}
         </div>
       </div>
-      
+
       {/* Mobile: Bottom Navigation */}
       {isMobile && <BottomNav />}
     </BackgroundWrapper>

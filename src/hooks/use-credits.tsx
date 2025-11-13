@@ -1,6 +1,6 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSession } from "./use-session";
-import db from "@/db";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSession } from './use-session';
+import db from '@/db';
 
 interface SearchRecord {
   id: string;
@@ -12,20 +12,20 @@ interface SearchRecord {
 export const useCreditData = () => {
   const { session } = useSession();
   const { data: creditData, error: creditError } = useQuery({
-    queryKey: ["credits", session?.user?.id],
+    queryKey: ['credits', session.trial, session?.user?.id],
     queryFn: async () => {
+      if (session?.trial) return null;
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const { data, error } = await db
-        .from("credits")
-        .select("*")
-        .eq("id", session?.user?.id)
+        .from('credits')
+        .select('*')
+        .eq('id', session?.user?.id)
         .single();
       if (error) throw error;
       return data;
     },
     staleTime: 1000,
-    enabled: !!session?.user?.id,
   });
 
   const creditRemaining = creditData?.total_credit - creditData?.used_credit;
@@ -38,15 +38,19 @@ export const useUpdateCredits = () => {
   const queryClient = useQueryClient();
 
   const updateCreditsAndSearch = async (keyword: string) => {
+    if (session?.trial) {
+      // In trial mode, do not update credits
+      return null;
+    }
     if (!session?.user?.id) {
-      throw new Error("User not authenticated");
+      throw new Error('User not authenticated');
     }
 
     try {
       const { data: creditData, error: creditErrors } = await db
-        .from("credits")
-        .select("*")
-        .eq("id", session.user.id)
+        .from('credits')
+        .select('*')
+        .eq('id', session.user.id)
         .single();
 
       if (creditErrors) throw creditErrors;
@@ -54,9 +58,9 @@ export const useUpdateCredits = () => {
       const usedCredits = Number(creditData.used_credit);
 
       const { data: updatedCredits, error: creditError } = await db
-        .from("credits")
+        .from('credits')
         .update({ used_credit: usedCredits + 1 })
-        .eq("id", session.user.id)
+        .eq('id', session.user.id)
         .select()
         .single();
 
@@ -64,33 +68,33 @@ export const useUpdateCredits = () => {
 
       // Insert search record
       const { data: insertedSearch, error: searchError } = await db
-        .from("searches")
+        .from('searches')
         .insert(
           {
             id: session.user.id,
             keyword: keyword,
             save: false,
           },
-          { returning: "representation" }
+          { returning: 'representation' }
         )
-        .select("*");
+        .select('*');
 
       if (searchError) throw searchError;
 
       // Save current search ID to session storage
       const currentSearchId = insertedSearch[0]?.search_id;
       if (currentSearchId) {
-        sessionStorage.setItem("currentSearchId", currentSearchId);
+        sessionStorage.setItem('currentSearchId', currentSearchId);
       }
 
       // Invalidate credits query to trigger a refetch
       await queryClient.invalidateQueries({
-        queryKey: ["credits", session.user.id],
+        queryKey: ['credits', session.trial, session.user.id],
       });
 
       return updatedCredits;
     } catch (error) {
-      console.error("Error updating credits:", error);
+      console.error('Error updating credits:', error);
       throw error;
     }
   };

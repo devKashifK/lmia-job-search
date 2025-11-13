@@ -325,6 +325,11 @@ export function SearchBox() {
   };
 
   const checkCredits = async () => {
+    console.log('session:', session);
+    if (session?.trial) {
+      // Trial session, allow access
+      return true;
+    }
     if (!session?.user?.id) {
       toast({
         title: 'Error',

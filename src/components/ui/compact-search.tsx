@@ -140,6 +140,10 @@ export default function CompactSearch({
   };
 
   const checkCredits = async () => {
+    if (session?.trial) {
+      // Trial session, allow access
+      return true;
+    }
     if (!session?.user?.id) {
       toast({
         title: 'Error',

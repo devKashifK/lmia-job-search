@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -9,10 +9,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { LogIn, Lock, ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { LogIn, Lock, ArrowRight } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface LoginAlertDialogProps {
   isOpen: boolean;
@@ -27,6 +27,7 @@ export function LoginAlertDialog({
 }: LoginAlertDialogProps) {
   const router = useRouter();
   const [shouldAnimate, setShouldAnimate] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (isOpen) {
@@ -34,8 +35,12 @@ export function LoginAlertDialog({
     }
   }, [isOpen]);
 
+  if (pathname === '/sign-in' || pathname === '/sign-up') {
+    return null;
+  }
+
   const handleLogin = () => {
-    router.push("/sign-in");
+    router.push('/sign-in');
     onClose();
   };
 
@@ -44,7 +49,7 @@ export function LoginAlertDialog({
       <AlertDialogContent className="max-w-md border-2 border-brand-200 overflow-hidden">
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-purple-50 opacity-50" />
-        
+
         {/* Floating particles effect */}
         <AnimatePresence>
           {shouldAnimate && (
@@ -62,7 +67,7 @@ export function LoginAlertDialog({
                   transition={{
                     duration: 3 + i,
                     repeat: Infinity,
-                    ease: "easeInOut",
+                    ease: 'easeInOut',
                   }}
                 />
               ))}
@@ -77,7 +82,7 @@ export function LoginAlertDialog({
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{
-                type: "spring",
+                type: 'spring',
                 stiffness: 200,
                 damping: 15,
               }}
@@ -94,15 +99,15 @@ export function LoginAlertDialog({
                   transition={{
                     duration: 2,
                     repeat: Infinity,
-                    ease: "easeInOut",
+                    ease: 'easeInOut',
                   }}
                 />
-                
+
                 {/* Main icon container */}
                 <div className="relative p-4 bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 rounded-full shadow-lg">
                   <Lock className="w-8 h-8 text-white" />
                 </div>
-                
+
                 {/* Corner decoration */}
                 <motion.div
                   className="absolute -top-1 -right-1 p-1.5 bg-gradient-to-br from-orange-500 to-red-500 rounded-full shadow-md"
@@ -112,7 +117,7 @@ export function LoginAlertDialog({
                   transition={{
                     duration: 3,
                     repeat: Infinity,
-                    ease: "linear",
+                    ease: 'linear',
                   }}
                 >
                   <LogIn className="w-3 h-3 text-white" />
@@ -142,7 +147,7 @@ export function LoginAlertDialog({
           </AlertDialogHeader>
 
           {/* Action Buttons */}
-          <AlertDialogFooter className="flex flex-col sm:flex-row gap-3 mt-6">
+          <AlertDialogFooter className="flex flex-col sm:flex-row gap-3 mt-6 sm:justify-center">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -182,10 +187,10 @@ export function LoginAlertDialog({
             transition={{ delay: 0.6 }}
             className="text-center text-xs text-gray-500 mt-4"
           >
-            Don&apos;t have an account?{" "}
+            Don&apos;t have an account?{' '}
             <button
               onClick={() => {
-                router.push("/sign-up");
+                router.push('/sign-up');
                 onClose();
               }}
               className="text-brand-600 hover:text-brand-700 font-semibold hover:underline transition-colors"
@@ -202,7 +207,7 @@ export function LoginAlertDialog({
 // Hook to easily use the login dialog
 export function useLoginAlert() {
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
   const showLoginAlert = (customMessage: string) => {
     setMessage(customMessage);
