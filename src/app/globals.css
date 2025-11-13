@@ -1,3 +1,4 @@
+@import 'nprogress/nprogress.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -83,7 +84,6 @@
 }
 
 /* Import nProgress styles */
-@import "nprogress/nprogress.css";
 
 /* Optional: Hide the default spinner */
 
