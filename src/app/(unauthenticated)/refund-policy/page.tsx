@@ -96,7 +96,7 @@ export default function NoRefundPolicy() {
           us at:
         </p>
         <p className="mb-4">
-          <span className="font-medium">Email:</span> info@example.com
+          <span className="font-medium">Email:</span> info@jobmaze.ca
         </p>
 
         <p className="text-xs text-muted-foreground mt-6">
