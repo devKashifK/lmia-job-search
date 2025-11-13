@@ -1501,8 +1501,14 @@ function CompanyAnalysisContent({
       ) : (
         <Navbar />
       )}
-      <div className={isMobile ? "min-h-screen pb-20" : "min-h-screen pt-[8rem] pb-12"}>
-        <div className={isMobile ? "mx-auto px-4" : "max-w-[1600px] mx-auto px-8"}>
+      <div
+        className={
+          isMobile ? 'min-h-screen pb-20' : 'min-h-screen pt-[8rem] pb-12'
+        }
+      >
+        <div
+          className={isMobile ? 'mx-auto px-4' : 'max-w-[1600px] mx-auto px-8'}
+        >
           {/* Header */}
           {!isMobile && (
             <motion.div
@@ -1532,124 +1538,128 @@ function CompanyAnalysisContent({
                   )}
                 </Button>
 
-              {/* Company Name with Icon */}
-              <div className="flex items-center gap-3">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
-                  className="p-2 bg-brand-100 rounded-lg"
-                >
-                  <Building2 className="w-5 h-5 text-brand-600" />
-                </motion.div>
+                {/* Company Name with Icon */}
+                <div className="flex items-center gap-3">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                      duration: 0.3,
+                      type: 'spring',
+                      stiffness: 200,
+                    }}
+                    className="p-2 bg-brand-100 rounded-lg"
+                  >
+                    <Building2 className="w-5 h-5 text-brand-600" />
+                  </motion.div>
 
-                <div>
-                  <h1 className="text-lg font-semibold text-gray-900">
-                    {companyName}
-                  </h1>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Company Analysis
-                  </p>
+                  <div>
+                    <h1 className="text-lg font-semibold text-gray-900">
+                      {companyName}
+                    </h1>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Company Analysis
+                    </p>
+                  </div>
                 </div>
+
+                {/* Data Source Badge */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <Badge
+                    variant="outline"
+                    className="text-xs font-medium border-gray-300 text-gray-700"
+                  >
+                    <TrendingUp className="w-3 h-3 mr-1 inline" />
+                    {filters.searchType === 'lmia' ? 'LMIA' : 'Trending Jobs'}
+                  </Badge>
+                </motion.div>
               </div>
 
-              {/* Data Source Badge */}
+              {/* Right Section: Action Buttons */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.15 }}
+                className="flex items-center gap-2"
               >
-                <Badge
+                {/* Refresh Button */}
+                <Button
                   variant="outline"
-                  className="text-xs font-medium border-gray-300 text-gray-700"
+                  size="sm"
+                  onClick={() => {
+                    window.location.reload();
+                    toast.success('Refreshing data...');
+                  }}
+                  className="border-gray-300 hover:border-blue-300 hover:bg-blue-50 transition-all"
+                  title="Refresh data"
                 >
-                  <TrendingUp className="w-3 h-3 mr-1 inline" />
-                  {filters.searchType === 'lmia' ? 'LMIA' : 'Trending Jobs'}
-                </Badge>
-              </motion.div>
-            </div>
+                  <RefreshCw className="w-4 h-4" />
+                </Button>
 
-            {/* Right Section: Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: 0.15 }}
-              className="flex items-center gap-2"
-            >
-              {/* Refresh Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  window.location.reload();
-                  toast.success('Refreshing data...');
-                }}
-                className="border-gray-300 hover:border-blue-300 hover:bg-blue-50 transition-all"
-                title="Refresh data"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </Button>
-
-              {/* Bookmark Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const saved = localStorage.getItem('savedCompanies');
-                  const savedList = saved ? JSON.parse(saved) : [];
-                  const isBookmarked = savedList.some(
-                    (c: any) =>
-                      c.name === companyName && c.type === filters.searchType
-                  );
-
-                  if (isBookmarked) {
-                    const updated = savedList.filter(
+                {/* Bookmark Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const saved = localStorage.getItem('savedCompanies');
+                    const savedList = saved ? JSON.parse(saved) : [];
+                    const isBookmarked = savedList.some(
                       (c: any) =>
-                        !(
-                          c.name === companyName &&
-                          c.type === filters.searchType
-                        )
+                        c.name === companyName && c.type === filters.searchType
                     );
-                    localStorage.setItem(
-                      'savedCompanies',
-                      JSON.stringify(updated)
-                    );
-                    toast.success('Company removed from bookmarks');
-                  } else {
-                    savedList.push({
-                      name: companyName,
-                      type: filters.searchType,
-                      savedAt: new Date().toISOString(),
-                    });
-                    localStorage.setItem(
-                      'savedCompanies',
-                      JSON.stringify(savedList)
-                    );
-                    toast.success('Company bookmarked!');
-                  }
-                  // Force re-render
-                  setIsFilterOpen((prev) => prev);
-                }}
-                className="border-gray-300 hover:border-yellow-300 hover:bg-yellow-50 transition-all"
-                title="Bookmark this company"
-              >
-                {(() => {
-                  const saved = localStorage.getItem('savedCompanies');
-                  const savedList = saved ? JSON.parse(saved) : [];
-                  const isBookmarked = savedList.some(
-                    (c: any) =>
-                      c.name === companyName && c.type === filters.searchType
-                  );
-                  return isBookmarked ? (
-                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  ) : (
-                    <StarOff className="w-4 h-4" />
-                  );
-                })()}
-              </Button>
 
-              {/* Export Dropdown */}
-              <DropdownMenu>
+                    if (isBookmarked) {
+                      const updated = savedList.filter(
+                        (c: any) =>
+                          !(
+                            c.name === companyName &&
+                            c.type === filters.searchType
+                          )
+                      );
+                      localStorage.setItem(
+                        'savedCompanies',
+                        JSON.stringify(updated)
+                      );
+                      toast.success('Company removed from bookmarks');
+                    } else {
+                      savedList.push({
+                        name: companyName,
+                        type: filters.searchType,
+                        savedAt: new Date().toISOString(),
+                      });
+                      localStorage.setItem(
+                        'savedCompanies',
+                        JSON.stringify(savedList)
+                      );
+                      toast.success('Company bookmarked!');
+                    }
+                    // Force re-render
+                    setIsFilterOpen((prev) => prev);
+                  }}
+                  className="border-gray-300 hover:border-yellow-300 hover:bg-yellow-50 transition-all"
+                  title="Bookmark this company"
+                >
+                  {(() => {
+                    const saved = localStorage.getItem('savedCompanies');
+                    const savedList = saved ? JSON.parse(saved) : [];
+                    const isBookmarked = savedList.some(
+                      (c: any) =>
+                        c.name === companyName && c.type === filters.searchType
+                    );
+                    return isBookmarked ? (
+                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    ) : (
+                      <StarOff className="w-4 h-4" />
+                    );
+                  })()}
+                </Button>
+
+                {/* Export Dropdown */}
+                {/* <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
@@ -1783,148 +1793,150 @@ function CompanyAnalysisContent({
                     <span className="ml-auto text-xs text-gray-500">API</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenu> */}
 
-              {/* Share Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={async () => {
-                  try {
-                    const url = window.location.href;
-                    if (navigator.clipboard && window.isSecureContext) {
-                      await navigator.clipboard.writeText(url);
-                      toast.success('Link copied to clipboard!');
-                    } else {
-                      // Fallback for non-secure contexts
-                      const textArea = document.createElement('textarea');
-                      textArea.value = url;
-                      textArea.style.position = 'fixed';
-                      textArea.style.left = '-999999px';
-                      document.body.appendChild(textArea);
-                      textArea.focus();
-                      textArea.select();
-                      try {
-                        document.execCommand('copy');
+                {/* Share Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      const url = window.location.href;
+                      if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(url);
                         toast.success('Link copied to clipboard!');
-                      } catch (err) {
-                        toast.error('Failed to copy link');
+                      } else {
+                        // Fallback for non-secure contexts
+                        const textArea = document.createElement('textarea');
+                        textArea.value = url;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-999999px';
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        try {
+                          document.execCommand('copy');
+                          toast.success('Link copied to clipboard!');
+                        } catch (err) {
+                          toast.error('Failed to copy link');
+                        }
+                        document.body.removeChild(textArea);
                       }
-                      document.body.removeChild(textArea);
+                    } catch (err) {
+                      console.error('Share failed:', err);
+                      toast.error('Failed to copy link');
                     }
-                  } catch (err) {
-                    console.error('Share failed:', err);
-                    toast.error('Failed to copy link');
-                  }
-                }}
-                className="border-gray-300 hover:border-blue-300 hover:bg-blue-50 transition-all"
-                title="Share analysis"
-              >
-                <Share2 className="w-4 h-4" />
-              </Button>
+                  }}
+                  className="border-gray-300 hover:border-blue-300 hover:bg-blue-50 transition-all"
+                  title="Share analysis"
+                >
+                  <Share2 className="w-4 h-4" />
+                </Button>
 
-              {/* Add to Compare Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  try {
-                    const compared = localStorage.getItem('comparedCompanies');
-                    const comparedList = compared ? JSON.parse(compared) : [];
+                {/* Add to Compare Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    try {
+                      const compared =
+                        localStorage.getItem('comparedCompanies');
+                      const comparedList = compared ? JSON.parse(compared) : [];
 
-                    const exists = comparedList.some(
-                      (c: any) =>
-                        c.name === companyName && c.type === filters.searchType
-                    );
+                      const exists = comparedList.some(
+                        (c: any) =>
+                          c.name === companyName &&
+                          c.type === filters.searchType
+                      );
 
-                    if (exists) {
-                      toast.info('Company already in comparison list', {
-                        action: {
-                          label: 'View Comparison',
-                          onClick: () => router.push('/compare'),
-                        },
-                      });
-                      return;
-                    }
-
-                    if (comparedList.length >= 5) {
-                      toast.error(
-                        'Maximum 5 companies can be compared. Remove one to add more.',
-                        {
+                      if (exists) {
+                        toast.info('Company already in comparison list', {
                           action: {
                             label: 'View Comparison',
                             onClick: () => router.push('/compare'),
                           },
+                        });
+                        return;
+                      }
+
+                      if (comparedList.length >= 5) {
+                        toast.error(
+                          'Maximum 5 companies can be compared. Remove one to add more.',
+                          {
+                            action: {
+                              label: 'View Comparison',
+                              onClick: () => router.push('/compare'),
+                            },
+                          }
+                        );
+                        return;
+                      }
+
+                      comparedList.push({
+                        name: companyName,
+                        type: filters.searchType,
+                        addedAt: new Date().toISOString(),
+                      });
+                      localStorage.setItem(
+                        'comparedCompanies',
+                        JSON.stringify(comparedList)
+                      );
+
+                      // Show success toast with navigation option
+                      toast.success(
+                        `${companyName} added to comparison (${comparedList.length}/5)`,
+                        {
+                          description:
+                            comparedList.length >= 2
+                              ? 'Ready to compare multiple companies'
+                              : 'Add more companies to start comparing',
+                          action: {
+                            label: 'View Comparison',
+                            onClick: () => router.push('/compare'),
+                          },
+                          duration: 5000,
                         }
                       );
-                      return;
+                    } catch (err) {
+                      console.error('Compare failed:', err);
+                      toast.error('Failed to add to comparison');
                     }
+                  }}
+                  className="border-purple-300 bg-purple-50 hover:bg-purple-100 hover:border-purple-400 transition-all"
+                  title="Add to comparison"
+                >
+                  <GitCompare className="w-4 h-4 mr-1" />
+                  Compare
+                </Button>
 
-                    comparedList.push({
-                      name: companyName,
-                      type: filters.searchType,
-                      addedAt: new Date().toISOString(),
-                    });
-                    localStorage.setItem(
-                      'comparedCompanies',
-                      JSON.stringify(comparedList)
-                    );
+                {/* View Jobs Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const searchParams = new URLSearchParams();
+                    searchParams.set('employer', companyName);
+                    searchParams.set('t', filters.searchType);
+                    router.push(`/search?${searchParams.toString()}`);
+                  }}
+                  className="border-brand-300 bg-brand-50 hover:bg-brand-100 hover:border-brand-400 transition-all"
+                  title="View all jobs"
+                >
+                  <ExternalLink className="w-4 h-4 mr-1" />
+                  View Jobs
+                </Button>
 
-                    // Show success toast with navigation option
-                    toast.success(
-                      `${companyName} added to comparison (${comparedList.length}/5)`,
-                      {
-                        description:
-                          comparedList.length >= 2
-                            ? 'Ready to compare multiple companies'
-                            : 'Add more companies to start comparing',
-                        action: {
-                          label: 'View Comparison',
-                          onClick: () => router.push('/compare'),
-                        },
-                        duration: 5000,
-                      }
-                    );
-                  } catch (err) {
-                    console.error('Compare failed:', err);
-                    toast.error('Failed to add to comparison');
-                  }
-                }}
-                className="border-purple-300 bg-purple-50 hover:bg-purple-100 hover:border-purple-400 transition-all"
-                title="Add to comparison"
-              >
-                <GitCompare className="w-4 h-4 mr-1" />
-                Compare
-              </Button>
-
-              {/* View Jobs Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  const searchParams = new URLSearchParams();
-                  searchParams.set('employer', companyName);
-                  searchParams.set('t', filters.searchType);
-                  router.push(`/search?${searchParams.toString()}`);
-                }}
-                className="border-brand-300 bg-brand-50 hover:bg-brand-100 hover:border-brand-400 transition-all"
-                title="View all jobs"
-              >
-                <ExternalLink className="w-4 h-4 mr-1" />
-                View Jobs
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goBack}
-                className="border-gray-300 hover:border-brand-300 hover:bg-brand-50 transition-all"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goBack}
+                  className="border-gray-300 hover:border-brand-300 hover:bg-brand-50 transition-all"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+              </motion.div>
             </motion.div>
-          </motion.div>
           )}
 
           {/* Mobile: Company Title Section */}
