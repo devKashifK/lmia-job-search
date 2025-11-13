@@ -94,6 +94,7 @@ const employerPlans: Plan[] = [
   {
     name: 'Starter Plan',
     cadPrice: '$49',
+    inrPrice: '₹3,105',
     period: '/month',
     description: 'Essentials for small teams',
     features: ['Employer analytics dashboard', '100 employer contacts / month'],
@@ -104,6 +105,7 @@ const employerPlans: Plan[] = [
   {
     name: 'Pro Plan',
     cadPrice: '$99',
+    inrPrice: '₹6,271',
     period: '/month',
     description: 'Advanced tools for growing teams',
     features: [
