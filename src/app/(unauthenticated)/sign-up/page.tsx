@@ -29,12 +29,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
-import useMobile from '@/hooks/use-mobile';
-import { MobileHeader } from '@/components/mobile/mobile-header';
-import { cn } from '@/lib/utils';
 
 export default function SignUpPage() {
-  const { isMobile } = useMobile();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -97,7 +93,7 @@ export default function SignUpPage() {
             name: name,
             user_type: userType,
           },
-          emailRedirectTo: `${window.location.origin}/search`,
+          emailRedirectTo: `${window.location.origin}`,
         },
       });
 
@@ -109,7 +105,7 @@ export default function SignUpPage() {
         variant: 'default',
       });
 
-      router.push('/search');
+      router.push('/');
       return;
       //   const userId = data.user?.id;
 

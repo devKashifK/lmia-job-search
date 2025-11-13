@@ -25,7 +25,7 @@ export default function LoginForm() {
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams?.get('redirect') || '/search';
+  const redirect = searchParams?.get('redirect') || '/';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
