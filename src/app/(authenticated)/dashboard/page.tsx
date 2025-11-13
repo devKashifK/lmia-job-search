@@ -40,20 +40,12 @@ export default function DashboardPage() {
   } = useRecentActivity(5);
 
   // Debug logging
-  console.log('📊 Dashboard - Saved Jobs:', savedJobs?.length || 0);
-  console.log(
-    '🎯 Dashboard - Recent Activity:',
-    recentActivity?.length || 0,
-    recentActivity
-  );
 
   const savedJobsCount = savedJobs?.length || 0;
 
   // Manual refresh function for testing
   const handleManualRefresh = async () => {
-    console.log('🔄 Manual refresh triggered...');
     await Promise.all([refetchSavedJobs(), refetchActivity()]);
-    console.log('✅ Manual refresh complete');
   };
 
   // Get quick stats - Only real data

@@ -329,7 +329,6 @@ export default function DynamicDataView({
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
   const { isMobile, isMounted } = useMobile();
 
-  console.log('DynamicDataView Render:', { title, field });
   // Get search type from URL parameter
   const searchParams = useSearchParams();
   const searchType = (

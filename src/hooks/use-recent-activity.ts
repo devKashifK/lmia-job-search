@@ -19,13 +19,6 @@ export function useRecentActivity(limit: number = 10) {
   return useQuery({
     queryKey: ['recent-activity', session, session?.user?.id, limit],
     queryFn: async () => {
-      console.log(
-        '🎯 Fetching recent activity for user:',
-        session?.user?.id,
-        'limit:',
-        limit
-      );
-
       if (!session?.user?.id) {
         return [];
       }
@@ -127,7 +120,6 @@ export function useRecentActivity(limit: number = 10) {
 
         // Return only the requested number of items
         const result = activities.slice(0, limit);
-        console.log('✅ Recent activity fetched:', result.length, 'items');
         return result;
       } catch (error) {
         console.error('Error fetching recent activity:', error);

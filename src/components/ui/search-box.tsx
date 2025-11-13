@@ -325,7 +325,6 @@ export function SearchBox() {
   };
 
   const checkCredits = async () => {
-    console.log('session:', session);
     if (session?.trial) {
       // Trial session, allow access
       return true;
@@ -855,79 +854,72 @@ export function SearchBox() {
                             </div>
                           </div>
 
-                          {suggestions.map(
-                            (s, index) => (
-                              console.log(s, 'checkS'),
-                              (
+                          {suggestions.map((s, index) => (
+                            <motion.div
+                              key={`${s.suggestion}-${index}`}
+                              className="group px-4 py-4 hover:bg-gradient-to-r hover:from-brand-50 hover:to-brand-100 cursor-pointer transition-all duration-200 rounded-2xl mx-1 mb-1"
+                              onClick={() => handleSuggestionClick(s)}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                              whileHover={{ scale: 1.02, x: 5 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <div className="flex items-center gap-4">
                                 <motion.div
-                                  key={`${s.suggestion}-${index}`}
-                                  className="group px-4 py-4 hover:bg-gradient-to-r hover:from-brand-50 hover:to-brand-100 cursor-pointer transition-all duration-200 rounded-2xl mx-1 mb-1"
-                                  onClick={() => handleSuggestionClick(s)}
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: index * 0.05 }}
-                                  whileHover={{ scale: 1.02, x: 5 }}
-                                  whileTap={{ scale: 0.98 }}
+                                  className="p-3 rounded-2xl bg-gradient-to-r from-brand-100 to-brand-200 group-hover:from-brand-200 group-hover:to-brand-300 transition-all duration-200 relative overflow-hidden shadow-lg shadow-brand-500/20"
+                                  whileHover={{ rotate: 15, scale: 1.1 }}
                                 >
-                                  <div className="flex items-center gap-4">
-                                    <motion.div
-                                      className="p-3 rounded-2xl bg-gradient-to-r from-brand-100 to-brand-200 group-hover:from-brand-200 group-hover:to-brand-300 transition-all duration-200 relative overflow-hidden shadow-lg shadow-brand-500/20"
-                                      whileHover={{ rotate: 15, scale: 1.1 }}
-                                    >
-                                      <motion.div
-                                        className="absolute inset-0 opacity-30"
-                                        animate={{ opacity: [0.3, 0.5, 0.3] }}
-                                        transition={{
-                                          duration: 2,
-                                          repeat: Infinity,
-                                          ease: 'linear',
-                                        }}
-                                      />
-                                      <Search className="w-5 h-5 text-brand-600 relative z-10" />
-                                    </motion.div>
-                                    <div className="flex-1">
-                                      <span className="text-gray-800 group-hover:text-brand-700 transition-colors font-semibold text-base block">
-                                        {s.suggestion}
-                                      </span>
-                                      <span className="text-sm text-gray-500 mt-1 block flex items-center gap-2">
-                                        <span className="flex items-center gap-1">
-                                          <>
-                                            <List className="w-3 h-3" />
-                                            <AttributeName
-                                              name={s.field || ''}
-                                            />
-                                          </>
-                                        </span>
-                                        {s.hits && (
-                                          <span className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-0.5 rounded-full">
-                                            <span className="text-gray-600">
-                                              {s.hits.toLocaleString()} results
-                                            </span>
-                                          </span>
-                                        )}
-                                      </span>
-                                    </div>
-                                    <motion.div
-                                      className="opacity-0 group-hover:opacity-100 transition-all duration-200"
-                                      initial={{ x: 10, scale: 0.8 }}
-                                      whileHover={{ x: 0, scale: 1 }}
-                                    >
-                                      <motion.div
-                                        animate={{ x: [0, 3, 0] }}
-                                        transition={{
-                                          duration: 1,
-                                          repeat: Infinity,
-                                          repeatDelay: 1,
-                                        }}
-                                      >
-                                        <ArrowRight className="w-5 h-5 text-brand-500" />
-                                      </motion.div>
-                                    </motion.div>
-                                  </div>
+                                  <motion.div
+                                    className="absolute inset-0 opacity-30"
+                                    animate={{ opacity: [0.3, 0.5, 0.3] }}
+                                    transition={{
+                                      duration: 2,
+                                      repeat: Infinity,
+                                      ease: 'linear',
+                                    }}
+                                  />
+                                  <Search className="w-5 h-5 text-brand-600 relative z-10" />
                                 </motion.div>
-                              )
-                            )
-                          )}
+                                <div className="flex-1">
+                                  <span className="text-gray-800 group-hover:text-brand-700 transition-colors font-semibold text-base block">
+                                    {s.suggestion}
+                                  </span>
+                                  <span className="text-sm text-gray-500 mt-1 block flex items-center gap-2">
+                                    <span className="flex items-center gap-1">
+                                      <>
+                                        <List className="w-3 h-3" />
+                                        <AttributeName name={s.field || ''} />
+                                      </>
+                                    </span>
+                                    {s.hits && (
+                                      <span className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-0.5 rounded-full">
+                                        <span className="text-gray-600">
+                                          {s.hits.toLocaleString()} results
+                                        </span>
+                                      </span>
+                                    )}
+                                  </span>
+                                </div>
+                                <motion.div
+                                  className="opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                  initial={{ x: 10, scale: 0.8 }}
+                                  whileHover={{ x: 0, scale: 1 }}
+                                >
+                                  <motion.div
+                                    animate={{ x: [0, 3, 0] }}
+                                    transition={{
+                                      duration: 1,
+                                      repeat: Infinity,
+                                      repeatDelay: 1,
+                                    }}
+                                  >
+                                    <ArrowRight className="w-5 h-5 text-brand-500" />
+                                  </motion.div>
+                                </motion.div>
+                              </div>
+                            </motion.div>
+                          ))}
                         </div>
                       ) : (
                         <motion.div

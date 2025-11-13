@@ -82,7 +82,6 @@ export const useSession = () => {
   const { isTrialActive } = useTrial();
   const { session, loading } = context;
 
-  console.log('useSession - isTrialActive:', isTrialActive);
   // If trial is active and no Supabase session exists,
   // simulate a pseudo-session for access control.
   const effectiveSession = session || (isTrialActive ? { trial: true } : null);

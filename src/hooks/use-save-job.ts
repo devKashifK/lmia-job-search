@@ -59,23 +59,19 @@ export function useSaveJob(recordId: string | undefined) {
       // Update local state based on result
       if (result && typeof result.saved === 'boolean') {
         setIsSaved(result.saved);
-        
-        console.log('🔄 Invalidating queries after save/unsave...');
-        
+
         // Force refetch ALL queries to update immediately
         await Promise.all([
-          queryClient.refetchQueries({ 
+          queryClient.refetchQueries({
             queryKey: ['saved-jobs'],
-            type: 'all'
+            type: 'all',
           }),
-          queryClient.refetchQueries({ 
+          queryClient.refetchQueries({
             queryKey: ['recent-activity'],
-            type: 'all'
-          })
+            type: 'all',
+          }),
         ]);
-        
-        console.log('✅ Queries refetched successfully');
-        
+
         setIsLoading(false);
         return true;
       }
@@ -141,23 +137,19 @@ export function useSaveJobList() {
             }
             return newSet;
           });
-          
-          console.log('🔄 Invalidating queries after save/unsave...');
-          
+
           // Force refetch ALL queries to update immediately
           await Promise.all([
-            queryClient.refetchQueries({ 
+            queryClient.refetchQueries({
               queryKey: ['saved-jobs'],
-              type: 'all'
+              type: 'all',
             }),
-            queryClient.refetchQueries({ 
+            queryClient.refetchQueries({
               queryKey: ['recent-activity'],
-              type: 'all'
-            })
+              type: 'all',
+            }),
           ]);
-          
-          console.log('✅ Queries refetched successfully');
-          
+
           setIsLoading(false);
           return true;
         }

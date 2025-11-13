@@ -8,8 +8,6 @@ export function useSavedJobs() {
   return useQuery({
     queryKey: ['saved-jobs', session?.user?.id],
     queryFn: async () => {
-      console.log('📊 Fetching saved jobs for user:', session?.user?.id);
-
       if (!session?.user?.id) {
         return [];
       }
@@ -71,7 +69,6 @@ export function useSavedJobs() {
           .filter((job): job is NonNullable<typeof job> => job !== null)
           .map((job) => job.job_data);
 
-        console.log('✅ Saved jobs fetched:', validJobs.length, 'jobs');
         return validJobs;
       } catch (error) {
         console.error('Error in useSavedJobs:', error);

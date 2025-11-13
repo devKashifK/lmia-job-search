@@ -134,7 +134,6 @@ export default function Page() {
   };
 
   const checkCredits = async () => {
-    console.log(session);
     if (session?.trial) {
       // Trial session, allow access
       return true;

@@ -36,8 +36,6 @@ export default function PageTitle({
   // Use prop if provided, otherwise fall back to useData
   const count = countProp !== undefined ? countProp : data?.count;
 
-  console.log('PageTitle Render:', { title, count, tableName, isMobile });
-
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
