@@ -286,11 +286,11 @@ function Terms() {
         </h2>
         <p className="mb-4">
           These Terms shall be governed by and construed in accordance with the
-          laws of the jurisdiction in which our business is registered, without
-          regard to its conflict of law principles. You agree to submit to the
-          exclusive jurisdiction of the courts located in that jurisdiction to
-          resolve any disputes arising from or relating to these Terms or your
-          use of the Platform.
+          laws of the jurisdiction of India in which our business is registered,
+          without regard to its conflict of law principles. You agree to submit
+          to the exclusive jurisdiction of the courts located in that
+          jurisdiction to resolve any disputes arising from or relating to these
+          Terms or your use of the Platform.
         </p>
 
         <h2 className="text-lg font-semibold mt-6 mb-3">16. Contact Us</h2>
