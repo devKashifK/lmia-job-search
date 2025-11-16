@@ -121,6 +121,9 @@ export default function ContactPage() {
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Office</h3>
                 <p className="text-gray-600 mb-2">Visit our office.</p>
                 <span className="text-brand-600 font-semibold">
+                  GTR WORLDWIDE SERVICES PVT LTD
+                </span>
+                <span className="text-brand-600 font-semibold">
                   Kankaria Estate, 6, Little Russel St, Maidan, Midleton Row,
                   Park Street area, Kolkata, West Bengal 700071
                 </span>
