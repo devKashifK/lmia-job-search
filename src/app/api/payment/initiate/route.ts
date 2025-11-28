@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Initialize Supabase Service Role Client
-    // This is required to bypass RLS policies for backend operations
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -51,19 +50,18 @@ export async function POST(request: NextRequest) {
     // Get app URL from environment
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     
-    // Create payment payload for v2
-    const paymentPayload: PhonePePaymentPayload = {
-      merchantId: process.env.NEXT_PUBLIC_PHONEPE_CLIENT_ID!,
-      merchantTransactionId,
-      merchantUserId: userId,
-      amount: formatAmountToPaise(amount),
-      redirectUrl: `${appUrl}/payment/verify?transactionId=${merchantTransactionId}`,
-      redirectMode: 'REDIRECT',
-      callbackUrl: `${appUrl}/api/payment/callback`,
-      mobileNumber: userPhone,
-      paymentInstrument: {
-        type: 'PAY_PAGE',
-      },
+    // Create payment payload for v2 Standard Checkout
+    // UPDATED: Adding merchantId and redirectMode
+    
+    const v2Payload = {
+        merchantId: process.env.NEXT_PUBLIC_PHONEPE_CLIENT_ID!, // Explicitly adding merchantId
+        merchantOrderId: merchantTransactionId,
+        amount: formatAmountToPaise(amount),
+        redirectUrl: `${appUrl}/payment/verify?transactionId=${merchantTransactionId}`,
+        redirectMode: 'REDIRECT', // Explicitly adding redirectMode
+        paymentInstrument: {
+            type: 'PAY_PAGE'
+        }
     };
 
     // Save initial transaction record in database using Admin Client
@@ -77,7 +75,7 @@ export async function POST(request: NextRequest) {
         plan_name: planName,
         status: 'PENDING',
         metadata: {
-          payment_payload: paymentPayload,
+          payment_payload: v2Payload,
           api_version: 'v2',
         },
       });
@@ -91,7 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Initiate payment with PhonePe v2
-    const paymentResponse = await initiatePayment(paymentPayload);
+    const paymentResponse = await initiatePayment(v2Payload as any);
     
     // Handle response
     const redirectUrl = paymentResponse.data?.instrumentResponse?.redirectInfo?.url || paymentResponse.data?.redirectUrl;
