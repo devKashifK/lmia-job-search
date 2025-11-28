@@ -10,7 +10,8 @@ const PHONEPE_CONFIG = {
   env: process.env.PHONEPE_ENV || 'UAT',
   // V2 Endpoints
   uatUrl: 'https://api-preprod.phonepe.com/apis/pg-sandbox',
-  prodUrl: 'https://api.phonepe.com/apis/hermes',
+  // UPDATED: Correct Production Base URL for v2 Standard Checkout
+  prodUrl: 'https://api.phonepe.com/apis/pg', 
   uatAuthUrl: 'https://api-preprod.phonepe.com/apis/pg-sandbox/v1/oauth/token',
   prodAuthUrl: 'https://api.phonepe.com/apis/identity-manager/v1/oauth/token',
 };
@@ -42,12 +43,18 @@ export const getAuthToken = async (): Promise<string> => {
 
     console.log('Generating Auth Token...');
     console.log('Auth URL:', authUrl);
-    console.log('Client ID:', clientId);
     
-    // We are sending credentials in BOTH Body and Header to ensure compatibility.
-    // Some OAuth implementations require Basic Auth for the client, and body for the grant type.
-    // The previous error "form field... must not be blank" confirmed body is checked.
-    // The 401 implies maybe the header was missing or credentials are wrong.
+    // Construct CURL command for debugging
+    const curlCommand = `curl -X POST "${authUrl}" \\
+  -H "Content-Type: application/x-www-form-urlencoded" \\
+  -d "grant_type=client_credentials" \\
+  -d "client_id=${clientId}" \\
+  -d "client_secret=${clientSecret}" \\
+  -d "client_version=${clientVersion}"`;
+    
+    console.log('--- TRY RUNNING THIS CURL COMMAND ---');
+    console.log(curlCommand);
+    console.log('-------------------------------------');
 
     const params = new URLSearchParams();
     params.append('grant_type', 'client_credentials');
@@ -55,13 +62,9 @@ export const getAuthToken = async (): Promise<string> => {
     params.append('client_secret', clientSecret);
     params.append('client_version', clientVersion);
 
-    // Basic Auth Header: base64(clientId:clientSecret)
-    const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-
     const response = await axios.post(authUrl, params, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${authHeader}`, // Sending both
       },
     });
 
