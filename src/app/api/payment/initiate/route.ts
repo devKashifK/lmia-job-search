@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { initiatePayment, generateTransactionId, formatAmountToPaise } from '@/lib/phonepe';
+import { initiatePayment, generateTransactionId, formatAmountToPaise, phonePeConfig } from '@/lib/phonepe';
 import { PaymentRequest, PhonePePaymentPayload } from '@/types/payment';
 import { createClient } from '@supabase/supabase-js';
 
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     // UPDATED: Adding merchantId and redirectMode
     
     const v2Payload = {
-        merchantId: process.env.NEXT_PUBLIC_PHONEPE_CLIENT_ID!, // Explicitly adding merchantId
+        merchantId: phonePeConfig.merchantId, // Using configured Merchant ID
         merchantOrderId: merchantTransactionId,
         amount: formatAmountToPaise(amount),
         redirectUrl: `${appUrl}/payment/verify?transactionId=${merchantTransactionId}`,

@@ -5,6 +5,7 @@ import { PaymentResponse, PaymentStatusResponse, PhonePePaymentPayload } from '@
 // PhonePe Configuration
 const PHONEPE_CONFIG = {
   clientId: process.env.NEXT_PUBLIC_PHONEPE_CLIENT_ID!,
+  merchantId: process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID || process.env.NEXT_PUBLIC_PHONEPE_CLIENT_ID!, // Fallback to Client ID if Merchant ID not set
   clientSecret: process.env.PHONEPE_CLIENT_SECRET!,
   clientVersion: process.env.PHONEPE_CLIENT_VERSION || '1',
   env: process.env.PHONEPE_ENV || 'UAT',
