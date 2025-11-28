@@ -51,6 +51,8 @@ export async function POST(request: NextRequest) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     
     // Create payment payload for v2 Standard Checkout
+    console.log('Using Merchant ID for Payment:', phonePeConfig.merchantId);
+    
     // UPDATED: Adding merchantId and redirectMode
     
     const v2Payload = {
