@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import useMobile from '@/hooks/use-mobile';
 import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';
+import PaymentButton from '@/components/ui/payment-button';
 
 type Currency = 'CAD' | 'INR';
 
@@ -227,23 +228,47 @@ function PlanCard({
           </ul>
 
           <div className="mt-auto">
-            <Button
-              className={cn(
-                'w-full h-11 sm:h-12',
-                plan.tone === 'primary'
-                  ? 'bg-brand-500 hover:bg-brand-600 text-white'
-                  : 'bg-brand-100 hover:bg-brand-200 text-brand-700'
-              )}
-            >
-              {plan.name.includes('Enterprise') ? (
-                'Contact Sales'
-              ) : (
-                <>
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </>
-              )}
-            </Button>
+            {plan.name.includes('Enterprise') ? (
+              <Button
+                className={cn(
+                  'w-full h-11 sm:h-12',
+                  plan.tone === 'primary'
+                    ? 'bg-brand-500 hover:bg-brand-600 text-white'
+                    : 'bg-brand-100 hover:bg-brand-200 text-brand-700'
+                )}
+              >
+                Contact Sales
+              </Button>
+            ) : plan.name === 'Free Plan' ? (
+              <Button
+                className={cn(
+                  'w-full h-11 sm:h-12',
+                  'bg-brand-100 hover:bg-brand-200 text-brand-700'
+                )}
+              >
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            ) : (
+              <PaymentButton
+                amount={parseFloat(
+                  currency === 'CAD'
+                    ? plan.cadPrice?.replace('$', '') || '0'
+                    : plan.inrPrice?.replace('₹', '').replace(',', '') || '0'
+                )}
+                currency={currency}
+                planName={plan.name}
+                className={cn(
+                  'w-full h-11 sm:h-12',
+                  plan.tone === 'primary'
+                    ? 'bg-brand-500 hover:bg-brand-600 text-white'
+                    : 'bg-brand-100 hover:bg-brand-200 text-brand-700'
+                )}
+              >
+                Get Started
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </PaymentButton>
+            )}
           </div>
         </div>
       </HoverCard>
