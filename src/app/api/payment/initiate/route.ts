@@ -58,7 +58,6 @@ export async function POST(request: NextRequest) {
     const v2Payload = {
         merchantId: phonePeConfig.merchantId, // Using configured Merchant ID
         merchantOrderId: merchantTransactionId,
-        merchantTransactionId: merchantTransactionId, // Adding this as well to be safe
         amount: formatAmountToPaise(amount),
         redirectUrl: `${appUrl}/payment/verify?transactionId=${merchantTransactionId}`,
         redirectMode: 'REDIRECT', // Explicitly adding redirectMode
