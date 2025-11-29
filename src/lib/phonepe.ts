@@ -97,10 +97,16 @@ export const initiatePayment = async (
     // Get Auth Token
     const authToken = await getAuthToken();
     
+    // PhonePe often expects the payload to be base64 encoded in a 'request' field
+    const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
+    const requestBody = { request: base64Payload };
+
+    console.log('Sending Base64 Encoded Payload...');
+
     // Make API request with Auth Token
     const response = await axios.post<PaymentResponse>(
       `${baseUrl}${endpoint}`,
-      payload,
+      requestBody,
       {
         headers: {
           'Content-Type': 'application/json',
