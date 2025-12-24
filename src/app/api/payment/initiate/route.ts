@@ -60,7 +60,9 @@ export async function POST(request: NextRequest) {
         merchantOrderId: merchantTransactionId,
         amount: formatAmountToPaise(amount),
         redirectUrl: `${appUrl}/payment/verify?transactionId=${merchantTransactionId}`,
-        redirectMode: 'REDIRECT', // Explicitly adding redirectMode
+        redirectMode: 'REDIRECT',
+        callbackUrl: `${appUrl}/api/payment/callback`,
+        mobileNumber: userPhone,
         paymentInstrument: {
             type: 'PAY_PAGE'
         }

@@ -99,6 +99,16 @@ export const initiatePayment = async (
     
     console.log('Sending JSON Payload...');
 
+    console.log('--- PhonePe Request Details ---');
+    console.log('URL:', `${baseUrl}${endpoint}`);
+    console.log('Headers:', JSON.stringify({
+      'Content-Type': 'application/json',
+      'Authorization': `O-Bearer ${authToken.substring(0, 10)}...`,
+      'X-CLIENT-ID': PHONEPE_CONFIG.clientId,
+    }, null, 2));
+    console.log('Payload:', JSON.stringify(payload, null, 2));
+    console.log('-------------------------------');
+
     // Make API request with Auth Token
     const response = await axios.post<PaymentResponse>(
       `${baseUrl}${endpoint}`,
@@ -120,7 +130,7 @@ export const initiatePayment = async (
     if (error.response) {
         console.error('Status:', error.response.status);
         console.error('Headers:', error.response.headers);
-        console.error('Data:', JSON.stringify(error.response.data));
+        console.error('Data:', JSON.stringify(error.response.data, null, 2));
     }
     throw new Error(
       error.response?.data?.message || 'Failed to initiate payment'
