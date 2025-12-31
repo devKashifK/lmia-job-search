@@ -83,7 +83,7 @@ jobs:
 
             # 3) Restart via Docker Compose
             cd /home/${{ secrets.SERVER_USER }}/jobmaze-app
-            docker-compose down || true
-            docker-compose up -d
+            docker compose down || true
+            docker compose up -d
 
             echo "✅  Deployment complete"
