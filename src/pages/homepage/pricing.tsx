@@ -403,7 +403,7 @@ export default function Pricing() {
           <div className="flex items-center gap-2 mb-4">
             <Building2 className="w-5 h-5 text-brand-600" />
             <h4 className="text-lg font-semibold text-gray-900">
-              For Employers
+              For Enterprise
             </h4>
           </div>
 

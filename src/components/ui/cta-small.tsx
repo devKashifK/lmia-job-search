@@ -1,4 +1,5 @@
 import React from 'react';
+import CustomLink from '@/components/ui/CustomLink';
 
 export default function CtaSmall() {
   return (
@@ -32,9 +33,11 @@ export default function CtaSmall() {
         </div>
         {/* CTA Button */}
         <div className="flex flex-col items-center md:items-end gap-1">
-          <button className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3 rounded-full text-base shadow-md transition">
-            Get Started
-          </button>
+          <CustomLink href="/sign-up">
+            <button className="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3 rounded-full text-base shadow-md transition">
+              Get Started
+            </button>
+          </CustomLink>
           <span className="text-xs text-gray-500 mt-1">
             Includes free and premium features
           </span>
