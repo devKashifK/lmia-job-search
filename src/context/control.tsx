@@ -22,7 +22,7 @@ export const ControlContextProvider = ({
 }) => {
   const { session, loading } = useSession();
   const { isTrialActive, setIsTrialActive } = useTrial();
-  const [remainingTime, setRemainingTime] = useState(120); // 2 minutes in seconds
+  const [remainingTime, setRemainingTime] = useState(300); // 2 minutes in seconds
   const [visitorInfo, setVisitorInfo] = useState<VisitorInfo | null>(null);
   const [showLoginAlert, setShowLoginAlert] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
@@ -114,8 +114,8 @@ export const ControlContextProvider = ({
 
         // Start 2-minute trial
         setIsTrialActive(true);
-        setRemainingTime(120);
-        startCountdown(120);
+        setRemainingTime(300);
+        startCountdown(300);
       }
 
       setIsChecking(false);
@@ -141,7 +141,7 @@ export const ControlContextProvider = ({
         <LoginAlertDialog
           isOpen={showLoginAlert}
           onClose={() => setShowLoginAlert(false)}
-          message="Your 2-minute free trial has ended. Please login to continue using the platform and access all features."
+          message="Your 5-minute free trial has ended. Please login to continue using the platform and access all features."
         />
       ) : null}
     </ControlContext.Provider>
