@@ -407,7 +407,7 @@ export function SearchBox() {
                 : 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6'
             }
           >
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
@@ -422,7 +422,7 @@ export function SearchBox() {
               >
                 Find Top Opportunities
               </Badge>
-            </motion.div>
+            </motion.div> */}
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -430,8 +430,8 @@ export function SearchBox() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className={
                 isMobile
-                  ? 'text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-3'
-                  : 'text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-6'
+                  ? 'text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-1'
+                  : 'text-5xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-1'
               }
             >
               Discover{' '}
@@ -440,7 +440,7 @@ export function SearchBox() {
               </span>
               <span>Career</span>
             </motion.h1>
-
+{/* 
             {!isMobile && (
               <TypewriterEffect
                 title="Search With"
@@ -456,7 +456,7 @@ export function SearchBox() {
                   '',
                 ]}
               />
-            )}
+            )} */}
           </div>
 
           {/* Search Section */}
@@ -464,7 +464,7 @@ export function SearchBox() {
             className={
               isMobile
                 ? 'p-4 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
-                : 'p-10 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
+                : 'p-10 pt-2 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
             }
           >
             <motion.div

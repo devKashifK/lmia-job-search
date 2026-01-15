@@ -12,12 +12,12 @@ export function TypewriterEffect({
   return (
     <div
       className="search-container"
-      style={{ textAlign: "center", marginTop: "50px" }}
+      style={{ textAlign: "center", marginTop: "10px" }}
     >
-      <h2 className="text-4xl text-brand-600 font-bold">
+      <h2 className="text-2xl text-brand-600 font-bold">
         {title} -{" "}
         <span
-          className="text-4xl font-bold gradient-text"
+          className="text-2xl font-bold gradient-text"
           style={{
             background: "linear-gradient(90deg, #4ade80, #22c55e)",
             WebkitBackgroundClip: "text",
