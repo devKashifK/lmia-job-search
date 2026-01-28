@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Zap, Search } from "lucide-react";
 import useMobile from "@/hooks/use-mobile";
+import CustomLink from "@/components/ui/CustomLink";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 export default function CTA() {
   const { isMobile, isMounted } = useMobile();
@@ -53,19 +55,34 @@ export default function CTA() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className={isMobile ? "group relative inline-flex items-center justify-center bg-brand-600 text-white text-base font-semibold px-6 py-3 rounded-xl overflow-hidden transition-all duration-300" : "group relative inline-flex items-center justify-center bg-brand-600 text-white text-lg font-semibold px-8 py-4 rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-500/20"}>
-                  <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
-                  <span className="relative flex items-center gap-2">
-                    Get Started Free
-                    <ArrowRight className={isMobile ? "w-4 h-4" : "w-5 h-5 transform group-hover:translate-x-1 transition-transform"} />
-                  </span>
-                </button>
-                <button className={isMobile ? "group inline-flex items-center justify-center bg-white text-brand-600 text-base font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:bg-brand-50" : "group inline-flex items-center justify-center bg-white text-brand-600 text-lg font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:bg-brand-50"}>
-                  <span className="flex items-center gap-2">
-                    Watch Demo
-                    <Zap className={isMobile ? "w-4 h-4" : "w-5 h-5"} />
-                  </span>
-                </button>
+                <CustomLink href="/sign-up">
+                  <button className={isMobile ? "group relative inline-flex items-center justify-center bg-brand-600 text-white text-base font-semibold px-6 py-3 rounded-xl overflow-hidden transition-all duration-300" : "group relative inline-flex items-center justify-center bg-brand-600 text-white text-lg font-semibold px-8 py-4 rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-brand-500/20"}>
+                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                    <span className="relative flex items-center gap-2">
+                      Get Started Free
+                      <ArrowRight className={isMobile ? "w-4 h-4" : "w-5 h-5 transform group-hover:translate-x-1 transition-transform"} />
+                    </span>
+                  </button>
+                </CustomLink>
+
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button className={isMobile ? "group inline-flex items-center justify-center bg-white text-brand-600 text-base font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:bg-brand-50" : "group inline-flex items-center justify-center bg-white text-brand-600 text-lg font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:bg-brand-50"}>
+                      <span className="flex items-center gap-2">
+                        Watch Demo
+                        <Zap className={isMobile ? "w-4 h-4" : "w-5 h-5"} />
+                      </span>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden bg-black border-none">
+                    <video
+                      src="/demo.mp4"
+                      controls
+                      autoPlay
+                      className="w-full h-full"
+                    />
+                  </DialogContent>
+                </Dialog>
               </div>
             </motion.div>
           </div>

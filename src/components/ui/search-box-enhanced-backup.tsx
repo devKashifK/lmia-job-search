@@ -354,11 +354,10 @@ export function SearchBox() {
                 <input
                   ref={searchInputRef}
                   className="w-full bg-transparent text-lg py-5 outline-none placeholder:text-gray-500 text-gray-800 font-medium transition-all duration-300 drop-shadow-sm"
-                  placeholder={`Search for ${
-                    searchType === 'hot_leads'
-                      ? 'trending job opportunities'
-                      : 'LMIA approved positions'
-                  }...`}
+                  placeholder={`Search for ${searchType === 'hot_leads'
+                    ? 'trending job opportunities'
+                    : 'LMIA approved positions'
+                    }...`}
                   value={input}
                   onChange={handleChange}
                   onKeyDown={handleKeyPress}

@@ -381,7 +381,7 @@ const PricingPage = () => {
             <div className="flex items-center justify-center gap-2 mb-4">
               <Building2 className="h-4 w-4 text-brand-500" />
               <span className="uppercase text-xs font-semibold text-brand-700 tracking-widest">
-                For Employers
+                For Enterprise
               </span>
             </div>
 

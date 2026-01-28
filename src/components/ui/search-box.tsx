@@ -39,6 +39,15 @@ import { AttributeName } from '@/helpers/attribute';
 import useMobile from '@/hooks/use-mobile';
 import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { DateRange } from 'react-day-picker';
 
 interface Suggestion {
   suggestion: string;
@@ -99,10 +108,8 @@ export function SearchBox() {
   );
 
   // --- RANGE (Trending Jobs only)
-  const [rangeKey, setRangeKey] = useState<string | null>(null); // 'today' | '7d' | '30d' | '1y' | '4y'
-  const [dateFrom, setDateFrom] = useState<string>(''); // YYYY-MM-DD
-  const [dateTo, setDateTo] = useState<string>(''); // YYYY-MM-DD
-  const [showMoreRanges, setShowMoreRanges] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
 
   const { updateCreditsAndSearch } = useUpdateCredits();
   const { toast } = useToast();
@@ -122,44 +129,33 @@ export function SearchBox() {
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   };
-  const todayYMD = () => toYMD(new Date());
-  const ymdDaysBack = (days: number) => {
-    const d = new Date();
-    d.setDate(d.getDate() - days);
-    return toYMD(d);
-  };
 
-  const baseRanges = [
-    { key: 'today', label: 'Today', days: 0 },
-    { key: '7d', label: 'Last 7 days', days: 7 },
-    { key: '30d', label: 'Last 30 days', days: 30 },
-  ] as const;
-  const moreRanges = [
-    { key: '1y', label: 'Last 1 year', days: 365 },
-    { key: '4y', label: 'Last 4 years', days: 365 * 4 },
-  ] as const;
+  useEffect(() => {
+    if (dateRange?.from) {
+      const fromParam = toYMD(dateRange.from);
+      // If 'to' is undefined, we might just set to=from or handle it however the backend expects.
+      // Usually ranges need both or at least 'from'.
+      // If 'to' is present:
+      const toParam = dateRange.to ? toYMD(dateRange.to) : '';
 
-  const applyRange = (key: string, days: number) => {
-    const end = todayYMD();
-    const start = days === 0 ? end : ymdDaysBack(days);
-    setDateFrom(start);
-    setDateTo(end);
-    setRangeKey(key);
-  };
-  const clearRange = () => {
-    setRangeKey(null);
-    setDateFrom('');
-    setDateTo('');
-  };
+      // Update URL params logic will happen in attachRangeParams
+    }
+  }, [dateRange]);
 
   // seed from URL (if user lands with date_from/date_to)
   useEffect(() => {
-    const urlFrom = searchParams?.get('date_from') || '';
-    const urlTo = searchParams?.get('date_to') || '';
-    if (urlFrom || urlTo) {
-      setDateFrom(urlFrom);
-      setDateTo(urlTo || todayYMD());
-      setRangeKey(null);
+    const urlFrom = searchParams?.get('date_from');
+    const urlTo = searchParams?.get('date_to');
+    if (urlFrom) {
+      // simplistic parse, assumes YYYY-MM-DD
+      const [y, m, d] = urlFrom.split('-').map(Number);
+      const fromDate = new Date(y, m - 1, d);
+      let toDate = undefined;
+      if (urlTo) {
+        const [ty, tm, td] = urlTo.split('-').map(Number);
+        toDate = new Date(ty, tm - 1, td);
+      }
+      setDateRange({ from: fromDate, to: toDate });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -226,9 +222,13 @@ export function SearchBox() {
 
   // attach date params to URL only for trending jobs
   const attachRangeParams = (params: URLSearchParams) => {
-    if (searchType === 'hot_leads' && dateFrom && dateTo) {
-      params.set('date_from', dateFrom);
-      params.set('date_to', dateTo);
+    if (searchType === 'hot_leads' && dateRange?.from) {
+      params.set('date_from', toYMD(dateRange.from));
+      if (dateRange.to) {
+        params.set('date_to', toYMD(dateRange.to));
+      } else {
+        params.delete('date_to');
+      }
     } else {
       params.delete('date_from');
       params.delete('date_to');
@@ -379,6 +379,8 @@ export function SearchBox() {
     return null;
   }
 
+  const hasCredits = session?.session || session?.trial || false; // simplified check for UI disabled states if needed
+
   return (
     <>
       {isMobile && <MobileHeader title="Job Search" />}
@@ -386,7 +388,7 @@ export function SearchBox() {
         className={
           isMobile
             ? 'w-full max-w-full mx-auto px-4 pt-4 pb-5'
-            : 'w-full max-w-full mx-auto px-16 pt-28'
+            : 'w-full max-w-full mx-auto px-16 pt-32'
         }
       >
         <motion.div
@@ -396,7 +398,7 @@ export function SearchBox() {
           className={
             isMobile
               ? 'bg-white/95 backdrop-blur-2xl rounded-2xl shadow-sm border border-gray-100 overflow-hidden'
-              : 'bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden'
+              : 'bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden px-28'
           }
         >
           {/* Hero */}
@@ -407,7 +409,7 @@ export function SearchBox() {
                 : 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6'
             }
           >
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
@@ -422,7 +424,7 @@ export function SearchBox() {
               >
                 Find Top Opportunities
               </Badge>
-            </motion.div>
+            </motion.div> */}
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -430,32 +432,23 @@ export function SearchBox() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className={
                 isMobile
-                  ? 'text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-3'
-                  : 'text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-6'
+                  ? 'text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-1'
+                  : 'text-5xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-1'
               }
             >
-              Discover{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-brand-700 to-brand-600">
-                Perfect{' '}
-              </span>
-              <span>Career</span>
+              Discover the job you want
             </motion.h1>
 
             {!isMobile && (
-              <TypewriterEffect
-                title="Search With"
-                words={[
-                  'Noc Code',
-                  'Program',
-                  'Employer',
-                  'Address',
-                  'Occupation',
-                  'City',
-                  'Employer Name',
-                  'Province Mapping',
-                  '',
-                ]}
-              />
+              <div className="flex justify-center">
+                <h3 className="text-xl pt-2 md:text-2xl font-medium text-brand-600 text-center mb-6">
+                  Search by
+                </h3>
+                <TypewriterEffect
+                  title=""
+                  words={['NOC', 'Province or City', 'Job title']}
+                />
+              </div>
             )}
           </div>
 
@@ -464,7 +457,7 @@ export function SearchBox() {
             className={
               isMobile
                 ? 'p-4 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
-                : 'p-10 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
+                : 'p-10 pt-2 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
             }
           >
             <motion.div
@@ -479,11 +472,11 @@ export function SearchBox() {
                   className={cn(
                     isMobile
                       ? 'relative flex flex-col gap-3 rounded-xl transition-all duration-300 bg-white'
-                      : 'relative flex items-stretch rounded-2xl transition-all duration-500 border-2 overflow-visible group',
+                      : 'relative flex items-stretch rounded-2xl transition-all duration-500 border-2 overflow-visible group w-full',
                     !isMobile &&
-                      (showSuggestions || showLocationMenu
-                        ? 'bg-white border-brand-500 shadow-lg shadow-brand-500/20 ring-2 ring-brand-500/10'
-                        : 'bg-white border-gray-200 shadow-md hover:border-brand-300 hover:shadow-lg')
+                    (showSuggestions || showLocationMenu
+                      ? 'bg-white border-brand-500 shadow-lg shadow-brand-500/20 ring-2 ring-brand-500/10'
+                      : 'bg-white border-gray-200 shadow-md hover:border-brand-300 hover:shadow-lg')
                   )}
                 >
                   {isMobile ? (
@@ -572,6 +565,7 @@ export function SearchBox() {
                     <div className="relative flex items-center gap-2 px-4">
                       <Button
                         type="button"
+                        variant="ghost"
                         onClick={() => setShowLocationMenu((v) => !v)}
                         className={cn(
                           'flex items-center gap-2 rounded-xl shadow-none px-3 py-2 transition-all duration-200',
@@ -581,7 +575,7 @@ export function SearchBox() {
                         )}
                       >
                         <MapPin className="w-4 h-4" />
-                        <span className="text-sm font-medium">
+                        <span className="text-sm font-medium whitespace-nowrap">
                           {location.trim() ? location : 'Location'}
                         </span>
                       </Button>
@@ -596,6 +590,47 @@ export function SearchBox() {
                           <X className="w-4 h-4" />
                         </Button>
                       )}
+
+                      <div className="h-6 w-px bg-gray-200 mx-2" />
+
+                      {/* Date Range Picker */}
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              'flex items-center gap-2 rounded-xl shadow-none px-3 py-2 border-0 bg-transparent hover:bg-gray-100 text-gray-700',
+                              (dateRange?.from || dateRange?.to) && 'text-brand-600 bg-brand-50 hover:bg-brand-100'
+                            )}
+                          >
+                            <CalendarIcon className="w-4 h-4" />
+                            <span className="text-sm font-medium whitespace-nowrap">
+                              {dateRange?.from ? (
+                                dateRange.to ? (
+                                  <>
+                                    {format(dateRange.from, 'LLL dd')} -{' '}
+                                    {format(dateRange.to, 'LLL dd')}
+                                  </>
+                                ) : (
+                                  format(dateRange.from, 'LLL dd')
+                                )
+                              ) : (
+                                'Date Range'
+                              )}
+                            </span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="end">
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={dateRange?.from}
+                            selected={dateRange}
+                            onSelect={setDateRange}
+                            numberOfMonths={2}
+                          />
+                        </PopoverContent>
+                      </Popover>
 
                       <AnimatePresence>
                         {showLocationMenu && (
@@ -647,7 +682,7 @@ export function SearchBox() {
                                 type="text"
                                 value={city}
                                 onChange={(e) => setCity(e.target.value)}
-                                placeholder="e.g., Edmonton, Abbortsford, Calgary"
+                                placeholder="e.g., Edmonton, Abbotsford, Calgary"
                                 className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter')
@@ -962,7 +997,7 @@ export function SearchBox() {
           >
             <div
               className={
-                isMobile ? 'flex flex-col gap-3' : 'flex items-center gap-6'
+                isMobile ? 'flex flex-col gap-3' : 'flex items-center gap-6 w-full'
               }
             >
               <span
@@ -1051,152 +1086,7 @@ export function SearchBox() {
               </div>
             </div>
 
-            {/* Sort by (date posted) – only for Trending Jobs */}
-            {searchType === 'hot_leads' && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35, duration: 0.35 }}
-                className={isMobile ? 'mt-3' : 'mt-6'}
-              >
-                <div
-                  className={
-                    isMobile
-                      ? 'flex flex-col gap-2'
-                      : 'flex items-center gap-4 flex-wrap'
-                  }
-                >
-                  <span
-                    className={
-                      isMobile
-                        ? 'text-xs font-semibold text-gray-700'
-                        : 'text-sm font-semibold text-gray-700 min-w-[64px]'
-                    }
-                  >
-                    Sort by:
-                  </span>
 
-                  {/* Base ranges */}
-                  <div className="flex items-center gap-3 flex-wrap">
-                    {baseRanges.map((r) => {
-                      const checked = rangeKey === r.key;
-                      return (
-                        <Label
-                          key={r.key}
-                          className={cn(
-                            'flex items-center gap-2 cursor-pointer rounded-xl border px-3 py-2 text-sm transition-all duration-200',
-                            checked
-                              ? 'bg-brand-50 border-brand-300 text-brand-700'
-                              : 'border-gray-200 hover:border-brand-300 hover:bg-gray-50'
-                          )}
-                        >
-                          <Input
-                            type="checkbox"
-                            className="sr-only"
-                            checked={checked}
-                            onChange={() =>
-                              checked ? clearRange() : applyRange(r.key, r.days)
-                            }
-                          />
-                          <span
-                            className={cn(
-                              'w-4 h-4 rounded-md border flex items-center justify-center',
-                              checked
-                                ? 'bg-brand-600 border-brand-600'
-                                : 'border-gray-300'
-                            )}
-                          >
-                            {checked && (
-                              <Check className="w-3 h-3 text-white" />
-                            )}
-                          </span>
-                          <span className="font-medium">{r.label}</span>
-                        </Label>
-                      );
-                    })}
-
-                    {/* Expander */}
-                    <Button
-                      variant={'outline'}
-                      type="button"
-                      onClick={() => setShowMoreRanges((v) => !v)}
-                      className="flex items-center gap-2 rounded-xl border border-gray-200 px-3 py-2 text-sm hover:border-brand-300 hover:bg-gray-50 transition"
-                    >
-                      {showMoreRanges ? (
-                        <>
-                          Hide ranges <ChevronUp className="w-4 h-4" />
-                        </>
-                      ) : (
-                        <>
-                          More ranges <ChevronDown className="w-4 h-4" />
-                        </>
-                      )}
-                    </Button>
-
-                    {/* More ranges */}
-                    <AnimatePresence initial={false}>
-                      {showMoreRanges && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="flex items-center gap-3 overflow-hidden"
-                        >
-                          {moreRanges.map((r) => {
-                            const checked = rangeKey === r.key;
-                            return (
-                              <Label
-                                key={r.key}
-                                className={cn(
-                                  'flex items-center gap-2 cursor-pointer rounded-xl border px-3 py-2 text-sm transition-all duration-200',
-                                  checked
-                                    ? 'bg-brand-50 border-brand-300 text-brand-700'
-                                    : 'border-gray-200 hover:border-brand-300 hover:bg-gray-50'
-                                )}
-                              >
-                                <Input
-                                  type="checkbox"
-                                  className="sr-only"
-                                  checked={checked}
-                                  onChange={() =>
-                                    checked
-                                      ? clearRange()
-                                      : applyRange(r.key, r.days)
-                                  }
-                                />
-                                <span
-                                  className={cn(
-                                    'w-4 h-4 rounded-md border flex items-center justify-center',
-                                    checked
-                                      ? 'bg-brand-600 border-brand-600'
-                                      : 'border-gray-300'
-                                  )}
-                                >
-                                  {checked && (
-                                    <Check className="w-3 h-3 text-white" />
-                                  )}
-                                </span>
-                                <span className="font-medium">{r.label}</span>
-                              </Label>
-                            );
-                          })}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {(dateFrom || dateTo) && (
-                      <Button
-                        type="button"
-                        onClick={clearRange}
-                        className="ml-1 shadow-none text-sm text-gray-600 underline underline-offset-2 hover:text-gray-800"
-                      >
-                        Clear date filter
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            )}
           </motion.div>
 
           {/* Trending */}
@@ -1204,11 +1094,11 @@ export function SearchBox() {
             className={
               isMobile
                 ? 'px-4 pb-6 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent'
-                : 'px-10 pb-10 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent'
+                : 'px-10 pb-2 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent'
             }
           >
             <motion.div
-              className={isMobile ? 'mt-4' : 'mt-8'}
+              className={isMobile ? 'mt-4' : 'mt-8 w-full'}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
@@ -1245,15 +1135,15 @@ export function SearchBox() {
                   </div>
                 </motion.div>
                 <div>
-                  <h3
+                  <span
                     className={
                       isMobile
-                        ? 'font-bold text-gray-800 text-sm'
-                        : 'font-bold text-gray-800 text-lg'
+                        ? 'text-xs text-gray-500 pt-1'
+                        : 'text-sm text-gray-500 pt-1 font-semibold'
                     }
                   >
-                    Trending Searches
-                  </h3>
+                    High End Jobs
+                  </span>
                   {!isMobile && (
                     <p className="text-sm text-gray-500">
                       Popular jobs right now
@@ -1263,8 +1153,8 @@ export function SearchBox() {
               </div>
 
               <TrendingSearchBox
-                dateFrom={dateFrom}
-                dateTo={dateTo}
+                dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
+                dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
                 checkCredits={checkCredits}
                 fetchSuggestions={fetchSuggestions}
                 location={location}
@@ -1277,14 +1167,15 @@ export function SearchBox() {
 
           {/* Categories */}
           <CategoryBox
-            dateFrom={dateFrom}
-            dateTo={dateTo}
+            dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
+            dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
             location={location}
             searchType={searchType}
           />
         </motion.div>
-      </div>
-      {isMobile && <BottomNav />}
+      </div >
+      {isMobile && <BottomNav />
+      }
     </>
   );
 }

@@ -117,7 +117,7 @@ export default function Hero() {
               </div>
 
               <div className={isMobile ? "flex flex-col gap-3" : "flex flex-col sm:flex-row gap-4"}>
-                <CustomLink href="/search">
+                <CustomLink href="/sign-up">
                   <motion.button
                     className={isMobile ? "relative px-6 py-3 rounded-xl font-bold text-white overflow-hidden group bg-gradient-to-r from-brand-600 to-brand-700 shadow-lg shadow-brand-500/30 w-full" : "relative px-8 py-4 rounded-2xl font-bold text-white overflow-hidden group bg-gradient-to-r from-brand-600 to-brand-700 shadow-xl shadow-brand-500/30"}
                     whileHover={{ scale: 1.05, y: -2 }}
@@ -139,16 +139,18 @@ export default function Hero() {
                   </motion.button>
                 </CustomLink>
 
-                <motion.button
-                  className={isMobile ? "px-6 py-3 rounded-xl font-bold text-brand-700 border-2 border-brand-300 bg-brand-50 hover:bg-brand-100 transition-all duration-300 w-full" : "px-8 py-4 rounded-2xl font-bold text-brand-700 border-2 border-brand-300 bg-brand-50 hover:bg-brand-100 transition-all duration-300"}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className={isMobile ? "flex items-center justify-center gap-2" : "flex items-center gap-2"}>
-                    <Search className={isMobile ? "w-4 h-4" : "w-5 h-5"} />
-                    Explore Features
-                  </span>
-                </motion.button>
+                <CustomLink href="/pricing">
+                  <motion.button
+                    className={isMobile ? "px-6 py-3 rounded-xl font-bold text-brand-700 border-2 border-brand-300 bg-brand-50 hover:bg-brand-100 transition-all duration-300 w-full" : "px-8 py-4 rounded-2xl font-bold text-brand-700 border-2 border-brand-300 bg-brand-50 hover:bg-brand-100 transition-all duration-300"}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span className={isMobile ? "flex items-center justify-center gap-2" : "flex items-center gap-2"}>
+                      <Search className={isMobile ? "w-4 h-4" : "w-5 h-5"} />
+                      View Plans
+                    </span>
+                  </motion.button>
+                </CustomLink>
               </div>
             </motion.div>
 
