@@ -36,24 +36,18 @@ export default function PaymentButton({
       return;
     }
 
-    // Check currency support
-    if (currency !== 'INR') {
-      toast.error('PhonePe currently supports INR payments only. Please switch to INR currency.');
-      return;
-    }
-
     setIsProcessing(true);
 
     try {
-      // Call payment initiation API
-      const response = await fetch('/api/payment/initiate', {
+      // Call Stripe Checkout API
+      const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           amount,
-          currency,
+          currency, // Stripe supports multiple currencies, so we can pass 'CAD' or 'INR' directly
           planName,
           userId: session.user.id,
           userEmail: session.user.email,
@@ -62,19 +56,13 @@ export default function PaymentButton({
 
       const data = await response.json();
 
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Payment initiation failed');
+      if (!response.ok || !data.url) {
+        throw new Error(data.error || 'Failed to create checkout session');
       }
 
-      // Show success message
-      toast.success('Redirecting to payment gateway...');
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
 
-      // Redirect to PhonePe payment page
-      if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;
-      } else {
-        throw new Error('Payment URL not received');
-      }
     } catch (error: any) {
       console.error('Payment error:', error);
       toast.error(error.message || 'Failed to initiate payment');
