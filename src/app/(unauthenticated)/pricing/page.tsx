@@ -45,6 +45,20 @@ const individualPlans: Plan[] = [
   },
   {
     name: 'Pay-as-you-go',
+    cadPrice: '$0.50',
+    inrPrice: '₹34.38',
+    period: '/search',
+    description: 'Only pay when you need a search',
+    features: [
+      '1 job search with full employer contact details',
+      'NOC Code insights included',
+    ],
+    highlighted: false,
+    badge: 'Most Flexible',
+    tone: 'primary',
+  },
+  {
+    name: 'Pay-as-you-go',
     cadPrice: '$3',
     inrPrice: '₹199',
     period: '/search',
@@ -140,8 +154,8 @@ function Price({ plan, currency }: { plan: Plan; currency: Currency }) {
     plan.cadPrice === 'Custom' || plan.inrPrice === 'Custom'
       ? 'Custom'
       : currency === 'CAD'
-      ? plan.cadPrice ?? '—'
-      : plan.inrPrice ?? '—';
+        ? plan.cadPrice ?? '—'
+        : plan.inrPrice ?? '—';
 
   return (
     <div className="mb-3 sm:mb-4">
