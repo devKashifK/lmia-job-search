@@ -52,6 +52,10 @@ jobs:
             PHONEPE_UAT_URL=${{ secrets.PHONEPE_UAT_URL }}
             PHONEPE_PROD_URL=${{ secrets.PHONEPE_PROD_URL }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+            STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+
 
   # ───────────────────────────────────────
   # 2) SSH into your server to pull & restart
