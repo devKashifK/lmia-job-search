@@ -438,9 +438,7 @@ export function SearchBox() {
             >
               Discover the job you want
             </motion.h1>
-{/* 
             {!isMobile && (
-<<<<<<< HEAD
               <div className="flex justify-center">
                 <h3 className="text-xl pt-2 md:text-2xl font-medium text-brand-600 text-center mb-6">
                   Search by
@@ -451,23 +449,6 @@ export function SearchBox() {
                 />
               </div>
             )}
-=======
-              <TypewriterEffect
-                title="Search With"
-                words={[
-                  'Noc Code',
-                  'Program',
-                  'Employer',
-                  'Address',
-                  'Occupation',
-                  'City',
-                  'Employer Name',
-                  'Province Mapping',
-                  '',
-                ]}
-              />
-            )} */}
->>>>>>> 0c5c7cfada8e86c1e123a7e046806b76e5774f64
           </div>
 
           {/* Search Section */}
