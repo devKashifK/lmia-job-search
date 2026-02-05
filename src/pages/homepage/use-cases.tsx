@@ -6,109 +6,42 @@ import SectionTitle from "@/components/ui/section-title";
 // Mock application interface examples
 const useCases = [
   {
-    title: "Interactive Search Interface",
+    title: "Job Seekers",
     description:
-      "Find exactly what you need with our powerful search filters. Filter by NOC codes, locations, employers, and more.",
+      "Discover the right Canadian jobs, understand employer hiring behavior, and apply with clarity and confidence.",
     content: (
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 h-full">
-        {/* Mock search interface */}
-        <div className="flex gap-3 mb-4">
-          <div className="flex-1 h-10 bg-gray-100 rounded-md" />
-          <div className="w-20 h-10 bg-brand-500 rounded-md" />
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 h-full flex flex-col justify-center items-center text-center">
+        <div className="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mb-4">
+          <svg className="w-8 h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
         </div>
-        <div className="space-y-3">
-          <div className="h-16 bg-gray-50 rounded-md border border-gray-200 p-3">
-            <div className="w-2/3 h-4 bg-gray-200 rounded mb-2" />
-            <div className="w-1/2 h-4 bg-gray-100 rounded" />
-          </div>
-          <div className="h-16 bg-gray-50 rounded-md border border-gray-200 p-3">
-            <div className="w-3/4 h-4 bg-gray-200 rounded mb-2" />
-            <div className="w-1/3 h-4 bg-gray-100 rounded" />
-          </div>
-        </div>
+        <p className="text-sm text-gray-500">Apply with confidence</p>
       </div>
     ),
   },
   {
-    title: "Data Visualization",
+    title: "Immigration Consultants & Recruiters",
     description:
-      "Transform your search results into beautiful, insightful charts and visualizations for better understanding.",
+      "Identify active employers, access hiring trend intelligence, and reduce guesswork in client profiling.",
     content: (
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 h-full">
-        {/* Mock chart interface */}
-        <div className="flex items-end h-32 gap-3 mb-4 pt-8">
-          <div
-            className="flex-1 bg-brand-200 rounded-t"
-            style={{ height: "60%" }}
-          />
-          <div
-            className="flex-1 bg-brand-300 rounded-t"
-            style={{ height: "80%" }}
-          />
-          <div
-            className="flex-1 bg-brand-400 rounded-t"
-            style={{ height: "40%" }}
-          />
-          <div
-            className="flex-1 bg-brand-500 rounded-t"
-            style={{ height: "90%" }}
-          />
-          <div
-            className="flex-1 bg-brand-600 rounded-t"
-            style={{ height: "70%" }}
-          />
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 h-full flex flex-col justify-center items-center text-center">
+        <div className="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mb-4">
+          <svg className="w-8 h-8 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
         </div>
-        <div className="flex justify-between text-sm text-gray-500 px-2">
-          <div>Jan</div>
-          <div>Feb</div>
-          <div>Mar</div>
-          <div>Apr</div>
-          <div>May</div>
-        </div>
+        <p className="text-sm text-gray-500">Data-driven profiling</p>
       </div>
     ),
   },
   {
-    title: "Advanced Filtering",
+    title: "Employers (Coming Soon)",
     description:
-      "Use our comprehensive filtering system to narrow down results and find the most relevant opportunities.",
+      "Showcase hiring presence, access talent insights, and make data-driven hiring decisions.",
     content: (
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 h-full">
-        {/* Mock filter interface */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-brand-500" />
-            <div className="flex-1 h-8 bg-gray-100 rounded" />
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-brand-400" />
-            <div className="flex-1 h-8 bg-gray-100 rounded" />
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-brand-300" />
-            <div className="flex-1 h-8 bg-gray-100 rounded" />
-          </div>
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 h-full flex flex-col justify-center items-center text-center relative overflow-hidden">
+        <div className="absolute top-2 right-2 bg-gray-100 text-gray-500 text-xs font-bold px-2 py-1 rounded">Soon</div>
+        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+          <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
         </div>
-      </div>
-    ),
-  },
-  {
-    title: "Export Options",
-    description:
-      "Download and share your findings in multiple formats. Export to PDF, Excel, or share directly with your team.",
-    content: (
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 h-full">
-        {/* Mock export interface */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="h-20 bg-gray-50 rounded border border-gray-200 p-3 flex flex-col items-center justify-center">
-            <div className="w-8 h-8 bg-brand-500 rounded mb-2" />
-            <div className="w-16 h-3 bg-gray-200 rounded" />
-          </div>
-          <div className="h-20 bg-gray-50 rounded border border-gray-200 p-3 flex flex-col items-center justify-center">
-            <div className="w-8 h-8 bg-brand-400 rounded mb-2" />
-            <div className="w-16 h-3 bg-gray-200 rounded" />
-          </div>
-        </div>
+        <p className="text-sm text-gray-500">Showcase your brand</p>
       </div>
     ),
   },
@@ -134,8 +67,8 @@ export default function UseCases() {
     <section className="py-16 relative">
       <div className="max-w-6xl mx-auto px-4">
         <SectionTitle
-          title="Use Cases"
-          subtitle="Discover how our platform can help you achieve your goals"
+          title="Who JobMaze Is For"
+          subtitle="Tailored solutions for every stakeholder in the ecosystem"
         />
 
         <motion.div
@@ -143,7 +76,7 @@ export default function UseCases() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
           {useCases.map((uc) => (
             <motion.div

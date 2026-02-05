@@ -402,61 +402,14 @@ export function SearchBox() {
           }
         >
           {/* Hero */}
-          <div
-            className={
-              isMobile
-                ? 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-4 pt-4 pb-4'
-                : 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6'
-            }
-          >
-            {/* <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className={isMobile ? 'text-left mb-3' : 'text-center mb-6'}
-            >
-              <Badge
-                className={
-                  isMobile
-                    ? 'px-3 py-1 text-xs font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border-brand-200'
-                    : 'px-6 py-2 text-sm font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 hover:from-brand-200 hover:to-brand-300 border-brand-200 shadow-md'
-                }
-              >
-                Find Top Opportunities
-              </Badge>
-            </motion.div> */}
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className={
-                isMobile
-                  ? 'text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-1'
-                  : 'text-5xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-1'
-              }
-            >
-              Discover the job you want
-            </motion.h1>
-            {!isMobile && (
-              <div className="flex justify-center">
-                <h3 className="text-xl pt-2 md:text-2xl font-medium text-brand-600 text-center mb-6">
-                  Search by
-                </h3>
-                <TypewriterEffect
-                  title=""
-                  words={['NOC', 'Province or City', 'Job title']}
-                />
-              </div>
-            )}
-          </div>
 
           {/* Search Section */}
           <div
             className={
               isMobile
                 ? 'p-4 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
-                : 'p-10 pt-2 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
+                : 'p-10 pt-8 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
             }
           >
             <motion.div
@@ -985,6 +938,54 @@ export function SearchBox() {
                 )}
               </AnimatePresence>
             </motion.div>
+          </div>
+          <div
+            className={
+              isMobile
+                ? 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-4 pt-4 pb-4'
+                : 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6'
+            }
+          >
+            {/* <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className={isMobile ? 'text-left mb-3' : 'text-center mb-6'}
+            >
+              <Badge
+                className={
+                  isMobile
+                    ? 'px-3 py-1 text-xs font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border-brand-200'
+                    : 'px-6 py-2 text-sm font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 hover:from-brand-200 hover:to-brand-300 border-brand-200 shadow-md'
+                }
+              >
+                Find Top Opportunities
+              </Badge>
+            </motion.div> */}
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className={
+                isMobile
+                  ? 'text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-1'
+                  : 'text-5xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-1'
+              }
+            >
+              Discover the job you want
+            </motion.h1>
+            {!isMobile && (
+              <div className="flex justify-center">
+                <h3 className="text-xl pt-2 md:text-2xl font-medium text-brand-600 text-center mb-6">
+                  Search by
+                </h3>
+                <TypewriterEffect
+                  title=""
+                  words={['NOC', 'Province or City', 'Job title']}
+                />
+              </div>
+            )}
           </div>
 
           {/* Search Type */}

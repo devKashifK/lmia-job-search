@@ -4,12 +4,12 @@ import { cn } from '@/lib/utils';
 
 interface BackgroundWrapperProps {
   children: React.ReactNode;
-  className: string;
+  className?: string;
 }
 
 export default function BackgroundWrapper({
   children,
-  className,
+  className = "",
 }: BackgroundWrapperProps) {
   return (
     <div

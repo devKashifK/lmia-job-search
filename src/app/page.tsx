@@ -6,11 +6,13 @@ import Pricing from '@/pages/homepage/pricing';
 import Testimonials from '@/pages/homepage/testimonals';
 import Navbar from '../components/ui/nabvar';
 import HowItWorks from '@/pages/homepage/how-it-works';
+import Intelligence from '@/pages/homepage/intelligence';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import Company from '@/components/ui/company';
 import PopularProfile from '@/components/ui/popular-profile';
 import CtaSmall from '@/components/ui/cta-small';
 import SearchBox from '@/components/ui/search-box';
+import UseCases from '@/pages/homepage/use-cases';
 
 export default function Home() {
   return (
@@ -19,11 +21,10 @@ export default function Home() {
       <SearchBox />
       <Hero />
       <Features />
-      <HowItWorks />
-      <Company />
-      <CtaSmall />
-      <PopularProfile />
+      {/* <HowItWorks /> */}
+      <Intelligence />
       {/* <UseCases /> */}
+      <Company />
       {/* <SeeItAction /> */}
       <Pricing />
       <Testimonials />

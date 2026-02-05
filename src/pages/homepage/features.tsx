@@ -1,12 +1,9 @@
 'use client';
 
 import {
-  Search,
-  BarChart2,
-  Newspaper,
-  Lock,
-  Wand2,
-  Filter,
+  Building2,
+  Globe,
+  Flame,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SectionTitle from '@/components/ui/section-title';
@@ -14,49 +11,72 @@ import useMobile from '@/hooks/use-mobile';
 
 const features = [
   {
-    title: 'Advance Search',
-    description: `Instantly find jobs by title, company, NOC code, or city. Use advanced filters to narrow results and discover the most relevant opportunities for your career goals. Easily combine multiple criteria, such as job type, location, and employer, to pinpoint exactly what you're looking for. Our search engine is optimized for speed and accuracy, ensuring you never miss a match.`,
-    icon: Search,
-    span: 'col-span-2 row-span-1',
-    content: null,
-  },
-  {
-    title: 'Dynamic Charts',
-    description:
-      'Explore trends, compare salaries, and analyze hiring patterns with beautiful, easy-to-understand charts that update as you search.',
-    icon: BarChart2,
+    title: 'LMIA-Based Hiring Opportunities',
+    description: `Explore Canadian employers that have historically hired foreign workers or may consider LMIA-based hiring — subject to IRCC rules and employer discretion.`,
+    icon: Building2,
     span: 'col-span-1 row-span-1',
-    content: null,
+    content: (
+      <ul className="mt-4 space-y-2 text-sm text-gray-600">
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Employer hiring history
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Role & location patterns
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          No job or LMIA guarantees
+        </li>
+      </ul>
+    ),
   },
   {
-    title: 'Latest Job Details',
+    title: 'Jobs Open to Global Candidates',
     description:
-      'Access up-to-date listings, employer profiles, and job requirements. Never miss a new opportunity with real-time updates and detailed job insights.',
-    icon: Newspaper,
+      'Find Canadian job opportunities that are open to applicants worldwide, including remote, hybrid, and global talent roles.',
+    icon: Globe,
     span: 'col-span-1 row-span-1',
-    content: null,
+    content: (
+      <ul className="mt-4 space-y-2 text-sm text-gray-600">
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Open international eligibility
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Employer preference visibility
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Clear application scope
+        </li>
+      </ul>
+    ),
   },
   {
-    title: 'Premium Information',
-    description: `View hidden contact details, company analytics, and insider information available only to premium users, giving you a competitive edge in your job search. Unlock access to recruiter emails, phone numbers, and in-depth company data. Premium members also receive exclusive insights, such as salary benchmarks and hiring trends, to help you make informed decisions.`,
-    icon: Lock,
-    span: 'col-span-2 row-span-1',
-    content: null,
-  },
-  {
-    title: 'Smart Search',
-    description: `Get intelligent recommendations as you type, with personalized job matches and employer suggestions based on your profile and preferences. Our AI-powered engine learns from your activity and preferences, offering smarter suggestions and highlighting jobs you're most likely to be interested in. Save time and discover hidden opportunities tailored just for you.`,
-    icon: Wand2,
-    span: 'col-span-2 row-span-1',
-    content: null,
-  },
-  {
-    title: 'Real-Time Filtering',
+    title: 'Hot & High-Demand Jobs in Canada',
     description:
-      'Refine your search on the fly—adjust filters for salary, location, job type, and more, and see results update instantly for a seamless experience.',
-    icon: Filter,
+      'Identify roles and regions with strong and consistent hiring demand based on multi-year data.',
+    icon: Flame,
     span: 'col-span-1 row-span-1',
-    content: null,
+    content: (
+      <ul className="mt-4 space-y-2 text-sm text-gray-600">
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          High-frequency hiring roles
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Province & city demand
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Trend-based insights
+        </li>
+      </ul>
+    ),
   },
 ];
 
@@ -86,21 +106,21 @@ export default function Features() {
     <section className={isMobile ? "py-10 relative bg-gradient-to-b from-white to-gray-50/50" : "py-20 relative bg-gradient-to-b from-white to-gray-50/50"}>
       <div className={isMobile ? "max-w-full mx-auto px-4" : "max-w-full mx-auto px-16"}>
         <SectionTitle
-          title="Powerful Features for Enhanced Job Search"
-          subtitle="Everything you need to streamline your job search experience"
+          title="What JobMaze Offers"
+          subtitle="Three pillars of intelligent job search"
         />
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className={isMobile ? "mt-6 grid grid-cols-1 gap-4" : "mt-12 grid grid-cols-1 md:grid-cols-3 grid-rows-6 md:grid-rows-3 gap-10 auto-rows-[minmax(160px,1fr)]"}
+          className={isMobile ? "mt-6 grid grid-cols-1 gap-4" : "mt-12 grid grid-cols-1 md:grid-cols-3 gap-10"}
         >
           {features.map((feature) => (
             <motion.div
               key={feature.title}
               variants={item}
-              className={isMobile ? "relative group rounded-xl shadow-sm p-0 flex flex-col" : `relative group rounded-2xl shadow-sm ${feature.span} p-0 flex flex-col`}
+              className={isMobile ? "relative group rounded-xl shadow-sm p-0 flex flex-col" : `relative group rounded-2xl shadow-sm col-span-1 p-0 flex flex-col`}
             >
               {/* Tilted brand background effect */}
               <div className={isMobile ? "absolute inset-0 bg-gradient-to-br from-brand-500/10 via-brand-400/10 to-brand-300/10 rounded-xl pointer-events-none" : "absolute inset-0 bg-gradient-to-br from-brand-500/10 via-brand-400/10 to-brand-300/10 rounded-2xl -rotate-2 group-hover:rotate-0 transition-transform duration-300 pointer-events-none"} />
@@ -118,7 +138,7 @@ export default function Features() {
                   {feature.description}
                 </p>
                 {feature.content && (
-                  <div className="flex-1">{feature.content}</div>
+                  <div className="flex-1 mt-auto">{feature.content}</div>
                 )}
               </div>
             </motion.div>

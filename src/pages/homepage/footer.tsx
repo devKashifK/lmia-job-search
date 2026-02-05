@@ -157,8 +157,10 @@ export default function Footer() {
           </div>
         </div>
 
+
+
         {/* Bottom Bar */}
-        <div className="border-t border-brand-200 mt-12 pt-8">
+        <div className="mt-12 pt-8 border-t border-brand-200/50">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-600 text-sm mb-4 md:mb-0">
               © {new Date().getFullYear()} Job Maze. All rights reserved.
