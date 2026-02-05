@@ -16,9 +16,29 @@ import {
   X,
   ChevronDown,
   ChevronUp,
-  Briefcase, // restored for suggestions
+  Briefcase,
   Clock,
-  List, // restored for suggestions header
+  List,
+  Palette,
+  HardHat,
+  PenTool,
+  GraduationCap,
+  Cog,
+  Leaf,
+  DollarSign,
+  Users,
+  Stethoscope,
+  Hotel,
+  Laptop,
+  UserCog,
+  Factory,
+  Megaphone,
+  Droplet,
+  MoreHorizontal,
+  Shield,
+  HeartHandshake,
+  Dumbbell,
+  Truck,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -56,41 +76,32 @@ interface Suggestion {
 }
 
 const categories = [
-  {
-    icon: <Car className="h-5 w-5" />,
-    noc_priority: 'Automotive_Maintenance',
-    bg: 'bg-brand-50',
-  },
-  {
-    icon: <Building className="h-5 w-5" />,
-    noc_priority: 'Construction',
-    bg: 'bg-brand-50',
-  },
-  {
-    icon: <Wheat className="h-5 w-5" />,
-    noc_priority: 'Farm',
-    bg: 'bg-brand-50',
-  },
-  {
-    icon: <Utensils className="h-5 w-5" />,
-    noc_priority: 'F&B',
-    bg: 'bg-brand-50',
-  },
-  {
-    icon: <Utensils className="h-5 w-5" />,
-    noc_priority: 'Food Processing',
-    bg: 'bg-brand-50',
-  },
-  {
-    icon: <Hospital className="h-5 w-5" />,
-    noc_priority: 'Healthcare',
-    bg: 'bg-brand-50',
-  },
-  {
-    icon: <Store className="h-5 w-5" />,
-    noc_priority: 'Office_Retail',
-    bg: 'bg-brand-50',
-  },
+  { icon: <Wheat className="h-5 w-5" />, noc_priority: 'Agriculture', bg: 'bg-brand-50' },
+  { icon: <Palette className="h-5 w-5" />, noc_priority: 'Art', bg: 'bg-brand-50' },
+  { icon: <Car className="h-5 w-5" />, noc_priority: 'Automotive', bg: 'bg-brand-50' },
+  { icon: <Star className="h-5 w-5" />, noc_priority: 'Beauty', bg: 'bg-brand-50' },
+  { icon: <Briefcase className="h-5 w-5" />, noc_priority: 'Business', bg: 'bg-brand-50' },
+  { icon: <HardHat className="h-5 w-5" />, noc_priority: 'Construction', bg: 'bg-brand-50' },
+  { icon: <PenTool className="h-5 w-5" />, noc_priority: 'Design', bg: 'bg-brand-50' },
+  { icon: <GraduationCap className="h-5 w-5" />, noc_priority: 'Education', bg: 'bg-brand-50' },
+  { icon: <Cog className="h-5 w-5" />, noc_priority: 'Engineering', bg: 'bg-brand-50' },
+  { icon: <Leaf className="h-5 w-5" />, noc_priority: 'Environmental', bg: 'bg-brand-50' },
+  { icon: <Utensils className="h-5 w-5" />, noc_priority: 'F&B', bg: 'bg-brand-50' },
+  { icon: <DollarSign className="h-5 w-5" />, noc_priority: 'Finance', bg: 'bg-brand-50' },
+  { icon: <Users className="h-5 w-5" />, noc_priority: 'HR', bg: 'bg-brand-50' },
+  { icon: <Stethoscope className="h-5 w-5" />, noc_priority: 'Healthcare', bg: 'bg-brand-50' },
+  { icon: <Hotel className="h-5 w-5" />, noc_priority: 'Hospitality', bg: 'bg-brand-50' },
+  { icon: <Laptop className="h-5 w-5" />, noc_priority: 'IT', bg: 'bg-brand-50' },
+  { icon: <UserCog className="h-5 w-5" />, noc_priority: 'Management', bg: 'bg-brand-50' },
+  { icon: <Factory className="h-5 w-5" />, noc_priority: 'Manufacturing', bg: 'bg-brand-50' },
+  { icon: <Megaphone className="h-5 w-5" />, noc_priority: 'Marketing', bg: 'bg-brand-50' },
+  { icon: <Store className="h-5 w-5" />, noc_priority: 'Office & Retail', bg: 'bg-brand-50' },
+  { icon: <Droplet className="h-5 w-5" />, noc_priority: 'Oil & Gas', bg: 'bg-brand-50' },
+  { icon: <MoreHorizontal className="h-5 w-5" />, noc_priority: 'Other', bg: 'bg-brand-50' },
+  { icon: <Shield className="h-5 w-5" />, noc_priority: 'Security', bg: 'bg-brand-50' },
+  { icon: <HeartHandshake className="h-5 w-5" />, noc_priority: 'Social Services', bg: 'bg-brand-50' },
+  { icon: <Dumbbell className="h-5 w-5" />, noc_priority: 'Sports & Fitness', bg: 'bg-brand-50' },
+  { icon: <Truck className="h-5 w-5" />, noc_priority: 'Transportation & Logistics', bg: 'bg-brand-50' },
 ];
 
 export function SearchBox() {
