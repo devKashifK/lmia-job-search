@@ -21,6 +21,7 @@ import { MobileHeader } from '@/components/mobile/mobile-header';
 import useMobile from '@/hooks/use-mobile';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { RecentActivityFeed } from '@/components/dashboard/recent-activity-feed';
+import { RecommendationsWidget } from '@/components/dashboard/recommendations-widget';
 
 export default function DashboardPage() {
   const { session } = useSession();
@@ -179,6 +180,17 @@ export default function DashboardPage() {
                 })}
               </div>
             </motion.div>
+
+            {/* Job Recommendations */}
+            {!isMobile && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <RecommendationsWidget />
+              </motion.div>
+            )}
 
             {/* Recent Searches / Saved Jobs Preview could go here if we wanted more widgets */}
             {/* For now keeping it clean with just stats and quick actions on the main feed */}

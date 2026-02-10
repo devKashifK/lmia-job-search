@@ -18,6 +18,7 @@ import { useUpdateCredits } from '@/hooks/use-credits';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import db from '@/db';
+import { trackSearch } from '@/utils/track-search';
 import { TypewriterEffect } from './type-writter';
 import { Input } from './input';
 import { Label } from './label';
@@ -36,6 +37,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { DateRange } from 'react-day-picker';
+
 
 interface Suggestion {
   suggestion: string;
@@ -78,6 +80,7 @@ export function SearchBox() {
   const [locationStep, setLocationStep] = useState<'province' | 'city'>('province');
   const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
+
 
   const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>('hot_leads');
   const [activeField, setActiveField] = useState<'what' | 'where' | 'dates' | null>(null);
@@ -417,6 +420,25 @@ export function SearchBox() {
 
       router.push(sp.toString() ? `${base}?${sp.toString()}` : base);
 
+      // Track the search
+      if (session?.user?.id) {
+        const filters: Record<string, any> = {};
+        if (selectedCities.length > 0) filters.cities = selectedCities;
+        if (selectedProvinces.length > 0) filters.provinces = selectedProvinces;
+        if (dateRange?.from) {
+          filters.date_from = toYMD(dateRange.from);
+          if (dateRange.to) filters.date_to = toYMD(dateRange.to);
+        }
+        filters.search_type = searchType;
+        filters.search_by = searchBy;
+
+        void trackSearch({
+          userId: session.user.id,
+          keyword: searchTerm,
+          filters: Object.keys(filters).length > 0 ? filters : undefined,
+        });
+      }
+
     } catch (error) {
       // ... error ... 
       console.error(error);
@@ -631,6 +653,7 @@ export function SearchBox() {
                 <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-900" />
               )}
             </button>
+
           </div>
 
           {/* THE "TRI-ZONE PILL" Search Bar */}
@@ -995,6 +1018,8 @@ export function SearchBox() {
               ))}
             </div>
           </div>
+
+
 
           {/* Headline (Moved Below Search Bar) */}
 

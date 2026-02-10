@@ -4,6 +4,7 @@ import CustomLink from '@/components/ui/CustomLink';
 import { cn } from '@/lib/utils';
 import { useSession } from '@/hooks/use-session';
 import UserDropdown from '@/components/ui/user-dropdown';
+import { NotificationsPopover } from '@/components/ui/notifications-popover';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -88,6 +89,7 @@ export default function Navbar({ className }: { className?: string }) {
               >
                 <CustomLink href="/dashboard">Dashboard</CustomLink>
               </Button>
+              <NotificationsPopover />
               <div className="pl-1"><UserDropdown /></div>
             </>
           ) : (

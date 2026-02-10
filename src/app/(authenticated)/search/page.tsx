@@ -1,6 +1,7 @@
 'use client';
 import { SearchBox } from '@/components/ui/search-box';
 import { SearchFeatures } from '@/components/search/features';
+
 import { motion } from 'framer-motion';
 import Footer from '@/pages/homepage/footer';
 import { BottomNav } from '@/components/mobile/bottom-nav';
@@ -25,6 +26,8 @@ export default function Page() {
 
         {/* The Enhanced Search Box */}
         <SearchBox />
+
+
 
         {/* Features section with animation */}
         {!isMobile && (
