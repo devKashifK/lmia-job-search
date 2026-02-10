@@ -19,6 +19,7 @@
 
 # production
 /build
+/db/jobmaze/backups
 
 # misc
 .DS_Store
