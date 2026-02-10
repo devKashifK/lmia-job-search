@@ -115,37 +115,37 @@ export default function AppliedFilters() {
         {selectedFilters.map((filter) => (
           <div
             key={`${filter.column}-${filter.value}`}
-            className="inline-flex items-center gap-1 py-1 px-2 bg-brand-50 border border-brand-200 rounded text-[10px] group hover:bg-brand-100 transition-colors"
+            className="inline-flex items-center gap-1.5 py-1 px-3 bg-brand-50 border border-brand-200 rounded-full text-[11px] group hover:bg-brand-100 transition-all shadow-sm"
           >
-            <span className="text-brand-600 font-semibold">
+            <span className="text-brand-600 font-semibold tracking-wide uppercase text-[9px]">
               <AttributeName name={filter.column} />
             </span>
-            <span className="text-brand-400">•</span>
-            <span className="text-brand-900 font-medium max-w-[100px] truncate">{filter.value}</span>
+            <span className="text-brand-300">|</span>
+            <span className="text-brand-900 font-medium max-w-[120px] truncate">{filter.value}</span>
             <button
               onClick={() => handleRemoveFilter(filter.column, filter.value)}
-              className="ml-0.5 text-brand-400 hover:text-brand-600 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="ml-0.5 text-brand-400 hover:text-brand-700 bg-brand-100/50 rounded-full p-0.5"
             >
-              <X className="w-2.5 h-2.5" />
+              <X className="w-3 h-3" />
             </button>
           </div>
         ))}
 
         {(dateFrom || dateTo) && (
-          <div className="inline-flex items-center gap-1 py-1 px-2 bg-brand-50 border border-brand-200 rounded text-[10px] group hover:bg-brand-100 transition-colors">
-            <CalendarIcon className="w-2.5 h-2.5 text-brand-500" />
-            <span className="text-brand-600 font-semibold">
+          <div className="inline-flex items-center gap-1.5 py-1 px-3 bg-brand-50 border border-brand-200 rounded-full text-[11px] group hover:bg-brand-100 transition-all shadow-sm">
+            <CalendarIcon className="w-3 h-3 text-brand-500" />
+            <span className="text-brand-600 font-semibold tracking-wide uppercase text-[9px]">
               {tableName === 'lmia' ? 'Year' : 'Date'}
             </span>
-            <span className="text-brand-400">•</span>
+            <span className="text-brand-300">|</span>
             <span className="text-brand-900 font-medium">
               {fmtDate(dateFrom)} - {fmtDate(dateTo)}
             </span>
             <button
               onClick={clearDateRange}
-              className="ml-0.5 text-brand-400 hover:text-brand-600 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="ml-0.5 text-brand-400 hover:text-brand-700 bg-brand-100/50 rounded-full p-0.5"
             >
-              <X className="w-2.5 h-2.5" />
+              <X className="w-3 h-3" />
             </button>
           </div>
         )}

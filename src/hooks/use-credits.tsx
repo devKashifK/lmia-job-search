@@ -11,7 +11,7 @@ interface SearchRecord {
 
 export const useCreditData = () => {
   const { session } = useSession();
-  const { data: creditData, error: creditError } = useQuery({
+  const { data: creditData, error: creditError, isLoading } = useQuery({
     queryKey: ['credits', session.trial, session?.user?.id],
     queryFn: async () => {
       if (session?.trial) return null;
@@ -30,7 +30,7 @@ export const useCreditData = () => {
 
   const creditRemaining = creditData?.total_credit - creditData?.used_credit;
 
-  return { creditData, creditError, creditRemaining };
+  return { creditData, creditError, creditRemaining, isLoading };
 };
 
 export const useUpdateCredits = () => {
@@ -74,8 +74,7 @@ export const useUpdateCredits = () => {
             id: session.user.id,
             keyword: keyword,
             save: false,
-          },
-          { returning: 'representation' }
+          }
         )
         .select('*');
 

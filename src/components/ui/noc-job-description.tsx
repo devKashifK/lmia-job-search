@@ -118,7 +118,7 @@ export function NocJobDescription({
     checkSavedStatus,
     LoginAlertComponent,
   } = useSaveJob(recordId);
-  
+
   const [nocProfile, setNocProfile] = useState<NocProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -154,11 +154,11 @@ export function NocJobDescription({
           `/analysis/${encodeURIComponent(
             job.employer
           )}?t=trending_job&jobTitle=${encodeURIComponent(
-            job.job_title
+            job.job_title ?? ''
           )}&location=${encodeURIComponent(
             job.state
           )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
-            job.noc_code
+            job.noc_code ?? ''
           )}`
         );
       } else {
@@ -166,11 +166,11 @@ export function NocJobDescription({
           `/analysis/${encodeURIComponent(
             job.employer
           )}?t=lmia&jobTitle=${encodeURIComponent(
-            job.job_title
+            job.job_title ?? ''
           )}&location=${encodeURIComponent(
             job.state
           )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
-            job.noc_code
+            job.noc_code ?? ''
           )}`
         );
       }
@@ -199,7 +199,7 @@ export function NocJobDescription({
   useEffect(() => {
     if (job?.noc_code || job?.['2021_noc']) {
       setLoading(true);
-      const nocCode = job.noc_code || job['2021_noc'];
+      const nocCode = job.noc_code || job['2021_noc'] || '';
       async function loadNocProfile() {
         const profile = await fetchNocProfile(nocCode);
         setNocProfile(profile);
@@ -241,16 +241,10 @@ export function NocJobDescription({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className={`bg-gradient-to-br from-gray-50 to-white overflow-y-auto relative ${className}`}
+        className={`bg-gray-50/50 relative ${className}`}
       >
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            }}
-          />
-        </div>
+        <div className="absolute inset-0 opacity-[0.015] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+
         <div className="relative z-10 w-full py-8 px-6">
           <div className="flex items-center justify-center h-96">
             <div className="text-center bg-white/90 backdrop-blur-sm rounded-3xl p-12 shadow-xl border border-white/30">
@@ -281,7 +275,7 @@ export function NocJobDescription({
             </div>
           </div>
         </div>
-      </motion.div>
+      </motion.div >
     );
   }
 
@@ -301,15 +295,11 @@ export function NocJobDescription({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <div className="relative rounded-xl bg-gradient-to-r from-brand-400 via-purple-500 to-brand-600 p-0.5">
-                <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 shadow-sm">
-                  <div className="absolute inset-0 opacity-20">
-                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full animate-pulse" />
-                    <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-white/5 rounded-full" />
-                    <div
-                      className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/5 rounded-full animate-bounce"
-                      style={{ animationDelay: '1s', animationDuration: '3s' }}
-                    />
+              <div className="relative rounded-2xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 p-0.5 shadow-xl shadow-brand-500/10">
+                <div className="relative overflow-hidden rounded-[14px] bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800">
+                  <div className="absolute inset-0 opacity-30">
+                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-brand-400/20 rounded-full blur-2xl" />
                   </div>
 
                   <div className="relative p-4">
@@ -329,7 +319,7 @@ export function NocJobDescription({
                                     )}?field=noc_code&t=trending_job`
                                   )
                                 }
-                                className="bg-white/20 cursor-pointer text-white border-white/30 font-mono text-xs px-2 py-0.5"
+                                className="bg-white/10 backdrop-blur-md cursor-pointer text-white border-white/20 font-medium text-xs px-2.5 py-1 hover:bg-white/20 transition-all"
                               >
                                 NOC {job!.noc_code || job!['2021_noc']}
                               </Badge>
@@ -339,7 +329,7 @@ export function NocJobDescription({
                                     size="sm"
                                     variant="ghost"
                                     onClick={copyNOCCode}
-                                    className="h-5 w-5 p-0 text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200"
+                                    className="h-6 w-6 p-0 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all duration-200"
                                   >
                                     <motion.div
                                       animate={{
@@ -457,13 +447,12 @@ export function NocJobDescription({
                               size="sm"
                               onClick={handleSaveJob}
                               disabled={savingJob}
-                              className={`transition-all duration-300 px-2.5 py-1.5 text-xs hover:scale-105 ${
-                                savingJob
-                                  ? 'opacity-50 cursor-not-allowed bg-white/20'
-                                  : dbSaved || isSaved
+                              className={`transition-all duration-300 px-2.5 py-1.5 text-xs hover:scale-105 ${savingJob
+                                ? 'opacity-50 cursor-not-allowed bg-white/20'
+                                : dbSaved || isSaved
                                   ? 'bg-yellow-500 hover:bg-yellow-400 text-yellow-900 shadow-lg shadow-yellow-500/25'
                                   : 'bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm'
-                              }`}
+                                }`}
                             >
                               <motion.div
                                 animate={{
@@ -472,9 +461,8 @@ export function NocJobDescription({
                                 transition={{ duration: 0.3 }}
                               >
                                 <Star
-                                  className={`w-3.5 h-3.5 ${
-                                    dbSaved || isSaved ? 'fill-current' : ''
-                                  }`}
+                                  className={`w-3.5 h-3.5 ${dbSaved || isSaved ? 'fill-current' : ''
+                                    }`}
                                 />
                               </motion.div>
                             </Button>
@@ -484,8 +472,8 @@ export function NocJobDescription({
                               {savingJob
                                 ? 'Saving...'
                                 : dbSaved || isSaved
-                                ? 'Remove from saved'
-                                : 'Save this job'}
+                                  ? 'Remove from saved'
+                                  : 'Save this job'}
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -532,11 +520,11 @@ export function NocJobDescription({
 
             {/* Quick Info */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Card className="border-0 bg-white/90 backdrop-blur-sm hover:shadow-lg transition-all duration-300 rounded-xl">
+              <Card className="border-0 bg-white shadow-sm ring-1 ring-gray-100 rounded-xl overflow-hidden">
                 <CardContent className="p-3">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">

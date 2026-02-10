@@ -1,21 +1,22 @@
 'use client';
+
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import {
-  Building2,
-  BarChart3,
-  TrendingUp,
-  ArrowRight,
-  Search,
-} from 'lucide-react';
-import CustomLink from '@/components/ui/CustomLink';
+import { motion } from 'framer-motion';
+import { Building2, TrendingUp, ArrowRight, PieChart } from 'lucide-react';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/pages/homepage/footer';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';
 import useMobile from '@/hooks/use-mobile';
+import { CompanySearchBar } from '@/components/analysis/company-search-bar';
+import { CompanyTierList } from '@/components/analysis/company-tier-list';
+import { TopCompaniesList } from '@/components/analysis/top-companies-list';
+import { CategorizedCompanies } from '@/components/analysis/categorized-companies';
+import { MarketStats } from '@/components/analysis/market-stats';
+import { FeaturedCompany } from '@/components/analysis/featured-company';
+import { Button } from '@/components/ui/button';
+import CustomLink from '@/components/ui/CustomLink';
 
 function Analysis() {
   const { isMobile, isMounted } = useMobile();
@@ -27,275 +28,138 @@ function Analysis() {
   return (
     <>
       <BackgroundWrapper>
+        {/* Navbar */}
         {!isMobile && <Navbar />}
         {isMobile && <MobileHeader title="Analysis" />}
-        <div
-          className={
-            isMobile ? 'min-h-screen pt-4 pb-20' : 'min-h-screen pt-32 pb-20'
-          }
-        >
-          <div
-            className={
-              isMobile ? 'container mx-auto px-4' : 'container mx-auto px-6'
-            }
-          >
+
+        <div className={isMobile ? 'min-h-screen pt-4 pb-24' : 'min-h-screen pt-32 pb-20'}>
+          {/* Decorative Elements */}
+          <div className="absolute top-0 left-0 right-0 h-[600px] bg-gradient-to-b from-brand-50/50 via-white/20 to-transparent pointer-events-none -z-10" />
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-100/30 rounded-full blur-[100px] -mr-32 -mt-32 opacity-60 animate-pulse-slow -z-10" />
+          <div className="absolute top-1/4 left-0 w-[400px] h-[400px] bg-blue-100/20 rounded-full blur-[80px] -ml-20 opacity-40 -z-10" />
+
+          <div className={isMobile ? 'container mx-auto px-4' : 'container mx-auto px-6'}>
+
             {/* Hero Section */}
-            <div className="text-center mb-16">
-              <div
-                className={
-                  isMobile
-                    ? 'inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 mb-4'
-                    : 'inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 mb-6'
-                }
+            <div className="text-center mb-12 lg:mb-16 relative max-w-5xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
               >
-                <BarChart3
-                  className={
-                    isMobile ? 'h-6 w-6 text-white' : 'h-8 w-8 text-white'
-                  }
-                />
-              </div>
-              <h1
-                className={
-                  isMobile
-                    ? 'text-2xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-4'
-                    : 'text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-6'
-                }
-              >
-                Company Analysis Dashboard
-              </h1>
-              <p
-                className={
-                  isMobile
-                    ? 'text-sm text-gray-600 max-w-3xl mx-auto leading-relaxed'
-                    : 'text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'
-                }
-              >
-                Get detailed insights into company hiring patterns, job trends,
-                and workforce data. Navigate to a company's analysis page by
-                clicking "See All Jobs" from any job listing.
-              </p>
-              <div
-                className={
-                  isMobile
-                    ? 'mt-6 flex flex-col items-stretch gap-3'
-                    : 'mt-8 flex items-center justify-center gap-4'
-                }
-              >
-                <Button
-                  size={isMobile ? 'default' : 'lg'}
-                  className="bg-gradient-to-r from-brand-500 via-brand-600 to-brand-700 hover:from-brand-600 hover:via-brand-700 hover:to-brand-800 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/40 hover:shadow-xl hover:shadow-brand-600/50 transition-all duration-300 hover:scale-105 border border-brand-400/20"
-                  asChild
-                >
-                  <CustomLink href="/search">
-                    <Search className="mr-2 h-5 w-5" />
-                    Start Searching
-                  </CustomLink>
-                </Button>
-                <Button
-                  variant="outline"
-                  size={isMobile ? 'default' : 'lg'}
-                  className="border-2 border-brand-200 text-brand-700 hover:bg-brand-50 hover:border-brand-300 font-semibold rounded-xl transition-all duration-300"
-                  asChild
-                >
-                  <CustomLink href="/dashboard">
-                    Dashboard
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </CustomLink>
-                </Button>
-              </div>
-            </div>
-
-            {/* Features Grid */}
-            <div
-              className={
-                isMobile
-                  ? 'grid grid-cols-1 gap-4 mb-12'
-                  : 'grid grid-cols-1 md:grid-cols-3 gap-8 mb-16'
-              }
-            >
-              <Card className="group hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader
-                  className={isMobile ? 'text-center pb-2' : 'text-center pb-4'}
-                >
-                  <div
-                    className={
-                      isMobile
-                        ? 'inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 mb-2 group-hover:scale-110 transition-transform duration-300'
-                        : 'inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 mb-4 group-hover:scale-110 transition-transform duration-300'
-                    }
-                  >
-                    <Building2
-                      className={
-                        isMobile ? 'h-5 w-5 text-white' : 'h-7 w-7 text-white'
-                      }
-                    />
-                  </div>
-                  <CardTitle
-                    className={
-                      isMobile
-                        ? 'text-base font-bold text-gray-900'
-                        : 'text-xl font-bold text-gray-900'
-                    }
-                  >
-                    Company Insights
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <p
-                    className={
-                      isMobile
-                        ? 'text-sm text-gray-600 leading-relaxed'
-                        : 'text-gray-600 leading-relaxed'
-                    }
-                  >
-                    Comprehensive analysis of hiring patterns and job
-                    distributions by company with detailed metrics and trends.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="group hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader
-                  className={isMobile ? 'text-center pb-2' : 'text-center pb-4'}
-                >
-                  <div
-                    className={
-                      isMobile
-                        ? 'inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 mb-2 group-hover:scale-110 transition-transform duration-300'
-                        : 'inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 mb-4 group-hover:scale-110 transition-transform duration-300'
-                    }
-                  >
-                    <TrendingUp
-                      className={
-                        isMobile ? 'h-5 w-5 text-white' : 'h-7 w-7 text-white'
-                      }
-                    />
-                  </div>
-                  <CardTitle
-                    className={
-                      isMobile
-                        ? 'text-base font-bold text-gray-900'
-                        : 'text-xl font-bold text-gray-900'
-                    }
-                  >
-                    Growth Trends
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <p
-                    className={
-                      isMobile
-                        ? 'text-sm text-gray-600 leading-relaxed'
-                        : 'text-gray-600 leading-relaxed'
-                    }
-                  >
-                    Track hiring growth rates and seasonal patterns across
-                    different time periods with interactive visualizations.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="group hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-500 border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader
-                  className={isMobile ? 'text-center pb-2' : 'text-center pb-4'}
-                >
-                  <div
-                    className={
-                      isMobile
-                        ? 'inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 mb-2 group-hover:scale-110 transition-transform duration-300'
-                        : 'inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 mb-4 group-hover:scale-110 transition-transform duration-300'
-                    }
-                  >
-                    <BarChart3
-                      className={
-                        isMobile ? 'h-5 w-5 text-white' : 'h-7 w-7 text-white'
-                      }
-                    />
-                  </div>
-                  <CardTitle
-                    className={
-                      isMobile
-                        ? 'text-base font-bold text-gray-900'
-                        : 'text-xl font-bold text-gray-900'
-                    }
-                  >
-                    Interactive Charts
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <p
-                    className={
-                      isMobile
-                        ? 'text-sm text-gray-600 leading-relaxed'
-                        : 'text-gray-600 leading-relaxed'
-                    }
-                  >
-                    Visual dashboards with location breakdowns, job categories,
-                    and NOC code analysis for comprehensive insights.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Instructions Card */}
-            <Card className="bg-gradient-to-br from-brand-50 via-white to-brand-50/30 border-brand-200/50 backdrop-blur-sm">
-              <CardContent
-                className={isMobile ? 'text-center py-8' : 'text-center py-12'}
-              >
-                <div
-                  className={
-                    isMobile
-                      ? 'inline-flex items-center justify-center w-10 h-10 rounded-full bg-brand-100 mb-3'
-                      : 'inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-100 mb-4'
-                  }
-                >
-                  <Search
-                    className={
-                      isMobile
-                        ? 'h-5 w-5 text-brand-600'
-                        : 'h-6 w-6 text-brand-600'
-                    }
-                  />
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 text-brand-600 text-xs font-bold uppercase tracking-widest mb-6">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                  </span>
+                  Data Intelligence
                 </div>
-                <h3
-                  className={
-                    isMobile
-                      ? 'text-base font-semibold text-gray-900 mb-2'
-                      : 'text-lg font-semibold text-gray-900 mb-3'
-                  }
-                >
-                  How to Access Company Analysis
-                </h3>
-                <p
-                  className={
-                    isMobile
-                      ? 'text-sm text-gray-600 max-w-md mx-auto'
-                      : 'text-gray-600 max-w-md mx-auto'
-                  }
-                >
-                  Click the "See All Jobs" button from any job listing in your
-                  search results to view detailed company analysis and insights.
+
+                <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight leading-tight">
+                  Unlock Global <br className="hidden md:block" />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-500">Company Insights</span>
+                </h1>
+
+                <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed font-light mb-10">
+                  Search millions of job records to find hiring trends, verified LMIA sponsors, and top employers in your industry.
                 </p>
-                <Button
-                  className={
-                    isMobile
-                      ? 'mt-4 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold rounded-xl shadow-md shadow-brand-500/30 hover:shadow-lg hover:shadow-brand-600/40 transition-all duration-300 w-full'
-                      : 'mt-6 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold rounded-xl shadow-md shadow-brand-500/30 hover:shadow-lg hover:shadow-brand-600/40 transition-all duration-300'
-                  }
-                  asChild
-                >
-                  <CustomLink href="/search">
-                    Start Exploring
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </CustomLink>
-                </Button>
-              </CardContent>
-            </Card>
+
+                {/* Search Bar */}
+                <div className="mb-12">
+                  <CompanySearchBar />
+                </div>
+
+                {/* Market Stats */}
+                <div className="mb-12">
+                  <MarketStats />
+                </div>
+
+                {/* Featured Company Spotlight */}
+                <div className="mb-20 text-left">
+                  <div className="flex items-center gap-2 mb-4 px-2">
+                    <div className="h-1 w-10 bg-brand-600 rounded-full" />
+                    <span className="text-sm font-bold text-brand-600 uppercase tracking-wider">Editor's Pick</span>
+                  </div>
+                  <FeaturedCompany />
+                </div>
+
+                {/* Tier Based Leaderboard */}
+                <div className="mb-20">
+                  <CompanyTierList />
+                </div>
+
+
+              </motion.div>
+            </div>
+
+            {/* Main Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-20">
+
+              {/* Left Column: Top Companies & LMIA (Span 8) */}
+              <div className="lg:col-span-12 space-y-20">
+
+                {/* Top Trending Companies */}
+                <div>
+                  <div className="flex items-center justify-between mb-8 px-2">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <TrendingUp className="h-6 w-6 text-brand-600" />
+                        Trending Companies
+                      </h2>
+                      <p className="text-gray-500 text-sm mt-1">Top employers with the most active job postings this month.</p>
+                    </div>
+                    <Button variant="ghost" className="text-brand-600 hover:bg-brand-50" asChild>
+                      <CustomLink href="/search?sort=date_desc">
+                        View All <ArrowRight className="ml-1 h-4 w-4" />
+                      </CustomLink>
+                    </Button>
+                  </div>
+                  <TopCompaniesList variant="trending" />
+                </div>
+
+                {/* Top LMIA Companies */}
+                <div>
+                  <div className="flex items-center justify-between mb-8 px-2">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <Building2 className="h-6 w-6 text-brand-600" />
+                        Top LMIA Sponsors
+                      </h2>
+                      <p className="text-gray-500 text-sm mt-1">Verified companies with the highest number of approved positions.</p>
+                    </div>
+                    <Button variant="ghost" className="text-brand-600 hover:bg-brand-50" asChild>
+                      <CustomLink href="/search?t=lmia">
+                        View All <ArrowRight className="ml-1 h-4 w-4" />
+                      </CustomLink>
+                    </Button>
+                  </div>
+                  <TopCompaniesList variant="lmia" />
+                </div>
+
+                {/* Categorized Companies */}
+                <div>
+                  <div className="flex items-center justify-between mb-8 px-2">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                        <PieChart className="h-6 w-6 text-brand-600" />
+                        Category Leaders
+                      </h2>
+                      <p className="text-gray-500 text-sm mt-1">Leading employers across key industries.</p>
+                    </div>
+                  </div>
+                  <CategorizedCompanies />
+                </div>
+
+              </div>
+            </div>
+
           </div>
-        </div>
-        {!isMobile && <Footer />}
+        </div >
+
+        {!isMobile && <Footer />
+        }
         {isMobile && <BottomNav />}
-      </BackgroundWrapper>
+      </BackgroundWrapper >
     </>
   );
 }

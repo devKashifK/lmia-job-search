@@ -1,311 +1,332 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+
+import { useState, useEffect, useCallback } from "react";
+import { format } from "date-fns";
+import {
+  Search,
+  Clock,
+  Trash2,
+  ExternalLink,
+  Edit2,
+  MoreVertical,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Search, Trash2, Edit2, Clock, History } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
-import db from "@/db";
-import { useSession } from "@/hooks/use-session";
-import CustomLink from "@/components/ui/CustomLink";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { toast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
+import db from "@/db";
+import { useSession } from "@/hooks/use-session";
 import LoadingScreen from "@/components/ui/loading-screen";
 
-interface RecentSearch {
-  id: string;
-  keyword: string;
-  created_at: string;
-  user_id: string;
+interface SearchRecord {
+  id: string; // This will map to search_id
+  term: string;
+  filters: any;
+  timestamp: Date;
+  resultCount?: number;
 }
 
 export default function RecentSearches() {
   const { session } = useSession();
-  const { toast } = useToast();
-  const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
+  const [searches, setSearches] = useState<SearchRecord[]>([]);
+  const [editingSearch, setEditingSearch] = useState<SearchRecord | null>(null);
+  const [newTerm, setNewTerm] = useState("");
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [editingSearch, setEditingSearch] = useState<RecentSearch | null>(null);
-  const [newQuery, setNewQuery] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const fetchSavedSearches = async () => {
+  const fetchSearches = useCallback(async () => {
     if (!session?.user?.id) return;
 
     try {
       const { data, error } = await db
-        .from("searches")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .order("created_at", { ascending: false });
+        .from('searches')
+        .select('*')
+        .eq('id', session.user.id) // 'id' column stores the user_id
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setRecentSearches(data || []);
-    } catch {
+
+      if (data) {
+        setSearches(data.map((item: any) => ({
+          id: item.search_id,
+          term: item.keyword,
+          filters: {}, // No filters column in schema yet
+          timestamp: new Date(item.created_at),
+          resultCount: undefined // Not stored
+        })));
+      }
+    } catch (error) {
+      console.error("Error fetching searches:", error);
       toast({
-        variant: "destructive",
         title: "Error",
-        description: "Failed to fetch saved searches",
+        description: "Failed to load recent searches",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [session?.user?.id]);
 
   useEffect(() => {
-    fetchSavedSearches();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session?.user?.id]);
+    fetchSearches();
+  }, [fetchSearches]);
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await db.from("searches").delete().eq("id", id);
+      const { error } = await db
+        .from('searches')
+        .delete()
+        .eq('search_id', id);
 
       if (error) throw error;
 
-      setRecentSearches((prev) => prev.filter((search) => search.id !== id));
+      setSearches(searches.filter((s) => s.id !== id));
       toast({
-        title: "Search Deleted",
-        description: "Your saved search has been removed",
+        title: "Success",
+        description: "Search history deleted",
+        variant: "success",
       });
-    } catch {
+    } catch (error) {
       toast({
-        variant: "destructive",
         title: "Error",
-        description: "Failed to delete saved search",
+        description: "Failed to delete search",
+        variant: "destructive",
       });
     }
   };
 
-  const handleRename = async () => {
-    if (!editingSearch) return;
-
+  const handleClearHistory = async () => {
+    if (!session?.user?.id) return;
     try {
       const { error } = await db
-        .from("searches")
-        .update({ keyword: newQuery })
-        .eq("id", editingSearch.id);
+        .from('searches')
+        .delete()
+        .eq('id', session.user.id);
 
       if (error) throw error;
 
-      setRecentSearches((prev) =>
-        prev.map((search) =>
-          search.id === editingSearch.id
-            ? { ...search, keyword: newQuery }
-            : search
-        )
-      );
-
-      setIsDialogOpen(false);
-      setEditingSearch(null);
-      setNewQuery("");
+      setSearches([]);
       toast({
-        title: "Search Renamed",
-        description: "Your saved search has been updated",
+        title: "Success",
+        description: "All search history cleared",
+        variant: "success",
       });
-    } catch {
+    } catch (error) {
       toast({
-        variant: "destructive",
         title: "Error",
-        description: "Failed to rename saved search",
+        description: "Failed to clear history",
+        variant: "destructive",
       });
+    }
+  };
+
+
+  const startRename = (search: SearchRecord) => {
+    setEditingSearch(search);
+    setNewTerm(search.term);
+    setIsRenameDialogOpen(true);
+  };
+
+  const handleRename = async () => {
+    if (editingSearch && newTerm.trim()) {
+      try {
+        const { error } = await db
+          .from('searches')
+          .update({ keyword: newTerm })
+          .eq('search_id', editingSearch.id);
+
+        if (error) throw error;
+
+        setSearches(
+          searches.map((s) =>
+            s.id === editingSearch.id ? { ...s, term: newTerm } : s
+          )
+        );
+        setIsRenameDialogOpen(false);
+        toast({
+          title: "Success",
+          description: "Search renamed successfully",
+          variant: "success",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to rename search",
+          variant: "destructive",
+        });
+      }
     }
   };
 
   if (isLoading) {
-    return <LoadingScreen className="h-[93vh] relative" />;
+    return <LoadingScreen className="h-[50vh]" />;
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex items-center gap-3 mb-6"
-      >
-        <div className="p-2.5 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-xl shadow-sm">
-          <History className="w-5 h-5 text-brand-600" />
-        </div>
+    <div className="max-w-7xl px-4 py-8 md:px-8">
+      <div className="mb-10 flex items-end justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-zinc-900">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
             Recent Searches
           </h1>
-          <p className="text-sm text-zinc-500 mt-1">
-            View and manage your recent search history
+          <p className="mt-2 text-base text-gray-500">
+            View and manage your search history.
           </p>
         </div>
-      </motion.div>
+        <Button
+          variant="outline"
+          onClick={handleClearHistory}
+          disabled={searches.length === 0}
+          className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Clear History
+        </Button>
+      </div>
 
-      {recentSearches.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex flex-col items-center justify-center py-16 px-4"
-        >
-          <div className="p-4 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-2xl shadow-sm mb-4">
-            <Search className="w-8 h-8 text-brand-600" />
-          </div>
-          <h2 className="text-lg font-medium text-zinc-900 mb-2">
-            No recent searches yet
-          </h2>
-          <p className="text-sm text-zinc-500 text-center max-w-sm mb-6">
-            Your recent searches will appear here. Start searching to see your
-            history.
-          </p>
-          <CustomLink href="/search">
-            <Button
-              variant="outline"
-              className="flex items-center gap-2 hover:bg-brand-50 hover:text-brand-600 transition-colors"
-            >
-              <Search className="w-4 h-4" />
-              Start Searching
-            </Button>
-          </CustomLink>
-        </motion.div>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
-            <CardHeader className="p-6 bg-gradient-to-r from-brand-50/90 via-brand-50/80 to-white border-b shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="p-2 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-lg shadow-md">
-                    <History className="w-4 h-4 text-brand-600" />
-                  </div>
-                  <div className="space-y-1">
-                    <h2 className="text-base font-semibold text-zinc-900">
-                      Search History
-                    </h2>
-                    <div className="flex items-center gap-2">
-                      <div className="px-2 py-0.5 bg-brand-50 rounded-full shadow-sm">
-                        <span className="text-xs font-medium text-brand-600">
-                          {recentSearches.length}{" "}
-                          {recentSearches.length === 1 ? "search" : "searches"}
-                        </span>
-                      </div>
-                      <span className="text-xs text-zinc-400">•</span>
-                      <span className="text-xs text-zinc-500">
-                        Last updated{" "}
-                        {new Date(
-                          recentSearches[0]?.created_at
-                        ).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <CustomLink href="/search">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-2 hover:bg-brand-50 hover:text-brand-600 transition-colors shadow-sm"
+      <Card className="border-none shadow-lg bg-white/80 backdrop-blur-sm">
+        <CardContent className="p-0">
+          {searches.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 mb-4">
+                <Search className="h-8 w-8 text-gray-400" />
+              </div>
+              <p className="text-lg font-medium text-gray-900">
+                No recent searches
+              </p>
+              <p className="text-sm text-gray-500 mt-1 max-w-sm">
+                Your search history will appear here. Start searching to see your
+                recent queries.
+              </p>
+              <Button className="mt-6 bg-brand-600 hover:bg-brand-700 text-white" asChild>
+                <Link href="/search">Start Searching</Link>
+              </Button>
+            </div>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              <AnimatePresence>
+                {searches.map((search, index) => (
+                  <motion.li
+                    key={search.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.2, delay: index * 0.05 }}
+                    className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 hover:bg-gray-50/50 transition-colors"
                   >
-                    <Search className="w-3.5 h-3.5" />
-                    New Search
-                  </Button>
-                </CustomLink>
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="space-y-2">
-                <AnimatePresence mode="popLayout">
-                  {recentSearches.map((search) => (
-                    <motion.div
-                      key={search.id}
-                      layout
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      className="group relative"
-                    >
-                      <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-brand-50/60 transition-all duration-300">
-                        <div className="shrink-0 w-9 h-9 flex items-center justify-center rounded-lg bg-gradient-to-br from-brand-100 via-brand-50 to-white text-brand-600 shadow-sm">
-                          <Search className="w-4 h-4" />
+                    <div className="flex items-start gap-4">
+                      <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 group-hover:bg-brand-100 transition-colors">
+                        <Search className="h-5 w-5" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-gray-900">
+                            {search.term}
+                          </h3>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2">
-                            <CustomLink
-                              href={`/search/${search.keyword}`}
-                              className="block flex-1"
-                            >
-                              <h3 className="text-sm font-medium text-zinc-900 truncate group-hover:text-brand-600 transition-colors">
-                                {search.keyword}
-                              </h3>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <Clock className="w-3 h-3 text-zinc-400" />
-                                <span className="text-xs text-zinc-500">
-                                  {new Date(
-                                    search.created_at
-                                  ).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  })}
-                                </span>
-                              </div>
-                            </CustomLink>
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0 hover:bg-white hover:text-blue-600"
-                                onClick={() => {
-                                  setEditingSearch(search);
-                                  setNewQuery(search.keyword);
-                                  setIsDialogOpen(true);
-                                }}
-                              >
-                                <Edit2 className="w-3.5 h-3.5" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                className="h-8 w-8 p-0 hover:bg-white hover:text-red-600"
-                                onClick={() => handleDelete(search.id)}
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </Button>
-                            </div>
-                          </div>
+                        <div className="flex flex-wrap gap-2 text-sm text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3.5 w-3.5" />
+                            {format(search.timestamp, "MMM d, h:mm a")}
+                          </span>
                         </div>
                       </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
+                    </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+                    <div className="flex items-center gap-2 sm:self-center self-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-gray-500 hover:text-brand-600 hover:bg-brand-50 hidden sm:flex"
+                        asChild
+                      >
+                        <Link href={`/search?q=${encodeURIComponent(search.term)}`}>
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          Run Search
+                        </Link>
+                      </Button>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-700">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                          <DropdownMenuItem asChild className="sm:hidden">
+                            <Link href={`/search?q=${encodeURIComponent(search.term)}`}>
+                              <ExternalLink className="mr-2 h-4 w-4" />
+                              Run Search
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => startRename(search)}>
+                            <Edit2 className="mr-2 h-4 w-4" />
+                            Rename
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                            onClick={() => handleDelete(search.id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </motion.li>
+                ))}
+              </AnimatePresence>
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Rename Search</DialogTitle>
+            <DialogDescription>
+              Give this search a custom name to recognize it easily later.
+            </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="py-4">
             <Input
-              value={newQuery}
-              onChange={(e) => setNewQuery(e.target.value)}
-              placeholder="Enter new search name"
+              value={newTerm}
+              onChange={(e) => setNewTerm(e.target.value)}
+              placeholder="Enter search name..."
+              className="col-span-3"
             />
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleRename}>Save</Button>
-            </div>
           </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsRenameDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleRename} className="bg-brand-600 hover:bg-brand-700 text-white">Save Changes</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

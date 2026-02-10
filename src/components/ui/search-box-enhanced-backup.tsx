@@ -33,7 +33,7 @@ const searchTabs = [
   },
   {
     id: 'lmia',
-    label: 'LMIA Approved',
+    label: 'LMIA',
     icon: FileText,
     description: 'LMIA approved positions',
     gradient: 'from-brand-500 to-brand-600',

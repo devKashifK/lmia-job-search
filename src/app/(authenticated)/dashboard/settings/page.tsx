@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +24,7 @@ import {
   EyeOff,
   AlertCircle,
   Palette,
+  Check,
 } from "lucide-react";
 import {
   Select,
@@ -32,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import {
   Popover,
@@ -40,6 +40,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { updateThemeColor } from "@/lib/colors";
+import { cn } from "@/lib/utils";
 
 export default function Settings() {
   const { session } = useSession();
@@ -88,14 +89,17 @@ export default function Settings() {
     { name: "Amber", value: "amber", color: "#f59e0b" },
     { name: "Lime", value: "lime", color: "#84cc16" },
     { name: "Emerald", value: "emerald", color: "#10b981" },
+    { name: 'Apple', value: 'black', color: '#000000' },
   ];
 
   // Apply theme color on initial load
   useEffect(() => {
     if (session?.user?.user_metadata?.brandColor) {
-      updateThemeColor(session.user.user_metadata.brandColor);
+      // Ensure we respect the saved user preference on load
+      setBrandColor(session.user.user_metadata.brandColor);
     }
   }, [session?.user?.user_metadata?.brandColor]);
+
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,6 +117,8 @@ export default function Settings() {
         title: "Profile Updated",
         description: "Your profile has been updated successfully.",
       });
+      setPassword("");
+      setNewPassword("");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -204,242 +210,215 @@ export default function Settings() {
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
-      >
-        <div className="flex items-center gap-3 mb-3">
-          <div className="p-2.5 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-xl shadow-sm">
-            <SettingsIcon className="w-5 h-5 text-brand-600" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold text-zinc-900">
-              Account Settings
-            </h1>
-            <p className="text-sm text-zinc-500 mt-1">
-              Manage your account preferences and settings
-            </p>
-          </div>
+    <div className="max-w-7xl px-4 py-8 md:px-8">
+      <div className="mb-10 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            Account Settings
+          </h1>
+          <p className="mt-2 text-base text-gray-500">
+            Manage your account preferences and security settings.
+          </p>
         </div>
-        <div className="p-4 bg-gradient-to-r from-brand-50/80 to-white rounded-lg border border-brand-100/50 shadow-sm">
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-white rounded-lg shadow-sm">
-              <Shield className="w-4 h-4 text-brand-500" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-zinc-900">
-                Security First
-              </p>
-              <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed">
-                Keep your account secure by using a strong password and enabling
-                notifications
-              </p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Account Security */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="space-y-4"
-        >
-          <div className="mb-6">
-            <h2 className="text-sm font-medium text-zinc-900">
-              Account Security
-            </h2>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              Manage your email and password
-            </p>
-          </div>
-
-          <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
-            <CardHeader className="p-6 bg-gradient-to-r from-brand-50/90 via-brand-50/80 to-white border-b shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-lg shadow-md">
-                  <Key className="w-4 h-4 text-brand-600" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-base font-semibold text-zinc-900">
-                    Security Settings
-                  </h3>
-                  <p className="text-xs text-zinc-500">
-                    Update your email and password
-                  </p>
-                </div>
+      <div className="grid gap-10 lg:grid-cols-12">
+        {/* Helper Sidebar */}
+        <div className="lg:col-span-4 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+                <Shield className="h-5 w-5" />
               </div>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <div className="space-y-2">
-                <Label
-                  htmlFor="email"
-                  className="flex items-center gap-2 text-zinc-600"
-                >
-                  <Mail className="w-4 h-4" />
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white border-zinc-200 focus:border-brand-500 focus:ring-brand-500/20"
-                />
-              </div>
-
-              <Separator className="my-4" />
-
-              <div className="space-y-2">
-                <Label
-                  htmlFor="current-password"
-                  className="flex items-center gap-2 text-zinc-600"
-                >
-                  <Lock className="w-4 h-4" />
-                  Current Password
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="current-password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-white border-zinc-200 focus:border-brand-500 focus:ring-brand-500/20 pr-10"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-brand-50 hover:text-brand-600"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label
-                  htmlFor="new-password"
-                  className="flex items-center gap-2 text-zinc-600"
-                >
-                  <Lock className="w-4 h-4" />
-                  New Password
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="new-password"
-                    type={showNewPassword ? "text" : "password"}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="bg-white border-zinc-200 focus:border-brand-500 focus:ring-brand-500/20 pr-10"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-brand-50 hover:text-brand-600"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                  >
-                    {showNewPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 p-3 bg-brand-50/50 rounded-lg">
-                <AlertCircle className="w-4 h-4 text-brand-600" />
-                <p className="text-xs text-zinc-600">
-                  Make sure your new password is strong and unique
+              <div>
+                <h3 className="font-semibold text-gray-900">Security First</h3>
+                <p className="mt-1 text-sm text-gray-500 leading-relaxed">
+                  We prioritize your account security. Enable two-factor authentication for added protection.
                 </p>
               </div>
+            </div>
+          </motion.div>
 
-              <Button
-                onClick={handleProfileUpdate}
-                disabled={isLoading}
-                className="w-full bg-brand-600 hover:bg-brand-700 text-white shadow-sm"
-              >
-                {isLoading ? "Updating..." : "Update Security Settings"}
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 ring-1 ring-blue-100">
+                <Palette className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Personalize</h3>
+                <p className="mt-1 text-sm text-gray-500 leading-relaxed">
+                  Customize your dashboard with our carefully curated themes to match your style.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
 
-        {/* Preferences */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="space-y-4"
-        >
-          <div className="mb-6">
-            <h2 className="text-sm font-medium text-zinc-900">Preferences</h2>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              Customize your app experience
-            </p>
-          </div>
+        {/* Main Settings Area */}
+        <div className="lg:col-span-8 space-y-8">
+          {/* Account Security */}
+          <section>
+            <div className="mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+              <Key className="h-5 w-5 text-brand-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Security</h2>
+            </div>
 
-          <Card className="overflow-hidden border-none shadow-lg bg-white/90 backdrop-blur-sm">
-            <CardHeader className="p-6 bg-gradient-to-r from-brand-50/90 via-brand-50/80 to-white border-b shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-lg shadow-md">
-                  <SettingsIcon className="w-4 h-4 text-brand-600" />
+            <div className="rounded-xl border border-gray-100 bg-white/50 backdrop-blur-sm p-6 shadow-sm">
+              <div className="space-y-6">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="pl-9 bg-white/50 border-gray-200 focus:border-brand-500 focus:ring-brand-500/20"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-base font-semibold text-zinc-900">
-                    App Preferences
-                  </h3>
-                  <p className="text-xs text-zinc-500">
-                    Customize your app settings
-                  </p>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="current-password">Current Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="current-password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-9 pr-10 bg-white/50 border-gray-200 focus:border-brand-500 focus:ring-brand-500/20"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-400" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="new-password">New Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="new-password"
+                      type={showNewPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="pl-9 pr-10 bg-white/50 border-gray-200 focus:border-brand-500 focus:ring-brand-500/20"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    >
+                      {showNewPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-400" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 rounded-lg bg-orange-50 px-4 py-3 text-sm text-orange-800">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <p>Make sure your new password is at least 8 characters long and includes a number.</p>
+                </div>
+
+                <div className="flex justify-end pt-2">
+                  <Button
+                    onClick={handleProfileUpdate}
+                    disabled={isLoading}
+                    className="bg-brand-600 hover:bg-brand-700 text-white min-w-[140px]"
+                  >
+                    {isLoading ? "Saving..." : "Update Credentials"}
+                  </Button>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="p-6 space-y-6">
-              <div className="flex items-center justify-between">
+            </div>
+          </section>
+
+          {/* Preferences */}
+          <section>
+            <div className="mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+              <SettingsIcon className="h-5 w-5 text-brand-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Preferences</h2>
+            </div>
+
+            <div className="rounded-xl border border-gray-100 bg-white/50 backdrop-blur-sm shadow-sm divide-y divide-gray-100">
+              {/* Theme Toggle */}
+              <div className="flex items-center justify-between p-6">
                 <div className="space-y-0.5">
-                  <Label className="text-zinc-900 flex items-center gap-2">
-                    <Sun className="w-4 h-4" />
-                    Theme
-                  </Label>
-                  <p className="text-xs text-zinc-500">
-                    Choose your preferred theme
+                  <div className="flex items-center gap-2">
+                    <Sun className="h-4 w-4 text-gray-500" />
+                    <Label className="text-base font-medium text-gray-900">Appearance</Label>
+                  </div>
+                  <p className="text-sm text-gray-500 pl-6">
+                    Customize how the application looks properly.
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Sun className="w-4 h-4 text-brand-500" />
-                  <Switch
-                    checked={theme === "dark"}
-                    onCheckedChange={(checked) => {
-                      const newTheme = checked ? "dark" : "light";
-                      setTheme(newTheme);
-                      handleSystemUpdate("theme", newTheme);
-                    }}
-                  />
-                  <Moon className="w-4 h-4 text-zinc-400" />
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center rounded-full bg-gray-100 p-1">
+                    <button
+                      onClick={() => {
+                        setTheme("light");
+                        handleSystemUpdate("theme", "light");
+                      }}
+                      className={cn(
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all",
+                        theme === "light" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900"
+                      )}
+                    >
+                      <Sun className="h-3.5 w-3.5" />
+                      Light
+                    </button>
+                    <button
+                      onClick={() => {
+                        setTheme("dark");
+                        handleSystemUpdate("theme", "dark");
+                      }}
+                      className={cn(
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all",
+                        theme === "dark" ? "bg-gray-800 text-white shadow-sm" : "text-gray-500 hover:text-gray-900"
+                      )}
+                    >
+                      <Moon className="h-3.5 w-3.5" />
+                      Dark
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <Separator className="my-4" />
-
-              <div className="flex items-center justify-between">
+              {/* Notifications */}
+              <div className="flex items-center justify-between p-6">
                 <div className="space-y-0.5">
-                  <Label className="text-zinc-900 flex items-center gap-2">
-                    <Bell className="w-4 h-4" />
-                    Notifications
-                  </Label>
-                  <p className="text-xs text-zinc-500">
-                    Receive important updates
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-4 w-4 text-gray-500" />
+                    <Label className="text-base font-medium text-gray-900">Notifications</Label>
+                  </div>
+                  <p className="text-sm text-gray-500 pl-6">
+                    Receive updates about job alerts and system changes.
                   </p>
                 </div>
                 <Switch
@@ -451,16 +430,15 @@ export default function Settings() {
                 />
               </div>
 
-              <Separator className="my-4" />
-
-              <div className="flex items-center justify-between">
+              {/* Sound Effects */}
+              <div className="flex items-center justify-between p-6">
                 <div className="space-y-0.5">
-                  <Label className="text-zinc-900 flex items-center gap-2">
-                    <Volume2 className="w-4 h-4" />
-                    Sound Effects
-                  </Label>
-                  <p className="text-xs text-zinc-500">
-                    Enable sound notifications
+                  <div className="flex items-center gap-2">
+                    <Volume2 className="h-4 w-4 text-gray-500" />
+                    <Label className="text-base font-medium text-gray-900">Sound Effects</Label>
+                  </div>
+                  <p className="text-sm text-gray-500 pl-6">
+                    Play sounds for interactions and notifications.
                   </p>
                 </div>
                 <Switch
@@ -472,13 +450,17 @@ export default function Settings() {
                 />
               </div>
 
-              <Separator className="my-4" />
-
-              <div className="space-y-2">
-                <Label className="text-zinc-900 flex items-center gap-2">
-                  <Palette className="w-4 h-4" />
-                  Brand Color
-                </Label>
+              {/* Brand Color */}
+              <div className="flex items-center justify-between p-6">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <Palette className="h-4 w-4 text-gray-500" />
+                    <Label className="text-base font-medium text-gray-900">Accent Color</Label>
+                  </div>
+                  <p className="text-sm text-gray-500 pl-6">
+                    Choose a primary color for your dashboard.
+                  </p>
+                </div>
                 <Popover
                   open={showColorPalette}
                   onOpenChange={setShowColorPalette}
@@ -486,41 +468,49 @@ export default function Settings() {
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full justify-between bg-white border-zinc-200 hover:bg-zinc-50"
+                      className="w-[180px] justify-between bg-white border-zinc-200 hover:bg-zinc-50 font-normal"
                     >
                       <div className="flex items-center gap-2">
                         <div
-                          className="w-4 h-4 rounded-full"
+                          className="w-4 h-4 rounded-full border border-gray-100 shadow-sm"
                           style={{
                             backgroundColor: colorPalette.find(
                               (c) => c.value === brandColor
                             )?.color,
                           }}
                         />
-                        <span className="capitalize">{brandColor}</span>
+                        <span className="capitalize">{
+                          colorPalette.find((c) => c.value === brandColor)?.name || brandColor
+                        }</span>
                       </div>
-                      <Palette className="w-4 h-4 text-zinc-400" />
+                      <Palette className="w-3.5 h-3.5 text-zinc-400" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[280px] p-4" align="start">
+                  <PopoverContent className="w-[320px] p-4" align="end">
                     <div className="grid grid-cols-4 gap-2">
                       {colorPalette.map((color) => (
                         <button
                           key={color.value}
-                          className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-zinc-50 transition-colors"
+                          className={cn(
+                            "group flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all duration-200",
+                            brandColor === color.value ? "bg-gray-100" : "hover:bg-gray-50"
+                          )}
                           onClick={() => handleColorChange(color.value)}
                         >
-                          <div
-                            className="w-8 h-8 rounded-full border-2 border-zinc-200"
-                            style={{
-                              backgroundColor: color.color,
-                              borderColor:
-                                brandColor === color.value
-                                  ? color.color
-                                  : "transparent",
-                            }}
-                          />
-                          <span className="text-xs text-zinc-600 capitalize">
+                          <div className="relative">
+                            <div
+                              className={cn(
+                                "w-8 h-8 rounded-full shadow-sm ring-1 ring-inset ring-black/5 transition-transform group-hover:scale-110",
+                              )}
+                              style={{ backgroundColor: color.color }}
+                            />
+                            {brandColor === color.value && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Check className="w-4 h-4 text-white drop-shadow-md" strokeWidth={3} />
+                              </div>
+                            )}
+                          </div>
+                          <span className="text-[10px] font-medium text-gray-600 capitalize">
                             {color.name}
                           </span>
                         </button>
@@ -530,13 +520,17 @@ export default function Settings() {
                 </Popover>
               </div>
 
-              <Separator className="my-4" />
-
-              <div className="space-y-2">
-                <Label className="text-zinc-900 flex items-center gap-2">
-                  <Globe className="w-4 h-4" />
-                  Language
-                </Label>
+              {/* Language */}
+              <div className="flex items-center justify-between p-6">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 text-gray-500" />
+                    <Label className="text-base font-medium text-gray-900">Language</Label>
+                  </div>
+                  <p className="text-sm text-gray-500 pl-6">
+                    Select your preferred language.
+                  </p>
+                </div>
                 <Select
                   value={language}
                   onValueChange={(value) => {
@@ -544,19 +538,19 @@ export default function Settings() {
                     handleSystemUpdate("language", value);
                   }}
                 >
-                  <SelectTrigger className="bg-white border-zinc-200 focus:border-brand-500 focus:ring-brand-500/20">
+                  <SelectTrigger className="w-[180px] bg-white border-zinc-200 focus:border-brand-500 focus:ring-brand-500/20">
                     <SelectValue placeholder="Select language" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="fr">French</SelectItem>
-                    <SelectItem value="es">Spanish</SelectItem>
+                    <SelectItem value="fr">Français</SelectItem>
+                    <SelectItem value="es">Español</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

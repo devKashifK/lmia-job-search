@@ -1,20 +1,20 @@
 import { SearchResultsLayout } from '@/components/ui/search-result-layout';
 
 type PageProps = {
-  params: { segment: string; keyword: string };
-  searchParams: Record<string, string | string[] | undefined>;
+  params: Promise<{ segment: string; keyword: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
-export default function CompanyPage({ params, searchParams }: PageProps) {
-  const searchKey = params.keyword; // "Cook" (already decoded by Next)
+export default async function CompanyPage({ params, searchParams }: PageProps) {
+  const { keyword } = await params;
+  const { field } = await searchParams;
 
-  // ?field=job_title  (normalize to a single string)
-  const field = searchParams.field;
+  const searchKey = decodeURIComponent(keyword);
 
   return (
     <SearchResultsLayout
       searchKey={searchKey}
       field={field as string}
-      searchType="company" // or "lmia"
+      searchType="lmia" // or "lmia"
     />
   );
 }

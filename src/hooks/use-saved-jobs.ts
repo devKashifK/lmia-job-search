@@ -55,7 +55,11 @@ export function useSavedJobs() {
             if (!trendingJobError && trendingJobData) {
               return {
                 ...savedJob,
-                job_data: { ...trendingJobData, type: 'hotLeads' },
+                job_data: {
+                  ...trendingJobData,
+                  type: 'hotLeads',
+                  operating_name: trendingJobData.employer // Map employer to operating_name
+                },
               };
             }
 

@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { Bookmark } from 'lucide-react';
 import {
@@ -112,16 +113,16 @@ export default function JobCard({
   const tags =
     type === 'lmia'
       ? [
-          `Program: ${program}`,
-          `Priority Occupation: ${priorityOccupation}`,
-          `NOC: ${noc}`,
-          `Positions: ${approvedPositions}`,
-        ].filter(Boolean)
+        `Program: ${program}`,
+        `Priority Occupation: ${priorityOccupation}`,
+        `NOC: ${noc}`,
+        `Positions: ${approvedPositions}`,
+      ].filter(Boolean)
       : [
-          // `Employer Type: ${employerType}`,
-          `Category: ${category}`,
-          `NOC: ${noc}`,
-        ].filter(Boolean);
+        // `Employer Type: ${employerType}`,
+        `Category: ${category}`,
+        `NOC: ${noc}`,
+      ].filter(Boolean);
 
   // Pick a random color for the top section, stable for this card instance
   const randomBg = useMemo(
@@ -136,10 +137,10 @@ export default function JobCard({
       : [city, state].filter(Boolean).join(', ');
 
   return (
-    <div className="rounded-2xl  w-full max-w-md bg-transparent px-2 py-2 border border-gray-200">
+    <div className="group rounded-3xl w-full max-w-md bg-white p-2 border border-gray-100 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1">
       {/* Top Section */}
       <div
-        className={`${randomBg} rounded-2xl px-5 pt-4 pb-3 flex flex-col relative`}
+        className={`${randomBg} rounded-2xl px-5 pt-5 pb-4 flex flex-col relative transition-opacity duration-300 group-hover:opacity-90`}
       >
         {/* Date + Save */}
         <div className="flex items-start justify-between mb-3">
@@ -164,9 +165,8 @@ export default function JobCard({
                   type="button"
                 >
                   <Bookmark
-                    className={`w-5 h-5 ${
-                      isSaved ? 'fill-black text-black' : 'text-gray-400'
-                    }`}
+                    className={`w-5 h-5 ${isSaved ? 'fill-black text-black' : 'text-gray-400'
+                      }`}
                     fill={isSaved ? 'currentColor' : 'none'}
                   />
                 </button>
@@ -227,7 +227,24 @@ export default function JobCard({
         </div>
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-1">
-          {tags.map((tag) => (
+          {tags.filter(t => t.startsWith('Category:')).map((tag) => {
+            const categoryName = tag.replace('Category: ', '');
+            return (
+              <Link
+                key={tag}
+                href={`/search/${type === 'lmia' ? 'lmia' : 'hot-leads'}/${encodeURIComponent(categoryName)}?field=category&t=${type === 'lmia' ? 'lmia' : 'trending_job'}`}
+                className="cursor-pointer"
+              >
+                <Badge
+                  variant="secondary"
+                  className="bg-white/80 hover:bg-brand-50 hover:text-brand-600 text-gray-700 border border-gray-200/50 transition-colors"
+                >
+                  {tag}
+                </Badge>
+              </Link>
+            );
+          })}
+          {tags.filter(t => !t.startsWith('Category:')).map((tag) => (
             <Badge
               key={tag}
               variant="secondary"
@@ -258,7 +275,9 @@ export default function JobCard({
         <button
           className="bg-black text-white px-5 py-1.5 rounded-full font-semibold text-sm shadow hover:bg-gray-800 transition-colors duration-200"
           onClick={() => {
-            setSelectedRecordID(recordID);
+            if (recordID) {
+              setSelectedRecordID(recordID);
+            }
             onKnowMore();
           }}
         >

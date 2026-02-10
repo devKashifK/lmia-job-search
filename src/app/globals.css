@@ -78,6 +78,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -91,8 +92,10 @@
 
 /* Change the color of the progress bar */
 #nprogress .bar {
-  background: #ea580c !important; /* Green color */
-  height: 4px; /* Increase thickness */
+  background: #ea580c !important;
+  /* Green color */
+  height: 4px;
+  /* Increase thickness */
 }
 
 /* Customize the spinner (if enabled) */
@@ -161,14 +164,17 @@
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -206,4 +212,22 @@
 
 .custom-scrollbar::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+@keyframes vertical-scroll {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-vertical-scroll {
+  animation: vertical-scroll 20s linear infinite;
+}
+
+.animate-vertical-scroll:hover {
+  animation-play-state: paused;
 }

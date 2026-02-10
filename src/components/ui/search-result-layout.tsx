@@ -23,7 +23,7 @@ export function SearchResultsLayout({
       ) : (
         <Navbar className="" />
       )}
-      <div className={isMobile ? '' : 'pt-24'}>
+      <div className={isMobile ? '' : 'pt-16'}>
         <DynamicDataView
           title={decodeURIComponent(searchKey)}
           field={decodeURIComponent(field)}

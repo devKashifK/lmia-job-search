@@ -22,13 +22,13 @@ import {
 interface CompactSearchProps {
   className?: string;
   placeholder?: string;
-  defaultSearchType?: 'Trending Jobs' | 'lmia';
+  defaultSearchType?: 'hot_leads' | 'lmia';
 }
 
 export default function CompactSearch({
   className = '',
   placeholder = 'Quick search...',
-  defaultSearchType = 'Trending Jobs',
+  defaultSearchType = 'hot_leads',
 }: CompactSearchProps) {
   const [input, setInput] = useState('');
   const [isChecking, setIsChecking] = useState(false);
@@ -37,7 +37,7 @@ export default function CompactSearch({
   >([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [searchType, setSearchType] = useState<'Trending Jobs' | 'lmia'>(
+  const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>(
     defaultSearchType
   );
   const [isExpanded, setIsExpanded] = useState(false);
@@ -250,9 +250,8 @@ export default function CompactSearch({
     <div className={`relative ${className}`}>
       <motion.div
         layout
-        className={`flex items-center bg-white rounded-lg border border-gray-200 shadow-sm transition-all duration-300 ${
-          isExpanded ? 'shadow-md ring-1 ring-brand-500/20' : 'hover:shadow-md'
-        }`}
+        className={`flex items-center bg-white rounded-lg border border-gray-200 shadow-sm transition-all duration-300 ${isExpanded ? 'shadow-md ring-1 ring-brand-500/20' : 'hover:shadow-md'
+          }`}
         animate={{
           width: isExpanded ? '400px' : '260px',
         }}

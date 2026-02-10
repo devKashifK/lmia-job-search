@@ -40,6 +40,7 @@ export default function UserDropdown({ className }: { className?: string }) {
     { name: 'Amber', value: 'amber', color: '#f59e0b' },
     { name: 'Lime', value: 'lime', color: '#84cc16' },
     { name: 'Emerald', value: 'emerald', color: '#10b981' },
+    { name: 'Apple', value: 'black', color: '#000000' },
   ];
 
   const handleColorChange = async (color: string) => {

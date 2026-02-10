@@ -78,6 +78,7 @@ export const colorScales: Record<string, ColorScale> = {
   amber: generateHslScale("#f59e0b"),
   lime: generateHslScale("#84cc16"),
   emerald: generateHslScale("#10b981"),
+  black: generateHslScale("#000000"),
 };
 
 export function updateThemeColor(color: string) {

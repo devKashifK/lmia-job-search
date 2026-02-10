@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { NocJobDescriptionSkeleton } from './noc-job-description-skeleton';
-import { AllJobsListSkeleton } from './all-jobs-list-skeleton';
 
 interface NewDataPanelSkeletonProps {
   className?: string;
@@ -12,41 +10,35 @@ export function NewDataPanelSkeleton({
   className = '',
 }: NewDataPanelSkeletonProps) {
   return (
-    <div className={`flex flex-col w-full  h-[1200px] ${className}`}>
-      <div className="flex flex-1 min-h-0">
-        {/* Middle Section - NOC Job Description - Fixed width */}
-
-        {/* Right Sidebar - All Jobs - Fixed width */}
-        <div className="w-[550px] flex-shrink-0 border-l ml-4 border-gray-200">
-          <AllJobsListSkeleton className="h-full" itemCount={5} />
-        </div>
-
-        <div className="flex-1 min-w-0 max-w-4xl">
-          <NocJobDescriptionSkeleton className="h-full" />
-        </div>
-      </div>
-
-      {/* Pagination Controls Skeleton - Outside scrollable area */}
-      <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4 shadow-none">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-center items-center gap-2">
-            {/* Previous button */}
-            <Skeleton className="h-8 w-8 rounded" />
-
-            {/* Page numbers */}
-            <div className="flex gap-1">
-              <Skeleton className="h-8 w-8 rounded" />
-              <Skeleton className="h-8 w-8 rounded bg-brand-100" />{' '}
-              {/* Current page */}
-              <Skeleton className="h-8 w-8 rounded" />
-              <span className="flex items-center px-2 text-gray-500">...</span>
-              <Skeleton className="h-8 w-8 rounded" />
+    <div className={`w-full ${className}`}>
+      {/* Grid of Card Skeletons */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="rounded-3xl bg-white p-2 border border-gray-100 shadow-sm"
+          >
+            {/* Top Section */}
+            <div className="rounded-2xl px-5 pt-5 pb-4 flex flex-col relative bg-gray-50 h-[140px]">
+              <div className="flex justify-between mb-3">
+                <Skeleton className="h-5 w-20 rounded-full bg-gray-200" />
+                <Skeleton className="h-8 w-8 rounded-full bg-white" />
+              </div>
+              <div className="mt-auto space-y-2">
+                <Skeleton className="h-3 w-24 bg-gray-200" />
+                <Skeleton className="h-6 w-48 bg-gray-300" />
+              </div>
             </div>
-
-            {/* Next button */}
-            <Skeleton className="h-8 w-8 rounded" />
+            {/* Bottom Section */}
+            <div className="px-5 pt-3 pb-2 flex items-end justify-between">
+              <div className="space-y-1">
+                <Skeleton className="h-4 w-16 bg-gray-200" />
+                <Skeleton className="h-3 w-32 bg-gray-100" />
+              </div>
+              <Skeleton className="h-8 w-20 rounded-full bg-gray-900" />
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

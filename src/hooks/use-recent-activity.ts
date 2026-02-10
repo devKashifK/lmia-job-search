@@ -94,7 +94,7 @@ export function useRecentActivity(limit: number = 10) {
         const { data: searchesData, error: searchesError } = await db
           .from('searches')
           .select('id, keyword, created_at')
-          .eq('user_id', session.user.id)
+          .eq('id', session.user.id)
           .order('created_at', { ascending: false });
 
         if (!searchesError && searchesData) {

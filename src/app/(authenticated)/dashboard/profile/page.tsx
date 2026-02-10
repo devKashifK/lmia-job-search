@@ -27,6 +27,7 @@ import {
   MapPin,
   Building,
   Clock,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -92,79 +93,78 @@ function EditableField({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.2 }}
     >
-      <Card className="group overflow-hidden bg-white hover:bg-zinc-50/50 transition-all duration-300 hover:shadow-md">
-        <div className="flex items-center justify-between px-5 py-4 bg-white border-b border-zinc-100">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-lg text-brand-500 shadow-sm">
+      <div className="group relative overflow-hidden rounded-xl border border-gray-100 bg-white/50 backdrop-blur-sm transition-all duration-300 hover:shadow-md hover:border-brand-100/50 hover:bg-white/80">
+        <div className="flex items-start justify-between p-4">
+          <div className="flex gap-4">
+            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-50 text-gray-500 ring-1 ring-gray-100 transition-colors group-hover:bg-brand-50 group-hover:text-brand-600 group-hover:ring-brand-100">
               {icon}
             </div>
-            <div>
-              <h3 className="text-sm font-medium text-zinc-900">{title}</h3>
-              {!isEditing && !value && (
-                <p className="text-xs text-zinc-400 mt-0.5">Not set</p>
+            <div className="flex-1 space-y-1">
+              <p className="text-sm font-medium leading-none text-gray-900">
+                {title}
+              </p>
+              {!isEditing ? (
+                <p className={cn("text-sm leading-relaxed", !value ? "text-gray-400 italic" : "text-gray-600")}>
+                  {value || "Not set"}
+                </p>
+              ) : (
+                <div className="mt-2 space-y-3">
+                  {isTextArea ? (
+                    <Textarea
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      placeholder={placeholder}
+                      className="min-h-[100px] resize-none border-gray-200 bg-white/50 focus:border-brand-500 focus:ring-brand-500/20"
+                    />
+                  ) : (
+                    <Input
+                      type={type}
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      placeholder={placeholder}
+                      className="h-9 border-gray-200 bg-white/50 focus:border-brand-500 focus:ring-brand-500/20"
+                    />
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={handleUpdate}
+                      disabled={isLoading}
+                      className="h-8 bg-brand-600 px-3 text-xs hover:bg-brand-700"
+                    >
+                      {isLoading ? "Saving..." : "Save Changes"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCancelEditing}
+                      disabled={isLoading}
+                      className="h-8 px-3 text-xs text-gray-500 hover:text-gray-900"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
               )}
             </div>
           </div>
-          {!isEditing ? (
+          {!isEditing && (
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={handleStartEditing}
-              className="h-8 w-8 p-0 text-zinc-400 opacity-0 group-hover:opacity-100 hover:text-zinc-900 transition-all"
+              className="h-8 w-8 text-gray-400 opacity-0 transition-all hover:bg-gray-100 hover:text-gray-900 group-hover:opacity-100"
             >
               <Pencil className="h-4 w-4" />
+              <span className="sr-only">Edit {title}</span>
             </Button>
-          ) : (
-            <div className="flex gap-1.5">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCancelEditing}
-                className="h-8 w-8 p-0 text-zinc-400 hover:text-zinc-900 hover:bg-white/50"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleUpdate}
-                disabled={isLoading}
-                className="h-8 w-8 p-0 text-brand-500 hover:text-brand-600 hover:bg-brand-50"
-              >
-                <Check className="h-4 w-4" />
-              </Button>
-            </div>
           )}
         </div>
-        <CardContent className={cn("p-5", isEditing && "bg-zinc-50/80")}>
-          {isEditing ? (
-            isTextArea ? (
-              <Textarea
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                placeholder={placeholder}
-                className="min-h-[120px] resize-none bg-white border-zinc-200 focus:border-brand-500 focus:ring-brand-500/20"
-              />
-            ) : (
-              <Input
-                type={type}
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                placeholder={placeholder}
-                className="bg-white border-zinc-200 focus:border-brand-500 focus:ring-brand-500/20"
-              />
-            )
-          ) : (
-            <p className="text-sm text-zinc-600 leading-relaxed">
-              {value || <span className="text-zinc-400">{placeholder}</span>}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      </div>
     </motion.div>
   );
 }
@@ -185,199 +185,190 @@ export default function UserProfile() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
-      >
-        <div className="flex items-center gap-3 mb-3">
-          <div className="p-2.5 bg-gradient-to-br from-brand-100 via-brand-50 to-white rounded-xl shadow-sm">
-            <User className="w-5 h-5 text-brand-600" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold text-zinc-900">
-              Profile Settings
-            </h1>
-            <p className="text-sm text-zinc-500 mt-1">
-              Manage your profile information and preferences
-            </p>
+    <div className="max-w-7xl px-4 py-8 md:px-8">
+      <div className="mb-10 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            Profile Settings
+          </h1>
+          <p className="mt-2 text-base text-gray-500">
+            Manage your personal information and professional profile.
+          </p>
+        </div>
+        <div className="hidden md:block">
+          <div className="flex items-center gap-2 rounded-full bg-brand-50 px-4 py-1.5 text-sm font-medium text-brand-700 ring-1 ring-inset ring-brand-700/10">
+            <Sparkles className="h-4 w-4" />
+            <span>Profile Completion: 85%</span>
           </div>
         </div>
-        <div className="p-4 bg-gradient-to-r from-brand-50/50 to-brand-100/30 rounded-lg border border-brand-100/50">
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-white rounded-lg shadow-sm">
-              <Shield className="w-4 h-4 text-brand-500" />
+      </div>
+
+      <div className="grid gap-10 lg:grid-cols-12">
+        {/* Sidebar/Navigation (Optional - for future expansion, keeping layout balanced) */}
+        <div className="lg:col-span-4 space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+          >
+            <div className="flex flex-col items-center text-center">
+              <div className="relative mb-4">
+                <div className="h-24 w-24 rounded-full bg-gradient-to-br from-brand-100 to-brand-50 p-1 ring-4 ring-white">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-white text-2xl font-bold text-brand-600">
+                    {session.user.email?.charAt(0).toUpperCase()}
+                  </div>
+                </div>
+                <div className="absolute bottom-0 right-0 rounded-full bg-emerald-500 p-1.5 ring-4 ring-white"></div>
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {session.user.user_metadata?.name || "User"}
+              </h2>
+              <p className="text-sm text-gray-500">{session.user.email}</p>
+
+              <div className="mt-6 w-full space-y-2">
+                <div className="flex items-center gap-2 rounded-lg bg-gray-50 p-3 text-sm text-gray-600">
+                  <Shield className="h-4 w-4 text-brand-500" />
+                  <span>Verified Account</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-zinc-900">
-                Complete your profile
-              </p>
-              <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed">
-                Adding your information helps us provide better service and
-                personalized experience
-              </p>
-            </div>
-          </div>
+          </motion.div>
         </div>
-      </motion.div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        {/* Personal Information */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="space-y-4"
-        >
-          <div className="mb-6">
-            <h2 className="text-sm font-medium text-zinc-900">
-              Personal Information
-            </h2>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              Your basic personal information
-            </p>
-          </div>
-          <EditableField
-            icon={<User className="w-4 h-4" />}
-            title="Full Name"
-            value={session?.user?.user_metadata?.name || ""}
-            placeholder="Add your full name"
-            onUpdate={(value) => updateUserMetadata("name", value)}
-          />
-          <EditableField
-            icon={<Phone className="w-4 h-4" />}
-            title="Phone Number"
-            value={session?.user?.user_metadata?.phone || ""}
-            placeholder="Add your phone number"
-            onUpdate={(value) => updateUserMetadata("phone", value)}
-            type="tel"
-          />
-          <EditableField
-            icon={<Shield className="w-4 h-4" />}
-            title="Gender"
-            value={session?.user?.user_metadata?.gender || ""}
-            placeholder="Add your gender"
-            onUpdate={(value) => updateUserMetadata("gender", value)}
-          />
-          <EditableField
-            icon={<Calendar className="w-4 h-4" />}
-            title="Date of Birth"
-            value={session?.user?.user_metadata?.dob || ""}
-            placeholder="Add your date of birth"
-            onUpdate={(value) => updateUserMetadata("dob", value)}
-            type="date"
-          />
-          <EditableField
-            icon={<MapPin className="w-4 h-4" />}
-            title="Country"
-            value={session?.user?.user_metadata?.country || ""}
-            placeholder="Add your country"
-            onUpdate={(value) => updateUserMetadata("country", value)}
-          />
-          <EditableField
-            icon={<Home className="w-4 h-4" />}
-            title="Address"
-            value={session?.user?.user_metadata?.address || ""}
-            placeholder="Add your address"
-            onUpdate={(value) => updateUserMetadata("address", value)}
-            isTextArea
-          />
-        </motion.div>
+        {/* Main Form Area */}
+        <div className="lg:col-span-8 space-y-8">
+          {/* Personal Information */}
+          <section>
+            <div className="mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+              <User className="h-5 w-5 text-brand-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Personal Information</h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <EditableField
+                icon={<User className="h-4 w-4" />}
+                title="Full Name"
+                value={session?.user?.user_metadata?.name || ""}
+                placeholder="Ex. John Doe"
+                onUpdate={(value) => updateUserMetadata("name", value)}
+              />
+              <EditableField
+                icon={<Phone className="h-4 w-4" />}
+                title="Phone Number"
+                value={session?.user?.user_metadata?.phone || ""}
+                placeholder="Ex. +1 (555) 000-0000"
+                onUpdate={(value) => updateUserMetadata("phone", value)}
+                type="tel"
+              />
+              <EditableField
+                icon={<MapPin className="h-4 w-4" />}
+                title="Location"
+                value={session?.user?.user_metadata?.country || ""}
+                placeholder="Ex. Toronto, Canada"
+                onUpdate={(value) => updateUserMetadata("country", value)}
+              />
+              <EditableField
+                icon={<Calendar className="h-4 w-4" />}
+                title="Date of Birth"
+                value={session?.user?.user_metadata?.dob || ""}
+                placeholder="Select date"
+                onUpdate={(value) => updateUserMetadata("dob", value)}
+                type="date"
+              />
+              <div className="sm:col-span-2">
+                <EditableField
+                  icon={<Home className="h-4 w-4" />}
+                  title="Address"
+                  value={session?.user?.user_metadata?.address || ""}
+                  placeholder="Ex. 123 Main St, Apt 4B"
+                  onUpdate={(value) => updateUserMetadata("address", value)}
+                  isTextArea
+                />
+              </div>
+            </div>
+          </section>
 
-        {/* Professional Information */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="space-y-4"
-        >
-          <div className="mb-6">
-            <h2 className="text-sm font-medium text-zinc-900">
-              Professional Information
-            </h2>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              Your work and education details
-            </p>
-          </div>
-          <EditableField
-            icon={<Briefcase className="w-4 h-4" />}
-            title="Current Position"
-            value={session?.user?.user_metadata?.position || ""}
-            placeholder="Add your current position"
-            onUpdate={(value) => updateUserMetadata("position", value)}
-          />
-          <EditableField
-            icon={<Building className="w-4 h-4" />}
-            title="Company"
-            value={session?.user?.user_metadata?.company || ""}
-            placeholder="Add your company name"
-            onUpdate={(value) => updateUserMetadata("company", value)}
-          />
-          <EditableField
-            icon={<Clock className="w-4 h-4" />}
-            title="Experience (years)"
-            value={session?.user?.user_metadata?.experience || ""}
-            placeholder="Add years of experience"
-            onUpdate={(value) => updateUserMetadata("experience", value)}
-            type="number"
-          />
-          <EditableField
-            icon={<GraduationCap className="w-4 h-4" />}
-            title="Education"
-            value={session?.user?.user_metadata?.education || ""}
-            placeholder="Add your education details"
-            onUpdate={(value) => updateUserMetadata("education", value)}
-          />
-          <EditableField
-            icon={<Code className="w-4 h-4" />}
-            title="Skills"
-            value={session?.user?.user_metadata?.skills || ""}
-            placeholder="Add your skills (comma separated)"
-            onUpdate={(value) => updateUserMetadata("skills", value)}
-            isTextArea
-          />
-          <EditableField
-            icon={<Languages className="w-4 h-4" />}
-            title="Languages"
-            value={session?.user?.user_metadata?.languages || ""}
-            placeholder="Add languages you speak"
-            onUpdate={(value) => updateUserMetadata("languages", value)}
-          />
-          <EditableField
-            icon={<Globe className="w-4 h-4" />}
-            title="Website"
-            value={session?.user?.user_metadata?.website || ""}
-            placeholder="Add your website URL"
-            onUpdate={(value) => updateUserMetadata("website", value)}
-            type="url"
-          />
-          <EditableField
-            icon={<Linkedin className="w-4 h-4" />}
-            title="LinkedIn"
-            value={session?.user?.user_metadata?.linkedin || ""}
-            placeholder="Add your LinkedIn profile URL"
-            onUpdate={(value) => updateUserMetadata("linkedin", value)}
-            type="url"
-          />
-          <EditableField
-            icon={<Twitter className="w-4 h-4" />}
-            title="Twitter"
-            value={session?.user?.user_metadata?.twitter || ""}
-            placeholder="Add your Twitter profile URL"
-            onUpdate={(value) => updateUserMetadata("twitter", value)}
-            type="url"
-          />
-          <EditableField
-            icon={<FileText className="w-4 h-4" />}
-            title="Bio"
-            value={session?.user?.user_metadata?.bio || ""}
-            placeholder="Add your bio"
-            onUpdate={(value) => updateUserMetadata("bio", value)}
-            isTextArea
-          />
-        </motion.div>
+          {/* Professional Information */}
+          <section>
+            <div className="mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+              <Briefcase className="h-5 w-5 text-brand-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Professional Profile</h2>
+            </div>
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <EditableField
+                  icon={<Briefcase className="h-4 w-4" />}
+                  title="Current Role"
+                  value={session?.user?.user_metadata?.position || ""}
+                  placeholder="Ex. Senior Software Engineer"
+                  onUpdate={(value) => updateUserMetadata("position", value)}
+                />
+                <EditableField
+                  icon={<Building className="h-4 w-4" />}
+                  title="Company"
+                  value={session?.user?.user_metadata?.company || ""}
+                  placeholder="Ex. Tech Solutions Inc."
+                  onUpdate={(value) => updateUserMetadata("company", value)}
+                />
+              </div>
+
+              <EditableField
+                icon={<FileText className="h-4 w-4" />}
+                title="Professional Bio"
+                value={session?.user?.user_metadata?.bio || ""}
+                placeholder="Tell us a bit about your professional background..."
+                onUpdate={(value) => updateUserMetadata("bio", value)}
+                isTextArea
+              />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <EditableField
+                  icon={<Clock className="h-4 w-4" />}
+                  title="Years of Experience"
+                  value={session?.user?.user_metadata?.experience || ""}
+                  placeholder="Ex. 5"
+                  onUpdate={(value) => updateUserMetadata("experience", value)}
+                  type="number"
+                />
+                <EditableField
+                  icon={<GraduationCap className="h-4 w-4" />}
+                  title="Education"
+                  value={session?.user?.user_metadata?.education || ""}
+                  placeholder="Ex. BSc Computer Science"
+                  onUpdate={(value) => updateUserMetadata("education", value)}
+                />
+              </div>
+
+              <EditableField
+                icon={<Code className="h-4 w-4" />}
+                title="Skills"
+                value={session?.user?.user_metadata?.skills || ""}
+                placeholder="Ex. React, Node.js, TypeScript (comma separated)"
+                onUpdate={(value) => updateUserMetadata("skills", value)}
+                isTextArea
+              />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <EditableField
+                  icon={<Linkedin className="h-4 w-4" />}
+                  title="LinkedIn URL"
+                  value={session?.user?.user_metadata?.linkedin || ""}
+                  placeholder="https://linkedin.com/in/..."
+                  onUpdate={(value) => updateUserMetadata("linkedin", value)}
+                  type="url"
+                />
+                <EditableField
+                  icon={<Globe className="h-4 w-4" />}
+                  title="Portfolio / Website"
+                  value={session?.user?.user_metadata?.website || ""}
+                  placeholder="https://..."
+                  onUpdate={(value) => updateUserMetadata("website", value)}
+                  type="url"
+                />
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

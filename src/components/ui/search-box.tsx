@@ -4,41 +4,12 @@ import {
   Search,
   TrendingUp,
   ArrowRight,
-  Star,
-  Check,
-  Car,
-  Building,
-  Hospital,
-  Utensils,
-  Wheat,
-  Store,
+  Briefcase,
   MapPin,
   X,
   ChevronDown,
-  ChevronUp,
-  Briefcase,
-  Clock,
-  List,
-  Palette,
-  HardHat,
-  PenTool,
-  GraduationCap,
-  Cog,
-  Leaf,
-  DollarSign,
-  Users,
-  Stethoscope,
-  Hotel,
-  Laptop,
-  UserCog,
-  Factory,
-  Megaphone,
-  Droplet,
-  MoreHorizontal,
-  Shield,
-  HeartHandshake,
-  Dumbbell,
-  Truck,
+  CalendarIcon,
+  Check
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -47,8 +18,6 @@ import { useUpdateCredits } from '@/hooks/use-credits';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import db from '@/db';
-import { useTableStore } from '@/context/store';
-import { Badge } from '@/components/ui/badge';
 import { TypewriterEffect } from './type-writter';
 import { Input } from './input';
 import { Label } from './label';
@@ -66,7 +35,6 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 
 interface Suggestion {
@@ -75,52 +43,48 @@ interface Suggestion {
   hits?: number;
 }
 
-const categories = [
-  { icon: <Wheat className="h-5 w-5" />, noc_priority: 'Agriculture', bg: 'bg-brand-50' },
-  { icon: <Palette className="h-5 w-5" />, noc_priority: 'Art', bg: 'bg-brand-50' },
-  { icon: <Car className="h-5 w-5" />, noc_priority: 'Automotive', bg: 'bg-brand-50' },
-  { icon: <Star className="h-5 w-5" />, noc_priority: 'Beauty', bg: 'bg-brand-50' },
-  { icon: <Briefcase className="h-5 w-5" />, noc_priority: 'Business', bg: 'bg-brand-50' },
-  { icon: <HardHat className="h-5 w-5" />, noc_priority: 'Construction', bg: 'bg-brand-50' },
-  { icon: <PenTool className="h-5 w-5" />, noc_priority: 'Design', bg: 'bg-brand-50' },
-  { icon: <GraduationCap className="h-5 w-5" />, noc_priority: 'Education', bg: 'bg-brand-50' },
-  { icon: <Cog className="h-5 w-5" />, noc_priority: 'Engineering', bg: 'bg-brand-50' },
-  { icon: <Leaf className="h-5 w-5" />, noc_priority: 'Environmental', bg: 'bg-brand-50' },
-  { icon: <Utensils className="h-5 w-5" />, noc_priority: 'F&B', bg: 'bg-brand-50' },
-  { icon: <DollarSign className="h-5 w-5" />, noc_priority: 'Finance', bg: 'bg-brand-50' },
-  { icon: <Users className="h-5 w-5" />, noc_priority: 'HR', bg: 'bg-brand-50' },
-  { icon: <Stethoscope className="h-5 w-5" />, noc_priority: 'Healthcare', bg: 'bg-brand-50' },
-  { icon: <Hotel className="h-5 w-5" />, noc_priority: 'Hospitality', bg: 'bg-brand-50' },
-  { icon: <Laptop className="h-5 w-5" />, noc_priority: 'IT', bg: 'bg-brand-50' },
-  { icon: <UserCog className="h-5 w-5" />, noc_priority: 'Management', bg: 'bg-brand-50' },
-  { icon: <Factory className="h-5 w-5" />, noc_priority: 'Manufacturing', bg: 'bg-brand-50' },
-  { icon: <Megaphone className="h-5 w-5" />, noc_priority: 'Marketing', bg: 'bg-brand-50' },
-  { icon: <Store className="h-5 w-5" />, noc_priority: 'Office & Retail', bg: 'bg-brand-50' },
-  { icon: <Droplet className="h-5 w-5" />, noc_priority: 'Oil & Gas', bg: 'bg-brand-50' },
-  { icon: <MoreHorizontal className="h-5 w-5" />, noc_priority: 'Other', bg: 'bg-brand-50' },
-  { icon: <Shield className="h-5 w-5" />, noc_priority: 'Security', bg: 'bg-brand-50' },
-  { icon: <HeartHandshake className="h-5 w-5" />, noc_priority: 'Social Services', bg: 'bg-brand-50' },
-  { icon: <Dumbbell className="h-5 w-5" />, noc_priority: 'Sports & Fitness', bg: 'bg-brand-50' },
-  { icon: <Truck className="h-5 w-5" />, noc_priority: 'Transportation & Logistics', bg: 'bg-brand-50' },
-];
+interface LocationSuggestion {
+  city: string;
+  province: string;
+}
+
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+// ... existing imports ...
+
+// ... (Suggestion interfaces remain same)
 
 export function SearchBox() {
   const { isMobile, isMounted } = useMobile();
   const [input, setInput] = useState('');
-  const [location, setLocation] = useState('');
-  const [city, setCity] = useState('');
+  const [locationText, setLocationText] = useState(''); // Text display only
   const [showLocationMenu, setShowLocationMenu] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>(
-    'hot_leads'
-  );
 
-  // --- RANGE (Trending Jobs only)
+  // Location Hierarchy State (Multi-Select)
+  const [provinces, setProvinces] = useState<{ province: string }[]>([]);
+  const [cities, setCities] = useState<{ city: string; province: string }[]>([]);
+  const [locationStep, setLocationStep] = useState<'province' | 'city'>('province');
+  const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
+  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+
+  const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>('hot_leads');
+  const [activeField, setActiveField] = useState<'what' | 'where' | 'dates' | null>(null);
+  const [searchBy, setSearchBy] = useState<'all' | 'job_title' | 'category' | 'noc_code' | 'employer'>('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
+  // ... (existing refs and hooks)
 
   const { updateCreditsAndSearch } = useUpdateCredits();
   const { toast } = useToast();
@@ -132,6 +96,7 @@ export function SearchBox() {
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const locationMenuRef = useRef<HTMLDivElement>(null);
+  const locationInputRef = useRef<HTMLInputElement>(null);
 
   // helpers for dates
   const toYMD = (d: Date) => {
@@ -143,12 +108,6 @@ export function SearchBox() {
 
   useEffect(() => {
     if (dateRange?.from) {
-      const fromParam = toYMD(dateRange.from);
-      // If 'to' is undefined, we might just set to=from or handle it however the backend expects.
-      // Usually ranges need both or at least 'from'.
-      // If 'to' is present:
-      const toParam = dateRange.to ? toYMD(dateRange.to) : '';
-
       // Update URL params logic will happen in attachRangeParams
     }
   }, [dateRange]);
@@ -183,8 +142,18 @@ export function SearchBox() {
       ) {
         setShowSuggestions(false);
       }
-      if (locationMenuRef.current && !locationMenuRef.current.contains(t)) {
+      if (locationMenuRef.current && !locationMenuRef.current.contains(t) && locationInputRef.current && !locationInputRef.current.contains(t)) {
         setShowLocationMenu(false);
+      }
+
+      // Clear active field if clicking outside main container
+      const container = document.getElementById('search-pill-container');
+      if (container && !container.contains(t)) {
+        // Check if we clicked inside the calendar popover
+        const calendarPopover = document.querySelector('[data-radix-popper-content-wrapper]');
+        if (!calendarPopover?.contains(t)) {
+          setActiveField(null);
+        }
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -201,7 +170,7 @@ export function SearchBox() {
     try {
       if (searchType === 'hot_leads') {
         const { data, error } = await db.rpc('suggest_trending_job', {
-          p_field: 'all',
+          p_field: searchBy,
           p_q: query,
           p_limit: 10,
         });
@@ -209,7 +178,7 @@ export function SearchBox() {
         setSuggestions((data as Suggestion[]) || []);
       } else {
         const { data, error } = await db.rpc('suggest_lmia', {
-          p_field: 'all',
+          p_field: searchBy,
           p_q: query,
           p_limit: 10,
         });
@@ -224,10 +193,121 @@ export function SearchBox() {
     }
   };
 
+  // 1. Fetch Provinces
+  const fetchProvinces = async () => {
+    try {
+      const { data, error } = await db.rpc('get_provinces');
+      if (!error && data) {
+        setProvinces(data as { province: string }[]);
+      }
+    } catch (err) {
+      console.error('Error fetching provinces:', err);
+    }
+  };
+
+  // 2. Fetch Cities for ALL selected provinces
+  const fetchCitiesForProvinces = async (provincesList: string[]) => {
+    if (provincesList.length === 0) {
+      setCities([]);
+      return;
+    }
+
+    try {
+      // Fetch stats for each selected province in parallel
+      const allCitiesArrays = await Promise.all(
+        provincesList.map(async (province) => {
+          const { data, error } = await db.rpc('get_cities_by_province', {
+            p_province: province,
+            p_search: '',
+          });
+          if (!error && data) {
+            // Tag with province for context if needed, though RPC might not return it
+            return (data as { city: string }[]).map(c => ({ ...c, province }));
+          }
+          return [];
+        })
+      );
+
+      // Flatten
+      const flattened = allCitiesArrays.flat();
+      // Remove duplicates if any (though cities are usually unique per province, same city name might exist in multiple?)
+      // For now trust the list.
+      setCities(flattened);
+    } catch (err) {
+      console.error('Error fetching cities:', err);
+    }
+  };
+
+  // Load provinces on mount
+  useEffect(() => {
+    fetchProvinces();
+  }, []);
+
+  // Update cities when selected provinces change
+  useEffect(() => {
+    if (selectedProvinces.length > 0) {
+      fetchCitiesForProvinces(selectedProvinces);
+    } else {
+      setCities([]);
+    }
+  }, [selectedProvinces]);
+
+  // Update Location Text based on selections
+  useEffect(() => {
+    if (selectedCities.length > 0) {
+      const count = selectedCities.length;
+      setLocationText(`${count} Cit${count > 1 ? 'ies' : 'y'} Selected`);
+    } else if (selectedProvinces.length > 0) {
+      const count = selectedProvinces.length;
+      setLocationText(`${count} Province${count > 1 ? 's' : ''} Selected`);
+    } else {
+      setLocationText('');
+    }
+  }, [selectedProvinces, selectedCities]);
+
+
+  const handleProvinceToggle = (province: string) => {
+    setSelectedProvinces(prev => {
+      const next = prev.includes(province)
+        ? prev.filter(p => p !== province)
+        : [...prev, province];
+      return next;
+    });
+    // If we deselect a province, we should remove its cities? 
+    // Complicated UX. For now, let's clear cities if province is removed to be safe?
+    // Or just filter valid cities later. 
+    // Simplest: Clear cities when provinces change significantly or just let `fetchCitiesForProvinces` rebuild available list.
+    // Real issue: `selectedCities` might contain cities from a deselected province.
+    // Lets clear cities selection if we toggle provinces to avoid stale state for now, or filter them.
+    setSelectedCities([]);
+  };
+
+  const handleCityToggle = (city: string) => {
+    setSelectedCities(prev => {
+      return prev.includes(city)
+        ? prev.filter(c => c !== city)
+        : [...prev, city];
+    });
+  };
+
+  const handleApplyLocation = () => {
+    setShowLocationMenu(false);
+    // Focus next field or just close
+  };
+
+  // reset on "Canada" selection
+  const handleSelectCanada = () => {
+    setSelectedProvinces([]);
+    setSelectedCities([]);
+    setLocationText('Canada');
+    setShowLocationMenu(false);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInput(value);
     setShowSuggestions(true);
+    setActiveField('what');
     void fetchSuggestions(value);
   };
 
@@ -250,7 +330,17 @@ export function SearchBox() {
     if (!session?.session) {
       updateCreditsAndSearch(s?.suggestion);
       sp.set('field', s.field ?? 'all');
-      if (location.trim()) sp.set('state', location.trim());
+
+      // Handle Location in URL
+      sp.delete('state');
+      sp.delete('city');
+      if (selectedCities.length > 0) {
+        selectedCities.forEach(c => sp.append('city', c));
+        selectedProvinces.forEach(p => sp.append('state', p));
+      } else {
+        selectedProvinces.forEach(p => sp.append('state', p));
+      }
+
       attachRangeParams(sp);
 
       if (searchType === 'hot_leads') {
@@ -273,67 +363,176 @@ export function SearchBox() {
   };
 
   const startSearch = async () => {
-    if (!input.trim()) {
-      toast({
-        title: 'Empty Search',
-        description: 'Please enter a search term',
-        variant: 'destructive',
-      });
-      return;
+    // ... validation ...
+    if (!input.trim() && !dateRange?.from && selectedProvinces.length === 0 && selectedCities.length === 0 && locationText !== 'Canada') {
+      // Allow if specifically "Canada" selected or manual text? 
+      // For this UI, "Canada" means NO location filter.
     }
 
     setIsSearching(true);
     try {
-      const loc = (location || '').trim();
-      const cty = (city || '').trim();
-      const isCanada = loc.toLowerCase() === 'canada';
+      const isCanada = locationText.toLowerCase() === 'canada';
 
-      if (isCanada) {
+      if (isCanada || (selectedProvinces.length === 0 && selectedCities.length === 0)) {
         sp.delete('state');
         sp.delete('city');
       } else {
-        if (loc) sp.set('state', loc);
-        else sp.delete('state');
-        if (cty) sp.set('city', cty);
-        else sp.delete('city');
+        // Multi-select URL params: append multiple 'state' or 'city' keys
+        sp.delete('state');
+        sp.delete('city');
+
+        if (selectedCities.length > 0) {
+          // If cities are selected, we filter by them. 
+          // Do we ALSO need the province? Usually city implies province/state context or distinct names.
+          // Search result logic likely handles `city` OR `state`? 
+          // If I select "Toronto", I expect "Toronto, ON". 
+          // Let's pass both if possible or just cities if they are granular enough.
+          // Pass state context if query requires it. 
+          // For now, let's pass all selected provinces AND all selected cities. 
+          selectedCities.forEach(c => sp.append('city', c));
+          // Also pass provinces? 
+          selectedProvinces.forEach(p => sp.append('state', p));
+        } else {
+          // Only provinces selected
+          selectedProvinces.forEach(p => sp.append('state', p));
+        }
       }
 
-      sp.set('field', 'job_title');
+      const searchTerm = input.trim() || 'all';
+      sp.set('field', input.trim() ? searchBy : 'all');
       attachRangeParams(sp);
 
-      if (!session?.session) {
-        updateCreditsAndSearch(input);
-        if (searchType === 'hot_leads') {
-          sp.set('t', 'trending_job');
-          router.push(
-            `/search/hot-leads/${encodeURIComponent(input)}?${sp.toString()}`
-          );
-        } else {
-          sp.set('t', 'lmia');
-          router.push(
-            `/search/lmia/${encodeURIComponent(input)}?${sp.toString()}`
-          );
-        }
-        return;
-      }
+      // ... (rest of router push logic same as before, sp.toString() handles multi-params)
 
       const base =
         searchType === 'hot_leads'
-          ? `/search/hot-leads/${encodeURIComponent(input)}`
-          : `/search/lmia/${encodeURIComponent(input)}`;
+          ? `/search/hot-leads/${encodeURIComponent(searchTerm)}`
+          : `/search/lmia/${encodeURIComponent(searchTerm)}`;
+
+      if (searchType === 'hot_leads') {
+        sp.set('t', 'trending_job');
+      } else {
+        sp.set('t', 'lmia');
+      }
 
       router.push(sp.toString() ? `${base}?${sp.toString()}` : base);
+
     } catch (error) {
-      console.error('Search error:', error);
-      toast({
-        title: 'Search Error',
-        description: 'An error occurred while searching',
-        variant: 'destructive',
-      });
+      // ... error ... 
+      console.error(error);
     } finally {
       setIsSearching(false);
     }
   };
+
+  // ... render ... 
+
+  // In the UI for Zone 2: Where ...
+  <div
+    onClick={() => {
+      setActiveField('where');
+      setShowLocationMenu(true);
+    }}
+  // ... same styling ...
+  >
+    <Label className="...">Where</Label>
+    <div className="flex items-center justify-between">
+      <div className="text-base font-medium text-gray-900 truncate w-full">
+        {locationText || "Select Location..."}
+      </div>
+      {locationText && (
+        <button onClick={(e) => { e.stopPropagation(); handleSelectCanada(); setLocationText(''); }} className="p-1 hover:bg-gray-200 rounded-full">
+          <X className="w-3 h-3 text-gray-400" />
+        </button>
+      )}
+    </div>
+  </div>
+
+  // ... In Location Menu Dropdown ... 
+
+  {/* Two-Step Multi-Select */ }
+  <div className="mt-2 pt-2 border-t border-gray-100 max-h-[300px] overflow-y-auto">
+    {locationStep === 'province' ? (
+      <>
+        <div className="flex items-center justify-between px-4 py-2 mb-2">
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Select Provinces</div>
+          {selectedProvinces.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocationStep('city')}
+              className="h-7 text-xs text-brand-600 font-semibold hover:text-brand-700 hover:bg-brand-50"
+            >
+              Next: Select Cities <ArrowRight className="w-3 h-3 ml-1" />
+            </Button>
+          )}
+        </div>
+        <div className="grid grid-cols-1 gap-1 px-2">
+          {provinces.map((p, idx) => (
+            <div
+              key={idx}
+              className="flex items-center space-x-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+              onClick={() => handleProvinceToggle(p.province)}
+            >
+              <Checkbox
+                checked={selectedProvinces.includes(p.province)}
+                className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
+              />
+              <span className="text-sm font-medium text-gray-700">{p.province}</span>
+            </div>
+          ))}
+        </div>
+      </>
+    ) : (
+      <>
+        <div className="flex items-center justify-between px-2 mb-2 sticky top-0 bg-white z-10 py-2 border-b border-gray-50">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLocationStep('province')}
+            className="h-8 px-2 text-gray-500 hover:text-gray-900"
+          >
+            <ArrowRight className="w-4 h-4 rotate-180 mr-1" /> Back
+          </Button>
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            Cities from {selectedProvinces.length} Provi...
+          </div>
+        </div>
+
+        {cities.length > 0 ? (
+          <div className="grid grid-cols-1 gap-1 px-2">
+            {cities.map((c, idx) => (
+              <div
+                key={`${c.province}-${c.city}-${idx}`}
+                className="flex items-center space-x-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+                onClick={() => handleCityToggle(c.city)}
+              >
+                <Checkbox
+                  checked={selectedCities.includes(c.city)}
+                  className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
+                />
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-gray-700">{c.city}</span>
+                  <span className="text-[10px] text-gray-400">{c.province}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-4 text-center text-gray-400 text-sm">No cities found.</div>
+        )}
+
+        <div className="sticky bottom-0 bg-white p-2 border-t border-gray-100 mt-2">
+          <Button
+            onClick={handleApplyLocation}
+            className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-lg h-9 text-sm"
+          >
+            Apply ({selectedCities.length})
+          </Button>
+        </div>
+      </>
+    )}
+  </div>
 
   const checkCredits = async () => {
     if (session?.trial) {
@@ -390,803 +589,488 @@ export function SearchBox() {
     return null;
   }
 
-  const hasCredits = session?.session || session?.trial || false; // simplified check for UI disabled states if needed
-
   return (
     <>
       {isMobile && <MobileHeader title="Job Search" />}
       <div
         className={
           isMobile
-            ? 'w-full max-w-full mx-auto px-4 pt-4 pb-5'
-            : 'w-full max-w-full mx-auto px-16 pt-32'
+            ? 'w-full max-w-full mx-auto px-4 pt-16 pb-10'
+            : 'w-full max-w-7xl mx-auto px-6 pt-32 pb-16' // Dramatically reduced padding for "Eye Level"
         }
       >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className={
-            isMobile
-              ? 'bg-white/95 backdrop-blur-2xl rounded-2xl shadow-sm border border-gray-100 overflow-hidden'
-              : 'bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-gray-100 overflow-hidden px-28'
-          }
+          className="relative z-20"
         >
-          {/* Hero */}
-
-
-          {/* Search Section */}
-          <div
-            className={
-              isMobile
-                ? 'p-4 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
-                : 'p-10 pt-8 relative bg-gradient-to-br from-brand-50/30 via-white to-brand-50/20'
-            }
-          >
-            <motion.div
-              className="relative"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
+          {/* Tabs (Moved outside bar) - Subtle */}
+          <div className="flex justify-center gap-6 mb-2">
+            <button
+              onClick={() => setSearchType('hot_leads')}
+              className={cn(
+                "pb-2 text-sm font-semibold transition-all relative tracking-wide",
+                searchType === 'hot_leads' ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
+              )}
             >
-              <div className="relative">
-                {/* main search bar */}
-                <div
-                  className={cn(
-                    isMobile
-                      ? 'relative flex flex-col gap-3 rounded-xl transition-all duration-300 bg-white'
-                      : 'relative flex items-stretch rounded-2xl transition-all duration-500 border-2 overflow-visible group w-full',
-                    !isMobile &&
-                    (showSuggestions || showLocationMenu
-                      ? 'bg-white border-brand-500 shadow-lg shadow-brand-500/20 ring-2 ring-brand-500/10'
-                      : 'bg-white border-gray-200 shadow-md hover:border-brand-300 hover:shadow-lg')
-                  )}
-                >
-                  {isMobile ? (
-                    <>
-                      {/* Mobile: Simple search input */}
-                      <div className="flex items-center gap-2 p-3 border-2 border-gray-200 rounded-xl focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20">
-                        <Search className="w-4 h-4 text-brand-600 flex-shrink-0" />
-                        <input
-                          ref={searchInputRef}
-                          type="text"
-                          value={input}
-                          onChange={handleChange}
-                          onFocus={() => setShowSuggestions(true)}
-                          placeholder="Search jobs, companies..."
-                          className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-sm focus:outline-none"
-                          onKeyDown={(e) => e.key === 'Enter' && startSearch()}
-                        />
-                        {input && (
-                          <button
-                            onClick={() => {
-                              setInput('');
-                              setShowSuggestions(false);
-                            }}
-                            className="p-1 text-gray-400 hover:text-gray-600"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      {/* Desktop: Complex layout */}
-                      <motion.div
-                        className="pl-5 pr-3 py-4 flex items-center"
-                        animate={{ scale: showSuggestions ? 1.1 : 1 }}
-                        transition={{
-                          duration: 0.3,
-                          type: 'spring',
-                          stiffness: 200,
-                        }}
-                      >
-                        <div
-                          className={cn(
-                            'p-2.5 rounded-xl transition-all duration-300 relative overflow-hidden',
-                            showSuggestions
-                              ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-lg'
-                              : 'bg-brand-100 text-brand-600 group-hover:bg-brand-200'
-                          )}
-                        >
-                          <Search className="w-5 h-5 relative z-10" />
-                        </div>
-                      </motion.div>
-
-                      <input
-                        ref={searchInputRef}
-                        type="text"
-                        value={input}
-                        onChange={handleChange}
-                        onFocus={() => setShowSuggestions(true)}
-                        placeholder="Search for jobs, companies, NOC, keywords…"
-                        className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 text-base py-4 px-2 focus:outline-none"
-                        onKeyDown={(e) => e.key === 'Enter' && startSearch()}
-                      />
-
-                      <div className="my-2 w-px bg-gray-200" />
-                    </>
-                  )}
-
-                  {/* location block */}
-                  {isMobile ? (
-                    <Button
-                      type="button"
-                      onClick={() => setShowLocationMenu((v) => !v)}
-                      className="w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 border-2 border-gray-200"
-                    >
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-brand-600" />
-                        <span className="text-sm font-medium">
-                          {location.trim() ? location : 'Add Location'}
-                        </span>
-                      </div>
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  ) : (
-                    <div className="relative flex items-center gap-2 px-4">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => setShowLocationMenu((v) => !v)}
-                        className={cn(
-                          'flex items-center gap-2 rounded-xl shadow-none px-3 py-2 transition-all duration-200',
-                          showLocationMenu
-                            ? 'bg-brand-50 text-brand-700'
-                            : 'hover:bg-gray-100 text-gray-700'
-                        )}
-                      >
-                        <MapPin className="w-4 h-4" />
-                        <span className="text-sm font-medium whitespace-nowrap">
-                          {location.trim() ? location : 'Location'}
-                        </span>
-                      </Button>
-
-                      {location.trim() && (
-                        <Button
-                          type="button"
-                          aria-label="Clear location"
-                          onClick={() => setLocation('')}
-                          className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      )}
-
-                      <div className="h-6 w-px bg-gray-200 mx-2" />
-
-                      {/* Date Range Picker */}
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={'outline'}
-                            className={cn(
-                              'flex items-center gap-2 rounded-xl shadow-none px-3 py-2 border-0 bg-transparent hover:bg-gray-100 text-gray-700',
-                              (dateRange?.from || dateRange?.to) && 'text-brand-600 bg-brand-50 hover:bg-brand-100'
-                            )}
-                          >
-                            <CalendarIcon className="w-4 h-4" />
-                            <span className="text-sm font-medium whitespace-nowrap">
-                              {dateRange?.from ? (
-                                dateRange.to ? (
-                                  <>
-                                    {format(dateRange.from, 'LLL dd')} -{' '}
-                                    {format(dateRange.to, 'LLL dd')}
-                                  </>
-                                ) : (
-                                  format(dateRange.from, 'LLL dd')
-                                )
-                              ) : (
-                                'Date Range'
-                              )}
-                            </span>
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="end">
-                          <Calendar
-                            initialFocus
-                            mode="range"
-                            defaultMonth={dateRange?.from}
-                            selected={dateRange}
-                            onSelect={setDateRange}
-                            numberOfMonths={2}
-                          />
-                        </PopoverContent>
-                      </Popover>
-
-                      <AnimatePresence>
-                        {showLocationMenu && (
-                          <motion.div
-                            ref={locationMenuRef}
-                            initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                            transition={{ duration: 0.15 }}
-                            className="absolute right-0 top-[calc(100%+10px)] z-[10000] w-80 rounded-2xl border border-gray-200 bg-white shadow-xl"
-                          >
-                            <div className="p-3 border-b border-gray-100">
-                              <Button
-                                type="button"
-                                onClick={() => {
-                                  setLocation('Canada');
-                                  setShowLocationMenu(false);
-                                }}
-                                className="w-full flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 hover:bg-brand-50 transition"
-                              >
-                                <span className="flex items-center gap-2 text-gray-800">
-                                  <MapPin className="w-4 h-4 text-brand-600" />
-                                  All of Canada
-                                </span>
-                                <span className="text-xs font-semibold text-brand-700 bg-brand-100 px-2 py-0.5 rounded">
-                                  Quick set
-                                </span>
-                              </Button>
-                            </div>
-                            <div className="p-3">
-                              <Label className="block text-xs font-semibold text-gray-500 mb-2">
-                                Type a state / province
-                              </Label>
-                              <Input
-                                type="text"
-                                value={location}
-                                onChange={(e) => setLocation(e.target.value)}
-                                placeholder="e.g., Toronto, ON or British Columbia"
-                                className="w-full mb-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter')
-                                    setShowLocationMenu(false);
-                                }}
-                              />
-                              <Label className="block text-xs font-semibold text-gray-500 mb-2">
-                                Or type a city
-                              </Label>
-                              <Input
-                                type="text"
-                                value={city}
-                                onChange={(e) => setCity(e.target.value)}
-                                placeholder="e.g., Edmonton, Abbotsford, Calgary"
-                                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter')
-                                    setShowLocationMenu(false);
-                                }}
-                              />
-                              <div className="mt-3 flex justify-end gap-2">
-                                <Button
-                                  variant={'outline'}
-                                  type="button"
-                                  onClick={() => {
-                                    setLocation('');
-                                    setShowLocationMenu(false);
-                                  }}
-                                  className="text-sm px-3 py-1.5 rounded-lg "
-                                >
-                                  Clear
-                                </Button>
-                                <Button
-                                  variant={'default'}
-                                  type="button"
-                                  onClick={() => setShowLocationMenu(false)}
-                                  className="text-sm px-3 py-1.5 rounded-lg bg-brand-600 text-white"
-                                >
-                                  Done
-                                </Button>
-                              </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  )}
-
-                  {/* trailing controls */}
-                  {isMobile ? (
-                    <Button
-                      type="button"
-                      onClick={startSearch}
-                      disabled={isSearching || !input.trim()}
-                      className={cn(
-                        'w-full px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300',
-                        isSearching || !input.trim()
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md'
-                      )}
-                    >
-                      {isSearching ? (
-                        <div className="flex items-center justify-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Searching...
-                        </div>
-                      ) : (
-                        'Search Jobs'
-                      )}
-                    </Button>
-                  ) : (
-                    <div className="flex items-center gap-3 pr-4">
-                      <AnimatePresence>
-                        {input && (
-                          <motion.button
-                            type="button"
-                            onClick={() => {
-                              setInput('');
-                              setShowSuggestions(false);
-                            }}
-                            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all duration-200"
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0 }}
-                          >
-                            <motion.div
-                              animate={{ rotate: 0 }}
-                              whileHover={{ rotate: 90 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            </motion.div>
-                          </motion.button>
-                        )}
-                      </AnimatePresence>
-
-                      <motion.button
-                        type="button"
-                        onClick={startSearch}
-                        disabled={isSearching || !input.trim()}
-                        className={cn(
-                          'px-5 py-2.5 rounded-xl font-medium transition-all duration-300 relative overflow-hidden',
-                          isSearching || !input.trim()
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-md hover:shadow-lg hover:scale-105'
-                        )}
-                        whileHover={
-                          !isSearching && input.trim()
-                            ? { scale: 1.05 }
-                            : undefined
-                        }
-                        whileTap={
-                          !isSearching && input.trim()
-                            ? { scale: 0.95 }
-                            : undefined
-                        }
-                      >
-                        {isSearching ? (
-                          <motion.div
-                            className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 1,
-                              repeat: Infinity,
-                              ease: 'linear',
-                            }}
-                          />
-                        ) : (
-                          <span className="flex items-center gap-2">
-                            Search
-                            <motion.div
-                              animate={{ x: [0, 3, 0] }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                repeatDelay: 2,
-                              }}
-                            >
-                              <ArrowRight className="w-4 h-4" />
-                            </motion.div>
-                          </span>
-                        )}
-                      </motion.button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Suggestions Dropdown (restored) */}
-              <AnimatePresence>
-                {showSuggestions && input.trim() && (
-                  <motion.div
-                    ref={suggestionsRef}
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className={
-                      isMobile
-                        ? 'absolute left-0 right-0 top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-[9999]'
-                        : 'absolute left-0 right-0 top-full mt-3 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-sm border border-white/30 overflow-hidden z-[9999]'
-                    }
-                  >
-                    <div
-                      className={
-                        isMobile
-                          ? 'max-h-[300px] overflow-y-auto'
-                          : 'max-h-[400px] overflow-y-auto'
-                      }
-                    >
-                      {isLoadingSuggestions ? (
-                        <div className="p-6 space-y-3">
-                          {[...Array(4)].map((_, index) => (
-                            <motion.div
-                              key={index}
-                              className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.1 }}
-                            >
-                              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-gray-200 to-gray-300 animate-pulse" />
-                              <div className="flex-1 space-y-2">
-                                <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full w-3/4 animate-pulse" />
-                                <div className="h-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full w-1/2 animate-pulse" />
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                      ) : suggestions.length > 0 ? (
-                        <div className="p-2">
-                          <div className="px-4 py-3 bg-gradient-to-r from-brand-50 to-brand-100 rounded-2xl mb-2 border-b border-white/20">
-                            <div className="flex items-center gap-2 text-sm text-brand-700 font-medium">
-                              <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{
-                                  duration: 4,
-                                  repeat: Infinity,
-                                  ease: 'linear',
-                                }}
-                              >
-                                <Clock className="w-4 h-4" />
-                              </motion.div>
-                              <span className="font-medium">
-                                Suggestions based on your search
-                              </span>
-                            </div>
-                          </div>
-
-                          {suggestions.map((s, index) => (
-                            <motion.div
-                              key={`${s.suggestion}-${index}`}
-                              className="group px-4 py-4 hover:bg-gradient-to-r hover:from-brand-50 hover:to-brand-100 cursor-pointer transition-all duration-200 rounded-2xl mx-1 mb-1"
-                              onClick={() => handleSuggestionClick(s)}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.05 }}
-                              whileHover={{ scale: 1.02, x: 5 }}
-                              whileTap={{ scale: 0.98 }}
-                            >
-                              <div className="flex items-center gap-4">
-                                <motion.div
-                                  className="p-3 rounded-2xl bg-gradient-to-r from-brand-100 to-brand-200 group-hover:from-brand-200 group-hover:to-brand-300 transition-all duration-200 relative overflow-hidden shadow-lg shadow-brand-500/20"
-                                  whileHover={{ rotate: 15, scale: 1.1 }}
-                                >
-                                  <motion.div
-                                    className="absolute inset-0 opacity-30"
-                                    animate={{ opacity: [0.3, 0.5, 0.3] }}
-                                    transition={{
-                                      duration: 2,
-                                      repeat: Infinity,
-                                      ease: 'linear',
-                                    }}
-                                  />
-                                  <Search className="w-5 h-5 text-brand-600 relative z-10" />
-                                </motion.div>
-                                <div className="flex-1">
-                                  <span className="text-gray-800 group-hover:text-brand-700 transition-colors font-semibold text-base block">
-                                    {s.suggestion}
-                                  </span>
-                                  <span className="text-sm text-gray-500 mt-1 block flex items-center gap-2">
-                                    <span className="flex items-center gap-1">
-                                      <>
-                                        <List className="w-3 h-3" />
-                                        <AttributeName name={s.field || ''} />
-                                      </>
-                                    </span>
-                                    {s.hits && (
-                                      <span className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-0.5 rounded-full">
-                                        <span className="text-gray-600">
-                                          {s.hits.toLocaleString()} results
-                                        </span>
-                                      </span>
-                                    )}
-                                  </span>
-                                </div>
-                                <motion.div
-                                  className="opacity-0 group-hover:opacity-100 transition-all duration-200"
-                                  initial={{ x: 10, scale: 0.8 }}
-                                  whileHover={{ x: 0, scale: 1 }}
-                                >
-                                  <motion.div
-                                    animate={{ x: [0, 3, 0] }}
-                                    transition={{
-                                      duration: 1,
-                                      repeat: Infinity,
-                                      repeatDelay: 1,
-                                    }}
-                                  >
-                                    <ArrowRight className="w-5 h-5 text-brand-500" />
-                                  </motion.div>
-                                </motion.div>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                      ) : (
-                        <motion.div
-                          className="p-10 text-center"
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                        >
-                          <motion.div
-                            className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center shadow-lg"
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 20,
-                              repeat: Infinity,
-                              ease: 'linear',
-                            }}
-                          >
-                            <Search className="w-8 h-8 text-gray-400" />
-                          </motion.div>
-                          <p className="font-semibold text-gray-700 text-lg mb-1">
-                            No suggestions found
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Try different keywords or check spelling
-                          </p>
-                        </motion.div>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
+              Trending Jobs
+              {searchType === 'hot_leads' && (
+                <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-900" />
+              )}
+            </button>
+            <button
+              onClick={() => setSearchType('lmia')}
+              className={cn(
+                "pb-2 text-sm font-semibold transition-all relative tracking-wide",
+                searchType === 'lmia' ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
+              )}
+            >
+              LMIA
+              {searchType === 'lmia' && (
+                <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-900" />
+              )}
+            </button>
           </div>
-          <div
-            className={
-              isMobile
-                ? 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-4 pt-4 pb-4'
-                : 'bg-gradient-to-br from-brand-50/50 via-white to-brand-50/30 px-10 pt-10 pb-6'
-            }
-          >
-            {/* <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className={isMobile ? 'text-left mb-3' : 'text-center mb-6'}
-            >
-              <Badge
-                className={
-                  isMobile
-                    ? 'px-3 py-1 text-xs font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 border-brand-200'
-                    : 'px-6 py-2 text-sm font-semibold bg-gradient-to-r from-brand-100 to-brand-200 text-brand-800 hover:from-brand-200 hover:to-brand-300 border-brand-200 shadow-md'
-                }
-              >
-                Find Top Opportunities
-              </Badge>
-            </motion.div> */}
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className={
-                isMobile
-                  ? 'text-2xl font-bold text-gray-900 tracking-tight leading-tight text-left mb-1'
-                  : 'text-5xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight text-center mb-1'
-              }
-            >
-              Discover the job you want
-            </motion.h1>
-            {!isMobile && (
-              <div className="flex justify-center">
-                <h3 className="text-xl pt-2 md:text-2xl font-medium text-brand-600 text-center mb-6">
-                  Search by
-                </h3>
-                <TypewriterEffect
-                  title=""
-                  words={['NOC', 'Province or City', 'Job title']}
-                />
-              </div>
+          {/* THE "TRI-ZONE PILL" Search Bar */}
+          <div
+            id="search-pill-container"
+            className={cn(
+              "relative max-w-5xl mx-auto bg-white rounded-full transition-all duration-300",
+              isMobile
+                ? "flex flex-col rounded-3xl shadow-xl overflow-hidden"
+                : "flex items-center h-20 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] ring-1 ring-black/5"
             )}
-          </div>
-
-          {/* Search Type */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className={isMobile ? 'px-4' : 'px-10'}
           >
+            {/* Zone 1: What */}
             <div
-              className={
-                isMobile ? 'flex flex-col gap-3' : 'flex items-center gap-6 w-full'
-              }
+              onClick={() => {
+                setActiveField('what');
+                searchInputRef.current?.focus();
+              }}
+              className={cn(
+                "relative cursor-pointer hover:bg-gray-50/50 transition-colors",
+                isMobile ? "p-4 border-b border-gray-100" : "h-full flex-[1.5] rounded-l-full pl-8 pr-4 flex flex-col justify-center", // Flex grow for input
+                !isMobile && activeField === 'what' && "bg-gray-100/50 rounded-full"
+              )}
             >
-              <span
-                className={
-                  isMobile
-                    ? 'text-xs font-semibold text-gray-700'
-                    : 'text-sm font-semibold text-gray-700'
-                }
-              >
-                Search Type:
-              </span>
-              <div className="flex items-center gap-4">
-                <motion.label
-                  className="flex items-center gap-2 cursor-pointer group"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <motion.div className="relative" whileHover={{ scale: 1.1 }}>
-                    <Input
-                      type="checkbox"
-                      checked={searchType === 'lmia'}
-                      onChange={() => setSearchType('lmia')}
-                      className="sr-only"
-                    />
-                    <motion.div
-                      className={cn(
-                        'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200',
-                        searchType === 'lmia'
-                          ? 'bg-brand-600 border-brand-600'
-                          : 'border-gray-300 group-hover:border-brand-400'
-                      )}
-                    >
-                      {searchType === 'lmia' && (
-                        <Check className="w-3 h-3 text-white" />
-                      )}
-                    </motion.div>
-                  </motion.div>
-                  <span
-                    className={cn(
-                      'text-sm font-medium transition-colors duration-200',
-                      searchType === 'lmia'
-                        ? 'text-brand-700'
-                        : 'text-gray-600 group-hover:text-brand-600'
-                    )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Label
+                    htmlFor="search-input"
+                    className="text-[11px] font-extrabold text-gray-800 uppercase tracking-widest mb-0.5 block cursor-pointer ml-1 hover:text-brand-600 transition-colors flex items-center gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Prevent activeField set if we want just menu, but here we want input focus too? 
+                      // Actually, let's allow input focus but opening menu requires specific click on label.
+                      // If we click label, it opens menu.
+                    }}
                   >
-                    LMIA Approved
-                  </span>
-                </motion.label>
+                    {searchBy === 'all' ? 'Keywords' : searchBy.replace('_', ' ')}
+                    <ChevronDown className="w-3 h-3" />
+                  </Label>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-[200px]">
+                  <DropdownMenuLabel>Search By</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setSearchBy('all')}>
+                    Keywords (All)
+                    {searchBy === 'all' && <Check className="ml-auto w-4 h-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSearchBy('job_title')}>
+                    Job Title
+                    {searchBy === 'job_title' && <Check className="ml-auto w-4 h-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSearchBy('category')}>
+                    Category
+                    {searchBy === 'category' && <Check className="ml-auto w-4 h-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSearchBy('noc_code')}>
+                    NOC Code
+                    {searchBy === 'noc_code' && <Check className="ml-auto w-4 h-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSearchBy('employer')}>
+                    Employer
+                    {searchBy === 'employer' && <Check className="ml-auto w-4 h-4" />}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-                <motion.label
-                  className="flex items-center gap-2 cursor-pointer group"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <motion.div className="relative" whileHover={{ scale: 1.1 }}>
-                    <Input
-                      type="checkbox"
-                      checked={searchType === 'hot_leads'}
-                      onChange={() => setSearchType('hot_leads')}
-                      className="sr-only"
-                    />
-                    <motion.div
-                      className={cn(
-                        'w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200',
-                        searchType === 'hot_leads'
-                          ? 'bg-brand-600 border-brand-600'
-                          : 'border-gray-300 group-hover:border-brand-400'
-                      )}
-                    >
-                      {searchType === 'hot_leads' && (
-                        <Check className="w-3 h-3 text-white" />
-                      )}
-                    </motion.div>
-                  </motion.div>
-                  <span
-                    className={cn(
-                      'text-sm font-medium transition-colors duration-200',
-                      searchType === 'hot_leads'
-                        ? 'text-brand-700'
-                        : 'text-gray-600 group-hover:text-brand-600'
-                    )}
-                  >
-                    Trending Jobs
-                  </span>
-                </motion.label>
-              </div>
+              <input
+                id="search-input"
+                ref={searchInputRef}
+                type="text"
+                value={input}
+                onChange={handleChange}
+                onFocus={() => {
+                  setActiveField('what');
+                  setShowSuggestions(true);
+                }}
+                placeholder={searchBy === 'all' ? "Job title, keywords, or company..." : `Search by ${searchBy.replace('_', ' ')}...`}
+                className="w-full bg-transparent text-gray-900 placeholder:text-gray-400 text-base font-medium focus:outline-none truncate"
+                onKeyDown={(e) => e.key === 'Enter' && startSearch()}
+              />
+              {!isMobile && (
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-gray-200" />
+              )}
             </div>
 
-
-          </motion.div>
-
-          {/* Trending */}
-          <div
-            className={
-              isMobile
-                ? 'px-4 pb-6 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent'
-                : 'px-10 pb-2 bg-gradient-to-br from-transparent via-brand-50/20 to-transparent'
-            }
-          >
-            <motion.div
-              className={isMobile ? 'mt-4' : 'mt-8 w-full'}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
+            {/* Zone 2: Where */}
+            <div
+              onClick={() => {
+                setActiveField('where');
+                setShowLocationMenu(true);
+              }}
+              className={cn(
+                "relative cursor-pointer hover:bg-gray-50/50 transition-colors",
+                isMobile ? "p-4 border-b border-gray-100" : "h-full flex-1 pl-6 pr-4 flex flex-col justify-center",
+                !isMobile && activeField === 'where' && "bg-gray-100/50 rounded-full"
+              )}
             >
-              <div
-                className={
-                  isMobile
-                    ? 'flex items-center gap-2 mb-3'
-                    : 'flex items-center gap-3 mb-4'
-                }
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: 'linear',
-                  }}
+              <Label className="text-[11px] font-extrabold text-gray-800 uppercase tracking-widest mb-0.5 block cursor-pointer ml-1">Where</Label>
+              <div className="flex items-center justify-between">
+                <div className="text-base font-medium text-gray-900 truncate w-full">
+                  {locationText || "Select Location..."}
+                </div>
+                {locationText && locationText !== 'Canada' && (
+                  <button onClick={(e) => { e.stopPropagation(); handleSelectCanada(); }} className="p-1 hover:bg-gray-200 rounded-full">
+                    <X className="w-3 h-3 text-gray-400" />
+                  </button>
+                )}
+              </div>
+              {!isMobile && (
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-8 bg-gray-200" />
+              )}
+            </div>
+
+            {/* Zone 3: Dates */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <div
+                  onClick={() => setActiveField('dates')}
+                  className={cn(
+                    "relative cursor-pointer hover:bg-gray-50/50 transition-colors",
+                    isMobile ? "p-4" : "h-full flex-1 pl-6 pr-20 flex flex-col justify-center", // Padding right for button
+                    !isMobile && activeField === 'dates' && "bg-gray-100/50 rounded-full"
+                  )}
                 >
-                  <div
-                    className={
-                      isMobile
-                        ? 'p-1.5 rounded-lg bg-gradient-to-r from-brand-100 to-brand-200'
-                        : 'p-2 rounded-xl bg-gradient-to-r from-brand-100 to-brand-200 shadow-lg shadow-brand-500/20'
-                    }
-                  >
-                    <TrendingUp
-                      className={
-                        isMobile
-                          ? 'w-4 h-4 text-brand-600'
-                          : 'w-5 h-5 text-brand-600'
-                      }
-                    />
+                  <Label className="text-[11px] font-extrabold text-gray-800 uppercase tracking-widest mb-0.5 block cursor-pointer ml-1">Dates</Label>
+                  <div className={cn("text-base font-medium truncate", (dateRange?.from || dateRange?.to) ? "text-brand-600" : "text-gray-400")}>
+                    {dateRange?.from ? (
+                      dateRange.to ? (
+                        <>{format(dateRange.from, 'LLL dd')} - {format(dateRange.to, 'LLL dd')}</>
+                      ) : (
+                        format(dateRange.from, 'LLL dd')
+                      )
+                    ) : (
+                      'Add dates'
+                    )}
+                  </div>
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="center">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={dateRange?.from}
+                  selected={dateRange}
+                  onSelect={setDateRange}
+                  numberOfMonths={2}
+                />
+              </PopoverContent>
+            </Popover>
+
+            {/* Search Button (Floating) */}
+            <div className={isMobile ? "p-4 pt-0" : "absolute right-2 top-1/2 -translate-y-1/2"}>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={startSearch}
+                className={cn(
+                  "flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white shadow-xl shadow-brand-500/30 transition-all",
+                  isMobile ? "w-full h-14 rounded-2xl text-lg font-bold" : "w-14 h-14 rounded-full"
+                )}
+              >
+                {isSearching ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <Search className={isMobile ? "w-5 h-5 mr-2" : "w-6 h-6"} strokeWidth={2.5} />
+                )}
+                {isMobile && "Search"}
+              </motion.button>
+            </div>
+
+            {/* Suggestions Dropdown (Absolute) */}
+            <AnimatePresence>
+              {showSuggestions && input.trim() && (
+                <motion.div
+                  ref={suggestionsRef}
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className={cn(
+                    "absolute left-0 z-50 bg-white shadow-2xl overflow-hidden ring-1 ring-black/5",
+                    isMobile
+                      ? "top-full mt-2 w-full rounded-2xl"
+                      : "top-[calc(100%+16px)] w-[40%] rounded-3xl left-6"
+                  )}
+                >
+                  <div className="max-h-[300px] overflow-y-auto">
+                    {isLoadingSuggestions ? (
+                      <div className="p-4 space-y-2">
+                        <div className="h-10 bg-gray-50 rounded-lg animate-pulse" />
+                        <div className="h-10 bg-gray-50 rounded-lg animate-pulse" />
+                      </div>
+                    ) : suggestions.length > 0 ? (
+                      <div className="p-2">
+                        {suggestions.map((s, idx) => (
+                          <div
+                            key={idx}
+                            onClick={() => handleSuggestionClick(s)}
+                            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors"
+                          >
+                            <div className="p-2 bg-brand-50 text-brand-600 rounded-lg">
+                              <Briefcase className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-900 text-sm">{s.suggestion}</div>
+                              <div className="text-xs text-gray-500 font-medium">
+                                <AttributeName name={s.field || 'Job'} />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-8 text-center text-gray-400 text-sm">
+                        No suggestions found.
+                      </div>
+                    )}
                   </div>
                 </motion.div>
-                <div>
-                  <span
-                    className={
-                      isMobile
-                        ? 'text-xs text-gray-500 pt-1'
-                        : 'text-sm text-gray-500 pt-1 font-semibold'
-                    }
-                  >
-                    High End Jobs
-                  </span>
-                  {!isMobile && (
-                    <p className="text-sm text-gray-500">
-                      Popular jobs right now
-                    </p>
-                  )}
-                </div>
-              </div>
+              )}
+            </AnimatePresence>
 
-              <TrendingSearchBox
-                dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
-                dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
-                checkCredits={checkCredits}
-                fetchSuggestions={fetchSuggestions}
-                location={location}
-                searchType={searchType}
-                setInput={setInput}
-                setShowSuggestions={setShowSuggestions}
-              />
-            </motion.div>
+            {/* Location Menu Dropdown (Absolute) */}
+            <AnimatePresence>
+              {showLocationMenu && (
+                <motion.div
+                  ref={locationMenuRef}
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className={cn(
+                    "absolute z-50 bg-white shadow-2xl overflow-hidden p-2 ring-1 ring-black/5",
+                    isMobile
+                      ? "top-full mt-2 w-full rounded-2xl"
+                      : "top-[calc(100%+16px)] left-[35%] w-[320px] rounded-3xl"
+                  )}
+                >
+                  <Button
+                    onClick={handleSelectCanada}
+                    variant="ghost"
+                    className="w-full justify-start h-auto py-3 px-4 rounded-xl hover:bg-gray-50 text-gray-700"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-gray-100 rounded-full text-gray-600">
+                        <MapPin className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">All of Canada</span>
+                    </div>
+                  </Button>
+
+                  {/* Two-Step Multi-Select */}
+                  <div className="mt-2 pt-2 border-t border-gray-100 max-h-[300px] overflow-y-auto">
+                    {locationStep === 'province' ? (
+                      <>
+                        <div className="flex items-center justify-between px-4 py-2 mb-2">
+                          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Select Provinces</div>
+                          {selectedProvinces.length > 0 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setLocationStep('city')}
+                              className="h-7 text-xs text-brand-600 font-semibold hover:text-brand-700 hover:bg-brand-50"
+                            >
+                              Next: Cities <ArrowRight className="w-3 h-3 ml-1" />
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 gap-1 px-2">
+                          {provinces.map((p, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center space-x-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+                              onClick={() => handleProvinceToggle(p.province)}
+                            >
+                              <Checkbox
+                                checked={selectedProvinces.includes(p.province)}
+                                className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
+                              />
+                              <span className="text-sm font-medium text-gray-700">{p.province}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between px-2 mb-2 sticky top-0 bg-white z-10 py-2 border-b border-gray-50">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setLocationStep('province')}
+                            className="h-8 px-2 text-gray-500 hover:text-gray-900"
+                          >
+                            <ArrowRight className="w-4 h-4 rotate-180 mr-1" /> Back
+                          </Button>
+                          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                            Cities from {selectedProvinces.length} Provinces
+                          </div>
+                        </div>
+
+                        {cities.length > 0 ? (
+                          <div className="grid grid-cols-1 gap-1 px-2">
+                            {cities.map((c, idx) => (
+                              <div
+                                key={`${c.province}-${c.city}-${idx}`}
+                                className="flex items-center space-x-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+                                onClick={() => handleCityToggle(c.city)}
+                              >
+                                <Checkbox
+                                  checked={selectedCities.includes(c.city)}
+                                  className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
+                                />
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium text-gray-700">{c.city}</span>
+                                  <span className="text-[10px] text-gray-400">{c.province}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="p-4 text-center text-gray-400 text-sm">No cities found.</div>
+                        )}
+
+                        <div className="sticky bottom-0 bg-white p-2 border-t border-gray-100 mt-2">
+                          <Button
+                            onClick={handleApplyLocation}
+                            className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-lg h-9 text-sm"
+                          >
+                            Apply ({selectedCities.length})
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Categories */}
-          <CategoryBox
-            dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
-            dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
-            location={location}
-            searchType={searchType}
-          />
+          {/* Search By Options (New) */}
+          {/* Search By Options (Premium UI) */}
+          <div className="flex justify-center mt-6">
+            <div className="inline-flex items-center bg-white/80 backdrop-blur-md border border-white/50 shadow-sm rounded-full p-1.5 gap-1">
+              <span className="text-xs font-semibold text-gray-400 px-3 uppercase tracking-wider">Search by</span>
+              {['all', 'job_title', 'category', 'noc_code', 'employer'].map((field) => (
+                <button
+                  key={field}
+                  onClick={() => {
+                    setSearchBy(field as any);
+                    setSuggestions([]);
+                    if (searchInputRef.current) searchInputRef.current.focus();
+                  }}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300",
+                    searchBy === field
+                      ? "bg-brand-600 text-white shadow-md shadow-brand-500/20"
+                      : "text-gray-500 hover:text-gray-900 hover:bg-gray-100/50"
+                  )}
+                >
+                  {field === 'all' ? 'All' : (field === 'noc_code' ? 'NOC' : field.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase()))}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Headline (Moved Below Search Bar) */}
+
+
+          {/* Stats & Categories - Organized Container */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-8 max-w-5xl mx-auto"
+          >
+            {/* Unified Card for Trending & Categories */}
+            <div className="bg-white/50 backdrop-blur-sm border border-gray-100 rounded-3xl px-6 py-4 md:px-8 md:py-6 shadow-sm">
+
+              <div className="text-center mt-12 mb-8 space-y-4">
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                  className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight"
+                >
+                  Discover your next <span className="text-brand-600">career move</span>.
+                </motion.h1>
+                {!isMobile && (
+                  <div className="flex justify-center items-center gap-2 text-lg text-gray-500 font-medium">
+                    <span className="text-gray-500 mt-3" >Search for</span>
+                    <TypewriterEffect
+                      title=""
+                      words={['Software Engineers', 'Nurses in Ontario', 'LMIA Jobs', 'Marketing Managers']}
+                      className="text-gray-900 font-semibold"
+                    />
+                  </div>
+                )}
+              </div>
+              {/* Trending Section */}
+              <div className="flex flex-col items-center gap-4 mb-8">
+                <div className="flex items-center gap-2 text-gray-400">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase tracking-widest">Trending Now</span>
+                </div>
+                <TrendingSearchBox
+                  dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
+                  dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
+                  checkCredits={checkCredits}
+                  fetchSuggestions={fetchSuggestions}
+                  selectedProvinces={selectedProvinces}
+                  selectedCities={selectedCities}
+                  searchType={searchType}
+                  setInput={setInput}
+                  setShowSuggestions={setShowSuggestions}
+                />
+              </div>
+
+              {/* Divider */}
+              <div className="w-24 h-px bg-gray-200 mx-auto mb-8" />
+
+              {/* Categories Section */}
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex items-center gap-2 text-gray-400">
+                  <Briefcase className="w-4 h-4" />
+                  <span className="text-xs font-bold uppercase tracking-widest">Browse Categories</span>
+                </div>
+                <CategoryBox
+                  dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
+                  dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
+                  selectedProvinces={selectedProvinces}
+                  selectedCities={selectedCities}
+                  searchType={searchType}
+                />
+              </div>
+            </div>
+          </motion.div>
+
         </motion.div>
-      </div >
-      {isMobile && <BottomNav />
-      }
+      </div>
+      {isMobile && <BottomNav />}
     </>
   );
 }

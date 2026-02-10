@@ -85,6 +85,10 @@ import {
   FileDown,
   RefreshCw,
   ChevronDown,
+  Menu,
+  Home,
+  LayoutDashboard,
+  CreditCard,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
@@ -201,6 +205,7 @@ const FilterSidebar = ({
     ...(currentFilters.city || []),
     ...(currentFilters.nocCode || []),
     ...(currentFilters.jobTitle || []),
+    ...(currentFilters.category || []),
   ].filter(Boolean).length;
 
   // Fetch companies with matching job title
@@ -365,39 +370,57 @@ const FilterSidebar = ({
     const current =
       (currentFilters[key as keyof typeof currentFilters] as string[]) || [];
     if (!current.includes(value)) {
-      updateFilters({ [key]: [...current, value] });
+      const urlKeyMap: Record<string, string> = {
+        jobTitle: 'job_title',
+        nocCode: 'noc_code',
+        dateFrom: 'date_from',
+        dateTo: 'date_to',
+      };
+      const urlKey = urlKeyMap[key] || key;
+
+      updateFilters({ [urlKey]: [...current, value] });
     }
   };
 
   const removeFilter = (key: string, value: string) => {
     const current =
       (currentFilters[key as keyof typeof currentFilters] as string[]) || [];
-    updateFilters({ [key]: current.filter((v) => v !== value) });
+
+    const urlKeyMap: Record<string, string> = {
+      jobTitle: 'job_title',
+      nocCode: 'noc_code',
+      dateFrom: 'date_from',
+      dateTo: 'date_to',
+    };
+    const urlKey = urlKeyMap[key] || key;
+
+    updateFilters({ [urlKey]: current.filter((v) => v !== value) });
   };
 
   return (
-    <div className="bg-white/95 border-brand-200/40 h-full flex flex-col ">
+    <div className="bg-white/80 backdrop-blur-xl border-r border-white/50 h-full flex flex-col shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]">
       {/* Applied Filters Display */}
       {activeFiltersCount > 0 && (
-        <div className="border-b border-gray-200 bg-gray-50 px-2 py-1.5">
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-1.5">
-              <Filter className="h-3 w-3 text-gray-600" />
-              <span className="text-[10px] font-semibold text-gray-700">
-                Active ({activeFiltersCount})
+        <div className="border-b border-brand-100/50 bg-brand-50/30 px-4 py-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1 bg-brand-100 rounded-md">
+                <Filter className="h-3 w-3 text-brand-600" />
+              </div>
+              <span className="text-xs font-bold text-brand-900">
+                Active Filters ({activeFiltersCount})
               </span>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="h-5 px-1.5 text-[10px] text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="h-6 px-2 text-[10px] font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
             >
-              <X className="h-2.5 w-2.5 mr-0.5" />
-              Clear
+              Clear All
             </Button>
           </div>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {(currentFilters.dateFrom || currentFilters.dateTo) && (
               <Badge
                 variant="outline"
@@ -431,7 +454,7 @@ const FilterSidebar = ({
                   variant="ghost"
                   size="sm"
                   className="h-3 w-3 p-0 hover:bg-blue-200 rounded-full ml-0.5"
-                  onClick={() => removeFilter('job_title', title)}
+                  onClick={() => removeFilter('jobTitle', title)}
                 >
                   <X className="h-2 w-2" />
                 </Button>
@@ -487,27 +510,48 @@ const FilterSidebar = ({
                   variant="ghost"
                   size="sm"
                   className="h-3 w-3 p-0 hover:bg-violet-200 rounded-full ml-0.5"
-                  onClick={() => removeFilter('noc_code', noc)}
+                  onClick={() => removeFilter('nocCode', noc)}
                 >
                   <X className="h-2 w-2" />
                 </Button>
               </Badge>
             ))}
           </div>
+          {/* Category Filter Badge */}
+          {currentFilters.category?.map((cat) => (
+            <Badge
+              key={cat}
+              variant="outline"
+              className="flex items-center gap-0.5 px-1.5 py-0 h-5 bg-pink-50 border-pink-200 text-pink-700 text-[10px]"
+            >
+              <BarChart3 className="h-2.5 w-2.5" />
+              <span className="text-[10px] max-w-[60px] truncate">{cat}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-3 w-3 p-0 hover:bg-pink-200 rounded-full ml-0.5"
+                onClick={() => removeFilter('category', cat)}
+              >
+                <X className="h-2 w-2" />
+              </Button>
+            </Badge>
+          ))}
         </div>
       )}
 
+
+
+
       {/* Company Switcher */}
-      <div className="border-b border-brand-200/40 bg-gradient-to-r from-brand-50/60 to-white px-3 py-2">
-        <div className="flex items-center justify-between mb-1.5">
-          <Label className="text-xs font-semibold text-gray-700 flex items-center gap-2">
-            <Building2 className="h-3.5 w-3.5 text-brand-600" />
+      <div className="border-b border-brand-100/50 bg-white/40 p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <Label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
             Company
           </Label>
           {companiesData && companiesData.length > 0 && (
             <Badge
-              variant="outline"
-              className="text-xs px-2 py-0.5 bg-blue-50 border-blue-200 text-blue-700"
+              variant="secondary"
+              className="text-[10px] px-1.5 py-0 bg-brand-50 text-brand-600 border border-brand-100 font-medium"
             >
               {companiesData.length.toLocaleString()}
             </Badge>
@@ -519,9 +563,12 @@ const FilterSidebar = ({
               variant="outline"
               role="combobox"
               aria-expanded={companySearchOpen}
-              className="w-full h-8 justify-between bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors text-xs font-normal"
+              className="w-full h-9 justify-between bg-white/60 border-gray-200/60 shadow-sm hover:border-brand-300 hover:bg-white hover:shadow-md transition-all duration-200 text-sm font-medium rounded-xl group"
             >
-              <span className="truncate">
+              <span className="truncate flex items-center gap-2">
+                <div className="p-0.5 rounded-md bg-brand-50 text-brand-600 group-hover:bg-brand-100 transition-colors">
+                  <Building2 className="w-3.5 h-3.5" />
+                </div>
                 {companyName || 'Select company...'}
               </span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -543,8 +590,8 @@ const FilterSidebar = ({
                   {companiesLoading
                     ? 'Loading companies...'
                     : companySearchQuery
-                    ? 'No company found. Try a different search.'
-                    : 'Type to search companies...'}
+                      ? 'No company found. Try a different search.'
+                      : 'Type to search companies...'}
                 </CommandEmpty>
                 <CommandGroup>
                   {filteredCompanies.length > 0 ? (
@@ -686,17 +733,17 @@ const FilterSidebar = ({
       </div>
 
       {/* Vertical Filter Panel - Vertical part of L */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-4 bg-gradient-to-b from-white via-brand-50/20 to-brand-50/30">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-gradient-to-b from-white via-brand-50/10 to-brand-50/20">
         {/* Date Range Display (when not in top bar due to space) */}
         {(currentFilters.dateFrom || currentFilters.dateTo) && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <CalendarDays className="h-4 w-4 text-blue-600" />
-              <span className="text-xs font-semibold text-blue-900">
+          <div className="bg-brand-50/50 border border-brand-100 rounded-xl p-3 shadow-sm">
+            <div className="flex items-center gap-2 mb-1.5">
+              <CalendarDays className="h-3.5 w-3.5 text-brand-600" />
+              <span className="text-xs font-bold text-brand-900">
                 Active Date Range
               </span>
             </div>
-            <p className="text-xs text-blue-700">
+            <p className="text-xs text-brand-700 font-medium pl-5.5">
               {currentFilters.dateFrom && currentFilters.dateTo ? (
                 <>
                   {new Date(currentFilters.dateFrom).toLocaleDateString()} →{' '}
@@ -717,9 +764,11 @@ const FilterSidebar = ({
 
         {/* Advanced Filters Section */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-            <Filter className="w-4 h-4 text-emerald-600" />
-            <h3 className="text-sm font-semibold text-gray-800">
+          <div className="flex items-center gap-2 pb-3 border-b border-gray-100">
+            <div className="p-1 bg-emerald-50 rounded-md">
+              <Filter className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
               Additional Filters
             </h3>
           </div>
@@ -733,7 +782,7 @@ const FilterSidebar = ({
                   Job Title
                 </Label>
                 <Select
-                  onValueChange={(value) => addFilter('job_title', value)}
+                  onValueChange={(value) => addFilter('jobTitle', value)}
                 >
                   <SelectTrigger className="h-8 bg-white border-gray-200 shadow-sm hover:border-blue-300 transition-colors text-xs">
                     <SelectValue placeholder="Select job title..." />
@@ -767,13 +816,12 @@ const FilterSidebar = ({
                   {currentFilters.searchType === 'lmia' ? 'Territory' : 'State'}
                 </Label>
                 <Select onValueChange={(value) => addFilter('location', value)}>
-                  <SelectTrigger className="h-8 bg-white border-gray-200 shadow-sm hover:border-emerald-300 transition-colors text-xs">
+                  <SelectTrigger className="h-9 bg-white/60 border-gray-200/60 shadow-sm hover:border-brand-300 hover:bg-white transition-all duration-200 text-xs rounded-xl">
                     <SelectValue
-                      placeholder={`Select ${
-                        currentFilters.searchType === 'lmia'
-                          ? 'territory'
-                          : 'state'
-                      }...`}
+                      placeholder={`Select ${currentFilters.searchType === 'lmia'
+                        ? 'territory'
+                        : 'state'
+                        }...`}
                     />
                   </SelectTrigger>
                   <SelectContent className="max-h-48 [&>*]:p-0.5">
@@ -836,7 +884,7 @@ const FilterSidebar = ({
                   <Hash className="h-3.5 w-3.5 text-violet-500" />
                   NOC Code
                 </Label>
-                <Select onValueChange={(value) => addFilter('noc_code', value)}>
+                <Select onValueChange={(value) => addFilter('nocCode', value)}>
                   <SelectTrigger className="h-8 bg-white border-gray-200 shadow-sm hover:border-violet-300 transition-colors text-xs">
                     <SelectValue placeholder="Select NOC code..." />
                   </SelectTrigger>
@@ -941,7 +989,7 @@ const FilterSidebar = ({
           </div>
         )} */}
       </div>
-    </div>
+    </div >
   );
 };
 function CompanyAnalysisContent({
@@ -1224,25 +1272,25 @@ function CompanyAnalysisContent({
       const programData =
         filters.searchType === 'lmia'
           ? Object.entries(programCounts)
-              .map(([name, value]) => ({ name, value }))
-              .sort((a, b) => b.value - a.value)
-              .slice(0, 10)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 10)
           : undefined;
 
       const categoryData =
         filters.searchType === 'hot_leads'
           ? Object.entries(categoryCounts)
-              .map(([name, value]) => ({ name, value }))
-              .sort((a, b) => b.value - a.value)
-              .slice(0, 10)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 10)
           : undefined;
 
       const priorityOccupationData =
         filters.searchType === 'lmia'
           ? Object.entries(priorityOccupationCounts)
-              .map(([name, value]) => ({ name, value }))
-              .sort((a, b) => b.value - a.value)
-              .slice(0, 10)
+            .map(([name, value]) => ({ name, value }))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 10)
           : undefined;
 
       // Calculate trends
@@ -1260,8 +1308,8 @@ function CompanyAnalysisContent({
       const growthRate =
         recentYears.length === 2
           ? ((recentYears[1].count - recentYears[0].count) /
-              recentYears[0].count) *
-            100
+            recentYears[0].count) *
+          100
           : 0;
 
       return {
@@ -1367,8 +1415,7 @@ function CompanyAnalysisContent({
       pdf.setFontSize(10);
       pdf.setTextColor(107, 114, 128); // gray-500
       pdf.text(
-        `Generated on ${new Date().toLocaleDateString()} | Data Source: ${
-          filters.searchType === 'lmia' ? 'LMIA' : 'Hot Leads'
+        `Generated on ${new Date().toLocaleDateString()} | Data Source: ${filters.searchType === 'lmia' ? 'LMIA' : 'Hot Leads'
         }`,
         margin,
         yPosition
@@ -1387,8 +1434,7 @@ function CompanyAnalysisContent({
 
       if (analysisData?.trends.growthRate) {
         pdf.text(
-          `Growth Rate: ${
-            analysisData.trends.growthRate > 0 ? '+' : ''
+          `Growth Rate: ${analysisData.trends.growthRate > 0 ? '+' : ''
           }${analysisData.trends.growthRate.toFixed(1)}%`,
           margin,
           yPosition
@@ -1482,8 +1528,7 @@ function CompanyAnalysisContent({
 
       // Save the PDF
       pdf.save(
-        `${companyName.replace(/[^a-z0-9]/gi, '_')}_analysis_${
-          new Date().toISOString().split('T')[0]
+        `${companyName.replace(/[^a-z0-9]/gi, '_')}_analysis_${new Date().toISOString().split('T')[0]
         }.pdf`
       );
     } catch (error) {
@@ -1498,12 +1543,10 @@ function CompanyAnalysisContent({
     <BackgroundWrapper>
       {isMobile ? (
         <MobileHeader title={companyName} showBack={true} />
-      ) : (
-        <Navbar />
-      )}
+      ) : null}
       <div
         className={
-          isMobile ? 'min-h-screen pb-20' : 'min-h-screen pt-[8rem] pb-12'
+          isMobile ? 'min-h-screen pb-20' : 'min-h-screen pt-4 pb-12'
         }
       >
         <div
@@ -1515,7 +1558,7 @@ function CompanyAnalysisContent({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex items-center justify-between gap-4 mb-3 pb-3 border-b border-gray-200"
+              className="sticky top-4 z-20 flex items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm"
             >
               {/* Left Section: Filter Toggle, Company Icon & Name */}
               <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -1929,12 +1972,44 @@ function CompanyAnalysisContent({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={goBack}
+                  onClick={() => router.push('/')}
                   className="border-gray-300 hover:border-brand-300 hover:bg-brand-50 transition-all"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back
+                  Home
                 </Button>
+
+                {/* Navigation Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="border-gray-300 hover:border-brand-300 hover:bg-brand-50 transition-all font-medium"
+                    >
+                      <Menu className="w-4 h-4 mr-2" />
+                      Menu
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => router.push('/')}>
+                      <Home className="w-4 h-4 mr-2" />
+                      Home
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/search')}>
+                      <Search className="w-4 h-4 mr-2" />
+                      Search Jobs
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                      <LayoutDashboard className="w-4 h-4 mr-2" />
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/pricing')}>
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      Pricing
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </motion.div>
             </motion.div>
           )}
@@ -1972,7 +2047,7 @@ function CompanyAnalysisContent({
                 transition={{ duration: 0.3 }}
                 className="w-64 flex-shrink-0"
               >
-                <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <div className="sticky top-24 bg-white/80 backdrop-blur-xl border border-white/50 rounded-2xl shadow-lg shadow-brand-900/5 overflow-hidden">
                   {/* Header */}
                   <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
                     <div className="flex items-center justify-between">
@@ -2483,8 +2558,8 @@ function CompanyAnalysisContent({
                                 .filter((d) =>
                                   searchQuery
                                     ? d.name
-                                        .toLowerCase()
-                                        .includes(searchQuery.toLowerCase())
+                                      .toLowerCase()
+                                      .includes(searchQuery.toLowerCase())
                                     : true
                                 )
                                 .map((location) => (
@@ -2531,8 +2606,8 @@ function CompanyAnalysisContent({
                                 .filter((d) =>
                                   searchQuery
                                     ? d.name
-                                        .toLowerCase()
-                                        .includes(searchQuery.toLowerCase())
+                                      .toLowerCase()
+                                      .includes(searchQuery.toLowerCase())
                                     : true
                                 )
                                 .map((city) => (
@@ -2576,8 +2651,8 @@ function CompanyAnalysisContent({
                                 .filter((d) =>
                                   searchQuery
                                     ? d.title
-                                        .toLowerCase()
-                                        .includes(searchQuery.toLowerCase())
+                                      .toLowerCase()
+                                      .includes(searchQuery.toLowerCase())
                                     : true
                                 )
                                 .map((job) => (
@@ -2605,14 +2680,13 @@ function CompanyAnalysisContent({
                   ) : (
                     <>
                       {/* Key Metrics */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 mb-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         <MetricCard
                           label={'Growth Rate'}
                           value={
                             analysisData?.trends.growthRate
-                              ? `${
-                                  analysisData.trends.growthRate > 0 ? '+' : ''
-                                }${analysisData.trends.growthRate.toFixed(1)}%`
+                              ? `${analysisData.trends.growthRate > 0 ? '+' : ''
+                              }${analysisData.trends.growthRate.toFixed(1)}%`
                               : 'N/A'
                           }
                           subtitle={'Year-over-year change'}
@@ -2621,11 +2695,10 @@ function CompanyAnalysisContent({
                         <MetricCard
                           label={'Top Location'}
                           value={analysisData?.trends.popularLocation || 'N/A'}
-                          subtitle={`Most common ${
-                            filters.searchType === 'lmia'
-                              ? 'territory'
-                              : 'state'
-                          }`}
+                          subtitle={`Most common ${filters.searchType === 'lmia'
+                            ? 'territory'
+                            : 'state'
+                            }`}
                           icon={'material-symbols:add-location-alt'}
                         />
                         <MetricCard
@@ -2636,7 +2709,7 @@ function CompanyAnalysisContent({
                         />
 
                         {filters.searchType === 'lmia' &&
-                        analysisData?.trends.averagePositions ? (
+                          analysisData?.trends.averagePositions ? (
                           <MetricCard
                             label={'Avg. Positions'}
                             value={analysisData.trends.averagePositions.toFixed(
@@ -2656,7 +2729,7 @@ function CompanyAnalysisContent({
                       </div>
 
                       {/* Two Column Charts - Location & Cities */}
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                         <div id="chart-location-distribution">
                           <DashboardCard
                             title="Location Distribution"
@@ -2714,7 +2787,7 @@ function CompanyAnalysisContent({
                       </div>
 
                       {/* Two Column Charts - NOC Codes & Categories */}
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                         <div id="chart-noc-codes">
                           <DashboardCard
                             title="NOC Code Distribution"
@@ -2728,7 +2801,7 @@ function CompanyAnalysisContent({
                                 const newSearchParams = new URLSearchParams(
                                   searchParams?.toString() || ''
                                 );
-                                newSearchParams.append('noc', nocCode);
+                                newSearchParams.append('noc_code', nocCode);
                                 router.push(
                                   `${pathname}?${newSearchParams.toString()}`
                                 );
@@ -2782,7 +2855,7 @@ function CompanyAnalysisContent({
                                 const newSearchParams = new URLSearchParams(
                                   searchParams?.toString() || ''
                                 );
-                                newSearchParams.append('jobTitle', jobTitle);
+                                newSearchParams.append('job_title', jobTitle);
                                 router.push(
                                   `${pathname}?${newSearchParams.toString()}`
                                 );
@@ -3026,7 +3099,7 @@ const MetricCard = ({ label, value, subtitle, icon }) => {
       whileHover={{ y: -3 }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
     >
-      <Card className="group bg-white/90 backdrop-blur-sm border-0 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 transition-all duration-300 overflow-hidden relative">
+      <Card className="group bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 transition-all duration-300 overflow-hidden relative">
         {/* Animated gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-brand-500/0 via-brand-500/0 to-brand-500/0 group-hover:from-brand-500/5 group-hover:via-brand-500/5 group-hover:to-brand-500/10 transition-all duration-500" />
 
@@ -3046,9 +3119,8 @@ const MetricCard = ({ label, value, subtitle, icon }) => {
                     transition={{ duration: 0.5 }}
                   >
                     <TrendingUp
-                      className={`w-3 h-3 ${
-                        value?.includes('+') ? 'text-green-500' : 'text-red-500'
-                      }`}
+                      className={`w-3 h-3 ${value?.includes('+') ? 'text-green-500' : 'text-red-500'
+                        }`}
                     />
                   </motion.div>
                 )}
@@ -3086,28 +3158,26 @@ const MetricCard = ({ label, value, subtitle, icon }) => {
                 transition={{ delay: 0.5 }}
               >
                 <div
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    value?.includes('+')
-                      ? 'bg-green-500'
-                      : value?.includes('-')
+                  className={`w-1.5 h-1.5 rounded-full ${value?.includes('+')
+                    ? 'bg-green-500'
+                    : value?.includes('-')
                       ? 'bg-red-500'
                       : 'bg-gray-400'
-                  }`}
+                    }`}
                 />
                 <span
-                  className={`text-xs font-medium ${
-                    value?.includes('+')
-                      ? 'text-green-600'
-                      : value?.includes('-')
+                  className={`text-xs font-medium ${value?.includes('+')
+                    ? 'text-green-600'
+                    : value?.includes('-')
                       ? 'text-red-600'
                       : 'text-gray-500'
-                  }`}
+                    }`}
                 >
                   {value?.includes('+')
                     ? 'Growing'
                     : value?.includes('-')
-                    ? 'Declining'
-                    : 'Stable'}
+                      ? 'Declining'
+                      : 'Stable'}
                 </span>
               </motion.div>
             )}
@@ -3166,7 +3236,7 @@ const DashboardCard = ({
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       <Card
-        className={`group bg-white/90 backdrop-blur-sm border-0 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 transition-all duration-400 flex flex-col overflow-hidden relative ${className}`}
+        className={`group bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 transition-all duration-400 flex flex-col overflow-hidden relative ${className}`}
       >
         {/* Animated gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-brand-500/0 via-brand-500/0 to-brand-500/0 group-hover:from-brand-500/3 group-hover:via-brand-500/2 group-hover:to-brand-500/5 transition-all duration-600" />
@@ -3236,14 +3306,14 @@ const DashboardCard = ({
                 {title.includes('Location')
                   ? 'Geographic'
                   : title.includes('Job Titles')
-                  ? 'Roles'
-                  : title.includes('NOC')
-                  ? 'Classification'
-                  : title.includes('Categories')
-                  ? 'Segmented'
-                  : title.includes('Trends')
-                  ? 'Timeline'
-                  : 'Analytics'}
+                    ? 'Roles'
+                    : title.includes('NOC')
+                      ? 'Classification'
+                      : title.includes('Categories')
+                        ? 'Segmented'
+                        : title.includes('Trends')
+                          ? 'Timeline'
+                          : 'Analytics'}
               </span>
             </div>
           </motion.div>
@@ -3282,13 +3352,13 @@ const AreaChart = ({ data, color = '#10b981' }) => {
   const points =
     data.length > 1
       ? data.map((d, i) => {
-          const x = padding + (i / (data.length - 1)) * (width - 2 * padding);
-          const y =
-            height -
-            bottomPadding -
-            ((d.count - minValue) / range) * (height - padding - bottomPadding);
-          return { x, y, value: d.count, period: d.period }; // Store period instead of year
-        })
+        const x = padding + (i / (data.length - 1)) * (width - 2 * padding);
+        const y =
+          height -
+          bottomPadding -
+          ((d.count - minValue) / range) * (height - padding - bottomPadding);
+        return { x, y, value: d.count, period: d.period }; // Store period instead of year
+      })
       : [];
 
   const pathData = points
@@ -3296,9 +3366,8 @@ const AreaChart = ({ data, color = '#10b981' }) => {
     .join(' ');
   const areaData =
     points.length > 0
-      ? `${pathData} L ${points[points.length - 1].x} ${
-          height - bottomPadding
-        } L ${points[0].x} ${height - bottomPadding} Z`
+      ? `${pathData} L ${points[points.length - 1].x} ${height - bottomPadding
+      } L ${points[0].x} ${height - bottomPadding} Z`
       : '';
 
   return (

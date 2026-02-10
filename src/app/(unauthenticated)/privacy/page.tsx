@@ -6,7 +6,7 @@ function PrivacyPolicy() {
   return (
     <>
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-12 text-sm leading-relaxed">
+      <div className="max-w-4xl mx-auto px-4 pt-28 pb-12 text-sm leading-relaxed">
         <h1 className="text-2xl font-semibold mb-6">Privacy Policy</h1>
 
         <p className="mb-4">

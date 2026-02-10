@@ -2,142 +2,159 @@
 
 import { motion } from 'framer-motion';
 import SectionTitle from './section-title';
-import { ArrowRight } from 'lucide-react';
+import { ArrowUpRight, TrendingUp, Activity } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useTableStore } from '@/context/store';
 import { useUpdateCredits } from '@/hooks/use-credits';
+import { cn } from '@/lib/utils';
 
-const companyGroups = [
-  {
-    title: 'Tim Hortons',
-    count: 4261,
-    companies: ['Tim Hortons'],
-    description: 'Leading coffee and quick service restaurant chain.',
-  },
-  {
-    title: 'Subway',
-    count: 2591,
-    companies: ['Subway'],
-    description: "World's largest submarine sandwich chain.",
-  },
-  {
-    title: 'Mc Donalds',
-    count: 1458,
-    companies: ['Mc Donalds'],
-    description: 'Global fast food restaurant chain.',
-  },
-  {
-    title: 'A&W',
-    count: 1068,
-    companies: ['A&W'],
-    description: 'Classic American fast food restaurant.',
-  },
-  {
-    title: 'Pizza Hut',
-    count: 1038,
-    companies: ['Pizza Hut'],
-    description: 'International pizza restaurant chain.',
-  },
-  {
-    title: 'Dairy Queen',
-    count: 962,
-    companies: ['Dairy Queen'],
-    description:
-      'American chain of soft serve ice cream and fast food restaurants.',
-  },
-  {
-    title: 'Jays Transportation',
-    count: 865,
-    companies: ['Jays Transportation'],
-    description: 'Leading transportation and logistics company.',
-  },
-  {
-    title: 'Pattison Agriculture',
-    count: 839,
-    companies: ['Pattison Agriculture'],
-    description: 'Major agricultural equipment and services provider.',
-  },
-  {
-    title: 'KFC',
-    count: 806,
-    companies: ['KFC'],
-    description: 'Leading fast food restaurant chain.',
-  },
-];
+import { useTrendingCompanies } from '@/hooks/use-trending-companies';
+
+// Simple Sparkline Component
+const Sparkline = ({ data, colorClass }: { data: number[], colorClass: string }) => {
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const points = data.map((d, i) => {
+    const x = (i / (data.length - 1)) * 100;
+    const y = 100 - ((d - min) / range) * 100;
+    return `${x},${y}`;
+  }).join(' ');
+
+  // Extract color for stroke (simplified mapping)
+  const strokeColor = colorClass.includes('red') ? '#dc2626' :
+    colorClass.includes('green') ? '#16a34a' :
+      colorClass.includes('yellow') ? '#ca8a04' :
+        colorClass.includes('blue') ? '#2563eb' :
+          colorClass.includes('indigo') ? '#4f46e5' : '#4b5563';
+
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible preserve-3d">
+      <defs>
+        <linearGradient id={`gradient-${colorClass}`} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor={strokeColor} stopOpacity="0.2" />
+          <stop offset="100%" stopColor={strokeColor} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path
+        d={`M0,100 L0,${100 - ((data[0] - min) / range) * 100} ${points.split(' ').map(p => 'L' + p).join(' ')} L100,100 Z`}
+        fill={`url(#gradient-${colorClass})`}
+        className="opacity-50"
+      />
+      <polyline
+        fill="none"
+        stroke={strokeColor}
+        strokeWidth="3"
+        points={points}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
 
 export default function Company() {
   const router = useRouter();
   const { updateCreditsAndSearch } = useUpdateCredits();
+  const { data: companies, isLoading } = useTrendingCompanies();
+
   const handleViewDetails = (company: string) => {
     router.push(
-      `/company/${encodeURIComponent(company)}?field=employer&t=trending_job`
+      `/company/${encodeURIComponent(company)}?field=employer&t=lmia`
     );
   };
 
-  return (
-    <section className="w-full flex flex-col items-center py-16 px-4 relative">
-      <SectionTitle
-        title="Top Companies Hiring Now"
-        subtitle="Explore the latest job openings from top companies across various industries"
-      />
-      <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-        {companyGroups.map((group, idx) => (
-          <motion.div
-            key={group.title}
-            whileHover={{ scale: 1.02 }}
-            className={`flex-1 relative group ${
-              idx % 2 === 0 ? 'md:text-right' : ''
-            }`}
-          >
-            <div className="absolute -inset-0.5 bg-gradient-to-br from-brand-500/10 to-brand-600/10 rounded-2xl transform -rotate-2 transition-transform duration-300 group-hover:rotate-0" />
+  const displayData = companies || []; // Fallback handled in hook
 
-            <div className="relative bg-white rounded-2xl p-5 flex flex-col transition-all h-[160px] w-full shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-brand-100/20 overflow-hidden group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-500/5 via-brand-400/5 to-brand-300/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative z-10 w-full h-full flex flex-col">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1 pr-4">
-                    <h3 className="font-bold text-left text-xl bg-gradient-to-br from-brand-600 to-brand-500 bg-clip-text text-transparent group-hover:from-brand-500 group-hover:to-brand-400 transition-all duration-300">
-                      {group.title}
-                    </h3>
-                    <p className="text-sm text-left text-gray-500 mt-1.5 line-clamp-2 group-hover:text-gray-600 transition-colors duration-300">
-                      {group.description}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-center bg-gradient-to-br from-brand-50 to-brand-100/50 px-3.5 py-2.5 rounded-xl border border-brand-100 group-hover:border-brand-200 transition-all duration-300">
-                    <span className="text-2xl font-bold bg-gradient-to-br from-brand-600 to-brand-500 bg-clip-text text-transparent group-hover:from-brand-500 group-hover:to-brand-400 transition-all duration-300">
-                      {group.count}
-                    </span>
-                    <span className="text-xs font-medium text-brand-600 group-hover:text-brand-500 transition-colors duration-300">
-                      Openings
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-auto pt-3 border-t border-gray-100 group-hover:border-gray-200 transition-colors duration-300">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-brand-500 animate-pulse group-hover:bg-brand-400 transition-colors duration-300" />
-                      <span className="text-sm font-medium text-brand-600 group-hover:text-brand-500 transition-colors duration-300">
-                        Actively hiring
-                      </span>
+  return (
+    <section className="w-full py-16 bg-white relative overflow-hidden border-t border-gray-100">
+
+      {/* Background Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]" />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+          <SectionTitle
+            badge="Market Trends"
+            title={<>Trending <span className="text-brand-600">Companies</span></>}
+            subtitle="Top employers from the most active sectors (NOCs)."
+            className="mb-0"
+          />
+
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {isLoading && displayData.length === 0 ? (
+            // Simple Loading Skeleton
+            Array.from({ length: 9 }).map((_, i) => (
+              <div key={i} className="h-40 bg-gray-50 rounded-xl animate-pulse" />
+            ))
+          ) : (
+            displayData.map((group, idx) => (
+              <motion.div
+                key={group.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05 }}
+              >
+                <div
+                  onClick={() => {
+                    updateCreditsAndSearch(group.title);
+                    handleViewDetails(group.title);
+                  }}
+                  className="group relative bg-white rounded-xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-lg hover:border-brand-100 transition-all duration-300 cursor-pointer overflow-hidden"
+                >
+                  {/* Header: Logo & Title */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center text-sm font-bold shadow-sm border border-black/5", group.color)}>
+                        {group.initials}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900 leading-tight group-hover:text-brand-600 transition-colors">
+                          {group.title}
+                        </h3>
+                        <p className="text-[10px] text-gray-400 font-mono mt-0.5">TICKER: {group.initials}</p>
+                      </div>
                     </div>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-500 transition-colors duration-300"
-                      onClick={() => {
-                        updateCreditsAndSearch(group.title);
-                        handleViewDetails(group.title);
-                      }}
-                    >
-                      View Details
-                      <ArrowRight className="w-4 h-4" />
-                    </motion.button>
+
+                    {/* Trend Badge */}
+                    <div className="flex flex-col items-end">
+                      <div className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                        <TrendingUp className="w-3 h-3" />
+                        {group.trend}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Metrics & Sparkline Row */}
+                  <div className="flex items-end justify-between mb-4">
+                    <div>
+                      <p className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider mb-0.5">Active LMIAs</p>
+                      <p className="text-2xl font-bold text-gray-900 tabular-nums tracking-tight">
+                        {group.count.toLocaleString()}
+                      </p>
+                    </div>
+
+                    {/* Sparkline Visualization */}
+                    <div className="h-10 w-24 relative">
+                      <Sparkline data={group.sparkline} colorClass={group.color} />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-50 pt-3 flex items-center justify-between">
+                    <p className="text-xs text-gray-500 truncate max-w-[180px]">
+                      Top: <span className="text-gray-700 font-medium">{group.description}</span>
+                    </p>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
+                      <ArrowUpRight className="w-4 h-4 text-brand-600" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </motion.div>
-        ))}
+              </motion.div>
+            ))
+          )}
+        </div>
       </div>
     </section>
   );

@@ -4,6 +4,7 @@ import {
   Building2,
   Globe,
   Flame,
+  CheckCircle2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SectionTitle from '@/components/ui/section-title';
@@ -103,43 +104,86 @@ export default function Features() {
   }
 
   return (
-    <section className={isMobile ? "py-10 relative bg-gradient-to-b from-white to-gray-50/50" : "py-20 relative bg-gradient-to-b from-white to-gray-50/50"}>
-      <div className={isMobile ? "max-w-full mx-auto px-4" : "max-w-full mx-auto px-16"}>
-        <SectionTitle
-          title="What JobMaze Offers"
-          subtitle="Three pillars of intelligent job search"
-        />
+    <section className="relative py-16 bg-white overflow-hidden">
+      {/* Background Decor - Subtle Light Gradients */}
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-50/50 via-white to-transparent pointer-events-none" />
+
+      <div className={isMobile ? "w-full px-4 relative z-10" : "max-w-7xl mx-auto px-6 lg:px-8 relative z-10"}>
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 mb-6"
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+            <span className="text-[10px] uppercase tracking-widest text-brand-700 font-bold">Market Intelligence</span>
+          </motion.div>
+
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight leading-[1.1]">
+            Intelligence. Not just <span className="text-brand-600 relative inline-block">
+              jobs
+              <svg className="absolute w-full h-3 -bottom-1 left-0 text-brand-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" /></svg>
+            </span>.
+          </h2>
+          <p className="text-lg text-gray-600 leading-relaxed font-light">
+            We process millions of data points to give you the signal, not the noise. Discover opportunities hidden in plain sight.
+          </p>
+        </div>
+
         <motion.div
           variants={container}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className={isMobile ? "mt-6 grid grid-cols-1 gap-4" : "mt-12 grid grid-cols-1 md:grid-cols-3 gap-10"}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
-          {features.map((feature) => (
+          {features.map((feature, index) => (
             <motion.div
               key={feature.title}
               variants={item}
-              className={isMobile ? "relative group rounded-xl shadow-sm p-0 flex flex-col" : `relative group rounded-2xl shadow-sm col-span-1 p-0 flex flex-col`}
+              className="relative group bg-white p-8 rounded-[2rem] border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-start text-left"
+              whileHover={{ y: -5 }}
             >
-              {/* Tilted brand background effect */}
-              <div className={isMobile ? "absolute inset-0 bg-gradient-to-br from-brand-500/10 via-brand-400/10 to-brand-300/10 rounded-xl pointer-events-none" : "absolute inset-0 bg-gradient-to-br from-brand-500/10 via-brand-400/10 to-brand-300/10 rounded-2xl -rotate-2 group-hover:rotate-0 transition-transform duration-300 pointer-events-none"} />
-              {/* Card content */}
-              <div className={isMobile ? "relative bg-white rounded-xl p-4 flex flex-col h-full border border-brand-100/20 overflow-hidden" : "relative bg-white rounded-2xl p-6 flex flex-col h-full border border-brand-100/20 overflow-hidden group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]"}>
-                <div className={isMobile ? "flex items-center gap-2 mb-3" : "flex items-center gap-3 mb-4"}>
-                  <div className={isMobile ? "rounded-lg p-1.5 bg-gradient-to-br from-brand-500 to-brand-600 shadow text-white" : "rounded-lg p-2 bg-gradient-to-br from-brand-500 to-brand-600 shadow text-white"}>
-                    <feature.icon className={isMobile ? "w-4 h-4" : "w-6 h-6"} />
-                  </div>
-                  <h3 className={isMobile ? "font-bold text-sm text-brand-600" : "font-bold text-lg text-brand-600"}>
-                    {feature.title}
-                  </h3>
+              {/* Hover Gradient Border Effect (Subtle) */}
+              <div className="absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-transparent group-hover:ring-brand-200/50 transition-all duration-300 pointer-events-none" />
+
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-300 shadow-sm ${index === 0 ? 'bg-blue-50 text-blue-600' :
+                index === 1 ? 'bg-purple-50 text-purple-600' :
+                  'bg-orange-50 text-orange-600'
+                }`}>
+                <feature.icon className="w-7 h-7" strokeWidth={1.5} />
+              </div>
+
+              <h3 className="text-xl font-bold text-gray-900 mb-3 tracking-tight group-hover:text-brand-600 transition-colors">
+                {feature.title}
+              </h3>
+
+              <p className="text-gray-500 mb-8 leading-relaxed text-sm font-medium">
+                {feature.description}
+              </p>
+
+              <div className="mt-auto pt-6 border-t border-gray-50 w-full bg-gray-50/50 -mx-8 -mb-8 p-8 rounded-b-[2rem] group-hover:bg-gray-50 transition-colors">
+                <div className="space-y-3">
+                  {index === 0 && (
+                    <>
+                      <div className="flex items-center gap-3 text-sm text-gray-700 font-medium"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Hiring History Analysis</div>
+                      <div className="flex items-center gap-3 text-sm text-gray-700 font-medium"><CheckCircle2 className="w-4 h-4 text-blue-500" /> Compliance Risk Checks</div>
+                    </>
+                  )}
+                  {index === 1 && (
+                    <>
+                      <div className="flex items-center gap-3 text-sm text-gray-700 font-medium"><CheckCircle2 className="w-4 h-4 text-purple-500" /> Remote & Hybrid Roles</div>
+                      <div className="flex items-center gap-3 text-sm text-gray-700 font-medium"><CheckCircle2 className="w-4 h-4 text-purple-500" /> Global Talent Stream</div>
+                    </>
+                  )}
+                  {index === 2 && (
+                    <>
+                      <div className="flex items-center gap-3 text-sm text-gray-700 font-medium"><CheckCircle2 className="w-4 h-4 text-orange-500" /> Demand Heatmaps</div>
+                      <div className="flex items-center gap-3 text-sm text-gray-700 font-medium"><CheckCircle2 className="w-4 h-4 text-orange-500" /> 5-Year Wage Trends</div>
+                    </>
+                  )}
                 </div>
-                <p className={isMobile ? "text-xs mb-2 opacity-80 text-gray-700" : "text-sm mb-3 opacity-80 text-gray-700"}>
-                  {feature.description}
-                </p>
-                {feature.content && (
-                  <div className="flex-1 mt-auto">{feature.content}</div>
-                )}
               </div>
             </motion.div>
           ))}

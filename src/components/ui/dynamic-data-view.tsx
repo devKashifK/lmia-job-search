@@ -149,13 +149,18 @@ function getNormMap(table: string): Record<string, string> {
   return table === 'lmia' ? NORM_MAP_LMIA : NORM_MAP_TRENDING;
 }
 
-export function useData(query: string, fieldFromProp?: string) {
+export function useData(
+  query: string,
+  fieldFromProp?: string,
+  searchType?: 'lmia' | 'hot_leads'
+) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
 
-  // table from URL (fallback to trending_job)
-  const tableName = (sp?.get('t') ?? 'trending_job').trim();
+  // table from URL (fallback to trending_job) or derived from searchType
+  const tableName =
+    (sp?.get('t') ?? (searchType === 'lmia' ? 'lmia' : 'trending_job')).trim();
 
   // ---- table-specific helpers
   const pk = getPrimaryKey(tableName); // 'id' | 'RecordID'
@@ -198,7 +203,8 @@ export function useData(query: string, fieldFromProp?: string) {
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  const q = (query ?? '').trim();
+  const rawQ = (query ?? '').trim();
+  const q = rawQ.toLowerCase() === 'all' ? '' : rawQ;
 
   // small helpers to update URL
   const setPage = (next: number) => {
@@ -322,21 +328,28 @@ export function useData(query: string, fieldFromProp?: string) {
   };
 }
 
+import { CrossTableChecker } from './cross-table-checker';
+
+// ... existing imports
+
 export default function DynamicDataView({
   title,
   field,
+  searchType: propSearchType,
 }: DynamicDataViewProps) {
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
   const { isMobile, isMounted } = useMobile();
 
-  // Get search type from URL parameter
+  // Get search type from prop or URL parameter
   const searchParams = useSearchParams();
-  const searchType = (
-    searchParams?.get('t') === 'lmia' ? 'lmia' : 'hot_leads'
-  ) as 'lmia' | 'hot_leads';
+  const searchType =
+    propSearchType ??
+    ((searchParams?.get('t') === 'lmia' ? 'lmia' : 'hot_leads') as
+      | 'lmia'
+      | 'hot_leads');
 
   // Call useData once here to get the filtered count
-  const { data } = useData(title, field);
+  const { data } = useData(title, field, searchType);
   const count = data?.count;
 
   // Wait for client-side mounting to determine device type
@@ -346,11 +359,15 @@ export default function DynamicDataView({
 
   return (
     <>
+      <CrossTableChecker
+        currentSearchType={searchType}
+        field={field}
+        query={title}
+      />
       <div
         className={
-          isMobile
-            ? 'mx-auto px-4 py-4 pb-20 overflow-x-hidden'
-            : 'mx-auto px-16 py-8'
+          isMobile ? 'mx-auto px-4 py-4 pb-20 overflow-x-hidden'
+            : 'mx-auto px-16 pt-2 pb-8'
         }
       >
         <div className="py-0">
@@ -365,6 +382,7 @@ export default function DynamicDataView({
                   : 'Search Trending jobs...'
               }
               defaultSearchType={searchType}
+              field={field}
             />
           </div>
         </div>
@@ -448,13 +466,15 @@ export function DataPanel({
   field,
   savedSet,
   setSavedSet,
+  searchType,
 }: {
   savedSet: Set<number>;
   query: string;
   field: string;
   setSavedSet: (set: Set<number>) => void;
+  searchType: 'lmia' | 'hot_leads';
 }) {
-  const { data, error, isLoading } = useData(query, field);
+  const { data, error, isLoading } = useData(query, field, searchType);
   const { dataConfig } = useTableStore();
   const navigate = useRouter();
 
@@ -551,10 +571,10 @@ export function NewDataPanel({
   query: string;
   field: string;
   setSavedSet: (set: Set<number>) => void;
-  searchType: string;
+  searchType: 'lmia' | 'hot_leads';
 }) {
   const { isMobile } = useMobile();
-  const { data, error, isLoading, setPage } = useData(query, field);
+  const { data, error, isLoading, setPage } = useData(query, field, searchType);
   const [selectedJob, setSelectedJob] = React.useState<any>(null);
   const [selectedJobId, setSelectedJobId] = React.useState<number | undefined>(
     undefined
@@ -726,6 +746,7 @@ export function NewDataPanel({
                 }}
                 totalCount={data?.count}
                 className="h-full"
+                searchType={searchType as 'lmia' | 'hot_leads'}
               />
             </div>
 
@@ -828,6 +849,7 @@ export function NewDataPanel({
                 }}
                 totalCount={data?.count}
                 className="h-full"
+                searchType={searchType as 'lmia' | 'hot_leads'}
               />
             </div>
             <div className="flex-1 min-w-0 max-w-4xl">

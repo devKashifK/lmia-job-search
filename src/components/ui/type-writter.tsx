@@ -5,16 +5,18 @@ import { Typewriter } from "react-simple-typewriter";
 export function TypewriterEffect({
   title,
   words = [],
+  className,
 }: {
   title: string;
   words: string[];
+  className?: string;
 }) {
   return (
     <div
       className="search-container"
       style={{ textAlign: "center", marginTop: "10px" }}
     >
-      <h2 className="text-2xl text-brand-600 font-bold">
+      <h2 className={className || "text-2xl text-brand-600 font-bold"}>
         {title} -{" "}
         <span
           className="text-2xl font-bold gradient-text"
