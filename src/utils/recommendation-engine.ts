@@ -56,7 +56,8 @@ export async function generateRecommendations(
             .limit(20);
 
         // 4. Analyze patterns and generate candidate jobs
-        const candidates = await getCandidateJobs(preferences);
+        // pass recentSearches to getCandidateJobs
+        const candidates = await getCandidateJobs(preferences, recentSearches || []);
 
         // 5. Score each candidate
         const scoredRecommendations = candidates.map((job) => {
@@ -86,21 +87,48 @@ export async function generateRecommendations(
 }
 
 /**
- * Get candidate jobs based on user preferences
+ * Get candidate jobs based on user preferences and recent activity
  */
-async function getCandidateJobs(preferences: UserPreferences): Promise<any[]> {
+async function getCandidateJobs(
+    preferences: UserPreferences,
+    recentSearches: any[] = []
+): Promise<any[]> {
     const candidates: any[] = [];
+
+    // Extract unique keywords from recent searches
+    const searchKeywords = recentSearches
+        .map(s => s.keyword)
+        .filter(k => k && k.length > 2 && !k.startsWith('__job_view__')) // Filter out short keywords and internal tracking
+        .map(k => k.trim());
+
+    // De-duplicate keywords
+    const uniqueKeywords = [...new Set(searchKeywords)];
 
     // Fetch from LMIA records
     let lmiaQuery = db.from('lmia_records').select('*').limit(500);
 
-    // Filter by job titles if specified
+    // Filter by job titles OR search keywords
+    const titleFilters = [];
+
     if (preferences.preferred_job_titles?.length > 0) {
-        // Use ilike for partial matching on each title
-        const titleConditions = preferences.preferred_job_titles
-            .map(title => `JobTitle.ilike.%${title}%`)
+        titleFilters.push(...preferences.preferred_job_titles);
+    }
+
+    if (uniqueKeywords.length > 0) {
+        titleFilters.push(...uniqueKeywords);
+    }
+
+    if (titleFilters.length > 0) {
+        // Use ilike for partial matching on each title/keyword
+        // Check both JobTitle and Employer for search keywords
+        const conditions = titleFilters
+            .map(term => `JobTitle.ilike.%${term}%`)
             .join(',');
-        lmiaQuery = lmiaQuery.or(titleConditions);
+
+        // Also check Employer field for search keywords if they might be company names
+        // But for now let's stick to Job Title to keep query simple and performant
+
+        lmiaQuery = lmiaQuery.or(conditions);
     }
 
     // Filter by provinces if specified
@@ -129,11 +157,11 @@ async function getCandidateJobs(preferences: UserPreferences): Promise<any[]> {
     let trendingQuery = db.from('trending_job').select('*').limit(500);
 
     // Apply same filters to trending jobs
-    if (preferences.preferred_job_titles?.length > 0) {
-        const titleConditions = preferences.preferred_job_titles
-            .map(title => `job_title.ilike.%${title}%`)
+    if (titleFilters.length > 0) {
+        const conditions = titleFilters
+            .map(term => `job_title.ilike.%${term}%`)
             .join(',');
-        trendingQuery = trendingQuery.or(titleConditions);
+        trendingQuery = trendingQuery.or(conditions);
     }
 
     if (preferences.preferred_provinces?.length > 0) {
