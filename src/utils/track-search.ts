@@ -29,7 +29,7 @@ export async function trackSearch({
     try {
         // Insert into existing searches table
         const searchData: any = {
-            id: userId, // User ID stored in 'id' column
+            user_id: userId, // User ID (UUID)
             keyword: keyword,
             search_id: crypto.randomUUID(), // Generate unique search ID
         };
@@ -66,7 +66,7 @@ export async function trackJobView(
         // We could create a separate job_views table, but for now
         // we can track this as a search with special keyword
         await db.from('searches').insert({
-            id: userId,
+            user_id: userId,
             keyword: `__job_view__:${jobSource}:${jobId}`,
             search_id: crypto.randomUUID(),
         });
@@ -86,7 +86,7 @@ export async function getRecentSearches(
         const { data, error } = await db
             .from('searches')
             .select('keyword')
-            .eq('id', userId)
+            .eq('user_id', userId)
             .not('keyword', 'like', '__job_view__%') // Exclude job view tracking
             .order('created_at', { ascending: false })
             .limit(limit);
