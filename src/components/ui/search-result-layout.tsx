@@ -1,5 +1,5 @@
 'use client';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import DynamicDataView from './dynamic-data-view';
 import Navbar from './nabvar';
 import useMobile from '@/hooks/use-mobile';

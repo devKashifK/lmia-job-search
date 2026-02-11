@@ -1,5 +1,5 @@
 import Navbar from '@/components/ui/nabvar';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 
 export default function NoRefundPolicy() {
   return (

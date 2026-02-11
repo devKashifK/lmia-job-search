@@ -1,6 +1,6 @@
 import JobDescription from '@/components/ui/job-description';
 import Navbar from '@/components/ui/nabvar';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import React from 'react';
 import JobMarketInfo from '@/components/job-market-info';
 

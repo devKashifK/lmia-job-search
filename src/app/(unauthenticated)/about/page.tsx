@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Navbar from '@/components/ui/nabvar';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import { motion } from 'framer-motion';
 import { Users, Target, Shield, Zap, Globe, Award, TrendingUp, CheckCircle2 } from 'lucide-react';
 import useMobile from '@/hooks/use-mobile';

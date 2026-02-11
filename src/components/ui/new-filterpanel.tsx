@@ -651,7 +651,18 @@ function DateRangeFilter() {
             <CalendarIcon className="w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-2" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start" side="right">
+        <PopoverContent
+          className="w-auto p-0"
+          align="start"
+          side="right"
+          onInteractOutside={(e) => {
+            // Prevent closing when clicking on Select dropdown items  
+            const target = e.target as HTMLElement;
+            if (target.closest('[role="listbox"]') || target.closest('[data-radix-select-content]')) {
+              e.preventDefault();
+            }
+          }}
+        >
           <div className="p-3">
             <Calendar
               mode="range"
@@ -660,6 +671,7 @@ function DateRangeFilter() {
                 setRange(r || { from: undefined, to: undefined })
               }
               numberOfMonths={1}
+              showManualInput={true}
             />
           </div>
           <div className="flex gap-2 p-3 border-t border-gray-100">

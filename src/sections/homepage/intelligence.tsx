@@ -1,5 +1,8 @@
 'use client';
 
+// Prevent static optimization - force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import {
     Briefcase,

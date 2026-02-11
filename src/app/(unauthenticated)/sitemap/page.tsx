@@ -1,5 +1,5 @@
 import Navbar from '@/components/ui/nabvar';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import Link from 'next/link';
 import React from 'react';
 import { Network, FileText, Search, Shield, HelpCircle } from 'lucide-react';

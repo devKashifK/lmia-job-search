@@ -1,6 +1,6 @@
 'use client';
 import dynamic from 'next/dynamic';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Mail, Phone, Building2, ExternalLink } from 'lucide-react';
 import Navbar from '@/components/ui/nabvar';

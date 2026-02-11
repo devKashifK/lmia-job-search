@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Building2, TrendingUp, ArrowRight, PieChart } from 'lucide-react';
 import Navbar from '@/components/ui/nabvar';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';

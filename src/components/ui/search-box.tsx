@@ -768,15 +768,15 @@ export function SearchBox() {
             </div>
 
             {/* Zone 3: Dates */}
-            <Popover>
+            <Popover open={activeField === 'dates'} onOpenChange={(open) => setActiveField(open ? 'dates' : null)} modal={false}>
               <PopoverTrigger asChild>
                 <div
-                  onClick={() => setActiveField('dates')}
                   className={cn(
                     "relative cursor-pointer hover:bg-gray-50/50 transition-colors",
                     isMobile ? "p-4" : "h-full flex-1 pl-6 pr-20 flex flex-col justify-center", // Padding right for button
                     !isMobile && activeField === 'dates' && "bg-gray-100/50 rounded-full"
                   )}
+                  onClick={() => setActiveField('dates')}
                 >
                   <Label className="text-[11px] font-extrabold text-gray-800 uppercase tracking-widest mb-0.5 block cursor-pointer ml-1">Dates</Label>
                   <div className={cn("text-base font-medium truncate", (dateRange?.from || dateRange?.to) ? "text-brand-600" : "text-gray-400")}>
@@ -792,7 +792,17 @@ export function SearchBox() {
                   </div>
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="center">
+              <PopoverContent
+                className="w-auto p-0"
+                align="center"
+                onInteractOutside={(e) => {
+                  // Prevent closing when clicking on Select dropdown items
+                  const target = e.target as HTMLElement;
+                  if (target.closest('[role="listbox"]') || target.closest('[data-radix-select-content]')) {
+                    e.preventDefault();
+                  }
+                }}
+              >
                 <Calendar
                   initialFocus
                   mode="range"
@@ -800,6 +810,13 @@ export function SearchBox() {
                   selected={dateRange}
                   onSelect={setDateRange}
                   numberOfMonths={2}
+                  showManualInput={true}
+                  showActionButtons={true}
+                  onApply={() => setActiveField(null)}
+                  onClear={() => {
+                    setDateRange(undefined);
+                    setActiveField(null);
+                  }}
                 />
               </PopoverContent>
             </Popover>

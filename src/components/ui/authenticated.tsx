@@ -3,6 +3,7 @@ import { useSession } from "@/hooks/use-session";
 import { useRouter } from "next/navigation";
 import React from "react";
 import LoadingScreen from "./loading-screen";
+import { ProfileCompletionCheck } from "./profile-completion-check";
 
 export default function AuthenticatedLayout({
   children,
@@ -23,5 +24,10 @@ export default function AuthenticatedLayout({
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <ProfileCompletionCheck />
+      {children}
+    </>
+  );
 }

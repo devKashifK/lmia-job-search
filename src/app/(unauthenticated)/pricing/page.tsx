@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Check, ArrowRight, Zap, Users, Building2, HelpCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/ui/nabvar';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import { HoverCard } from '@/components/ui/hover-card';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { cn } from '@/lib/utils';

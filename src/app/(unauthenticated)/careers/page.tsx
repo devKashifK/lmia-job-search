@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Navbar from '@/components/ui/nabvar';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import { motion } from 'framer-motion';
 import { ArrowRight, Zap, Heart, Globe, Coffee, Laptop, DollarSign } from 'lucide-react';
 import useMobile from '@/hooks/use-mobile';

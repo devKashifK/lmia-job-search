@@ -95,7 +95,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Navbar from '@/components/ui/nabvar';
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { useQuery } from '@tanstack/react-query';

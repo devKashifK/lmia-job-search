@@ -1,4 +1,4 @@
-import Footer from '@/pages/homepage/footer';
+import Footer from '@/sections/homepage/footer';
 import Navbar from './nabvar';
 
 export function StandardPageLayout({
