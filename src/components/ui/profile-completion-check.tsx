@@ -6,6 +6,9 @@ import { useRouter, usePathname } from "next/navigation";
 import db from "@/db";
 import { AlertCircle, ArrowRight } from "lucide-react";
 
+const STORAGE_KEY = "profile_completion_dismissed";
+const DISMISS_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
 export function ProfileCompletionCheck() {
     const router = useRouter();
     const pathname = usePathname();
@@ -13,6 +16,18 @@ export function ProfileCompletionCheck() {
     useEffect(() => {
         const checkProfileCompletion = async () => {
             try {
+                // Check if user has recently dismissed the toast
+                const dismissedAt = localStorage.getItem(STORAGE_KEY);
+                if (dismissedAt) {
+                    const dismissedTime = parseInt(dismissedAt, 10);
+                    const now = Date.now();
+
+                    // If dismissed within last 24 hours, don't show
+                    if (now - dismissedTime < DISMISS_DURATION_MS) {
+                        return;
+                    }
+                }
+
                 const { data: { session } } = await db.auth.getSession();
                 if (!session) {
                     return;
@@ -37,14 +52,8 @@ export function ProfileCompletionCheck() {
                 if (!preferences.preferred_job_titles || preferences.preferred_job_titles.length === 0) {
                     missingFields.push("Job Titles");
                 }
-                if (!preferences.preferred_locations || preferences.preferred_locations.length === 0) {
+                if (!preferences.preferred_provinces || preferences.preferred_provinces.length === 0) {
                     missingFields.push("Locations");
-                }
-                if (!preferences.experience_level) {
-                    missingFields.push("Experience Level");
-                }
-                if (!preferences.work_authorization) {
-                    missingFields.push("Work Authorization");
                 }
 
                 // If any fields are missing, show toast
@@ -87,6 +96,10 @@ export function ProfileCompletionCheck() {
             {
                 duration: 15000,
                 className: "border-l-4 border-red-500",
+                onDismiss: () => {
+                    // Remember that user dismissed this toast
+                    localStorage.setItem(STORAGE_KEY, Date.now().toString());
+                },
             }
         );
     };
