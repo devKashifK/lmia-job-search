@@ -593,7 +593,7 @@ export function NocJobDescription({
                             Overview
                           </h3>
                         </div>
-                        <p className="text-gray-700 text-sm leading-relaxed line-clamp-4">
+                        <p className="text-gray-700 text-sm leading-relaxed">
                           {jobData.aboutCompany}
                         </p>
                       </CardContent>

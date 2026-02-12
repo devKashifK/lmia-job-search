@@ -26,16 +26,42 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // Tier Configuration
 const TIERS = [
+
+
+
+
     {
-        level: 4,
-        name: 'Tier 4',
-        icon: Crown,
-        color: 'text-brand-900',
+        level: 0,
+        name: 'Tier 0',
+        icon: ShieldCheck,
+        color: 'text-brand-400',
+        bg: 'bg-brand-50/50',
+        border: 'border-brand-50',
+        gradient: 'from-brand-300 to-brand-400',
+        shadow: 'shadow-brand-400/20',
+        description: 'Standard'
+    },
+    {
+        level: 1,
+        name: 'Tier 1',
+        icon: Award,
+        color: 'text-brand-500',
         bg: 'bg-brand-50',
-        border: 'border-brand-200',
-        gradient: 'from-brand-800 to-brand-900',
-        shadow: 'shadow-brand-900/20',
-        description: 'Elite Performers'
+        border: 'border-brand-50',
+        gradient: 'from-brand-400 to-brand-500',
+        shadow: 'shadow-brand-500/20',
+        description: 'Emerging'
+    },
+    {
+        level: 2,
+        name: 'Tier 2',
+        icon: Medal,
+        color: 'text-brand-600',
+        bg: 'bg-brand-50',
+        border: 'border-brand-100',
+        gradient: 'from-brand-500 to-brand-600',
+        shadow: 'shadow-brand-600/20',
+        description: 'High Growth'
     },
     {
         level: 3,
@@ -50,38 +76,16 @@ const TIERS = [
 
     },
     {
-        level: 2,
-        name: 'Tier 2',
-        icon: Medal,
-        color: 'text-brand-600',
+        level: 4,
+        name: 'Tier 4',
+        icon: Crown,
+        color: 'text-brand-900',
         bg: 'bg-brand-50',
-        border: 'border-brand-100',
-        gradient: 'from-brand-500 to-brand-600',
-        shadow: 'shadow-brand-600/20',
-        description: 'High Growth'
+        border: 'border-brand-200',
+        gradient: 'from-brand-800 to-brand-900',
+        shadow: 'shadow-brand-900/20',
+        description: 'Elite Performers'
     },
-    {
-        level: 1,
-        name: 'Tier 1',
-        icon: Award,
-        color: 'text-brand-500',
-        bg: 'bg-brand-50',
-        border: 'border-brand-50',
-        gradient: 'from-brand-400 to-brand-500',
-        shadow: 'shadow-brand-500/20',
-        description: 'Emerging'
-    },
-    {
-        level: 0,
-        name: 'Tier 0',
-        icon: ShieldCheck,
-        color: 'text-brand-400',
-        bg: 'bg-brand-50/50',
-        border: 'border-brand-50',
-        gradient: 'from-brand-300 to-brand-400',
-        shadow: 'shadow-brand-400/20',
-        description: 'Standard'
-    }
 ];
 
 export function CompanyTierList() {

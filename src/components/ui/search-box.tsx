@@ -84,7 +84,7 @@ export function SearchBox() {
 
   const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>('hot_leads');
   const [activeField, setActiveField] = useState<'what' | 'where' | 'dates' | null>(null);
-  const [searchBy, setSearchBy] = useState<'all' | 'job_title' | 'category' | 'noc_code' | 'employer'>('all');
+  const [searchBy, setSearchBy] = useState<'all' | 'job_title' | 'category' | 'noc_code' | 'employer' | 'city'>('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   // ... (existing refs and hooks)
@@ -208,7 +208,7 @@ export function SearchBox() {
     }
   };
 
-  // 2. Fetch Cities for ALL selected provinces
+  // 2. Fetch Cities for ALL selected provinces (with fallback)
   const fetchCitiesForProvinces = async (provincesList: string[]) => {
     if (provincesList.length === 0) {
       setCities([]);
@@ -219,22 +219,75 @@ export function SearchBox() {
       // Fetch stats for each selected province in parallel
       const allCitiesArrays = await Promise.all(
         provincesList.map(async (province) => {
-          const { data, error } = await db.rpc('get_cities_by_province', {
-            p_province: province,
-            p_search: '',
-          });
-          if (!error && data) {
-            // Tag with province for context if needed, though RPC might not return it
-            return (data as { city: string }[]).map(c => ({ ...c, province }));
+          // Fetch from matching sources in parallel to get comprehensive list
+          const [rpcRes, trendingRes, lmiaRes] = await Promise.all([
+            // 1. RPC
+            db.rpc('get_cities_by_province', {
+              p_province: province,
+              p_search: '',
+            }),
+            // 2. Trending Job Table (Direct with higher limit)
+            db.from('trending_job')
+              .select('city')
+              .eq('state', province)
+              .limit(5000), // Fetch more to uncover cities missing from RPC/Top lists
+            // 3. LMIA Records Table
+            db.from('lmia_records')
+              .select('City')
+              .eq('Province', province)
+              .limit(5000)
+          ]);
+
+          let citiesForProv: { city: string; province: string }[] = [];
+
+          // Collect from RPC
+          if (!rpcRes.error && rpcRes.data && (rpcRes.data as any[]).length > 0) {
+            const rpcCities = (rpcRes.data as { city: string }[]).map(c => ({ ...c, province }));
+            citiesForProv = [...citiesForProv, ...rpcCities];
           }
-          return [];
+
+          // Collect from Trending
+          if (!trendingRes.error && trendingRes.data && trendingRes.data.length > 0) {
+            const tCities = trendingRes.data
+              .map(d => d.city)
+              .filter(Boolean)
+              .map(city => ({ city, province }));
+            citiesForProv = [...citiesForProv, ...tCities];
+          }
+
+          // Collect from LMIA
+          if (!lmiaRes.error && lmiaRes.data && lmiaRes.data.length > 0) {
+            const lCities = lmiaRes.data
+              .map(d => d.City)
+              .filter(Boolean)
+              .map(city => ({ city, province }));
+            citiesForProv = [...citiesForProv, ...lCities];
+          }
+
+          // Deduplicate within this province
+          const uniqueCities = new Set<string>();
+          const distinct: { city: string; province: string }[] = [];
+
+          for (const item of citiesForProv) {
+            const normalized = item.city.trim(); // keep casing for display, but could normalize for check
+            if (!uniqueCities.has(normalized)) {
+              uniqueCities.add(normalized);
+              distinct.push({ city: normalized, province });
+            }
+          }
+
+          return distinct.sort((a, b) => a.city.localeCompare(b.city));
         })
       );
 
-      // Flatten
+      // Flatten and deduplicate
       const flattened = allCitiesArrays.flat();
-      // Remove duplicates if any (though cities are usually unique per province, same city name might exist in multiple?)
-      // For now trust the list.
+
+      // Deduplicate by city name across all provinces (or keep province context)
+      // Since cities are keyed by province in the UI (key=`${c.province}-${c.city}-${idx}`), 
+      // duplicates across provinces are fine (e.g. Springfield in multiple states).
+      // But duplicates within same province should be handled by the per-province logic above.
+
       setCities(flattened);
     } catch (err) {
       console.error('Error fetching cities:', err);
@@ -717,6 +770,10 @@ export function SearchBox() {
                     Employer
                     {searchBy === 'employer' && <Check className="ml-auto w-4 h-4" />}
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSearchBy('city')}>
+                    City
+                    {searchBy === 'city' && <Check className="ml-auto w-4 h-4" />}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
@@ -1015,7 +1072,7 @@ export function SearchBox() {
           <div className="flex justify-center mt-6">
             <div className="inline-flex items-center bg-white/80 backdrop-blur-md border border-white/50 shadow-sm rounded-full p-1.5 gap-1">
               <span className="text-xs font-semibold text-gray-400 px-3 uppercase tracking-wider">Search by</span>
-              {['all', 'job_title', 'category', 'noc_code', 'employer'].map((field) => (
+              {['all', 'job_title', 'category', 'noc_code', 'employer', 'city'].map((field) => (
                 <button
                   key={field}
                   onClick={() => {

@@ -204,7 +204,12 @@ export function useData(
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
   const rawQ = (query ?? '').trim();
-  const q = rawQ.toLowerCase() === 'all' ? '' : rawQ;
+
+  // If query is 'all', try to get 'q' from URL params (used by NOC guide links)
+  const paramQ = sp?.get('q')?.trim() ?? '';
+  const q = rawQ.toLowerCase() === 'all'
+    ? (paramQ || '')
+    : rawQ;
 
   // small helpers to update URL
   const setPage = (next: number) => {

@@ -32,6 +32,7 @@ import { cn } from '@/lib/utils';
 import { useCompareData } from '@/components/compare/use-compare-data';
 import ComparisonResults from '@/components/compare/comparison-results';
 import { VirtualizedSearchableSelector } from '@/components/compare/virtualized-searchable-selector';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSavedJobs } from '@/hooks/use-saved-jobs';
 import { useSession } from '@/hooks/use-session';
 import {
@@ -164,6 +165,7 @@ export default function ComparePage() {
   const { data: options, isLoading } = useCompareData(comparisonType);
   const { data: savedJobs, isLoading: savedJobsLoading } = useSavedJobs();
   const { session } = useSession();
+  const queryClient = useQueryClient();
 
   const hasSavedJobs = savedJobs && savedJobs.length > 0;
 
@@ -373,7 +375,8 @@ export default function ComparePage() {
       if (selectedSavedJob2?.RecordID === recordId) setSelectedSavedJob2(null);
 
       toast.success('Job removed from saved jobs');
-      // Refetch will happen automatically via React Query
+      // Invalidate the query to force a refresh
+      queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
     } catch (error) {
       console.error('Error removing job:', error);
       toast.error('Failed to remove job');

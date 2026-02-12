@@ -1,6 +1,7 @@
 import { AttributeName } from '@/helpers/attribute';
 import React from 'react';
 import { Badge } from './badge';
+import Link from 'next/link';
 import { useData } from './dynamic-data-view';
 import { useSearchParams } from 'next/navigation';
 import CompactSearch from './compact-search';
@@ -59,9 +60,13 @@ export default function PageTitle({
         <div className="flex flex-col gap-1">
           {/* Breadcrumbs */}
           <nav className="flex items-center text-xs text-gray-500 mb-1">
-            <span>Home</span>
+            <Link href="/" className="hover:text-brand-600 hover:underline transition-colors">
+              Home
+            </Link>
             <span className="mx-1.5 text-gray-300">/</span>
-            <span className="text-gray-900 font-medium">Search</span>
+            <Link href="/search" className="text-gray-900 font-medium hover:text-brand-600 hover:underline transition-colors">
+              Search
+            </Link>
           </nav>
 
           {/* Title with Icon */}
