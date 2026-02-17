@@ -70,3 +70,50 @@ export function getTeerCategory(code: string): string {
         default: return 'TEER';
     }
 }
+
+export async function findNocMatches(jobTitles: string[]): Promise<NocSummary[]> {
+    const data = await getNocData();
+    const profiles = Object.values(data);
+    const matches: { profile: NocProfile; score: number }[] = [];
+
+    // Simple scoring system
+    // We want to find NOCs that match ANY of the job titles
+    const uniqueTitles = [...new Set(jobTitles.map(t => t.toLowerCase()))];
+
+    profiles.forEach(profile => {
+        let score = 0;
+        const nocTitle = profile.title.toLowerCase();
+        const duties = Object.values(profile.mainDuties).flat().join(' ').toLowerCase();
+
+        uniqueTitles.forEach(jobTitle => {
+            // Title Match (High weight)
+            if (nocTitle.includes(jobTitle)) {
+                score += 10;
+            } else {
+                // Partial word match in title
+                const words = jobTitle.split(' ');
+                const matchCount = words.filter(w => w.length > 3 && nocTitle.includes(w)).length;
+                score += matchCount * 2;
+            }
+
+            // Duty Match (Medium weight)
+            if (duties.includes(jobTitle)) {
+                score += 5;
+            }
+        });
+
+        if (score > 0) {
+            matches.push({ profile, score });
+        }
+    });
+
+    // Sort by score descending and take top 5
+    return matches
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5)
+        .map(m => ({
+            code: m.profile.code,
+            title: m.profile.title,
+            teer: getTeerCategory(m.profile.code)
+        }));
+}

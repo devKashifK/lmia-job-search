@@ -4,7 +4,10 @@ import {
   Building2,
   Globe,
   Flame,
-  CheckCircle2
+  CheckCircle2,
+  Bell,
+  FileSearch,
+  Sparkles
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SectionTitle from '@/components/ui/section-title';
@@ -75,6 +78,75 @@ const features = [
         <li className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
           Trend-based insights
+        </li>
+      </ul>
+    ),
+  },
+  {
+    title: 'Smart Job Alerts',
+    description:
+      'Never miss an opportunity. Get notified instantly when verified employers post jobs matching your specific criteria.',
+    icon: Bell,
+    span: 'col-span-1 row-span-1',
+    content: (
+      <ul className="mt-4 space-y-2 text-sm text-gray-600">
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Instant Email Notifications
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Custom Criteria Filters
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Verified Employer Tracking
+        </li>
+      </ul>
+    ),
+  },
+  {
+    title: 'AI Resume Analysis',
+    description:
+      'Optimize your profile. Get instant feedback on your resume\'s compatibility with Canadian job market standards.',
+    icon: FileSearch,
+    span: 'col-span-1 row-span-1',
+    content: (
+      <ul className="mt-4 space-y-2 text-sm text-gray-600">
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Parses & Scores Resume
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Suggests Missing Keywords
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Extracts Key Skills
+        </li>
+      </ul>
+    ),
+  },
+  {
+    title: 'Tailored Recommendations',
+    description:
+      'Discover your path. Receive personalized industry and TEER suggestions based on your unique profile.',
+    icon: Sparkles,
+    span: 'col-span-1 row-span-1',
+    content: (
+      <ul className="mt-4 space-y-2 text-sm text-gray-600">
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          Industry Matching
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          TEER Category Suggestions
+        </li>
+        <li className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-brand-500" />
+          NOC Code Alignment
         </li>
       </ul>
     ),

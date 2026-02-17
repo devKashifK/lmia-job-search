@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Book, Compass, Database, Zap, CreditCard, ChevronRight } from 'lucide-react';
+import { Book, Compass, Database, Zap, CreditCard, ChevronRight, BarChart3, Users, Bell, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -22,9 +22,29 @@ const sections = [
         icon: Database,
     },
     {
+        id: 'dashboard-analysis',
+        title: 'Dashboard & Analysis',
+        icon: BarChart3,
+    },
+    {
         id: 'features-guide',
         title: 'Features Guide',
         icon: Zap,
+    },
+    {
+        id: 'comparison-tool',
+        title: 'Comparison Tool',
+        icon: Book,
+    },
+    {
+        id: 'job-alerts',
+        title: 'Job Alerts',
+        icon: Bell,
+    },
+    {
+        id: 'profile-resume',
+        title: 'Profile & Resume',
+        icon: Users,
     },
     {
         id: 'step-by-step',
@@ -35,6 +55,11 @@ const sections = [
         id: 'credits-pricing',
         title: 'Credits & Pricing',
         icon: CreditCard,
+    },
+    {
+        id: 'security-privacy',
+        title: 'Security & Privacy',
+        icon: Shield,
     },
     {
         id: 'faq',

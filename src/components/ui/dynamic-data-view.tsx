@@ -16,6 +16,8 @@ import Loader from '@/components/ui/loader';
 import PageTitle from '@/components/ui/page-title';
 import Pagination from '@/components/ui/pagination';
 import JobCard from '@/components/ui/job-card';
+import { SearchPageHeader } from '@/components/search/search-page-header';
+import { keepPreviousData } from '@tanstack/react-query';
 import { NocJobDescription } from './noc-job-description';
 import { AllJobsList } from './all-jobs-list';
 import { NewDataPanelSkeleton } from './skeletons';
@@ -238,7 +240,7 @@ export function useData(
         dateFrom ?? null,
         dateTo ?? null,
       ],
-      keepPreviousData: true,
+      placeholderData: keepPreviousData,
       queryFn: async () => {
         let builder = db.from(tableName).select(selectCols, { count: 'exact' });
 
@@ -319,7 +321,7 @@ export function useData(
         if (error) throw new Error(error.message || 'Failed to fetch');
 
         return {
-          rows: data ?? [],
+          rows: (data as unknown as LMIA[]) ?? [],
           count: count ?? 0,
           page,
           pageSize,
@@ -353,6 +355,12 @@ export default function DynamicDataView({
       | 'lmia'
       | 'hot_leads');
 
+  // Determine if we should show the specialized Search Header
+  // We show it if searchType is explicitly provided (SearchResultsLayout) OR 
+  // if we are on a route that implies search (like roles/[keyword] which might use it)
+  // For now, let's use it if we have a searchType, as that drives the data source switcher.
+  const useNewHeader = !!searchType;
+
   // Call useData once here to get the filtered count
   const { data } = useData(title, field, searchType);
   const count = data?.count;
@@ -372,31 +380,42 @@ export default function DynamicDataView({
       <div
         className={
           isMobile ? 'mx-auto px-4 py-4 pb-20 overflow-x-hidden'
-            : 'mx-auto px-16 pt-2 pb-8'
+            : 'mx-auto px-0 pt-0 pb-8' // Remove padding/margins to let Header span full width
         }
       >
         <div className="py-0">
-          <div className="flex justify-between items-center mb-0">
-            <PageTitle
-              title={title}
-              count={count}
-              showSearch={!isMobile}
-              searchPlaceholder={
-                searchType === 'lmia'
-                  ? 'Search LMIA jobs...'
-                  : 'Search Trending jobs...'
-              }
-              defaultSearchType={searchType}
-              field={field}
-            />
+          <div className="flex flex-col mb-0">
+            {useNewHeader ? (
+              <SearchPageHeader
+                currentSearchType={searchType}
+                title={title}
+                field={field}
+                count={count}
+              />
+            ) : (
+              <div className="px-16 pt-2">
+                <PageTitle
+                  title={title}
+                  count={count}
+                  showSearch={!isMobile}
+                  searchPlaceholder={
+                    searchType === 'lmia'
+                      ? 'Search LMIA jobs...'
+                      : 'Search Trending jobs...'
+                  }
+                  defaultSearchType={searchType}
+                  field={field}
+                />
+              </div>
+            )}
           </div>
         </div>
 
-        <AppliedFilters />
+        {!useNewHeader && <AppliedFilters />}
 
         <div
           className={
-            isMobile ? 'relative flex flex-col gap-3' : 'relative flex gap-0'
+            isMobile ? 'relative flex flex-col gap-3 px-4' : 'relative flex gap-0 px-16 pt-2'
           }
         >
           {!isMobile && (
@@ -533,7 +552,7 @@ export function DataPanel({
                       category={item.category}
                       employerType={item.employer_type}
                       datePosted={item.date_of_job_posting}
-                      recordID={item.RecordID}
+                      recordID={item.RecordID ? String(item.RecordID) : undefined}
                       onKnowMore={() => {
                         navigate.push(`/search/noc-profile/${item.noc_code}`);
                       }}
@@ -736,7 +755,7 @@ export function NewDataPanel({
             {/* Mobile Job List */}
             <div className="flex-1 overflow-hidden">
               <AllJobsList
-                jobs={data?.rows || []}
+                jobs={(data?.rows as unknown as any[]) || []}
                 selectedJobId={selectedJobId}
                 onJobSelect={handleJobSelect}
                 savedJobs={savedSet}
@@ -839,7 +858,7 @@ export function NewDataPanel({
             {/* Desktop: Side by side */}
             <div className="w-[550px] flex-shrink-0 border-r border-gray-200">
               <AllJobsList
-                jobs={data?.rows || []}
+                jobs={(data?.rows as unknown as any[]) || []}
                 selectedJobId={selectedJobId}
                 onJobSelect={handleJobSelect}
                 savedJobs={savedSet}

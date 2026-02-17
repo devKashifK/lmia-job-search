@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     isMobile={isMobile}
                 />
 
-                <main className="flex-1 overflow-y-auto p-6 md:p-8">
+                <main className="flex-1 overflow-y-auto p-2 md:p-2">
                     <AnimatePresence mode="wait">
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}

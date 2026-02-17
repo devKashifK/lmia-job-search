@@ -18,12 +18,10 @@ export function SearchResultsLayout({
 
   return (
     <>
-      {isMobile ? (
+      {isMobile && (
         <MobileHeader title="Search Results" showBack={true} />
-      ) : (
-        <Navbar className="" />
       )}
-      <div className={isMobile ? '' : 'pt-16'}>
+      <div className={isMobile ? '' : ''}>
         <DynamicDataView
           title={decodeURIComponent(searchKey)}
           field={decodeURIComponent(field)}

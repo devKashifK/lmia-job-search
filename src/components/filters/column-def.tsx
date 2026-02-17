@@ -32,6 +32,9 @@ export type LMIA = {
   lmia_year?: string;
   priority_occupation?: string;
   approved_positions?: string;
+  employer?: string;
+  category?: string;
+  RecordID?: number;
 };
 
 interface ColumnMeta {

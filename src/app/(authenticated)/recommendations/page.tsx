@@ -18,11 +18,21 @@ import { BottomNav } from "@/components/mobile/bottom-nav";
 import useMobile from "@/hooks/use-mobile";
 import Link from "next/link";
 
+import { useUserPreferences } from "@/hooks/use-user-preferences";
+
 export default function RecommendationsPage() {
     const { isMobile } = useMobile();
     const { recommendations, isLoading, regenerate, isRegenerating } =
         useJobRecommendations();
+    const { preferences } = useUserPreferences();
     const { data: savedJobs } = useSavedJobs();
+
+    const hasSetPreferences =
+        preferences?.preferred_job_titles?.length > 0 ||
+        preferences?.preferred_provinces?.length > 0 ||
+        preferences?.preferred_cities?.length > 0 ||
+        preferences?.preferred_industries?.length > 0 ||
+        preferences?.preferred_noc_codes?.length > 0;
 
     // Check if a job is saved
     const isJobSaved = (jobId: string) => {
@@ -119,18 +129,37 @@ export default function RecommendationsPage() {
                     >
                         <div className="bg-white rounded-2xl p-12 shadow-sm border border-gray-200 max-w-2xl mx-auto">
                             <AlertCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                No Recommendations Yet
-                            </h3>
-                            <p className="text-gray-600 mb-6">
-                                Set your job preferences to get personalized recommendations
-                            </p>
-                            <Link href="/dashboard/profile">
-                                <Button className="bg-brand-600 hover:bg-brand-700 text-white">
-                                    <Settings className="h-4 w-4 mr-2" />
-                                    Set Preferences
-                                </Button>
-                            </Link>
+                            {hasSetPreferences ? (
+                                <>
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                        No Recommendations Found
+                                    </h3>
+                                    <p className="text-gray-600 mb-6">
+                                        We couldn't find any new jobs matching your specific preferences right now. Try broadening your filters or checking back later.
+                                    </p>
+                                    <Link href="/dashboard/profile">
+                                        <Button variant="outline" className="text-brand-600 border-brand-200 hover:bg-brand-50">
+                                            <Settings className="h-4 w-4 mr-2" />
+                                            Update Preferences
+                                        </Button>
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                        No Recommendations Yet
+                                    </h3>
+                                    <p className="text-gray-600 mb-6">
+                                        Set your job preferences to get personalized recommendations
+                                    </p>
+                                    <Link href="/dashboard/profile">
+                                        <Button className="bg-brand-600 hover:bg-brand-700 text-white">
+                                            <Settings className="h-4 w-4 mr-2" />
+                                            Set Preferences
+                                        </Button>
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </motion.div>
                 )}

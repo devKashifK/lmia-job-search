@@ -17,12 +17,15 @@ import { Button } from "@/components/ui/button";
 import { JobRecommendation } from "@/utils/recommendation-engine";
 import { useSaveJob } from "@/hooks/use-save-job";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { WageComparisonDisplay } from "@/components/analytics/wage-comparison-display";
 
 interface JobRecommendationCardProps {
     recommendation: JobRecommendation;
     index?: number;
     onSave?: (jobId: string) => void;
     isSaved?: boolean;
+    variant?: 'default' | 'compact';
 }
 
 export function JobRecommendationCard({
@@ -30,6 +33,7 @@ export function JobRecommendationCard({
     index = 0,
     onSave,
     isSaved = false,
+    variant = 'default'
 }: JobRecommendationCardProps) {
     const job = recommendation.job_data;
 
@@ -52,7 +56,9 @@ export function JobRecommendationCard({
     // Get top 2 reasons
     const topReasons = recommendation.reasons.slice(0, 2);
 
-    const handleSave = async () => {
+    const handleSave = async (e?: React.MouseEvent) => {
+        e?.preventDefault();
+        e?.stopPropagation();
         await toggleSave();
         // If an onSave prop is still provided, call it as well
         if (onSave) {
@@ -64,6 +70,69 @@ export function JobRecommendationCard({
     const detailUrl = recommendation.job_source === 'lmia'
         ? `/analysis/${encodeURIComponent(employer)}?t=lmia`
         : `/analysis/${encodeURIComponent(employer)}?t=trending_job`;
+
+    if (variant === 'compact') {
+        return (
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+            >
+                <Link href={detailUrl}>
+                    <div className="group relative bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md hover:border-brand-300 transition-all duration-300 h-full flex flex-col">
+                        <div className="flex justify-between items-start mb-2">
+                            <div className="flex-1 min-w-0 pr-2">
+                                <h3 className="font-bold text-gray-900 truncate text-sm group-hover:text-brand-600 transition-colors">
+                                    {jobTitle}
+                                </h3>
+                                <p className="text-xs text-gray-500 truncate flex items-center gap-1 mt-0.5">
+                                    <Building2 className="h-3 w-3" />
+                                    {employer}
+                                </p>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                                <Badge className="bg-brand-50 text-brand-700 hover:bg-brand-100 border-0 px-1.5 py-0.5 text-[10px] h-5 font-bold shadow-none">
+                                    {matchPercentage}%
+                                </Badge>
+                            </div>
+                        </div>
+
+                        <div className="mt-2 space-y-1.5 mb-3 flex-1">
+                            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                <MapPin className="h-3 w-3 text-gray-400" />
+                                <span className="truncate">{location}</span>
+                            </div>
+                            {salary && (
+                                <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                    <DollarSign className="h-3 w-3 text-gray-400" />
+                                    <span className="truncate">
+                                        {typeof salary === 'number'
+                                            ? `$${salary.toLocaleString()}/yr`
+                                            : salary}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3 border-t border-gray-50 mt-auto">
+                            <span className="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
+                                {recommendation.job_source === 'lmia' ? 'LMIA' : 'Hot Lead'}
+                            </span>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={handleSave}
+                                disabled={isLoading}
+                                className={cn("h-7 w-7", isJobSaved ? "text-brand-600 bg-brand-50" : "text-gray-400 hover:text-brand-600 hover:bg-gray-50")}
+                            >
+                                {isJobSaved ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
+                            </Button>
+                        </div>
+                    </div>
+                </Link>
+            </motion.div>
+        );
+    }
 
     return (
         <motion.div
@@ -111,7 +180,7 @@ export function JobRecommendationCard({
                     </div>
 
                     {/* Location & Salary */}
-                    <div className="flex flex-wrap gap-4 mb-4 text-sm text-gray-600">
+                    <div className="flex flex-wrap gap-4 mb-4 text-sm text-gray-600 items-center">
                         <div className="flex items-center gap-1">
                             <MapPin className="h-4 w-4" />
                             {location}
@@ -124,7 +193,17 @@ export function JobRecommendationCard({
                                     : salary}
                             </div>
                         )}
-                        <div className="flex items-center gap-1">
+
+                        {/* Wage Comparison Tag */}
+                        {typeof salary === 'number' && job.NOC && (
+                            <WageComparisonDisplay
+                                noc={job.NOC}
+                                province={job.Province || job.province}
+                                currentWage={salary / 2080} // Approx hourly from annual
+                            />
+                        )}
+
+                        <div className="flex items-center gap-1 ml-auto">
                             <Clock className="h-4 w-4" />
                             {recommendation.job_source === 'lmia' ? 'LMIA' : 'Hot Lead'}
                         </div>

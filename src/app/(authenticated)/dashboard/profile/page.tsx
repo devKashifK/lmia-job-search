@@ -31,6 +31,11 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { JobPreferencesSection } from "@/components/profile/job-preferences-section";
 import { useUserPreferences } from "@/hooks/use-user-preferences";
+import { ResumeUpload } from "@/components/profile/resume-upload";
+import { AnalysisConfirmationDialog } from "@/components/profile/analysis-confirmation-dialog";
+import { TimelineSection } from "@/components/profile/timeline-section";
+import { SkillsSection } from "@/components/profile/skills-section";
+import { NocRecommendationDialog } from "@/components/profile/noc-recommendation-dialog";
 
 interface EditableFieldProps {
   icon: React.ReactNode;
@@ -40,6 +45,7 @@ interface EditableFieldProps {
   onUpdate: (newValue: string) => Promise<void>;
   type?: string;
   isTextArea?: boolean;
+  last?: boolean;
 }
 
 function EditableField({
@@ -50,6 +56,7 @@ function EditableField({
   onUpdate,
   type = "text",
   isTextArea = false,
+  last = false,
 }: EditableFieldProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -92,26 +99,26 @@ function EditableField({
   };
 
   return (
-    <div className="group rounded-lg border border-gray-200 bg-white p-4 transition-all hover:border-brand-200 hover:shadow-sm">
-      <div className="flex items-start justify-between">
-        <div className="flex flex-1 gap-3">
-          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors group-hover:bg-brand-50 group-hover:text-brand-600">
+    <div className={cn("group px-4 py-3.5 transition-colors hover:bg-gray-50/50", !last && "border-b border-gray-100")}>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-1 gap-4">
+          <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-50/80 text-gray-500 border border-transparent group-hover:border-brand-100 group-hover:bg-brand-50 group-hover:text-brand-600 transition-all">
             {icon}
           </div>
-          <div className="flex-1 space-y-1.5">
-            <p className="text-sm font-medium text-gray-900">{title}</p>
+          <div className="flex-1 space-y-0.5">
+            <p className="text-[11px] font-semibold text-gray-500 tracking-wide">{title}</p>
             {!isEditing ? (
-              <p className={cn("text-sm", !value ? "text-gray-400 italic" : "text-gray-600")}>
+              <p className={cn("text-sm font-medium", !value ? "text-gray-400 italic" : "text-gray-900")}>
                 {value || "Not set"}
               </p>
             ) : (
-              <div className="space-y-2.5">
+              <div className="space-y-3 mt-2 max-w-lg">
                 {isTextArea ? (
                   <Textarea
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
                     placeholder={placeholder}
-                    className="min-h-[100px] resize-none text-sm"
+                    className="min-h-[100px] resize-none text-sm bg-white"
                   />
                 ) : (
                   <Input
@@ -119,7 +126,7 @@ function EditableField({
                     value={editValue}
                     onChange={(e) => setEditValue(e.target.value)}
                     placeholder={placeholder}
-                    className="h-9 text-sm"
+                    className="h-9 text-sm bg-white"
                   />
                 )}
                 <div className="flex items-center gap-2">
@@ -127,7 +134,7 @@ function EditableField({
                     size="sm"
                     onClick={handleUpdate}
                     disabled={isLoading}
-                    className="h-8 bg-brand-600 px-3 text-xs hover:bg-brand-700"
+                    className="h-7 bg-brand-600 px-3 text-xs hover:bg-brand-700"
                   >
                     {isLoading ? "Saving..." : <><Check className="mr-1 h-3 w-3" />Save</>}
                   </Button>
@@ -136,7 +143,7 @@ function EditableField({
                     size="sm"
                     onClick={handleCancelEditing}
                     disabled={isLoading}
-                    className="h-8 px-3 text-xs"
+                    className="h-7 px-3 text-xs"
                   >
                     Cancel
                   </Button>
@@ -150,9 +157,9 @@ function EditableField({
             variant="ghost"
             size="icon"
             onClick={handleStartEditing}
-            className="h-8 w-8 text-gray-400 opacity-0 transition-opacity hover:text-brand-600 group-hover:opacity-100"
+            className="h-7 w-7 text-gray-300 opacity-0 transition-opacity hover:text-brand-600 hover:bg-brand-50 group-hover:opacity-100 -mt-1"
           >
-            <Pencil className="h-4 w-4" />
+            <Pencil className="h-3.5 w-3.5" />
           </Button>
         )}
       </div>
@@ -162,7 +169,16 @@ function EditableField({
 
 export default function UserProfile() {
   const { session } = useSession();
-  const { preferences } = useUserPreferences();
+  const { preferences, updatePreferences } = useUserPreferences();
+  const { toast } = useToast();
+
+  const [analysisData, setAnalysisData] = useState<any>(null);
+  const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+
+  // NOC Dialog State
+  const [isNocDialogOpen, setIsNocDialogOpen] = useState(false);
+  const [pendingNocJobTitles, setPendingNocJobTitles] = useState<string[]>([]);
 
   if (!session) return null;
 
@@ -176,7 +192,109 @@ export default function UserProfile() {
     if (error) throw error;
   };
 
-  // Calculate profile completion
+  const handleAnalysisComplete = async (data: any) => {
+    if (!data) return;
+    setAnalysisData(data);
+    setIsAnalysisDialogOpen(true);
+  };
+
+  const handleConfirmAnalysis = async () => {
+    if (!analysisData) return;
+
+    setIsUpdatingProfile(true);
+    try {
+      const data = analysisData;
+      console.log("DEBUG: Starting profile update with data:", data);
+
+      let finalJobTitles: string[] = preferences?.preferred_job_titles || [];
+
+      // Map API response keys to metadata keys
+      try {
+        if (data.name) await updateUserMetadata("name", data.name);
+        if (data.email) await updateUserMetadata("email", data.email);
+        if (data.phone) await updateUserMetadata("phone", data.phone);
+        if (data.location) await updateUserMetadata("country", data.location);
+        if (data.address) await updateUserMetadata("address", data.address);
+        if (data.dob) await updateUserMetadata("dob", data.dob);
+        if (data.linkedin) await updateUserMetadata("linkedin", data.linkedin);
+        if (data.website) await updateUserMetadata("website", data.website);
+        if (data.position) await updateUserMetadata("position", data.position);
+        if (data.company) await updateUserMetadata("company", data.company);
+        if (data.bio) await updateUserMetadata("bio", data.bio);
+        if (data.skills) await updateUserMetadata("skills", data.skills);
+
+        // Handle array fields
+        const educationStr = Array.isArray(data.education) ? data.education.join("\n\n") : data.education;
+        if (educationStr) await updateUserMetadata("education", educationStr);
+
+        const workHistoryStr = Array.isArray(data.work_experience) ? data.work_experience.join("\n\n") : data.work_experience;
+        if (workHistoryStr) await updateUserMetadata("work_history", workHistoryStr);
+
+        if (data.experience) await updateUserMetadata("experience", String(data.experience));
+      } catch (metaError) {
+        console.error("DEBUG: Metadata update failed", metaError);
+        throw metaError;
+      }
+
+      // Update Job Preferences with Recommended Titles
+      if (data.recommended_job_titles && Array.isArray(data.recommended_job_titles)) {
+        const currentTitles = preferences?.preferred_job_titles || [];
+        const newTitles = data.recommended_job_titles.filter((t: string) => !currentTitles.includes(t));
+
+        if (newTitles.length > 0) {
+          console.log("DEBUG: Updating preferences with titles:", newTitles);
+          finalJobTitles = [...currentTitles, ...newTitles];
+          try {
+            await updatePreferences({
+              preferred_job_titles: finalJobTitles
+            });
+          } catch (prefError) {
+            console.error("DEBUG: Preferences update failed", prefError);
+            throw prefError;
+          }
+        } else {
+          console.log("DEBUG: No new titles to add.");
+          finalJobTitles = currentTitles;
+        }
+      }
+
+      console.log("DEBUG: Profile update complete.");
+
+      // Dismiss Analysis dialog
+      setIsAnalysisDialogOpen(false);
+      setAnalysisData(null);
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated.",
+      });
+
+      // Instead of reloading, open NOC dialog if we have relevant titles
+      if (finalJobTitles.length > 0) {
+        setPendingNocJobTitles(finalJobTitles);
+        setIsNocDialogOpen(true);
+      } else {
+        window.location.reload();
+      }
+
+    } catch (error: any) {
+      console.error("Failed to apply analysis results:", error);
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: `Could not update profile: ${error.message || "Unknown error"}`,
+      });
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
+
+  const handleNocDialogClose = () => {
+    setIsNocDialogOpen(false);
+    // Reload page to reflect all changes (Profile + Job Titles + NOCs)
+    window.location.reload();
+  };
+
   const profileFields = {
     name: session?.user?.user_metadata?.name,
     phone: session?.user?.user_metadata?.phone,
@@ -191,7 +309,6 @@ export default function UserProfile() {
   const totalProfileFields = Object.keys(profileFields).length;
   const profileCompletion = Math.round((filledProfileFields / totalProfileFields) * 100);
 
-  // Calculate job preferences completion
   const preferenceFields = {
     job_titles: preferences?.preferred_job_titles?.length > 0,
     locations: (preferences?.preferred_provinces?.length > 0) || (preferences?.preferred_cities?.length > 0),
@@ -203,213 +320,143 @@ export default function UserProfile() {
   const totalPreferenceFields = Object.keys(preferenceFields).length;
   const preferencesCompletion = Math.round((filledPreferenceFields / totalPreferenceFields) * 100);
 
-  // Check if any preference is set
   const hasAnyPreference = filledPreferenceFields > 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
-      {/* Header with Completion */}
-      <div className="mb-6">
-        <div className="flex items-start justify-between gap-4">
+    <div className="mx-auto max-w-6xl px-4 py-8 md:px-8 space-y-8">
+      {/* Header */}
+      <div className="relative overflow-hidden rounded-3xl bg-white p-8 border border-gray-200 shadow-sm">
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-50/50 to-transparent opacity-50"></div>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-              Profile Settings
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
+              {session?.user?.user_metadata?.name || "Your Profile"}
             </h1>
-            <p className="mt-2 text-gray-600">
-              Manage your personal information and job preferences
+            <p className="text-gray-500 max-w-lg">
+              Manage your personal information and complete your profile to get better job recommendations.
             </p>
-          </div>
-          <div className="flex flex-col gap-2">
-            {/* Profile Completion */}
-            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2">
-              <div className="flex items-center gap-2">
-                <div className="relative h-10 w-10">
-                  <svg className="h-10 w-10 -rotate-90 transform">
-                    <circle
-                      cx="20"
-                      cy="20"
-                      r="16"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      fill="none"
-                      className="text-gray-200"
-                    />
-                    <circle
-                      cx="20"
-                      cy="20"
-                      r="16"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeDasharray={`${2 * Math.PI * 16}`}
-                      strokeDashoffset={`${2 * Math.PI * 16 * (1 - profileCompletion / 100)}`}
-                      className="text-brand-600 transition-all duration-500"
-                    />
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-900">
-                    {profileCompletion}%
-                  </span>
+
+            {/* Completion Bars */}
+            <div className="flex gap-6 mt-6">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex justify-between text-xs font-medium text-gray-500">
+                  <span>Profile Completion</span>
+                  <span className="text-gray-900">{profileCompletion}%</span>
                 </div>
-                <div className="text-left">
-                  <div className="text-sm font-semibold text-gray-900">Profile</div>
-                  <div className="text-xs text-gray-500">
-                    {filledProfileFields}/{totalProfileFields} fields
-                  </div>
+                <div className="h-1.5 w-32 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-brand-600 rounded-full transition-all duration-500" style={{ width: `${profileCompletion}%` }} />
                 </div>
               </div>
-            </div>
-
-            {/* Preferences Completion */}
-            <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2">
-              <div className="flex items-center gap-2">
-                <div className="relative h-10 w-10">
-                  <svg className="h-10 w-10 -rotate-90 transform">
-                    <circle
-                      cx="20"
-                      cy="20"
-                      r="16"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      fill="none"
-                      className="text-gray-200"
-                    />
-                    <circle
-                      cx="20"
-                      cy="20"
-                      r="16"
-                      stroke="currentColor"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeDasharray={`${2 * Math.PI * 16}`}
-                      strokeDashoffset={`${2 * Math.PI * 16 * (1 - preferencesCompletion / 100)}`}
-                      className="text-brand-600 transition-all duration-500"
-                    />
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-900">
-                    {preferencesCompletion}%
-                  </span>
+              <div className="flex flex-col gap-1.5">
+                <div className="flex justify-between text-xs font-medium text-gray-500">
+                  <span>Preferences</span>
+                  <span className="text-gray-900">{preferencesCompletion}%</span>
                 </div>
-                <div className="text-left">
-                  <div className="text-sm font-semibold text-gray-900">Preferences</div>
-                  <div className="text-xs text-gray-500">
-                    {filledPreferenceFields}/{totalPreferenceFields} set
-                  </div>
+                <div className="h-1.5 w-32 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-600 rounded-full transition-all duration-500" style={{ width: `${preferencesCompletion}%` }} />
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Preferences Status Alert */}
-        {!hasAnyPreference && (
-          <div className="mt-4 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
-            <AlertCircle className="h-5 w-5 shrink-0 text-amber-600 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-amber-900">
-                No job preferences set
-              </p>
-              <p className="mt-1 text-sm text-amber-700">
-                Set at least one preference below to receive personalized job recommendations. The more preferences you set, the better your recommendations will be.
-              </p>
-            </div>
-          </div>
-        )}
-        {hasAnyPreference && preferencesCompletion < 100 && (
-          <div className="mt-4 flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <AlertCircle className="h-5 w-5 shrink-0 text-blue-600 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-blue-900">
-                Improve your recommendations
-              </p>
-              <p className="mt-1 text-sm text-blue-700">
-                You've set {filledPreferenceFields} out of {totalPreferenceFields} preferences. Fill all fields below for the most accurate job matches.
-              </p>
-            </div>
-          </div>
-        )}
-        {preferencesCompletion === 100 && (
-          <div className="mt-4 flex items-start gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-            <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-emerald-900">
-                All preferences set!
-              </p>
-              <p className="mt-1 text-sm text-emerald-700">
-                Your job preferences are complete. You'll receive the most accurate recommendations based on your criteria.
-              </p>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Main Content - Single Column */}
-      <div className="space-y-8">
-        {/* Personal Information */}
-        <section>
-          <div className="mb-4 flex items-center gap-2 border-b border-gray-200 pb-3">
-            <User className="h-5 w-5 text-brand-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Personal Information</h2>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <EditableField
-              icon={<User className="h-4 w-4" />}
-              title="Full Name"
-              value={session?.user?.user_metadata?.name || ""}
-              placeholder="Ex. John Doe"
-              onUpdate={(value) => updateUserMetadata("name", value)}
-            />
-            <EditableField
-              icon={<Mail className="h-4 w-4" />}
-              title="Email"
-              value={session?.user?.email || ""}
-              placeholder="your@email.com"
-              onUpdate={(value) => updateUserMetadata("email", value)}
-              type="email"
-            />
-            <EditableField
-              icon={<Phone className="h-4 w-4" />}
-              title="Phone Number"
-              value={session?.user?.user_metadata?.phone || ""}
-              placeholder="Ex. +1 (555) 000-0000"
-              onUpdate={(value) => updateUserMetadata("phone", value)}
-              type="tel"
-            />
-            <EditableField
-              icon={<MapPin className="h-4 w-4" />}
-              title="Location"
-              value={session?.user?.user_metadata?.country || ""}
-              placeholder="Ex. Toronto, Canada"
-              onUpdate={(value) => updateUserMetadata("country", value)}
-            />
-            <EditableField
-              icon={<Calendar className="h-4 w-4" />}
-              title="Date of Birth"
-              value={session?.user?.user_metadata?.dob || ""}
-              placeholder="Select date"
-              onUpdate={(value) => updateUserMetadata("dob", value)}
-              type="date"
-            />
-            <div className="sm:col-span-2">
-              <EditableField
-                icon={<Home className="h-4 w-4" />}
-                title="Address"
-                value={session?.user?.user_metadata?.address || ""}
-                placeholder="Ex. 123 Main St, Apt 4B"
-                onUpdate={(value) => updateUserMetadata("address", value)}
-                isTextArea
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {/* Left Column: Personal Info & Social (Sticky-ish?) */}
+        <div className="lg:col-span-1 space-y-6">
+
+          {/* Resume Upload Card */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-gray-100 bg-gray-50/50">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <FileText className="h-4 w-4 text-brand-600" />
+                Resume
+              </h3>
+            </div>
+            <div className="p-4">
+              <ResumeUpload
+                currentResumeUrl={session?.user?.user_metadata?.resume_url}
+                onUploadComplete={() => {
+                  window.location.reload();
+                }}
+                onAnalysisComplete={handleAnalysisComplete}
               />
             </div>
           </div>
-        </section>
 
-        {/* Professional Profile */}
-        <section>
-          <div className="mb-4 flex items-center gap-2 border-b border-gray-200 pb-3">
-            <Briefcase className="h-5 w-5 text-brand-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Professional Profile</h2>
+          {/* Personal Info Card */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <User className="h-4 w-4 text-brand-600" />
+                Personal Details
+              </h3>
+            </div>
+            <div>
+              <EditableField
+                icon={<User className="h-4 w-4" />}
+                title="Full Name"
+                value={session?.user?.user_metadata?.name || ""}
+                placeholder="Ex. John Doe"
+                onUpdate={(value) => updateUserMetadata("name", value)}
+              />
+              <EditableField
+                icon={<Mail className="h-4 w-4" />}
+                title="Email"
+                value={session?.user?.email || ""}
+                placeholder="your@email.com"
+                onUpdate={(value) => updateUserMetadata("email", value)}
+                type="email"
+              />
+              <EditableField
+                icon={<Phone className="h-4 w-4" />}
+                title="Phone"
+                value={session?.user?.user_metadata?.phone || ""}
+                placeholder="+1 (555) 000-0000"
+                onUpdate={(value) => updateUserMetadata("phone", value)}
+                type="tel"
+              />
+              <EditableField
+                icon={<MapPin className="h-4 w-4" />}
+                title="Location"
+                value={session?.user?.user_metadata?.country || ""}
+                placeholder="Toronto, Canada"
+                onUpdate={(value) => updateUserMetadata("country", value)}
+              />
+              <EditableField
+                icon={<Globe className="h-4 w-4" />}
+                title="Website"
+                value={session?.user?.user_metadata?.website || ""}
+                placeholder="https://..."
+                onUpdate={(value) => updateUserMetadata("website", value)}
+                last
+              />
+            </div>
           </div>
-          <div className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
+
+        </div>
+
+        {/* Right Column: Professional Info, Timeline, Skills */}
+        <div className="lg:col-span-2 space-y-6">
+
+          {/* Preferences Alert (Keep existing logic but styled better) */}
+          {!hasAnyPreference && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex gap-3">
+              <AlertCircle className="h-5 w-5 shrink-0 text-amber-600" />
+              <p className="text-sm text-amber-900"><strong>Action Required:</strong> Set your job preferences to get personalized recommendations.</p>
+            </div>
+          )}
+
+          {/* Professional Summary Card */}
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-gray-100 bg-gray-50/50">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Briefcase className="h-4 w-4 text-brand-600" />
+                Professional Profile
+              </h3>
+            </div>
+            <div>
               <EditableField
                 icon={<Briefcase className="h-4 w-4" />}
                 title="Current Role"
@@ -418,24 +465,13 @@ export default function UserProfile() {
                 onUpdate={(value) => updateUserMetadata("position", value)}
               />
               <EditableField
-                icon={<Building className="h-4 w-4" />}
-                title="Company"
-                value={session?.user?.user_metadata?.company || ""}
-                placeholder="Ex. Tech Solutions Inc."
-                onUpdate={(value) => updateUserMetadata("company", value)}
+                icon={<FileText className="h-4 w-4" />}
+                title="Professional Bio"
+                value={session?.user?.user_metadata?.bio || ""}
+                placeholder="Summary of your experience..."
+                onUpdate={(value) => updateUserMetadata("bio", value)}
+                isTextArea
               />
-            </div>
-
-            <EditableField
-              icon={<FileText className="h-4 w-4" />}
-              title="Professional Bio"
-              value={session?.user?.user_metadata?.bio || ""}
-              placeholder="Tell us about your professional background..."
-              onUpdate={(value) => updateUserMetadata("bio", value)}
-              isTextArea
-            />
-
-            <div className="grid gap-4 sm:grid-cols-2">
               <EditableField
                 icon={<Clock className="h-4 w-4" />}
                 title="Years of Experience"
@@ -443,51 +479,60 @@ export default function UserProfile() {
                 placeholder="Ex. 5"
                 onUpdate={(value) => updateUserMetadata("experience", value)}
                 type="number"
-              />
-              <EditableField
-                icon={<GraduationCap className="h-4 w-4" />}
-                title="Education"
-                value={session?.user?.user_metadata?.education || ""}
-                placeholder="Ex. BSc Computer Science"
-                onUpdate={(value) => updateUserMetadata("education", value)}
-              />
-            </div>
-
-            <EditableField
-              icon={<Code className="h-4 w-4" />}
-              title="Skills"
-              value={session?.user?.user_metadata?.skills || ""}
-              placeholder="Ex. React, Node.js, TypeScript (comma separated)"
-              onUpdate={(value) => updateUserMetadata("skills", value)}
-              isTextArea
-            />
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <EditableField
-                icon={<Linkedin className="h-4 w-4" />}
-                title="LinkedIn URL"
-                value={session?.user?.user_metadata?.linkedin || ""}
-                placeholder="https://linkedin.com/in/..."
-                onUpdate={(value) => updateUserMetadata("linkedin", value)}
-                type="url"
-              />
-              <EditableField
-                icon={<Globe className="h-4 w-4" />}
-                title="Portfolio / Website"
-                value={session?.user?.user_metadata?.website || ""}
-                placeholder="https://..."
-                onUpdate={(value) => updateUserMetadata("website", value)}
-                type="url"
+                last
               />
             </div>
           </div>
-        </section>
+
+          {/* Skills */}
+          <SkillsSection
+            value={session?.user?.user_metadata?.skills || ""}
+            onUpdate={(value) => updateUserMetadata("skills", value)}
+            placeholder="React, Next.js, Node.js..."
+          />
+        </div>
+      </div>
+
+      {/* Full Width Sections */}
+      <div className="space-y-8">
+        {/* Work History */}
+        <TimelineSection
+          title="Work History"
+          type="work"
+          value={session?.user?.user_metadata?.work_history || ""}
+          onUpdate={(value) => updateUserMetadata("work_history", value)}
+          placeholder="List your past roles..."
+        />
+
+        {/* Education */}
+        <TimelineSection
+          title="Education"
+          type="education"
+          value={session?.user?.user_metadata?.education || ""}
+          onUpdate={(value) => updateUserMetadata("education", value)}
+          placeholder="List your education..."
+        />
 
         {/* Job Preferences */}
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-6">
           <JobPreferencesSection />
-        </section>
+        </div>
       </div>
+
+      {/* Dialogs... */}
+      <AnalysisConfirmationDialog
+        isOpen={isAnalysisDialogOpen}
+        onClose={() => setIsAnalysisDialogOpen(false)}
+        onConfirm={handleConfirmAnalysis}
+        data={analysisData}
+        isUpdating={isUpdatingProfile}
+      />
+
+      <NocRecommendationDialog
+        isOpen={isNocDialogOpen}
+        onClose={handleNocDialogClose}
+        jobTitles={pendingNocJobTitles}
+      />
     </div>
   );
 }

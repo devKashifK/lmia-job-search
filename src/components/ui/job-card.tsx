@@ -12,6 +12,9 @@ import { TooltipProvider } from '@radix-ui/react-tooltip';
 import { Badge } from '@/components/ui/badge';
 import { useTableStore } from '@/context/store';
 import { useSaveJob } from '@/hooks/use-save-job';
+import { useUserPreferences } from '@/hooks/use-user-preferences';
+import { useMatchScore } from '@/hooks/use-match-score';
+import { MatchScoreBadge } from '@/components/recommendations/match-score-badge';
 
 export const BG_COLORS = [
   'bg-orange-100',
@@ -136,17 +139,44 @@ export default function JobCard({
       ? [city, territory].filter(Boolean).join(', ')
       : [city, state].filter(Boolean).join(', ');
 
+  const { preferences } = useUserPreferences();
+
+  // Create a job object for scoring
+  const jobForScoring = useMemo(() => ({
+    job_title: jobTitle,
+    JobTitle: jobTitle,
+    employer: employerName,
+    city,
+    City: city,
+    province: state || territory,
+    Province: state || territory,
+    industry: category,
+    noc,
+    program,
+    teer: null // We don't have TEER in props currently, hook handles fallback
+  }), [jobTitle, employerName, city, state, territory, category, noc, program]);
+
+  const { score, color, label } = useMatchScore({
+    job: jobForScoring,
+    preferences
+  });
+
   return (
-    <div className="group rounded-3xl w-full max-w-md bg-white p-2 border border-gray-100 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1">
+    <div className="group rounded-3xl w-full max-w-md bg-white p-2 border border-gray-100 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 relative">
+
+      {/* Match Score Badge (Absolute Positioned) */}
+
+
       {/* Top Section */}
       <div
         className={`${randomBg} rounded-2xl px-5 pt-5 pb-4 flex flex-col relative transition-opacity duration-300 group-hover:opacity-90`}
       >
         {/* Date + Save */}
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between mb-3 pr-8">
           {datePosted ? (
             <span className="bg-white text-gray-700 text-xs px-3 py-1 rounded-full shadow-sm font-medium">
               {datePosted}
+
             </span>
           ) : (
             <span className="bg-white text-gray-700 text-xs px-3 py-1 rounded-full shadow-sm font-medium">
@@ -285,6 +315,12 @@ export default function JobCard({
         </button>
       </div>
       <LoginAlertComponent />
+
+      {/* Match Score Badge (Moved to end for stacking) */}
+      <div className="absolute top-2 right-2 z-50 pointer-events-none">
+        <div className="bg-red-500 text-white text-[10px] px-1">DEBUG: {score}%</div>
+        <MatchScoreBadge score={score || 0} size="sm" showLabel={false} />
+      </div>
     </div>
   );
 }

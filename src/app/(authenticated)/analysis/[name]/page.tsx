@@ -110,6 +110,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
+import { WageVisualization } from '@/components/analytics/wage-visualization';
 
 interface CompanyAnalysisData {
   companyName: string;
@@ -1338,6 +1339,8 @@ function CompanyAnalysisContent({
     },
     enabled: !!companyName,
   });
+
+
 
   if (!companyName) {
     return (
@@ -2727,6 +2730,17 @@ function CompanyAnalysisContent({
                           />
                         )}
                       </div>
+
+                      {/* Wage Analysis Section */}
+                      {analysisData?.trends.topNocCode && (
+                        <div className="mb-6">
+                          <WageVisualization
+                            noc={analysisData.trends.topNocCode}
+                            province={analysisData.trends.popularLocation}
+                            title={analysisData.trends.commonTitle || `Typical Role at ${companyName}`}
+                          />
+                        </div>
+                      )}
 
                       {/* Two Column Charts - Location & Cities */}
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

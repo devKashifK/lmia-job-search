@@ -9,6 +9,9 @@ import {
     Building,
     ChevronDown,
     X,
+    Plus,
+    Sparkles,
+    Bell
 } from "lucide-react";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Badge } from "@/components/ui/badge";
@@ -16,9 +19,12 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useUserPreferences } from "@/hooks/use-user-preferences";
 import { useJobTitles, useCategories, useProvinces, useCitiesForProvinces, useNocCodes, useCompanyTiers } from "@/hooks/use-job-data";
+import { NocSummary } from "@/lib/noc-service";
+import { CreateAlertDialog } from "@/components/alerts/create-alert-dialog";
 
 export function JobPreferencesSection() {
     const { preferences, updatePreferences, isUpdating } = useUserPreferences();
+    const [showAlertDialog, setShowAlertDialog] = useState(false);
 
     // Fetch data from database
     const { data: jobTitles, isLoading: loadingTitles } = useJobTitles();
@@ -36,6 +42,39 @@ export function JobPreferencesSection() {
     );
     const [showLocationMenu, setShowLocationMenu] = useState(false);
     const [locationStep, setLocationStep] = useState<'province' | 'city'>('province');
+
+    const [recommendedNocs, setRecommendedNocs] = useState<NocSummary[]>([]);
+    const [recommendedTeers, setRecommendedTeers] = useState<string[]>([]);
+    const [recommendedIndustries, setRecommendedIndustries] = useState<string[]>([]);
+
+    // Fetch NOC recommendations when job titles change
+    useEffect(() => {
+        const fetchRecommendations = async () => {
+            if (preferences?.preferred_job_titles?.length > 0) {
+                try {
+                    const response = await fetch('/api/match-noc', {
+                        method: 'POST',
+                        body: JSON.stringify({ jobTitles: preferences.preferred_job_titles }),
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setRecommendedNocs(data.matches || []);
+                        setRecommendedTeers(data.teerMatches || []);
+                        setRecommendedIndustries(data.industryMatches || []);
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch recommendations", e);
+                }
+            } else {
+                setRecommendedNocs([]);
+                setRecommendedTeers([]);
+                setRecommendedIndustries([]);
+            }
+        };
+
+        const timeoutId = setTimeout(fetchRecommendations, 1000); // Debounce
+        return () => clearTimeout(timeoutId);
+    }, [preferences?.preferred_job_titles]);
 
     // Fetch cities when provinces are selected
     const { data: availableCities } = useCitiesForProvinces(selectedProvinces);
@@ -136,6 +175,26 @@ export function JobPreferencesSection() {
                 <Badge className="bg-brand-100 text-brand-700 border-0">
                     For Recommendations
                 </Badge>
+            </div>
+
+            {/* Alert Button */}
+            <div className="mb-6 flex items-center justify-between bg-gradient-to-r from-brand-50 to-white p-4 rounded-xl border border-brand-100">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-brand-100 rounded-lg">
+                        <Bell className="h-5 w-5 text-brand-600" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-semibold text-gray-900">Get notified for these jobs</h3>
+                        <p className="text-xs text-gray-500">Create an alert based on your preferences.</p>
+                    </div>
+                </div>
+                <Button
+                    onClick={() => setShowAlertDialog(true)}
+                    size="sm"
+                    className="bg-brand-600 hover:bg-brand-700 text-white"
+                >
+                    Create Alert
+                </Button>
             </div>
 
             {/* Current Preferences Summary */}
@@ -488,6 +547,114 @@ export function JobPreferencesSection() {
                         Select preferred company performance tiers
                     </p>
                 </motion.div>
+
+                {/* NOC Recommendations */}
+                {recommendedNocs.filter(noc => !preferences?.preferred_noc_codes?.includes(noc.code)).length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="rounded-lg border border-brand-100 bg-brand-50/50 p-4"
+                    >
+                        <div className="flex items-center gap-2 mb-3">
+                            <Sparkles className="h-4 w-4 text-brand-600" />
+                            <h3 className="text-sm font-medium text-brand-900">Recommended NOC Codes</h3>
+                        </div>
+                        <p className="text-xs text-brand-700 mb-3">
+                            Based on your preferred job titles, we recommend checking these NOC codes:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {recommendedNocs.filter(noc => !preferences?.preferred_noc_codes?.includes(noc.code)).map((noc, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => {
+                                        const current = preferences?.preferred_noc_codes || [];
+                                        if (!current.includes(noc.code)) {
+                                            updatePreferences({ preferred_noc_codes: [...current, noc.code] });
+                                        }
+                                    }}
+                                    className="group flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 shadow-sm transition-all hover:bg-brand-600 hover:text-white"
+                                >
+                                    <span>{noc.code}</span>
+                                    <span className="max-w-[150px] truncate opacity-80 group-hover:opacity-100">
+                                        - {noc.title}
+                                    </span>
+                                    <Plus className="h-3 w-3" />
+                                </button>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Industry Recommendations */}
+                {recommendedIndustries.filter(ind => !preferences?.preferred_industries?.includes(ind)).length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="rounded-lg border border-brand-100 bg-brand-50/50 p-4"
+                    >
+                        <div className="flex items-center gap-2 mb-3">
+                            <Sparkles className="h-4 w-4 text-brand-600" />
+                            <h3 className="text-sm font-medium text-brand-900">Recommended Industries</h3>
+                        </div>
+                        <p className="text-xs text-brand-700 mb-3">
+                            Based on your job titles, these industries might specific to your field:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {recommendedIndustries.filter(ind => !preferences?.preferred_industries?.includes(ind)).map((ind, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => {
+                                        const current = preferences?.preferred_industries || [];
+                                        if (!current.includes(ind)) {
+                                            updatePreferences({ preferred_industries: [...current, ind] });
+                                        }
+                                    }}
+                                    className="group flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 shadow-sm transition-all hover:bg-brand-600 hover:text-white"
+                                >
+                                    <Building className="h-3 w-3" />
+                                    <span>{ind}</span>
+                                    <Plus className="h-3 w-3 ml-1" />
+                                </button>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Tier Recommendations */}
+                {recommendedTeers.filter(tier => !preferences?.preferred_company_tiers?.includes(tier)).length > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="rounded-lg border border-brand-100 bg-brand-50/50 p-4"
+                    >
+                        <div className="flex items-center gap-2 mb-3">
+                            <Sparkles className="h-4 w-4 text-brand-600" />
+                            <h3 className="text-sm font-medium text-brand-900">Recommended TEER Categories</h3>
+                        </div>
+                        <p className="text-xs text-brand-700 mb-3">
+                            Based on your matched NOC Codes, these TEER categories apply to you:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            {recommendedTeers.filter(tier => !preferences?.preferred_company_tiers?.includes(tier)).map((tier, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => {
+                                        const current = preferences?.preferred_company_tiers || [];
+                                        if (!current.includes(tier)) {
+                                            updatePreferences({ preferred_company_tiers: [...current, tier] });
+                                        }
+                                    }}
+                                    className="group flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 shadow-sm transition-all hover:bg-brand-600 hover:text-white"
+                                >
+                                    <span>TEER {tier}</span>
+                                    <Plus className="h-3 w-3 ml-1" />
+                                </button>
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+
+
                 {isUpdating && (
                     <div className="text-sm text-brand-600 flex items-center gap-2">
                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
@@ -495,6 +662,21 @@ export function JobPreferencesSection() {
                     </div>
                 )}
             </div>
-        </section>
+
+            {/* Create Alert Dialog */}
+            <CreateAlertDialog
+                open={showAlertDialog}
+                onOpenChange={setShowAlertDialog}
+                criteria={{
+                    q: preferences?.preferred_job_titles || [],
+                    title: preferences?.preferred_job_titles || [],
+                    location: preferences?.preferred_cities?.length > 0 ? preferences.preferred_cities : preferences?.preferred_provinces,
+                    noc: preferences?.preferred_noc_codes?.[0] || '',
+                    tier: preferences?.preferred_company_tiers?.[0] || '',
+                    // We'll let the user refine these in the dialog
+                }}
+                defaultName="My Preference Alert"
+            />
+        </section >
     );
 }

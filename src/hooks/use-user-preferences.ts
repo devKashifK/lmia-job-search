@@ -11,6 +11,7 @@ export interface UserPreferences {
     preferred_cities: string[];
     preferred_industries: string[];
     preferred_noc_codes: string[];
+    preferred_teer_categories: string[]; // TEER 0-5
     preferred_company_tiers: string[];
     created_at?: string;
     updated_at?: string;
@@ -22,6 +23,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
     preferred_cities: [],
     preferred_industries: [],
     preferred_noc_codes: [],
+    preferred_teer_categories: [], // Default empty
     preferred_company_tiers: [],
 };
 
@@ -73,7 +75,7 @@ export function useUserPreferences() {
                 .upsert({
                     user_id: session.user.id,
                     ...updatedPreferences,
-                })
+                }, { onConflict: 'user_id' })
                 .select()
                 .single();
 
@@ -101,7 +103,7 @@ export function useUserPreferences() {
         preferences: preferences || DEFAULT_PREFERENCES,
         isLoading,
         error,
-        updatePreferences: updateMutation.mutate,
+        updatePreferences: updateMutation.mutateAsync,
         isUpdating: updateMutation.isPending,
     };
 }

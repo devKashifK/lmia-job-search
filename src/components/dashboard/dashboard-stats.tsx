@@ -2,14 +2,13 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, Bookmark, TrendingUp, AlertCircle } from 'lucide-react';
+import { CreditCard, Bookmark, TrendingUp, ArrowUpRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useCreditData } from '@/hooks/use-credits';
 import { useSavedJobs } from '@/hooks/use-saved-jobs';
 import Link from 'next/link';
 import useMobile from '@/hooks/use-mobile';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export function DashboardStats() {
     const { isMobile } = useMobile();
@@ -18,89 +17,81 @@ export function DashboardStats() {
 
     const savedJobsCount = savedJobs?.length || 0;
 
-    // Calculate run-out estimate if available, otherwise mock or hide
-    // precise calculation is in credits page, we can do a simple one here or just show balance
-    // Let's show balance and usage
-
     const stats = [
         {
-            label: 'Available Credits',
+            label: 'Credits',
             value: creditsLoading ? '...' : creditRemaining?.toLocaleString() || '0',
-            subtext: 'Search queries remaining',
+            subtext: 'Available',
             icon: CreditCard,
             color: 'text-brand-600',
-            bgColor: 'bg-brand-50',
-            borderColor: 'border-brand-200',
+            bg: 'bg-brand-50/50',
+            border: 'hover:border-brand-200',
             href: '/dashboard/credits',
+            trend: '+5', // Mock trend for premium feel
         },
         {
-            label: 'Saved Jobs',
+            label: 'Saved',
             value: savedJobsLoading ? '...' : savedJobsCount.toLocaleString(),
-            subtext: 'Jobs you are tracking',
+            subtext: 'Jobs',
             icon: Bookmark,
             color: 'text-amber-600',
-            bgColor: 'bg-amber-50',
-            borderColor: 'border-amber-200',
+            bg: 'bg-amber-50/50',
+            border: 'hover:border-amber-200',
             href: '/dashboard/saved-jobs',
+            trend: null,
         },
         {
-            label: 'Total Usage',
+            label: 'Searches',
             value: creditsLoading ? '...' : creditData?.used_credit?.toLocaleString() || '0',
-            subtext: 'Lifetime searches',
+            subtext: 'Lifetime',
             icon: TrendingUp,
             color: 'text-purple-600',
-            bgColor: 'bg-purple-50',
-            borderColor: 'border-purple-200',
+            bg: 'bg-purple-50/50',
+            border: 'hover:border-purple-200',
             href: '/dashboard/credits',
+            trend: '+12%',
         },
     ];
 
     return (
         <div className={cn(
             "grid gap-4",
-            isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-3"
+            isMobile ? "grid-cols-2" : "grid-cols-3"
         )}>
             {stats.map((stat, index) => {
                 const Icon = stat.icon;
                 return (
                     <motion.div
                         key={stat.label}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
                     >
                         <Link href={stat.href}>
-                            <Card className={cn(
-                                "relative overflow-hidden transition-all duration-300 group hover:shadow-md border-2",
-                                isMobile ? "p-4" : "p-5",
-                                stat.borderColor,
-                                "bg-white/50 backdrop-blur-sm"
+                            <div className={cn(
+                                "relative group flex flex-col justify-between p-5 rounded-2xl border border-gray-100 bg-white transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5",
+                                stat.border
                             )}>
-                                <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-500 mb-1">
-                                            {stat.label}
-                                        </p>
-                                        <div className="flex items-baseline gap-2">
-                                            <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
-                                                {stat.value}
-                                            </h3>
-                                        </div>
-                                        <p className="text-xs text-gray-400 mt-1">
-                                            {stat.subtext}
-                                        </p>
-                                    </div>
-                                    <div className={cn("p-2.5 rounded-xl transition-colors", stat.bgColor)}>
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className={cn("p-2 rounded-xl", stat.bg)}>
                                         <Icon className={cn("w-5 h-5", stat.color)} />
                                     </div>
+                                    {stat.trend && (
+                                        <div className="flex items-center text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                                            {stat.trend} <ArrowUpRight className="w-2.5 h-2.5 ml-0.5" />
+                                        </div>
+                                    )}
                                 </div>
 
-                                {/* Decorative background element */}
-                                <div className={cn(
-                                    "absolute -right-6 -bottom-6 w-24 h-24 rounded-full opacity-10 group-hover:scale-110 transition-transform duration-500",
-                                    stat.bgColor.replace('bg-', 'bg-')
-                                )} />
-                            </Card>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-gray-900 tracking-tight leading-none mb-1">
+                                        {stat.value}
+                                    </h3>
+                                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                        {stat.label} <span className="normal-case opacity-50 ml-1 font-normal">{stat.subtext}</span>
+                                    </p>
+                                </div>
+                            </div>
                         </Link>
                     </motion.div>
                 );

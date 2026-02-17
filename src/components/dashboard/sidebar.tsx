@@ -10,6 +10,7 @@ import {
   LogOut,
   LayoutDashboard,
   Search,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter, usePathname } from "next/navigation";
@@ -56,6 +57,11 @@ const navigation = [
     name: "Saved Jobs",
     href: "/dashboard/saved-jobs",
     icon: Bookmark,
+  },
+  {
+    name: "Job Alerts",
+    href: "/dashboard/alerts",
+    icon: Bell,
   },
 ];
 

@@ -9,7 +9,8 @@ import {
   X,
   ChevronDown,
   CalendarIcon,
-  Check
+  Check,
+  Bell
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -37,6 +38,8 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { DateRange } from 'react-day-picker';
+import { CreateAlertDialog } from '@/components/alerts/create-alert-dialog';
+import { HomeRecommendations } from '@/components/recommendations/home-recommendations';
 
 
 interface Suggestion {
@@ -86,6 +89,7 @@ export function SearchBox() {
   const [activeField, setActiveField] = useState<'what' | 'where' | 'dates' | null>(null);
   const [searchBy, setSearchBy] = useState<'all' | 'job_title' | 'category' | 'noc_code' | 'employer' | 'city'>('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [showAlertDialog, setShowAlertDialog] = useState(false);
 
   // ... (existing refs and hooks)
 
@@ -879,14 +883,27 @@ export function SearchBox() {
             </Popover>
 
             {/* Search Button (Floating) */}
-            <div className={isMobile ? "p-4 pt-0" : "absolute right-2 top-1/2 -translate-y-1/2"}>
+            <div className={isMobile ? "flex gap-3 p-4 pt-0" : "absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2"}>
+              {/* Alert Button (Desktop) */}
+              {!isMobile && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowAlertDialog(true)}
+                  className="rounded-full h-10 w-10 bg-gray-50 hover:bg-brand-50 text-gray-400 hover:text-brand-600 transition-all border border-transparent hover:border-brand-100"
+                  title="Create Job Alert"
+                >
+                  <Bell className="w-5 h-5" />
+                </Button>
+              )}
+
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={startSearch}
                 className={cn(
                   "flex items-center justify-center bg-brand-600 hover:bg-brand-700 text-white shadow-xl shadow-brand-500/30 transition-all",
-                  isMobile ? "w-full h-14 rounded-2xl text-lg font-bold" : "w-14 h-14 rounded-full"
+                  isMobile ? "flex-1 h-14 rounded-2xl text-lg font-bold" : "w-14 h-14 rounded-full"
                 )}
               >
                 {isSearching ? (
@@ -896,7 +913,32 @@ export function SearchBox() {
                 )}
                 {isMobile && "Search"}
               </motion.button>
+
+              {/* Alert Button (Mobile) */}
+              {isMobile && (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAlertDialog(true)}
+                  className="h-14 w-14 rounded-2xl border-gray-200 bg-white shadow-sm"
+                >
+                  <Bell className="w-6 h-6 text-gray-500" />
+                </Button>
+              )}
             </div>
+
+            <CreateAlertDialog
+              open={showAlertDialog}
+              onOpenChange={setShowAlertDialog}
+              criteria={{
+                q: input,
+                title: searchBy === 'job_title' ? input : undefined,
+                employer: searchBy === 'employer' ? input : undefined,
+                noc: searchBy === 'noc_code' ? input : undefined,
+                location: locationText || selectedCities,
+                searchBy
+              }}
+              defaultName={input || 'My Job Alert'}
+            />
 
             {/* Suggestions Dropdown (Absolute) */}
             <AnimatePresence>
@@ -1065,7 +1107,7 @@ export function SearchBox() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </div >
 
           {/* Search By Options (New) */}
           {/* Search By Options (Premium UI) */}
@@ -1167,9 +1209,14 @@ export function SearchBox() {
             </div>
           </motion.div>
 
+          <div className="mt-8">
+            <HomeRecommendations />
+          </div>
+
         </motion.div>
-      </div>
-      {isMobile && <BottomNav />}
+      </div >
+      {isMobile && <BottomNav />
+      }
     </>
   );
 }

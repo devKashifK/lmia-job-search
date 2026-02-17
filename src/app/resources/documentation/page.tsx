@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { DocSidebar } from '@/components/documentation/doc-sidebar';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
-import { BookOpen, Search, CheckCircle2, AlertCircle, Info, ArrowUpRight, Users, Zap, Lock, Coins } from 'lucide-react';
+import { Book, Compass, Database, Zap, CreditCard, ChevronRight, BarChart3, Users, Bell, Shield, TrendingUp, Search, CheckCircle2, AlertCircle, Info, ArrowUpRight, Lock, Coins, FileSearch, Sparkles, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -227,39 +227,243 @@ export default function DocumentationPage() {
                                 </div>
                             </section>
 
+
+                            {/* Dashboard & Analysis */}
+                            <section id="dashboard-analysis" className="scroll-mt-24">
+                                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="w-12 h-12 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-600">
+                                            <BarChart3 className="w-6 h-6" />
+                                        </div>
+                                        <h2 className="text-3xl font-bold text-gray-900">Dashboard & Analysis</h2>
+                                    </div>
+
+                                    <div className="prose prose-lg text-gray-600 max-w-none">
+                                        <p>
+                                            Your personal command center for the Canadian job market. The dashboard aggregates real-time data to give you a competitive edge.
+                                        </p>
+
+                                        <div className="grid md:grid-cols-2 gap-6 my-8 not-prose">
+                                            <div className="bg-gradient-to-br from-cyan-50 to-white p-6 rounded-2xl border border-cyan-100">
+                                                <h3 className="font-bold text-cyan-900 mb-2 flex items-center gap-2">
+                                                    <Zap className="w-5 h-5 text-cyan-600" />
+                                                    Quick Actions
+                                                </h3>
+                                                <ul className="text-sm text-cyan-800 space-y-2">
+                                                    <li>• <strong>One-Click Search:</strong> Access your recent searches instantly.</li>
+                                                    <li>• <strong>Daily Greeting:</strong> Get a snapshot of new opportunities every morning.</li>
+                                                </ul>
+                                            </div>
+                                            <div className="bg-gradient-to-br from-indigo-50 to-white p-6 rounded-2xl border border-indigo-100">
+                                                <h3 className="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                                                    <TrendingUp className="w-5 h-5 text-indigo-600" />
+                                                    Market Intelligence
+                                                </h3>
+                                                <ul className="text-sm text-indigo-800 space-y-2">
+                                                    <li>• <strong>Trending Companies:</strong> See who is hiring aggressively right now.</li>
+                                                    <li>• <strong>Top LMIA Sponsors:</strong> A curated list of verified sponsors.</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <h3 className="text-xl font-bold text-gray-900 mt-8 mb-4">Market Analysis Tools</h3>
+                                        <p className="mb-4">
+                                            Go to the <strong>Analysis</strong> tab to explore:
+                                        </p>
+                                        <ul className="space-y-4 not-prose">
+                                            <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
+                                                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-brand-600 font-bold shrink-0">1</div>
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900">Category Leaders</h4>
+                                                    <p className="text-sm text-gray-600">Identify the top employers in Tech, Healthcare, Construction, and more.</p>
+                                                </div>
+                                            </li>
+                                            <li className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
+                                                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm text-brand-600 font-bold shrink-0">2</div>
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900">LMIA Heatmap</h4>
+                                                    <p className="text-sm text-gray-600">Discover which provinces have the highest concentration of approved Foreign Worker positions.</p>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+
                             {/* Features Guide */}
                             <section id="features-guide" className="scroll-mt-24">
                                 <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
                                     <div className="flex items-center gap-4 mb-8">
-                                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                                            <span className="text-2xl font-bold">4</span>
+                                        <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600">
+                                            <Zap className="w-6 h-6" />
                                         </div>
                                         <h2 className="text-3xl font-bold text-gray-900">Features Guide</h2>
                                     </div>
 
-                                    <div className="grid sm:grid-cols-2 gap-6">
-                                        <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                                            <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center mb-4 text-indigo-600">
-                                                <Users className="w-5 h-5" />
+                                    <div className="prose prose-lg text-gray-600 max-w-none">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-4">Trending Jobs & Hot Leads</h3>
+                                        <p>
+                                            Not every job has an LMIA, but many are still urgent. Our <strong>Trending Jobs</strong> feed tracks roles with high application velocity.
+                                        </p>
+                                        <div className="grid sm:grid-cols-2 gap-4 mt-4 mb-8 not-prose">
+                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                <div className="font-semibold text-gray-900 mb-1">Growth Metrics</div>
+                                                <p className="text-sm text-gray-500">See which roles are growing (e.g. "+15% this week")</p>
                                             </div>
-                                            <h3 className="font-bold text-gray-900 mb-2">Job Comparison</h3>
-                                            <p className="text-sm text-gray-600 mb-4">
-                                                Stuck between two options? Click the <span className="inline-block p-1 bg-gray-200 rounded text-xs mx-1">Compare</span> button on any job card.
-                                            </p>
-                                            <p className="text-xs text-gray-500 bg-white p-2 rounded border border-gray-200">
-                                                <strong>Use Case:</strong> Compare a "Cook" role in Toronto vs. a "Chef" role in Halifax to see which offers better pay vs. cost of living.
-                                            </p>
+                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                <div className="font-semibold text-gray-900 mb-1">TEER Filtering</div>
+                                                <p className="text-sm text-gray-500">Filter Hot Leads by TEER 0, 1, 2, 3, 4, or 5.</p>
+                                            </div>
                                         </div>
-                                        <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                                            <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center mb-4 text-indigo-600">
-                                                <Zap className="w-5 h-5" />
+
+                                        <h3 className="text-xl font-bold text-gray-900 mb-4">Saved Jobs</h3>
+                                        <p>
+                                            Found something interesting but not ready to apply? Click the <strong>Bookmark</strong> icon on any job card to save it to your personalized list.
+                                        </p>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Job Alerts */}
+                            <section id="job-alerts" className="scroll-mt-24">
+                                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600">
+                                            <Bell className="w-6 h-6" />
+                                        </div>
+                                        <h2 className="text-3xl font-bold text-gray-900">Automated Job Alerts</h2>
+                                    </div>
+
+                                    <div className="prose prose-lg text-gray-600 max-w-none">
+                                        <p>
+                                            Let the jobs come to you. Create highly specific alerts so you never miss an opportunity.
+                                        </p>
+
+                                        <div className="bg-purple-50 border border-purple-100 rounded-2xl p-6 my-6 not-prose">
+                                            <h3 className="font-bold text-purple-900 mb-4">Custom Triggers</h3>
+                                            <ul className="grid sm:grid-cols-2 gap-3 text-sm text-purple-800">
+                                                <li className="flex items-center gap-2">
+                                                    <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                                                    <strong>Job Titles:</strong> Specific roles (e.g. "Cook", "Nurse")
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                                                    <strong>Location:</strong> Specific City or Province
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                                                    <strong>NOC Codes:</strong> Track specific immigration codes
+                                                </li>
+                                                <li className="flex items-center gap-2">
+                                                    <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                                                    <strong>TEER Level:</strong> Filter by TEER 0-5
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <p className="text-sm">
+                                            You can choose to receive alerts <strong>Instantly</strong>, <strong>Daily</strong>, or <strong>Weekly</strong>. Manage all your alerts from the Dashboard.
+                                        </p>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Comparison Tool */}
+                            <section id="comparison-tool" className="scroll-mt-24">
+                                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600">
+                                            <Book className="w-6 h-6" />
+                                        </div>
+                                        <h2 className="text-3xl font-bold text-gray-900">Comparison Tool</h2>
+                                    </div>
+
+                                    <div className="prose prose-lg text-gray-600 max-w-none">
+                                        <p>
+                                            Making a career move requires data, not guesswork. Our <strong>Comparator</strong> allows you to analyze opportunities side-by-side.
+                                        </p>
+
+                                        <div className="my-8 not-prose">
+                                            <div className="bg-teal-50 rounded-2xl p-6 border border-teal-100 relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-100 rounded-full blur-2xl -mr-16 -mt-16 opacity-50" />
+                                                <h3 className="text-lg font-bold text-teal-900 mb-4 relative z-10">What You Can Compare</h3>
+                                                <div className="grid sm:grid-cols-3 gap-4 relative z-10">
+                                                    <div className="bg-white p-4 rounded-xl shadow-sm">
+                                                        <div className="font-bold text-gray-900 mb-1">Job Titles</div>
+                                                        <div className="text-xs text-gray-500">Salary vs. Demand</div>
+                                                    </div>
+                                                    <div className="bg-white p-4 rounded-xl shadow-sm">
+                                                        <div className="font-bold text-gray-900 mb-1">Locations</div>
+                                                        <div className="text-xs text-gray-500">Cost of Living vs. Tax</div>
+                                                    </div>
+                                                    <div className="bg-white p-4 rounded-xl shadow-sm">
+                                                        <div className="font-bold text-gray-900 mb-1">Companies</div>
+                                                        <div className="text-xs text-gray-500">Size vs. Growth</div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <h3 className="font-bold text-gray-900 mb-2">Saved Jobs & Alerts</h3>
-                                            <p className="text-sm text-gray-600 mb-4">
-                                                Don't lose track of good leads. Bookmark jobs to your dashboard.
-                                            </p>
-                                            <p className="text-xs text-gray-500 bg-white p-2 rounded border border-gray-200">
-                                                <strong>Use Case:</strong> You find 10 good jobs but don't have time to apply now. Save them, and apply to all 10 on the weekend.
+                                        </div>
+
+                                        <p className="text-sm">
+                                            <strong>Pro Tip:</strong> Use the "3-Way Comparison" feature to triangulate the best offer. For example, compare "Software Engineer in Toronto" vs. "Vancouver" vs. "Montreal" to see where your salary goes furthest.
+                                        </p>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Profile & Resume */}
+                            <section id="profile-resume" className="scroll-mt-24">
+                                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600">
+                                            <Users className="w-6 h-6" />
+                                        </div>
+                                        <h2 className="text-3xl font-bold text-gray-900">Profile & Resume</h2>
+                                    </div>
+
+                                    <div className="prose prose-lg text-gray-600 max-w-none">
+                                        <p>
+                                            Your profile is more than just a bio—it's the engine that powers our AI recommendations.
+                                        </p>
+
+                                        <div className="grid md:grid-cols-2 gap-8 mt-6 mb-8 not-prose">
+                                            <div>
+                                                <h3 className="font-bold text-gray-900 mb-3">One-Click Resume Analysis</h3>
+                                                <p className="text-sm text-gray-600 mb-4">
+                                                    Upload your PDF or DOCX resume. Our AI extracts your skills, experience, and education instantly to build your profile.
+                                                </p>
+                                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-xs text-gray-500">
+                                                    It also suggests <strong>Job Titles</strong> you might have missed!
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h3 className="font-bold text-gray-900 mb-3">Profile Completion Score</h3>
+                                                <p className="text-sm text-gray-600 mb-4">
+                                                    A 100% complete profile unlocks:
+                                                </p>
+                                                <ul className="text-sm space-y-2">
+                                                    <li className="flex items-center gap-2 text-green-700">
+                                                        <CheckCircle2 className="w-4 h-4" />
+                                                        Better Recommendation Ranking
+                                                    </li>
+                                                    <li className="flex items-center gap-2 text-green-700">
+                                                        <CheckCircle2 className="w-4 h-4" />
+                                                        Access to "NOC Matcher"
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-brand-50 border border-brand-100 rounded-xl p-6">
+                                            <h4 className="font-bold text-brand-900 mb-2">Smart Preferences</h4>
+                                            <p className="text-sm text-brand-800">
+                                                Don't forget to set your <strong>Job Preferences</strong>. You can filter by:
+                                                <br />
+                                                <span className="inline-block mt-2 font-medium">
+                                                    • Preferred Job Titles<br />
+                                                    • Desired Provinces & Cities<br />
+                                                    • Target Industries
+                                                </span>
                                             </p>
                                         </div>
                                     </div>
@@ -429,6 +633,44 @@ export default function DocumentationPage() {
                                 </div>
                             </section>
 
+                            {/* Security & Privacy */}
+                            <section id="security-privacy" className="scroll-mt-24">
+                                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-600">
+                                            <Shield className="w-6 h-6" />
+                                        </div>
+                                        <h2 className="text-3xl font-bold text-gray-900">Security & Privacy</h2>
+                                    </div>
+
+                                    <div className="prose prose-lg text-gray-600 max-w-none">
+                                        <p>
+                                            Your trust is our priority. We use enterprise-grade security to protect your data.
+                                        </p>
+                                        <ul className="space-y-4 not-prose mt-6">
+                                            <li className="flex items-start gap-3">
+                                                <div className="p-1.5 bg-green-50 rounded-full text-green-600 mt-0.5">
+                                                    <Lock className="w-4 h-4" />
+                                                </div>
+                                                <div>
+                                                    <strong className="block text-gray-900">Data Encryption</strong>
+                                                    <span className="text-sm">TLS 1.2+ encryption for all data in transit and at rest.</span>
+                                                </div>
+                                            </li>
+                                            <li className="flex items-start gap-3">
+                                                <div className="p-1.5 bg-blue-50 rounded-full text-blue-600 mt-0.5">
+                                                    <Lock className="w-4 h-4" />
+                                                </div>
+                                                <div>
+                                                    <strong className="block text-gray-900">Secure Infrastructure</strong>
+                                                    <span className="text-sm">Hosted on SOC 2 certified cloud providers (Vercel, Supabase).</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </section>
+
                             {/* FAQ */}
                             <section id="faq" className="scroll-mt-24">
                                 <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
@@ -467,6 +709,6 @@ export default function DocumentationPage() {
                     </div>
                 </div>
             </div>
-        </BackgroundWrapper>
+        </BackgroundWrapper >
     );
 }
