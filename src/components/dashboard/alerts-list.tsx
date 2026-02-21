@@ -36,13 +36,8 @@ export function AlertsList() {
     const fetchAlerts = async () => {
         try {
             setLoading(true);
-            const { data, error } = await db
-                .from('job_alerts')
-                .select('*')
-                .eq('user_id', session?.user?.id!)
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
+            const { getUserAlerts } = await import('@/lib/api/alerts');
+            const data = await getUserAlerts(session?.user?.id!);
             setAlerts(data || []);
         } catch (error) {
             console.error('Error fetching alerts:', error);
@@ -61,8 +56,8 @@ export function AlertsList() {
             // Optimistic update
             setAlerts(prev => prev.filter(a => a.id !== id));
 
-            const { error } = await db.from('job_alerts').delete().eq('id', id);
-            if (error) throw error;
+            const { deleteAlert } = await import('@/lib/api/alerts');
+            await deleteAlert(id);
 
             toast({
                 title: 'Alert Deleted',
@@ -83,8 +78,8 @@ export function AlertsList() {
         try {
             setAlerts(prev => prev.map(a => a.id === id ? { ...a, is_active: !currentState } : a));
 
-            const { error } = await db.from('job_alerts').update({ is_active: !currentState }).eq('id', id);
-            if (error) throw error;
+            const { updateAlertStatus } = await import('@/lib/api/alerts');
+            await updateAlertStatus(id, !currentState);
         } catch (error) {
             console.error('Error updating alert:', error);
             fetchAlerts(); // Revert

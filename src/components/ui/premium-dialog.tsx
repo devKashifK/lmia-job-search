@@ -19,6 +19,7 @@ import {
   LineChart,
   Line,
 } from 'recharts';
+import { Building2, X, TrendingUp } from 'lucide-react';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import { Skeleton } from './skeleton';
@@ -51,14 +52,14 @@ export function PremiumDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[98%] max-w-[98%] p-0 h-[94vh] flex flex-col bg-gradient-to-br from-gray-50 to-white pb-10">
         <DialogTitle className="sr-only">Analytics</DialogTitle>
-        <PremiumDialogContent selectedValue={selectedValue} />
+        <PremiumDialogContent />
       </DialogContent>
     </Dialog>
   );
 }
 
 export function PremiumDialogContent() {
-  const { data: selectedValue } = useSelectedColumnRecord();
+  const { record: selectedValue } = useSelectedColumnRecord();
   const [additionalFilter, setAdditionalFilter] = useState({
     filterCols: ['operating_name'],
     filterVals: [selectedValue?.operating_name],
@@ -116,17 +117,21 @@ export function PremiumDialogContent() {
     <div className="flex-1 overflow-auto p-8 pb-4">
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight mb-2">
-          {selectedValue.operating_name}
+          {selectedValue.employer}
         </h1>
       </div>
       {/* Active Filters UI */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <span className="px-2 py-1 rounded bg-brand-100 text-brand-700 text-xs font-semibold">
-          Company: {selectedValue.operating_name}
-        </span>
+        {selectedValue.employer && (
+          <div className="flex items-center gap-1 px-2 py-1 rounded bg-brand-100 text-brand-700 text-xs font-semibold">
+            <Building2 className="w-4 h-4 text-blue-500" />
+            Company: {selectedValue.employer}
+          </div>
+        )}
+
         {additionalFilter.filterCols.map(
           (col, idx) =>
-            col !== 'operating_name' && (
+            col !== 'employer' && ( // Changed from 'operating_name' to 'employer'
               <span
                 key={col + idx}
                 className="flex items-center px-2 py-1 rounded bg-gray-100 text-gray-700 text-xs font-semibold"
@@ -265,14 +270,14 @@ function MonthlyJobTrendsChart({ data }: MonthlyJobTrendsChartProps) {
               _unused: unknown,
               props: { payload?: { label?: string } }
             ) => [
-              <span
-                key={props && props.payload ? props.payload.label : 'month'}
-                className="text-brand-600 font-bold"
-              >
-                {Number(value)} jobs
-              </span>,
-              'Jobs',
-            ]}
+                <span
+                  key={props && props.payload ? props.payload.label : 'month'}
+                  className="text-brand-600 font-bold"
+                >
+                  {Number(value)} jobs
+                </span>,
+                'Jobs',
+              ]}
           />
           <Line
             type="monotone"
@@ -643,8 +648,7 @@ export function DialogCharts({ dashboardData }: { dashboardData: any }) {
                 }}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 formatter={(value: any, _unused: unknown, props: any) => [
-                  `${props && props.payload ? props.payload.label : ''}: ${
-                    props && props.payload ? props.payload.cnt : ''
+                  `${props && props.payload ? props.payload.label : ''}: ${props && props.payload ? props.payload.cnt : ''
                   } (${Number(value).toFixed(2)}%)`,
                   'State',
                 ]}
@@ -801,8 +805,7 @@ export function DialogCharts({ dashboardData }: { dashboardData: any }) {
                 }}
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 formatter={(value: any, _unused: unknown, props: any) => [
-                  `${props && props.payload ? props.payload.label : ''}: ${
-                    props && props.payload ? props.payload.cnt : ''
+                  `${props && props.payload ? props.payload.label : ''}: ${props && props.payload ? props.payload.cnt : ''
                   } (${Number(value).toFixed(2)}%)`,
                   'Industry',
                 ]}

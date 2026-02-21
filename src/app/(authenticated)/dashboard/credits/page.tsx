@@ -3,20 +3,16 @@
 import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSession } from "@/hooks/use-session";
-import ReactECharts from "echarts-for-react";
+import dynamic from "next/dynamic";
+
+const ReactECharts = dynamic(() => import("@/components/charts/lazy-echarts"), {
+  ssr: false,
+  loading: () => <div className="h-[300px] w-full bg-gray-100 animate-pulse rounded-lg" />,
+});
 import { motion } from "framer-motion";
-import {
-  CreditCard,
-  TrendingUp,
-  Activity,
-  Calendar,
-  Sparkles,
-  ArrowUpRight,
-  ArrowDownRight,
-  Zap,
-} from "lucide-react";
+import { CreditCard, TrendingUp, Activity, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
 import { useCreditData } from "@/hooks/use-credits";
-import db from "@/db";
+import { getUsageHistoryList } from "@/lib/api/searches";
 import { subDays, format, startOfDay, eachDayOfInterval, isSameDay } from "date-fns";
 import LoadingScreen from "@/components/ui/loading-screen";
 
@@ -35,14 +31,7 @@ export default function CreditsPage() {
         const endDate = new Date();
         const startDate = subDays(endDate, 30); // Last 30 days
 
-        const { data, error } = await db
-          .from("searches")
-          .select("created_at")
-          .eq("id", session.user.id)
-          .gte("created_at", startDate.toISOString())
-          .lte("created_at", endDate.toISOString());
-
-        if (error) throw error;
+        const data = await getUsageHistoryList(session.user.id, startDate, endDate);
 
         // Process data for chart
         const days = eachDayOfInterval({ start: startDate, end: endDate });

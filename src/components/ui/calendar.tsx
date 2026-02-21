@@ -14,6 +14,9 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   showActionButtons?: boolean;
   onApply?: () => void;
   onClear?: () => void;
+  onSelect?: any;
+  selected?: any;
+  mode?: any;
 }
 
 // Simple inline dropdown without Portal

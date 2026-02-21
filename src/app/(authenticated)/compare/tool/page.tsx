@@ -54,7 +54,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-import db from '@/db';
 import useMobile from '@/hooks/use-mobile';
 import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';
@@ -261,7 +260,7 @@ export default function ComparePage() {
     const query = savedJobsSearch.toLowerCase();
     return savedJobs.filter((job: any) => {
       const jobValue = getEntityValue(job);
-      const company = job.operating_name || job.employer || '';
+      const company = job.employer || '';
       const city = job.city || '';
       return (
         jobValue.toLowerCase().includes(query) ||
@@ -362,13 +361,8 @@ export default function ComparePage() {
     if (!session?.user?.id) return;
 
     try {
-      const { error } = await db
-        .from('saved_jobs')
-        .delete()
-        .eq('record_id', recordId)
-        .eq('user_id', session.user.id);
-
-      if (error) throw error;
+      const { unsaveJob } = await import('@/lib/api/saved-jobs');
+      await unsaveJob(recordId, session.user.id);
 
       // Clear selections if this job was selected
       if (selectedSavedJob1?.RecordID === recordId) setSelectedSavedJob1(null);
@@ -1355,7 +1349,7 @@ export default function ComparePage() {
                       <VirtualizedSearchableSelector
                         value={entity1}
                         onValueChange={setEntity1}
-                        options={options || []}
+                        options={(options || []).map(o => ({ name: o.value, count: o.count }))}
                         placeholder={`Search ${selectedType?.label
                           .toLowerCase()
                           .slice(0, -1)}...`}
@@ -1409,7 +1403,7 @@ export default function ComparePage() {
                       <VirtualizedSearchableSelector
                         value={entity2}
                         onValueChange={setEntity2}
-                        options={options || []}
+                        options={(options || []).map(o => ({ name: o.value, count: o.count }))}
                         placeholder={`Search ${selectedType?.label
                           .toLowerCase()
                           .slice(0, -1)}...`}
@@ -1456,7 +1450,7 @@ export default function ComparePage() {
                           <VirtualizedSearchableSelector
                             value={entity3}
                             onValueChange={setEntity3}
-                            options={options || []}
+                            options={(options || []).map(o => ({ name: o.value, count: o.count }))}
                             placeholder={`Search ${selectedType?.label
                               .toLowerCase()
                               .slice(0, -1)}...`}

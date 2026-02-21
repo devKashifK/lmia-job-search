@@ -81,7 +81,7 @@ export function useJobAnalysis(props: UseJobAnalysisProps) {
 
       // Process distribution data
       const distribution = (
-        distributionData as Record<string, unknown>[]
+        distributionData as any as Record<string, unknown>[]
       ).reduce((acc: DistributionItem[], item) => {
         const key =
           (
@@ -146,8 +146,8 @@ export function useJobAnalysis(props: UseJobAnalysisProps) {
           ? recentYears[1].count > recentYears[0].count
             ? "up"
             : recentYears[1].count < recentYears[0].count
-            ? "down"
-            : "neutral"
+              ? "down"
+              : "neutral"
           : "neutral";
 
       // Get similar jobs (same title, different companies)
@@ -171,7 +171,7 @@ export function useJobAnalysis(props: UseJobAnalysisProps) {
         trend,
         distribution,
         yearlyTrend,
-        similarJobs: similarJobsData as SimilarJob[],
+        similarJobs: similarJobsData as unknown as SimilarJob[],
       };
     },
   });
@@ -195,18 +195,18 @@ export function useSimilarJobs({
   type,
 }: UseSimilarJobsProps) {
   return useQuery({
-    queryKey: ["similar-jobs", table, nocCode, location],
+    queryKey: ["similar-jobs", table, nocCode, location, locationField, type],
     queryFn: async () => {
       const { data, error } = await db
         .from(table)
         .select(
           type === "lmia"
-            ? "job_title, operating_name, program"
-            : "job_title, operating_name, employer_type"
+            ? "job_title, employer, program"
+            : "job_title, employer, employer_type"
         )
         .eq("noc_code", nocCode)
         .eq(locationField, location)
-        .neq("operating_name", currentCompany)
+        .neq("employer", currentCompany)
         .limit(5);
 
       if (error) throw error;

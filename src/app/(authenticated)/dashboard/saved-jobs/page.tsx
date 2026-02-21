@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useSession } from "@/hooks/use-session";
-import db from "@/db";
 import JobCard from "@/components/ui/job-card";
 import { Building2, Bookmark, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
@@ -13,7 +12,7 @@ import LoadingScreen from "@/components/ui/loading-screen";
 
 interface LMIAJob {
   RecordID: string;
-  operating_name: string;
+  employer: string;
   job_title: string;
   city: string;
   territory: string;
@@ -75,52 +74,16 @@ export default function SavedJobs() {
 
   const fetchSavedJobs = async () => {
     try {
-      // First get all saved job IDs
-      const { data: savedJobsData, error: savedJobsError } = await db
-        .from("saved_jobs")
-        .select("*")
-        .eq("user_id", session.user.id);
+      const { getSavedJobsWithData } = await import("@/lib/api/saved-jobs");
+      const jobs = await getSavedJobsWithData(session.user.id);
 
-      if (savedJobsError) throw savedJobsError;
+      const mappedJobs = jobs.map((job) => ({
+        record_id: job.type === "lmia" ? job.RecordID : job.id,
+        user_id: session.user.id,
+        job_data: job,
+      }));
 
-      // For each saved job, fetch the actual job data
-      const jobsWithData = await Promise.all(
-        savedJobsData.map(async (savedJob) => {
-          // Try to fetch from LMIA table first
-          const { data: lmiaData, error: lmiaError } = await db
-            .from("lmia_records")
-            .select("*")
-            .eq("RecordID", savedJob.record_id)
-            .single();
-
-          if (!lmiaError && lmiaData) {
-            return {
-              ...savedJob,
-              job_data: { ...lmiaData, type: "lmia" } as LMIAJob,
-            };
-          }
-
-          // If not in LMIA, try hot leads table
-          const { data: hotLeadsData, error: hotLeadsError } = await db
-            .from("trending_job")
-            .select("*")
-            .eq("id", savedJob.record_id)
-            .single();
-
-          if (!hotLeadsError && hotLeadsData) {
-            return {
-              ...savedJob,
-              job_data: { ...hotLeadsData, type: "hotLeads" } as HotLeadsJob,
-            };
-          }
-
-          // If job not found in either table, return null
-          return null;
-        })
-      );
-
-      // Filter out any null values and update state
-      setSavedJobs((jobsWithData.filter(Boolean) as unknown) as SavedJob[]);
+      setSavedJobs(mappedJobs as SavedJob[]);
     } catch (error) {
       console.error("Error fetching saved jobs:", error);
       toast.error("Failed to fetch saved jobs");
@@ -131,13 +94,8 @@ export default function SavedJobs() {
 
   const handleToggleSave = async (recordId: string) => {
     try {
-      const { error } = await db
-        .from("saved_jobs")
-        .delete()
-        .eq("record_id", recordId)
-        .eq("user_id", session.user.id);
-
-      if (error) throw error;
+      const { unsaveJob } = await import("@/lib/api/saved-jobs");
+      await unsaveJob(recordId, session.user.id);
 
       // Update local state
       setSavedJobs((prev) => prev.filter((job) => job.record_id !== recordId));
@@ -200,7 +158,6 @@ export default function SavedJobs() {
             <AnimatePresence>
               {savedJobs.map((savedJob) => {
                 const job = savedJob.job_data;
-                const employerName = job.operating_name || (job as HotLeadsJob).employer || "Unknown Employer";
 
                 return (
                   <motion.div
@@ -215,7 +172,7 @@ export default function SavedJobs() {
                       logoIcon={Building2}
                       saved={true}
                       onToggleSaved={() => handleToggleSave(savedJob.record_id)}
-                      employerName={employerName}
+                      employerName={(job as LMIAJob).employer || (job as HotLeadsJob).employer || "Unknown Employer"}
                       jobTitle={job.job_title || job.occupation_title || "Untitled Job"}
                       city={job.city || "Unknown City"}
                       state={job.state}

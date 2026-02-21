@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
         try {
             // Fetch categories similar to use-job-data.ts
             const [lmiaResult, trendingResult] = await Promise.all([
-                db.from('lmia_records').select('Category').not('Category', 'is', null).limit(1000),
+                db.from('lmia').select('Category').not('Category', 'is', null).limit(1000),
                 db.from('trending_job').select('category').not('category', 'is', null).limit(1000),
             ]);
 

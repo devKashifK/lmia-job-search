@@ -13,7 +13,7 @@ import { CompanySearchBar } from '@/components/analysis/company-search-bar';
 import { CompanyTierList } from '@/components/analysis/company-tier-list';
 import { TopCompaniesList } from '@/components/analysis/top-companies-list';
 import { CategorizedCompanies } from '@/components/analysis/categorized-companies';
-import { MarketStats } from '@/components/analysis/market-stats';
+import MarketStats from '@/components/analysis/market-stats';
 import { FeaturedCompany } from '@/components/analysis/featured-company';
 import { Button } from '@/components/ui/button';
 import CustomLink from '@/components/ui/CustomLink';

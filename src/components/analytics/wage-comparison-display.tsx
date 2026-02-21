@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import db from "@/db";
+import { getWageStats } from "@/lib/api/analytics";
 
 interface WageComparisonProps {
     noc: string;
@@ -22,14 +22,11 @@ export function WageComparisonDisplay({ noc, province, currentWage }: WageCompar
             if (!noc || !currentWage) return;
 
             try {
-                const { data, error } = await db.rpc('get_wage_stats', {
-                    p_noc_code: noc,
-                    p_province: province || null
-                });
+                const stats = await getWageStats(noc, province || null);
 
-                if (error || !data) return;
+                if (!stats) return;
 
-                const median = data.median_wage;
+                const median = stats.median_wage;
                 const diff = ((currentWage - median) / median) * 100;
 
                 setComparison({
@@ -53,8 +50,8 @@ export function WageComparisonDisplay({ noc, province, currentWage }: WageCompar
 
     return (
         <div className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${isPositive ? 'bg-green-50 text-green-700 border border-green-100' :
-                isNegative ? 'bg-red-50 text-red-700 border border-red-100' :
-                    'bg-yellow-50 text-yellow-700 border border-yellow-100'
+            isNegative ? 'bg-red-50 text-red-700 border border-red-100' :
+                'bg-yellow-50 text-yellow-700 border border-yellow-100'
             }`} title={`Market Median: $${comparison.median}/hr`}>
             {isPositive ? <TrendingUp className="h-3 w-3" /> :
                 isNegative ? <TrendingDown className="h-3 w-3" /> :

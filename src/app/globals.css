@@ -75,12 +75,23 @@
 }
 
 @layer base {
+
+  input,
+  textarea {
+    @apply select-text;
+    /* Allow users to select text inside inputs for editing */
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground unselectable;
   }
 }
 
@@ -228,6 +239,11 @@
   animation: vertical-scroll 20s linear infinite;
 }
 
-.animate-vertical-scroll:hover {
-  animation-play-state: paused;
+
+/* Security Hardening - Disable Selection */
+.unselectable {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

@@ -14,6 +14,7 @@ export default function RolesPage() {
   return (
     <DynamicDataView
       title={decodeURIComponent(keyword)}
+      field="job_title"
     />
   );
 }

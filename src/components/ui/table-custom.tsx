@@ -21,6 +21,11 @@ interface DataItem {
   sales: number;
   status: string;
 }
+const statusColors: Record<string, string> = {
+  active: "bg-green-500",
+  inactive: "bg-gray-500",
+  pending: "bg-yellow-500",
+};
 
 export default function PremiumTable() {
   const { filteredData } = useTableStore();
@@ -131,9 +136,8 @@ export default function PremiumTable() {
                       <td className="px-6 py-3 whitespace-nowrap">
                         <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-opacity-10 text-gray-800">
                           <span
-                            className={`h-2 w-2 rounded-full ${
-                              statusColors[item.status]
-                            } mr-2 self-center`}
+                            className={`h-2 w-2 rounded-full ${statusColors[item.status]
+                              } mr-2 self-center`}
                           ></span>
                           {item.status}
                         </span>

@@ -22,6 +22,47 @@ import { useJobTitles, useCategories, useProvinces, useCitiesForProvinces, useNo
 import { NocSummary } from "@/lib/noc-service";
 import { CreateAlertDialog } from "@/components/alerts/create-alert-dialog";
 
+// ----------------------------------------------------------------------
+// Reusable Sub-Component for Recommendations
+// ----------------------------------------------------------------------
+interface RecommendationBlockProps<T> {
+    title: string;
+    description: string;
+    items: T[];
+    renderItem: (item: T) => React.ReactNode;
+    onAdd: (item: T) => void;
+}
+
+function RecommendationBlock<T>({ title, description, items, renderItem, onAdd }: RecommendationBlockProps<T>) {
+    if (!items || items.length === 0) return null;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="rounded-lg border border-brand-100 bg-brand-50/50 p-4"
+        >
+            <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-4 w-4 text-brand-600" />
+                <h3 className="text-sm font-medium text-brand-900">{title}</h3>
+            </div>
+            <p className="text-xs text-brand-700 mb-3">{description}</p>
+            <div className="flex flex-wrap gap-2">
+                {items.map((item, idx) => (
+                    <button
+                        key={idx}
+                        onClick={() => onAdd(item)}
+                        className="group flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 shadow-sm transition-all hover:bg-brand-600 hover:text-white"
+                    >
+                        {renderItem(item)}
+                        <Plus className="h-3 w-3 ml-1" />
+                    </button>
+                ))}
+            </div>
+        </motion.div>
+    );
+}
+
 export function JobPreferencesSection() {
     const { preferences, updatePreferences, isUpdating } = useUserPreferences();
     const [showAlertDialog, setShowAlertDialog] = useState(false);
@@ -549,110 +590,58 @@ export function JobPreferencesSection() {
                 </motion.div>
 
                 {/* NOC Recommendations */}
-                {recommendedNocs.filter(noc => !preferences?.preferred_noc_codes?.includes(noc.code)).length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        className="rounded-lg border border-brand-100 bg-brand-50/50 p-4"
-                    >
-                        <div className="flex items-center gap-2 mb-3">
-                            <Sparkles className="h-4 w-4 text-brand-600" />
-                            <h3 className="text-sm font-medium text-brand-900">Recommended NOC Codes</h3>
-                        </div>
-                        <p className="text-xs text-brand-700 mb-3">
-                            Based on your preferred job titles, we recommend checking these NOC codes:
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                            {recommendedNocs.filter(noc => !preferences?.preferred_noc_codes?.includes(noc.code)).map((noc, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => {
-                                        const current = preferences?.preferred_noc_codes || [];
-                                        if (!current.includes(noc.code)) {
-                                            updatePreferences({ preferred_noc_codes: [...current, noc.code] });
-                                        }
-                                    }}
-                                    className="group flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 shadow-sm transition-all hover:bg-brand-600 hover:text-white"
-                                >
-                                    <span>{noc.code}</span>
-                                    <span className="max-w-[150px] truncate opacity-80 group-hover:opacity-100">
-                                        - {noc.title}
-                                    </span>
-                                    <Plus className="h-3 w-3" />
-                                </button>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
+                <RecommendationBlock
+                    title="Recommended NOC Codes"
+                    description="Based on your preferred job titles, we recommend checking these NOC codes:"
+                    items={recommendedNocs.filter(noc => !preferences?.preferred_noc_codes?.includes(noc.code))}
+                    onAdd={(noc) => {
+                        const current = preferences?.preferred_noc_codes || [];
+                        if (!current.includes(noc.code)) {
+                            updatePreferences({ preferred_noc_codes: [...current, noc.code] });
+                        }
+                    }}
+                    renderItem={(noc) => (
+                        <>
+                            <span>{noc.code}</span>
+                            <span className="max-w-[150px] truncate opacity-80 group-hover:opacity-100">
+                                - {noc.title}
+                            </span>
+                        </>
+                    )}
+                />
 
                 {/* Industry Recommendations */}
-                {recommendedIndustries.filter(ind => !preferences?.preferred_industries?.includes(ind)).length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        className="rounded-lg border border-brand-100 bg-brand-50/50 p-4"
-                    >
-                        <div className="flex items-center gap-2 mb-3">
-                            <Sparkles className="h-4 w-4 text-brand-600" />
-                            <h3 className="text-sm font-medium text-brand-900">Recommended Industries</h3>
-                        </div>
-                        <p className="text-xs text-brand-700 mb-3">
-                            Based on your job titles, these industries might specific to your field:
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                            {recommendedIndustries.filter(ind => !preferences?.preferred_industries?.includes(ind)).map((ind, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => {
-                                        const current = preferences?.preferred_industries || [];
-                                        if (!current.includes(ind)) {
-                                            updatePreferences({ preferred_industries: [...current, ind] });
-                                        }
-                                    }}
-                                    className="group flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 shadow-sm transition-all hover:bg-brand-600 hover:text-white"
-                                >
-                                    <Building className="h-3 w-3" />
-                                    <span>{ind}</span>
-                                    <Plus className="h-3 w-3 ml-1" />
-                                </button>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
+                <RecommendationBlock
+                    title="Recommended Industries"
+                    description="Based on your job titles, these industries might specific to your field:"
+                    items={recommendedIndustries.filter(ind => !preferences?.preferred_industries?.includes(ind))}
+                    onAdd={(ind) => {
+                        const current = preferences?.preferred_industries || [];
+                        if (!current.includes(ind)) {
+                            updatePreferences({ preferred_industries: [...current, ind] });
+                        }
+                    }}
+                    renderItem={(ind) => (
+                        <>
+                            <Building className="h-3 w-3" />
+                            <span>{ind}</span>
+                        </>
+                    )}
+                />
 
                 {/* Tier Recommendations */}
-                {recommendedTeers.filter(tier => !preferences?.preferred_company_tiers?.includes(tier)).length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        className="rounded-lg border border-brand-100 bg-brand-50/50 p-4"
-                    >
-                        <div className="flex items-center gap-2 mb-3">
-                            <Sparkles className="h-4 w-4 text-brand-600" />
-                            <h3 className="text-sm font-medium text-brand-900">Recommended TEER Categories</h3>
-                        </div>
-                        <p className="text-xs text-brand-700 mb-3">
-                            Based on your matched NOC Codes, these TEER categories apply to you:
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                            {recommendedTeers.filter(tier => !preferences?.preferred_company_tiers?.includes(tier)).map((tier, idx) => (
-                                <button
-                                    key={idx}
-                                    onClick={() => {
-                                        const current = preferences?.preferred_company_tiers || [];
-                                        if (!current.includes(tier)) {
-                                            updatePreferences({ preferred_company_tiers: [...current, tier] });
-                                        }
-                                    }}
-                                    className="group flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 shadow-sm transition-all hover:bg-brand-600 hover:text-white"
-                                >
-                                    <span>TEER {tier}</span>
-                                    <Plus className="h-3 w-3 ml-1" />
-                                </button>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
+                <RecommendationBlock
+                    title="Recommended TEER Categories"
+                    description="Based on your matched NOC Codes, these TEER categories apply to you:"
+                    items={recommendedTeers.filter(tier => !preferences?.preferred_company_tiers?.includes(tier))}
+                    onAdd={(tier) => {
+                        const current = preferences?.preferred_company_tiers || [];
+                        if (!current.includes(tier)) {
+                            updatePreferences({ preferred_company_tiers: [...current, tier] });
+                        }
+                    }}
+                    renderItem={(tier) => <span>TEER {tier}</span>}
+                />
 
 
                 {isUpdating && (

@@ -41,7 +41,6 @@ import {
 } from "@/components/ui/sheet";
 import { useTableStore } from "@/context/store";
 import { SearchBar } from "./search-bar";
-import { Filter } from "../filters/filter";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSheet } from "@/context/sheet-context";
 import { RecentSearches } from "./recent-searches";
@@ -239,87 +238,7 @@ function SearchActions({
   keywords?: string;
   type?: string;
 }) {
-  const filteredData = useTableStore((state) => state.filteredData);
-  const updateSearchSaved = useTableStore((state) => state.updateSearchSaved);
-  const showFilterPanel = useTableStore((state) => state.showFilterPanel);
-  const setShowFilterPanel = useTableStore((state) => state.setShowFilterPanel);
   const { showSheet } = useSheet();
-  const { toast } = useToast();
-
-  const handleSave = async () => {
-    const currentSearchId = sessionStorage.getItem("currentSearchId");
-    if (!currentSearchId) {
-      toast({
-        title: "Error",
-        description: "No search ID found",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      await updateSearchSaved(currentSearchId, true);
-      toast({
-        title: "Success",
-        description: "Search saved successfully",
-      });
-    } catch (error) {
-      console.error("Failed to save search:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save search. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const exportToCSV = () => {
-    if (!filteredData || filteredData.length === 0) {
-      return;
-    }
-
-    try {
-      const headers = Object.keys(filteredData[0]);
-      const csvContent = [
-        headers.join(","),
-        ...filteredData.map((row) =>
-          headers
-            .map((header) => {
-              const value = row[header];
-              if (value === null || value === undefined) return "";
-              if (typeof value === "object") return JSON.stringify(value);
-              if (typeof value === "string") {
-                if (
-                  value.includes(",") ||
-                  value.includes('"') ||
-                  value.includes("\n")
-                ) {
-                  return `"${value.replace(/"/g, '""')}"`;
-                }
-              }
-              return value;
-            })
-            .join(",")
-        ),
-      ].join("\n");
-
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
-        `export_${new Date().toISOString().split("T")[0]}.csv`
-      );
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Export failed:", error);
-    }
-  };
 
   return (
     <div className="flex items-center gap-2">
@@ -353,7 +272,7 @@ function SearchActions({
           /> */}
         </div>
         <div className="h-4 w-px bg-zinc-200" />
-        <SearchBar type={type} />
+        <SearchBar type={type || "lmia"} />
         {/* <div className="h-4 w-px bg-zinc-200" /> */}
         <div className="flex items-center gap-1">
           {/* <Filter /> */}

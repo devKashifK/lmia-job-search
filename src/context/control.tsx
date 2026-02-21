@@ -1,7 +1,7 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getVisitorInfo, VisitorInfo } from '@/lib/get-visitor-info';
-import db from '@/db';
+import { trackVisitor } from '@/lib/api/users';
 import { LoginAlertDialog } from '@/components/ui/login-alert-dialog';
 import { useSession } from '@/hooks/use-session';
 import { useTrial } from './trail';
@@ -66,7 +66,7 @@ export const ControlContextProvider = ({
       setVisitorInfo(info);
 
       // Check if visitor exists in database
-      const { data: existingVisitor, error: fetchError } = await db
+      const { data: existingVisitor, error: fetchError } = await (await import('@/db')).default
         .from('visitors')
         .select('*')
         .eq('ip_address', info.ip)
@@ -103,14 +103,7 @@ export const ControlContextProvider = ({
         }
       } else {
         // New visitor - insert into database
-        const { error: insertError } = await db.from('visitors').insert({
-          ip_address: info.ip,
-          location: info.location,
-        });
-
-        if (insertError) {
-          console.error('Error inserting visitor:', insertError);
-        }
+        await trackVisitor({ ip_address: info.ip, location: info.location });
 
         // Start 2-minute trial
         setIsTrialActive(true);

@@ -14,7 +14,7 @@ const FADE_OUT_DURATION_MS = 800; // Time for letters to fade out
 const LOOP_DELAY_MS = 500; // Pause before restarting the entire loop
 
 // --- SVG Water Animation Logic ---
-const calculateWavePath = (progress /* 0-100 */) => {
+const calculateWavePath = (progress: number /* 0-100 */) => {
   const normalizedProgress = progress / 100;
   const waterLevelY = 1 - normalizedProgress; // 0 is top, 1 is bottom
 
@@ -51,12 +51,12 @@ const Loader = () => {
 
   // Letter Animation Effect (Cascade In / Fade Out)
   useEffect(() => {
-    let letterTimers = [];
+    let letterTimers: NodeJS.Timeout[] = [];
 
     const animateLetters = (
-      targetLetterState,
-      durationPerLetter,
-      onComplete
+      targetLetterState: number,
+      durationPerLetter: number,
+      onComplete?: () => void
     ) => {
       // Clear any existing letter timers
       letterTimers.forEach(clearTimeout);
@@ -95,14 +95,14 @@ const Loader = () => {
 
   // Water Animation and Main State Machine Effect
   useEffect(() => {
-    let mainTimerId;
-    let frameId; // For requestAnimationFrame
+    let mainTimerId: NodeJS.Timeout;
+    let frameId: number; // For requestAnimationFrame
 
-    const animateWater = (targetProgress, duration, onComplete) => {
-      let startTime = null;
+    const animateWater = (targetProgress: number, duration: number, onComplete?: () => void) => {
+      let startTime: number | null = null;
       const currentProgress = targetProgress === 100 ? 0 : 100; // Start from 0 if filling, 100 if emptying
 
-      const step = (timestamp) => {
+      const step = (timestamp: number) => {
         if (!startTime) startTime = timestamp;
         const elapsed = timestamp - startTime;
         let progress = (elapsed / duration) * 100;
@@ -199,11 +199,9 @@ const Loader = () => {
             key={index}
             className="inline-block text-brand-300" // Base color when not water-filled
             style={{
-              transition: `opacity ${
-                FADE_OUT_DURATION_MS / TARGET_TEXT.length / 2
-              }ms ease-out, transform ${
-                LETTER_REVEAL_DURATION_MS / TARGET_TEXT.length / 1.5
-              }ms ease-out`,
+              transition: `opacity ${FADE_OUT_DURATION_MS / TARGET_TEXT.length / 2
+                }ms ease-out, transform ${LETTER_REVEAL_DURATION_MS / TARGET_TEXT.length / 1.5
+                }ms ease-out`,
               opacity: letterStates[index] === 1 ? 1 : 0,
               transform:
                 letterStates[index] === 1
@@ -223,31 +221,31 @@ const Loader = () => {
           animationState.includes("water") ||
           animationState === "text_empty" ||
           animationState === "settled") && (
-          <span
-            className="absolute left-0 top-0 h-full w-full bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent"
-            style={{
-              clipPath: showWaterEffect
-                ? "url(#jobmazeWaterClipPath)"
-                : animationState === "water_full"
-                ? "url(#jobmazeWaterClipPath)"
-                : "inset(0 0 100% 0)", // Hide if not filling/full by clipping all
-              WebkitClipPath: showWaterEffect
-                ? "url(#jobmazeWaterClipPath)"
-                : animationState === "water_full"
-                ? "url(#jobmazeWaterClipPath)"
-                : "inset(0 0 100% 0)",
-              opacity:
-                letterStates.every((s) => s === 1) ||
-                animationState.includes("water") ||
-                animationState === "text_empty" ||
-                animationState === "settled"
-                  ? 1
-                  : 0, // Ensure visibility during relevant states
-            }}
-          >
-            {TARGET_TEXT}
-          </span>
-        )}
+            <span
+              className="absolute left-0 top-0 h-full w-full bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 bg-clip-text text-transparent"
+              style={{
+                clipPath: showWaterEffect
+                  ? "url(#jobmazeWaterClipPath)"
+                  : animationState === "water_full"
+                    ? "url(#jobmazeWaterClipPath)"
+                    : "inset(0 0 100% 0)", // Hide if not filling/full by clipping all
+                WebkitClipPath: showWaterEffect
+                  ? "url(#jobmazeWaterClipPath)"
+                  : animationState === "water_full"
+                    ? "url(#jobmazeWaterClipPath)"
+                    : "inset(0 0 100% 0)",
+                opacity:
+                  letterStates.every((s) => s === 1) ||
+                    animationState.includes("water") ||
+                    animationState === "text_empty" ||
+                    animationState === "settled"
+                    ? 1
+                    : 0, // Ensure visibility during relevant states
+              }}
+            >
+              {TARGET_TEXT}
+            </span>
+          )}
       </div>
     </div>
   );

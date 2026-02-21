@@ -92,14 +92,10 @@ export function CreateAlertDialog({
     useEffect(() => {
         const fetchTier = async () => {
             if (nocCode.length >= 4) {
-                const { data } = await db.from('trending_job')
-                    .select('tier')
-                    .eq('noc_code', nocCode)
-                    .limit(1)
-                    .single();
-
-                if (data?.tier) {
-                    setTier(data.tier);
+                const { getTierByNoc } = await import('@/lib/api/analytics');
+                const tier = await getTierByNoc(nocCode);
+                if (tier) {
+                    setTier(tier);
                 }
             }
         };
@@ -187,53 +183,22 @@ export function CreateAlertDialog({
 
 
 
-    // --- LOCATION LOGIC (Exact replica from SearchBox.tsx) ---
+    // Location Logic
     const fetchProvinces = async () => {
         try {
-            const { data, error } = await db.rpc('get_provinces');
-            if (!error && data) {
-                setProvinces(data as { province: string }[]);
-            }
+            const { getProvinces } = await import('@/lib/api/locations');
+            const data = await getProvinces();
+            setProvinces(data.map(p => ({ province: p })));
         } catch (err) {
             console.error('Error fetching provinces:', err);
         }
     };
 
     const fetchCitiesForProvinces = async (provincesList: string[]) => {
-        if (provincesList.length === 0) {
-            setCities([]);
-            return;
-        }
-
         try {
-            const allCitiesArrays = await Promise.all(
-                provincesList.map(async (province) => {
-                    const [rpcRes, trendingRes, lmiaRes] = await Promise.all([
-                        db.rpc('get_cities_by_province', { p_province: province, p_search: '' }),
-                        db.from('trending_job').select('city').eq('state', province).limit(500),
-                        db.from('lmia_records').select('City').eq('Province', province).limit(500)
-                    ]);
-
-                    let citiesForProv: { city: string; province: string }[] = [];
-
-                    if (!rpcRes.error && rpcRes.data) citiesForProv.push(...(rpcRes.data as any[]).map(c => ({ ...c, province })));
-                    if (!trendingRes.error && trendingRes.data) citiesForProv.push(...trendingRes.data.map(d => ({ city: d.city, province })));
-                    if (!lmiaRes.error && lmiaRes.data) citiesForProv.push(...lmiaRes.data.map(d => ({ city: d.City, province })));
-
-                    // Deduplicate
-                    const uniqueCities = new Set<string>();
-                    const distinct: { city: string; province: string }[] = [];
-                    for (const item of citiesForProv) {
-                        const normalized = item.city?.trim();
-                        if (normalized && !uniqueCities.has(normalized)) {
-                            uniqueCities.add(normalized);
-                            distinct.push({ city: normalized, province });
-                        }
-                    }
-                    return distinct.sort((a, b) => a.city.localeCompare(b.city));
-                })
-            );
-            setCities(allCitiesArrays.flat());
+            const { getCitiesForProvinces } = await import('@/lib/api/locations');
+            const cities = await getCitiesForProvinces(provincesList);
+            setCities(cities);
         } catch (err) {
             console.error('Error fetching cities:', err);
         }
@@ -295,22 +260,19 @@ export function CreateAlertDialog({
                 title: jobTitles,
                 noc: nocCode || undefined,
                 tier: tier !== 'all' ? tier : undefined,
-                // Save as array if multiple cities, or string if generic
-                // Save as array if multiple cities, or string if generic
                 location: selectedCities.length > 0 ? selectedCities : (selectedProvinces.length > 0 ? selectedProvinces : locationText),
-                // Add metadata about what kind of location selection it is?
                 locationType: selectedCities.length > 0 ? 'cities' : (selectedProvinces.length > 0 ? 'provinces' : 'raw'),
             };
 
-            const { error } = await db.from('job_alerts').insert({
+            const { createAlert } = await import('@/lib/api/alerts');
+            await createAlert({
                 user_id: session.user.id,
                 name: name,
                 criteria: finalCriteria,
-                frequency: frequency,
+                frequency: frequency as any,
                 is_active: true,
             });
 
-            if (error) throw error;
             setSuccess(true);
             setTimeout(() => { onOpenChange(false); setSuccess(false); }, 1500);
 

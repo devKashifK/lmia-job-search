@@ -235,7 +235,7 @@ const features = [
 export default function SeeItAction() {
   const [activeFeature, setActiveFeature] = useState("search");
   const [isHovered, setIsHovered] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout>();
+  const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   useEffect(() => {
     const startAutoRotation = () => {
@@ -275,11 +275,10 @@ export default function SeeItAction() {
                 <button
                   key={feature.id}
                   onClick={() => setActiveFeature(feature.id)}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
-                    activeFeature === feature.id
+                  className={`w-full text-left px-4 py-3 rounded-lg transition-all ${activeFeature === feature.id
                       ? "bg-brand-50 text-brand-600"
                       : "hover:bg-gray-50 text-gray-600"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <feature.icon className="w-5 h-5" />

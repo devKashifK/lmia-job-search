@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from './use-session';
-import db from '@/db';
+import { getUserCredits, incrementUsedCredit } from '@/lib/api/credits';
+import { insertSearch } from '@/lib/api/searches';
 
 interface SearchRecord {
   id: string;
@@ -16,16 +17,8 @@ export const useCreditData = () => {
     queryFn: async () => {
       if (session?.trial) return null;
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const { data, error } = await db
-        .from('credits')
-        .select('*')
-        .eq('id', session?.user?.id)
-        .single();
-      if (error) throw error;
-      return data;
+      return getUserCredits(session?.user?.id!);
     },
-    staleTime: 1000,
   });
 
   const creditRemaining = creditData?.total_credit - creditData?.used_credit;
@@ -38,55 +31,22 @@ export const useUpdateCredits = () => {
   const queryClient = useQueryClient();
 
   const updateCreditsAndSearch = async (keyword: string) => {
-    if (session?.trial) {
-      // In trial mode, do not update credits
-      return null;
-    }
-    if (!session?.user?.id) {
-      throw new Error('User not authenticated');
-    }
+    if (session?.trial) return null;
+    if (!session?.user?.id) throw new Error('User not authenticated');
 
     try {
-      const { data: creditData, error: creditErrors } = await db
-        .from('credits')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
+      const updatedCredits = await incrementUsedCredit(session.user.id);
 
-      if (creditErrors) throw creditErrors;
+      const { search_id: currentSearchId } = await insertSearch({
+        id: session.user.id,
+        keyword,
+        save: false,
+      });
 
-      const usedCredits = Number(creditData.used_credit);
-
-      const { data: updatedCredits, error: creditError } = await db
-        .from('credits')
-        .update({ used_credit: usedCredits + 1 })
-        .eq('id', session.user.id)
-        .select()
-        .single();
-
-      if (creditError) throw creditError;
-
-      // Insert search record
-      const { data: insertedSearch, error: searchError } = await db
-        .from('searches')
-        .insert(
-          {
-            id: session.user.id,
-            keyword: keyword,
-            save: false,
-          }
-        )
-        .select('*');
-
-      if (searchError) throw searchError;
-
-      // Save current search ID to session storage
-      const currentSearchId = insertedSearch[0]?.search_id;
       if (currentSearchId) {
-        sessionStorage.setItem('currentSearchId', currentSearchId);
+        sessionStorage.setItem('currentSearchId', String(currentSearchId));
       }
 
-      // Invalidate credits query to trigger a refetch
       await queryClient.invalidateQueries({
         queryKey: ['credits', session.trial, session.user.id],
       });

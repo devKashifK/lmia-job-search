@@ -5,9 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Building2, TrendingUp, Search, ArrowRight, Zap, CheckCircle2 } from 'lucide-react';
-import db from '@/db';
+import { getTrendingRoles, getRegionalHotspots, getCategorizedCompanies, getDistinctCompanies } from '@/lib/api/analysis';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
+import db from '@/db';
 
 export function FeaturedCompany() {
     const router = useRouter();

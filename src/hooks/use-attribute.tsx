@@ -1,7 +1,7 @@
 import { useTableStore } from "@/context/store";
 import { useMemo } from "react";
 
-export const useFilterAttributes = (key) => {
+export const useFilterAttributes = (key: string) => {
   const data = useTableStore((state) => state.data);
 
   const attributes = useMemo(() => {

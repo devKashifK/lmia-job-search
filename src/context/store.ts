@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import db from '@/db';
 
 interface TableState {
   data: any[];
@@ -29,6 +28,20 @@ interface TableState {
   setSelectedRecordID: (id: string) => void;
 }
 
+const DATA: any[] = [];
+
+/**
+ * Helper to apply active filters to dataset
+ */
+const applyFilters = (data: any[], filters: Record<string, Set<string>>) => {
+  if (Object.keys(filters).length === 0) return data;
+  return data.filter((item) =>
+    Object.entries(filters).every(([key, values]) =>
+      values.has(item[key])
+    )
+  );
+};
+
 export const useTableStore = create<TableState>((set, get) => ({
   data: [],
   filteredData: [],
@@ -39,6 +52,7 @@ export const useTableStore = create<TableState>((set, get) => ({
   filterPanelConfig: {},
   dataConfig: {},
   viewMode: 'grid',
+  selectedRecordID: null,
 
   setShowFilterPanel: (value) => {
     const currentValue = get().showFilterPanel;
@@ -57,9 +71,12 @@ export const useTableStore = create<TableState>((set, get) => ({
 
   setFilteredData: (newData) => set({ filteredData: newData }),
 
+  clearAllFilters: () => {
+    set({ filters: {}, filteredData: get().data });
+  },
+
   updateFilter: (columnKey, value) => {
     const { filters, data } = get();
-
     const updatedFilters = { ...filters };
 
     if (!updatedFilters[columnKey]) {
@@ -75,69 +92,37 @@ export const useTableStore = create<TableState>((set, get) => ({
       updatedFilters[columnKey].add(value);
     }
 
-    const filteredData = data.filter((item) =>
-      Object.entries(updatedFilters).every(([key, values]) =>
-        values.has(item[key])
-      )
-    );
-
-    const newFilteredData =
-      Object.keys(updatedFilters).length === 0 ? data : filteredData;
-
     set({
       filters: updatedFilters,
-      filteredData: newFilteredData,
+      filteredData: applyFilters(data, updatedFilters),
     });
-  },
-  clearAllFilters: () => {
-    set({ filters: {}, filteredData: get().data });
   },
 
   clearFilter: (columnKey) => {
     const { filters, data } = get();
-
     const updatedFilters = { ...filters };
     delete updatedFilters[columnKey];
 
-    const filteredData =
-      Object.keys(updatedFilters).length === 0
-        ? data
-        : data.filter((item) =>
-            Object.entries(updatedFilters).every(([key, values]) =>
-              values.has(item[key])
-            )
-          );
-
     set({
       filters: updatedFilters,
-      filteredData,
+      filteredData: applyFilters(data, updatedFilters),
     });
   },
+
   clearSingleFilter: (columnKey, value) => {
     const { filters, data } = get();
-
-    if (!filters[columnKey]) return; // If the column has no filters, do nothing
+    if (!filters[columnKey]) return;
 
     const updatedFilters = { ...filters };
-    updatedFilters[columnKey].delete(value); // Remove the specific filter value
+    updatedFilters[columnKey].delete(value);
 
-    // If the column has no more filters, remove the column key
     if (updatedFilters[columnKey].size === 0) {
       delete updatedFilters[columnKey];
     }
 
-    const filteredData =
-      Object.keys(updatedFilters).length === 0
-        ? data
-        : data.filter((item) =>
-            Object.entries(updatedFilters).every(([key, values]) =>
-              values.has(item[key])
-            )
-          );
-
     set({
       filters: updatedFilters,
-      filteredData,
+      filteredData: applyFilters(data, updatedFilters),
     });
   },
   searchWithFuse: async (keywords, type = 'hot_leads') => {
@@ -152,15 +137,8 @@ export const useTableStore = create<TableState>((set, get) => ({
 
     if (type !== 'hot_leads') {
       try {
-        const { data: result, error } = await db.rpc('rpc_search_lmia', {
-          term: keywords,
-        });
-
-        if (error) {
-          console.error('Error searching:', error);
-          throw error;
-        }
-
+        const { searchLmia } = await import('@/lib/api/jobs');
+        const result = await searchLmia(safeKeywords);
         set({ data: result, filteredData: result });
       } catch (error) {
         console.error('Error in search:', error);
@@ -169,18 +147,8 @@ export const useTableStore = create<TableState>((set, get) => ({
       }
     } else {
       try {
-        const { data: result, error } = await db.rpc(
-          'rpc_search_hot_leads_new',
-          {
-            term: keywords,
-          }
-        );
-
-        if (error) {
-          console.error('Error searching:', error);
-          throw error;
-        }
-
+        const { searchTrending } = await import('@/lib/api/jobs');
+        const result = await searchTrending(safeKeywords);
         set({ data: result, filteredData: result });
       } catch (error) {
         console.error('Error in search:', error);
@@ -192,14 +160,8 @@ export const useTableStore = create<TableState>((set, get) => ({
   setCurrentSearchId: (id) => set({ currentSearchId: id }),
   updateSearchSaved: async (searchId, saved) => {
     try {
-      const { error } = await db
-        .from('searches')
-        .update({ save: saved })
-        .eq('search_id', searchId);
-
-      if (error) {
-        throw error;
-      }
+      const { updateSearchSaved: apiUpdateSearchSaved } = await import('@/lib/api/searches');
+      await apiUpdateSearchSaved(searchId, saved);
     } catch (error) {
       console.error('Error updating search:', error);
       throw error;

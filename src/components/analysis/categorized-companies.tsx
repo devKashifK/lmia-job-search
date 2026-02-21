@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Building2, Code, Stethoscope, HardHat, Coffee, ArrowUpRight } from 'lucide-react';
-import db from '@/db';
+import { getTrendingRoles, getRegionalHotspots, getCategorizedCompanies, getDistinctCompanies } from '@/lib/api/analysis';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,52 +23,32 @@ export function CategorizedCompanies() {
     const { data: categoriesData = [], isLoading } = useQuery({
         queryKey: ['categorized-companies'],
         queryFn: async () => {
-            // Fetch a large sample of trending jobs to categorize client-side
-            const { data, error } = await db
-                .from('trending_job')
-                .select('employer, job_title')
-                .not('employer', 'is', null)
-                .limit(2000);
-
-            if (error) throw error;
+            const data = await getCategorizedCompanies(2000);
 
             const grouped: Record<string, { companies: Record<string, number> }> = {};
+            CATEGORIES.forEach(cat => { grouped[cat.id] = { companies: {} }; });
 
-            // Initialize groups
-            CATEGORIES.forEach(cat => {
-                grouped[cat.id] = { companies: {} };
-            });
-
-            data?.forEach((row: any) => {
+            data.forEach((row: any) => {
                 const title = (row.job_title || '').toLowerCase();
                 const employer = row.employer;
-
-                // Find matching category
                 for (const cat of CATEGORIES) {
                     if (cat.keywords.some(k => title.includes(k))) {
-                        if (!grouped[cat.id].companies[employer]) {
-                            grouped[cat.id].companies[employer] = 0;
-                        }
+                        if (!grouped[cat.id].companies[employer]) grouped[cat.id].companies[employer] = 0;
                         grouped[cat.id].companies[employer]++;
                         break;
                     }
                 }
             });
 
-            // Format results
             return CATEGORIES.map(cat => {
                 const topCompanies = Object.entries(grouped[cat.id]?.companies || {})
                     .sort((a, b) => b[1] - a[1])
                     .slice(0, 4)
                     .map(([name, count]) => ({ name, count }));
-
-                return {
-                    ...cat,
-                    companies: topCompanies
-                };
+                return { ...cat, companies: topCompanies };
             });
         },
-        staleTime: 1000 * 60 * 30, // 30 mins
+        staleTime: 1000 * 60 * 30,
     });
 
     if (isLoading) {

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Building2, TrendingUp, Users, ArrowRight, Activity, Percent } from 'lucide-react';
-import db from '@/db';
+import { getTopCompaniesList } from '@/lib/api/analysis';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,76 +21,9 @@ export function TopCompaniesList({ variant }: TopCompaniesListProps) {
 
     const { data: companies = [], isLoading } = useQuery({
         queryKey: ['top-companies-list', variant],
-        queryFn: async () => {
-            // Data fetching logic remains the same
-            if (isLmia) {
-                const { data, error } = await db
-                    .from('lmia')
-                    .select('employer, approved_positions, city, province:territory')
-                    .not('employer', 'is', null)
-                    .limit(1500);
-
-                if (error) throw error;
-
-                const aggregated: Record<string, { count: number, positions: number, locations: Set<string> }> = {};
-
-                data?.forEach((row: any) => {
-                    const name = row.employer;
-                    if (!aggregated[name]) {
-                        aggregated[name] = { count: 0, positions: 0, locations: new Set() };
-                    }
-                    aggregated[name].count += 1;
-                    aggregated[name].positions += (Number(row.approved_positions) || 1);
-                    if (row.city) aggregated[name].locations.add(row.city);
-                });
-
-                return Object.entries(aggregated)
-                    .map(([name, stats]) => ({
-                        name,
-                        metric: stats.positions,
-                        subMetric: `${stats.count} applications`,
-                        locations: Array.from(stats.locations).slice(0, 2),
-                        isVerified: true
-                    }))
-                    .sort((a, b) => b.metric - a.metric)
-                    .slice(0, 8);
-
-            } else {
-                const { data, error } = await db
-                    .from('trending_job')
-                    .select('employer, job_title, city, state')
-                    .not('employer', 'is', null)
-                    .limit(1500);
-
-                if (error) throw error;
-
-                const aggregated: Record<string, { count: number, roles: Set<string>, locations: Set<string> }> = {};
-
-                data?.forEach((row: any) => {
-                    const name = row.employer;
-                    if (!aggregated[name]) {
-                        aggregated[name] = { count: 0, roles: new Set(), locations: new Set() };
-                    }
-                    aggregated[name].count += 1;
-                    if (row.job_title) aggregated[name].roles.add(row.job_title);
-                    if (row.city) aggregated[name].locations.add(row.city);
-                });
-
-                return Object.entries(aggregated)
-                    .map(([name, stats]) => ({
-                        name,
-                        metric: stats.count,
-                        subMetric: `${stats.roles.size} active roles`,
-                        locations: Array.from(stats.locations).slice(0, 2),
-                        isVerified: false
-                    }))
-                    .sort((a, b) => b.metric - a.metric)
-                    .slice(0, 8);
-            }
-        },
+        queryFn: () => getTopCompaniesList(variant),
         staleTime: 1000 * 60 * 15,
     });
-
     if (isLoading) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -26,7 +26,7 @@ export function SavedSearches({ onClose }: SavedSearchesProps) {
   const queryClient = useQueryClient();
 
   const { data: searches, isLoading } = useQuery<Search[]>({
-    queryKey: ["savedSearches"],
+    queryKey: ["savedSearches", session?.user?.id],
     queryFn: () => fetchSavedSearches({ id: session.user.id }),
   });
 

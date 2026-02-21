@@ -1,63 +1,44 @@
-import db from '@/db';
+/**
+ * Saved-jobs utility — re-exports from centralized API for backwards compatibility.
+ * Components should import from '@/lib/api/saved-jobs' directly going forward.
+ */
+export { saveJob, unsaveJob, isJobSaved as checkIfSaved } from '@/lib/api/saved-jobs';
+
+import { isJobSaved, saveJob, unsaveJob, getSavedJobSet } from '@/lib/api/saved-jobs';
 import { toast } from 'sonner';
 
 export interface SavedJobsUtils {
   handleSave: (recordID: string, session: any) => Promise<any>;
   checkIfSaved: (recordID: string, session: any) => Promise<boolean>;
-  checkMultipleSavedJobs: (
-    recordIDs: string[],
-    session: any
-  ) => Promise<Set<string>>;
+  checkMultipleSavedJobs: (recordIDs: string[], session: any) => Promise<Set<string>>;
 }
+
+export const checkMultipleSavedJobs = async (recordIDs: string[], session: any) => {
+  if (!recordIDs?.length || !session?.user?.id) return new Set<string>();
+
+  try {
+    return await getSavedJobSet(recordIDs, session.user.id);
+  } catch (error) {
+    console.error('Error in checkMultipleSavedJobs:', error);
+    return new Set<string>();
+  }
+};
 
 /**
  * Save or unsave a job in the database
- * Returns { requiresLogin: true } if user is not logged in
  */
 export const handleSave = async (recordID: string, session: any) => {
-  if (!recordID) {
-    console.error('Missing recordID');
-    return { error: 'Missing record ID' };
-  }
-
-  // Check if user is logged in
-  if (!session?.user?.id) {
-    return { requiresLogin: true };
-  }
+  if (!recordID) return { error: 'Missing record ID' };
+  if (!session?.user?.id) return { requiresLogin: true };
 
   try {
-    const isSaved = await checkIfSaved(recordID, session);
-
-    if (isSaved) {
-      // Remove from saved jobs
-      const { error } = await db
-        .from('saved_jobs')
-        .delete()
-        .eq('record_id', recordID)
-        .eq('user_id', session.user.id);
-
-      if (error) {
-        console.error('Error deleting job:', error);
-        toast.error('Failed to remove job from saved jobs');
-        return;
-      }
-
+    const saved = await isJobSaved(recordID, session.user.id);
+    if (saved) {
+      await unsaveJob(recordID, session.user.id);
       toast.success('Job removed from your saved jobs');
       return { action: 'removed', saved: false };
     } else {
-      // Add to saved jobs
-      const { error } = await db.from('saved_jobs').insert({
-        record_id: recordID,
-        user_id: session.user.id,
-        created_at: new Date().toISOString(), // Explicitly set timestamp
-      });
-
-      if (error) {
-        console.error('Error saving job:', error);
-        toast.error('Failed to save job');
-        return;
-      }
-
+      await saveJob(recordID, session.user.id);
       toast.success('Job saved to your saved jobs');
       return { action: 'saved', saved: true };
     }
@@ -68,70 +49,9 @@ export const handleSave = async (recordID: string, session: any) => {
 };
 
 /**
- * Check if a single job is saved
- */
-export const checkIfSaved = async (
-  recordID: string,
-  session: any
-): Promise<boolean> => {
-  if (!recordID || !session?.user?.id) {
-    return false;
-  }
-
-  try {
-    const { data, error } = await db
-      .from('saved_jobs')
-      .select('record_id')
-      .eq('record_id', recordID)
-      .eq('user_id', session.user.id);
-
-    if (error) {
-      console.error('Error checking if job is saved:', error);
-      return false;
-    }
-
-    return data && data.length > 0 && data[0].record_id === recordID;
-  } catch (error) {
-    console.error('Error in checkIfSaved:', error);
-    return false;
-  }
-};
-
-/**
- * Check multiple jobs at once and return a Set of saved record IDs
- */
-export const checkMultipleSavedJobs = async (
-  recordIDs: string[],
-  session: any
-): Promise<Set<string>> => {
-  if (!recordIDs.length || !session?.user?.id) {
-    return new Set();
-  }
-
-  try {
-    const { data, error } = await db
-      .from('saved_jobs')
-      .select('record_id')
-      .in('record_id', recordIDs)
-      .eq('user_id', session.user.id);
-
-    if (error) {
-      console.error('Error checking multiple saved jobs:', error);
-      return new Set();
-    }
-
-    return new Set(data.map((item) => item.record_id));
-  } catch (error) {
-    console.error('Error in checkMultipleSavedJobs:', error);
-    return new Set();
-  }
-};
-
-/**
  * Get the record ID from a job object
  */
 export const getJobRecordId = (job: any): string | undefined => {
-  // Convert to string since database expects string IDs
   const id = job?.id || job?.RecordID || job?.record_id;
   return id ? String(id) : undefined;
 };

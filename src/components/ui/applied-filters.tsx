@@ -139,7 +139,7 @@ export default function AppliedFilters() {
             </span>
             <span className="text-brand-300">|</span>
             <span className="text-brand-900 font-medium">
-              {fmtDate(dateFrom)} - {fmtDate(dateTo)}
+              {fmtDate(dateFrom || undefined)} - {fmtDate(dateTo || undefined)}
             </span>
             <button
               onClick={clearDateRange}

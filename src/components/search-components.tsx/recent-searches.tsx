@@ -24,7 +24,7 @@ interface RecentSearchesProps {
 export function RecentSearches({ onClose }: RecentSearchesProps) {
   const { session } = useSession();
   const { data: searches, isLoading } = useQuery<Search[]>({
-    queryKey: ["recentSearches"],
+    queryKey: ["recentSearches", session?.user?.id],
     queryFn: () => fetchRecentSearches({ id: session.user.id }),
   });
 
@@ -32,7 +32,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
     sessionStorage.setItem("currentSearchId", search.id);
     toast({
       title: "Search loaded",
-      description: `Loading search: ${search.keywords}`,
+      description: `Loading search: ${search.keyword}`,
     });
     onClose();
   };
@@ -41,11 +41,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
     return (
       <>
         <SheetHeader
-          title={
-            <span className="font-bold text-lg text-brand-600">
-              Recent Searches
-            </span>
-          }
+          title="Recent Searches"
           description="Quick access to your previous searches"
           onClose={onClose}
         />
@@ -63,11 +59,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
     return (
       <>
         <SheetHeader
-          title={
-            <span className="font-bold text-lg text-brand-600">
-              Recent Searches
-            </span>
-          }
+          title="Recent Searches"
           description="Quick access to your previous searches"
           onClose={onClose}
         />
@@ -89,11 +81,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
   return (
     <div className="flex flex-col h-full">
       <SheetHeader
-        title={
-          <span className="font-bold text-lg text-brand-600">
-            Recent Searches
-          </span>
-        }
+        title="Recent Searches"
         description="Quick access to your previous searches"
         onClose={onClose}
       />
@@ -104,7 +92,7 @@ export function RecentSearches({ onClose }: RecentSearchesProps) {
             {searches.map((search) => (
               <CustomLink
                 key={search.id}
-                href={`/search/${encodeURIComponent(search.keywords)}`}
+                href={`/search/${encodeURIComponent(search.keyword)}`}
                 onClick={() => handleSearchSelect(search)}
                 className="group block mb-2"
               >

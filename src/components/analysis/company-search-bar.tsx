@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Search, Loader2, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
-import db from '@/db';
+import { getTrendingRoles, getRegionalHotspots, getCategorizedCompanies, getDistinctCompanies } from '@/lib/api/analysis';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import db from '@/db';
 
 interface CompanySearchBarProps {
     className?: string;
@@ -58,8 +59,8 @@ export function CompanySearchBar({
                 .limit(5);
 
             const combined = [
-                ...(trendingData?.map(d => d.employer) || []),
-                ...(lmiaData?.map(d => d.employer) || [])
+                ...(trendingData?.map((d: any) => d.employer) || []),
+                ...(lmiaData?.map((d: any) => d.employer) || [])
             ];
 
             // Deduplicate and take top 5

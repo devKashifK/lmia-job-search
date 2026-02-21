@@ -23,7 +23,7 @@ interface SessionContextType {
   setIsTrialActive: (value: boolean) => void;
 }
 
-export const getSession = async (db) => {
+export const getSession = async (db: any) => {
   const {
     data: { session },
   } = await db.auth.getSession();

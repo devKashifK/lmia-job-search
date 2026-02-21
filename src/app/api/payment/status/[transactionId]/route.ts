@@ -4,10 +4,10 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { transactionId: string } }
+  { params }: { params: Promise<{ transactionId: string }> }
 ) {
   try {
-    const transactionId = params.transactionId;
+    const { transactionId } = await params;
 
     if (!transactionId) {
       return NextResponse.json({ error: 'Transaction ID is required' }, { status: 400 });
@@ -20,28 +20,28 @@ export async function GET(
     if (statusResponse.success || statusResponse.code === 'SUCCESS') {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
       const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-      
-      if (supabaseServiceKey) {
-          const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-            auth: { autoRefreshToken: false, persistSession: false },
-          });
 
-          const data = statusResponse.data;
-          const state = data?.state || statusResponse.code;
-          
-          await supabaseAdmin
-            .from('transactions')
-            .update({
-              phonepe_transaction_id: data?.transactionId,
-              status: state === 'PAYMENT_SUCCESS' || state === 'SUCCESS' ? 'SUCCESS' : state,
-              payment_method: data?.paymentInstrument?.type,
-              updated_at: new Date().toISOString(),
-              metadata: {
-                status_response: data,
-                response_code: statusResponse.code,
-              },
-            })
-            .eq('merchant_transaction_id', transactionId);
+      if (supabaseServiceKey) {
+        const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+          auth: { autoRefreshToken: false, persistSession: false },
+        });
+
+        const data = statusResponse.data;
+        const state = data?.state || statusResponse.code;
+
+        await supabaseAdmin
+          .from('transactions')
+          .update({
+            phonepe_transaction_id: data?.transactionId,
+            status: String(state) === 'PAYMENT_SUCCESS' || String(state) === 'SUCCESS' ? 'SUCCESS' : String(state),
+            payment_method: data?.paymentInstrument?.type,
+            updated_at: new Date().toISOString(),
+            metadata: {
+              status_response: data,
+              response_code: statusResponse.code,
+            },
+          })
+          .eq('merchant_transaction_id', transactionId);
       }
     }
 

@@ -97,16 +97,16 @@ const SORT_OPTIONS: SortOption[] = [
   },
 ];
 
-export function JobSortPopover({ 
-  currentSort, 
-  onSortChange, 
-  className = '' 
+export function JobSortPopover({
+  currentSort,
+  onSortChange,
+  className = ''
 }: JobSortPopoverProps) {
   const [open, setOpen] = React.useState(false);
 
   const currentSortOption = SORT_OPTIONS.find(
-    option => 
-      currentSort?.field === option.field && 
+    option =>
+      currentSort?.field === option.field &&
       currentSort?.direction === option.direction
   );
 
@@ -125,8 +125,8 @@ export function JobSortPopover({
 
   const getSortIcon = () => {
     if (!currentSort) return <ArrowUpDown className="w-4 h-4" />;
-    return currentSort.direction === 'asc' ? 
-      <ArrowUp className="w-4 h-4" /> : 
+    return currentSort.direction === 'asc' ?
+      <ArrowUp className="w-4 h-4" /> :
       <ArrowDown className="w-4 h-4" />;
   };
 
@@ -136,11 +136,10 @@ export function JobSortPopover({
         <Button
           variant="outline"
           size="sm"
-          className={`h-8 w-8 p-0 ${className} ${
-            currentSort 
-              ? 'bg-brand-50 border-brand-200 text-brand-600 hover:bg-brand-100' 
+          className={`h-8 w-8 p-0 ${className} ${currentSort
+              ? 'bg-brand-50 border-brand-200 text-brand-600 hover:bg-brand-100'
               : 'hover:bg-gray-50'
-          }`}
+            }`}
           title="Sort jobs"
         >
           {getSortIcon()}
@@ -196,7 +195,7 @@ export function JobSortPopover({
 
 // Utility function to sort jobs array
 export function sortJobs<T extends Record<string, any>>(
-  jobs: T[], 
+  jobs: T[],
   sortConfig: SortConfig
 ): T[] {
   if (!sortConfig) return jobs;
@@ -208,8 +207,8 @@ export function sortJobs<T extends Record<string, any>>(
     // Handle special cases for different field types
     switch (sortConfig.field) {
       case 'job_title':
-        aValue = a.job_title || a.occupation_title || '';
-        bValue = b.job_title || b.occupation_title || '';
+        aValue = a.job_title || '';
+        bValue = b.job_title || '';
         break;
       case 'noc_code':
         aValue = a.noc_code || a['2021_noc'] || '';

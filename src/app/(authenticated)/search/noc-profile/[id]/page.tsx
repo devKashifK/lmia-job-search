@@ -4,7 +4,7 @@ import Footer from '@/sections/homepage/footer';
 import React from 'react';
 import JobMarketInfo from '@/components/job-market-info';
 
-async function NocProfile({ params }) {
+async function NocProfile({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return (
     <>

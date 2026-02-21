@@ -13,9 +13,6 @@ import {
   Briefcase,
   Tag,
   Hash,
-  User,
-  Sparkles,
-  RefreshCcw,
 } from 'lucide-react';
 import {
   usePathname,
@@ -23,7 +20,6 @@ import {
   useSearchParams,
   useParams,
 } from 'next/navigation';
-import db from '@/db';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { hotLeadsColumns, lmiaColumns } from '@/components/filters/column-def';
@@ -42,6 +38,7 @@ import {
   TooltipTrigger,
 } from './tooltip';
 import { format, parseISO, isValid } from 'date-fns';
+import { getFacetCounts } from '@/lib/api/filters';
 
 // ---------------------------
 // Config / helpers
@@ -120,6 +117,13 @@ export function useFilterColumnAttributes(
         filters[key] = values;
       }
     });
+
+    // Handle min/max wage filters if they exist in URL
+    const minWage = sp?.get('salary_min');
+    const maxWage = sp?.get('salary_max');
+    if (minWage) filters.salary_min = [minWage];
+    if (maxWage) filters.salary_max = [maxWage];
+
     return filters;
   }, [sp, column]);
 
@@ -141,7 +145,7 @@ export function useFilterColumnAttributes(
       filtersKey,
     ],
     queryFn: async () => {
-      // Build filters object for RPC function
+      // Build filters object for API function
       const filters: Record<
         string,
         string | string[] | { gte?: string | number; lte?: string | number }
@@ -176,92 +180,15 @@ export function useFilterColumnAttributes(
         }
       }
 
-      // Try RPC function first (fast and accurate)
-      try {
-        const { data: rpcData, error: rpcError } = await db.rpc(
-          'get_facet_counts_with_filters',
-          {
-            p_table_name: table,
-            p_column_name: column,
-            p_filters: filters,
-            p_search_field: searchTerm && field !== 'all' ? field : null,
-            p_search_term: searchTerm || null,
-          }
-        );
+      // Use centralized API
+      const facets = await getFacetCounts(table, column, filters, searchTerm, field);
 
-        if (!rpcError && rpcData) {
-          return rpcData
-            .filter(
-              (item: { name: string; count: number }) =>
-                item.name && item.name.trim()
-            )
-            .sort(
-              (
-                a: { name: string; count: number },
-                b: { name: string; count: number }
-              ) => b.count - a.count
-            );
-        }
-      } catch (err) {
-        console.warn(
-          'RPC function not available, falling back to client-side aggregation',
-          err
-        );
-      }
+      console.log(`FILTER DEBUG [${column}]:`, facets);
 
-      // Fallback: Client-side aggregation
-      let q = db.from(table).select(column);
-
-      // Apply search term filter
-      if (searchTerm && field && field !== 'all') {
-        q = q.ilike(field as any, `%${searchTerm}%`);
-      }
-
-      // Apply stateFilter for city column
-      if (column === 'city' && stateFilter) {
-        q = q.eq('state', stateFilter);
-      }
-
-      // Apply all other active filters
-      Object.entries(activeFilters).forEach(([key, values]) => {
-        if (values.length > 0) {
-          if (values.length === 1) {
-            q = q.eq(key, values[0]);
-          } else {
-            q = q.in(key, values);
-          }
-        }
-      });
-
-      // Apply date range filters
-      if (table === 'trending_job') {
-        if (dateFrom) q = q.gte('date_of_job_posting', dateFrom);
-        if (dateTo) q = q.lte('date_of_job_posting', dateTo);
-      } else if (table === 'lmia') {
-        const yf = dateFrom ? Number(dateFrom.slice(0, 4)) : undefined;
-        const yt = dateTo ? Number(dateTo.slice(0, 4)) : undefined;
-        if (Number.isFinite(yf)) q = q.gte('lmia_year', yf as number);
-        if (Number.isFinite(yt)) q = q.lte('lmia_year', yt as number);
-      }
-
-      const { data, error } = await q.limit(50000); // Higher limit for fallback
-      if (error) throw new Error(error.message);
-
-      // Count occurrences of each value
-      const countMap = new Map<string, number>();
-      (data ?? []).forEach((row: any) => {
-        const value = row?.[column] == null ? '' : String(row[column]).trim();
-        if (value) {
-          countMap.set(value, (countMap.get(value) || 0) + 1);
-        }
-      });
-
-      // Convert to array of objects with name and count, sorted by count descending
-      const result = Array.from(countMap.entries())
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count);
-
-      return result;
+      return facets.map((f: { value: string; count: number }) => ({
+        name: f.value,
+        count: f.count
+      }));
     },
     staleTime: 60_000,
   });
@@ -473,27 +400,11 @@ function FilterAttributes({ column }: { column: string }) {
     setLocalFilters(new Set(sp.getAll(column)));
   }, [column, sp]);
 
-  // 🔕 AVAILABILITY TEMPORARILY DISABLED
-  // const tableName = (sp.get('t') ?? 'trending_job').trim();
-  // const availabilityKey = JSON.stringify(
-  //   [...selectedFilters]
-  //     .filter((f) => f.column !== column)
-  //     .sort((a, b) =>
-  //       a.column === b.column ? a.value.localeCompare(b.value) : a.column.localeCompare(b.column)
-  //     )
-  // );
-  // const { data: availability = [] } = useQuery({
-  //   queryKey: ['filter-availability', tableName, column, availabilityKey, USE_NORMALIZED],
-  //   queryFn: () => Promise.resolve([]),
-  //   keepPreviousData: true,
-  // });
-  // const availableSet = React.useMemo(() => new Set(availability), [availability]);
-
   const [searchQuery, setSearchQuery] = React.useState('');
   const filteredData = React.useMemo(() => {
     if (!data) return [];
     return data.filter((item: { name: string; count: number }) =>
-      item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      item.name?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [data, searchQuery]);
 
@@ -549,14 +460,14 @@ function FilterAttributes({ column }: { column: string }) {
       </div>
 
       {/* Options */}
-      <div className="max-h-36 overflow-y-auto">
+      <div className="max-h-36 overflow-y-auto custom-scrollbar">
         <div className="space-y-0.5">
           {sortedData.length === 0 ? (
             <div className="text-xs text-gray-500 text-center py-3">
               {searchQuery ? 'No results' : 'No options'}
             </div>
           ) : (
-            sortedData.map((item) => {
+            sortedData.map((item: { name: string; count: number }) => {
               const isSelected = localFilters.has(item.name);
               return (
                 <button
@@ -666,7 +577,7 @@ function DateRangeFilter() {
           <div className="p-3">
             <Calendar
               mode="range"
-              selected={range}
+              selected={range as any}
               onSelect={(r) =>
                 setRange(r || { from: undefined, to: undefined })
               }

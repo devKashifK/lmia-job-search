@@ -43,13 +43,10 @@ export function WageVisualization({ noc, province, currentWage, title }: WageVis
 
             setLoading(true);
             try {
-                const { data, error } = await db.rpc('get_wage_stats', {
-                    p_noc_code: noc,
-                    p_province: province || null
-                });
+                const { getWageStats } = await import('@/lib/api/analytics');
+                const data = await getWageStats(noc, province || null);
 
-                if (error) throw error;
-                setStats(data as WageStats);
+                setStats(data);
             } catch (err) {
                 console.error("Failed to fetch wage stats:", err);
                 setError("Could not load wage data");

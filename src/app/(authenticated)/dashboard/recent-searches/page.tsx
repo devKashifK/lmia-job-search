@@ -33,12 +33,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { toast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
-import db from "@/db";
 import { useSession } from "@/hooks/use-session";
+import { motion, AnimatePresence } from "framer-motion";
 import LoadingScreen from "@/components/ui/loading-screen";
+import { deleteSearch, clearSearchHistory, renameSearch, getSearchHistory } from "@/lib/api/searches";
 
-interface SearchRecord {
+export interface SearchRecord {
   id: string; // This will map to search_id
   term: string;
   filters: any;
@@ -58,13 +58,7 @@ export default function RecentSearches() {
     if (!session?.user?.id) return;
 
     try {
-      const { data, error } = await db
-        .from('searches')
-        .select('*')
-        .eq('id', session.user.id) // 'id' column stores the user_id
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await getSearchHistory(session.user.id);
 
       if (data) {
         setSearches(data.map((item: any) => ({
@@ -93,12 +87,7 @@ export default function RecentSearches() {
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await db
-        .from('searches')
-        .delete()
-        .eq('search_id', id);
-
-      if (error) throw error;
+      await deleteSearch(id);
 
       setSearches(searches.filter((s) => s.id !== id));
       toast({
@@ -118,12 +107,7 @@ export default function RecentSearches() {
   const handleClearHistory = async () => {
     if (!session?.user?.id) return;
     try {
-      const { error } = await db
-        .from('searches')
-        .delete()
-        .eq('id', session.user.id);
-
-      if (error) throw error;
+      await clearSearchHistory(session.user.id);
 
       setSearches([]);
       toast({
@@ -140,7 +124,6 @@ export default function RecentSearches() {
     }
   };
 
-
   const startRename = (search: SearchRecord) => {
     setEditingSearch(search);
     setNewTerm(search.term);
@@ -150,12 +133,7 @@ export default function RecentSearches() {
   const handleRename = async () => {
     if (editingSearch && newTerm.trim()) {
       try {
-        const { error } = await db
-          .from('searches')
-          .update({ keyword: newTerm })
-          .eq('search_id', editingSearch.id);
-
-        if (error) throw error;
+        await renameSearch(editingSearch.id, newTerm);
 
         setSearches(
           searches.map((s) =>

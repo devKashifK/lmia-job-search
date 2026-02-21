@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
 
         try {
             const [lmiaResult, trendingResult] = await Promise.all([
-                db.rpc('get_distinct_values_with_count', { table_name: 'lmia_records', column_name: 'JobTitle' }),
+                db.rpc('get_distinct_values_with_count', { table_name: 'lmia', column_name: 'JobTitle' }),
                 db.rpc('get_distinct_values_with_count', { table_name: 'trending_job', column_name: 'job_title' })
             ]);
 

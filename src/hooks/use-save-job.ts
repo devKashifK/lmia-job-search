@@ -5,6 +5,61 @@ import { useLoginAlert } from '@/components/ui/login-alert-dialog';
 import { useQueryClient } from '@tanstack/react-query';
 
 /**
+ * Core toggle logic to be shared between single and list hooks
+ */
+const executeToggleSave = async (
+  recordId: string,
+  session: any,
+  showLoginAlert: (msg: string) => void,
+  setIsLoading: (val: boolean) => void,
+  queryClient: ReturnType<typeof useQueryClient>,
+  onSuccess: (saved: boolean) => void
+) => {
+  if (!recordId) {
+    console.warn('No record ID provided');
+    return false;
+  }
+
+  setIsLoading(true);
+  try {
+    const result = await handleSave(recordId, session);
+
+    // Check if login is required
+    if (result?.requiresLogin) {
+      showLoginAlert('Please log in to save jobs to your profile.');
+      setIsLoading(false);
+      return false;
+    }
+
+    if (result && typeof result.saved === 'boolean') {
+      onSuccess(result.saved);
+
+      // Force refetch ALL queries to update immediately
+      await Promise.all([
+        queryClient.refetchQueries({
+          queryKey: ['saved-jobs'],
+          type: 'all',
+        }),
+        queryClient.refetchQueries({
+          queryKey: ['recent-activity'],
+          type: 'all',
+        }),
+      ]);
+
+      setIsLoading(false);
+      return true;
+    }
+
+    setIsLoading(false);
+    return false;
+  } catch (error) {
+    console.error('Error toggling save status:', error);
+    setIsLoading(false);
+    return false;
+  }
+};
+
+/**
  * Centralized hook for job saving functionality
  * Handles authentication checks, save/unsave operations, and state management
  */
@@ -40,49 +95,15 @@ export function useSaveJob(recordId: string | undefined) {
    * Returns true if operation was successful, false if login required or error
    */
   const toggleSave = useCallback(async () => {
-    if (!recordId) {
-      console.warn('No record ID provided');
-      return false;
-    }
-
-    setIsLoading(true);
-    try {
-      const result = await handleSave(recordId, session);
-
-      // Check if login is required
-      if (result?.requiresLogin) {
-        showLoginAlert('Please log in to save jobs to your profile.');
-        setIsLoading(false);
-        return false;
-      }
-
-      // Update local state based on result
-      if (result && typeof result.saved === 'boolean') {
-        setIsSaved(result.saved);
-
-        // Force refetch ALL queries to update immediately
-        await Promise.all([
-          queryClient.refetchQueries({
-            queryKey: ['saved-jobs'],
-            type: 'all',
-          }),
-          queryClient.refetchQueries({
-            queryKey: ['recent-activity'],
-            type: 'all',
-          }),
-        ]);
-
-        setIsLoading(false);
-        return true;
-      }
-
-      setIsLoading(false);
-      return false;
-    } catch (error) {
-      console.error('Error toggling save status:', error);
-      setIsLoading(false);
-      return false;
-    }
+    if (!recordId) return false;
+    return executeToggleSave(
+      recordId,
+      session,
+      showLoginAlert,
+      setIsLoading,
+      queryClient,
+      (saved) => setIsSaved(saved)
+    );
   }, [recordId, session, showLoginAlert, queryClient]);
 
   return {
@@ -92,7 +113,6 @@ export function useSaveJob(recordId: string | undefined) {
     checkSavedStatus,
     LoginAlertComponent,
   };
-  // Note: queryClient is stable and doesn't need to be in dependencies
 }
 
 /**
@@ -110,57 +130,21 @@ export function useSaveJobList() {
    */
   const toggleSave = useCallback(
     async (recordId: string) => {
-      if (!recordId) {
-        console.warn('No record ID provided');
-        return false;
-      }
-
-      setIsLoading(true);
-      try {
-        const result = await handleSave(recordId, session);
-
-        // Check if login is required
-        if (result?.requiresLogin) {
-          showLoginAlert('Please log in to save jobs to your profile.');
-          setIsLoading(false);
-          return false;
-        }
-
-        // Update local state
-        if (result) {
+      return executeToggleSave(
+        recordId,
+        session,
+        showLoginAlert,
+        setIsLoading,
+        queryClient,
+        (saved) => {
           setSavedJobs((prev) => {
             const newSet = new Set(prev);
-            if (result.saved) {
-              newSet.add(recordId);
-            } else {
-              newSet.delete(recordId);
-            }
+            if (saved) newSet.add(recordId);
+            else newSet.delete(recordId);
             return newSet;
           });
-
-          // Force refetch ALL queries to update immediately
-          await Promise.all([
-            queryClient.refetchQueries({
-              queryKey: ['saved-jobs'],
-              type: 'all',
-            }),
-            queryClient.refetchQueries({
-              queryKey: ['recent-activity'],
-              type: 'all',
-            }),
-          ]);
-
-          setIsLoading(false);
-          return true;
         }
-
-        setIsLoading(false);
-        return false;
-      } catch (error) {
-        console.error('Error toggling save status:', error);
-        setIsLoading(false);
-        return false;
-      }
+      );
     },
     [session, showLoginAlert, queryClient]
   );

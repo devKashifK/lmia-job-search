@@ -13,11 +13,10 @@ export function HomeRecommendations() {
     // 1. Check Preferences
     const hasSetPreferences =
         preferences?.preferred_job_titles?.length > 0 ||
-        preferences?.preferred_provinces?.length > 0 ||
-        preferences?.preferred_cities?.length > 0 ||
+        preferences?.preferred_locations?.length > 0 ||
         preferences?.preferred_industries?.length > 0 ||
         preferences?.preferred_noc_codes?.length > 0 ||
-        preferences?.preferred_teer_categories?.length > 0;
+        preferences?.preferred_company_tiers?.length > 0;
 
     // 2. Check Activity (Saved Jobs or Recent Searches)
     const hasActivity = recentActivity && recentActivity.length > 0;

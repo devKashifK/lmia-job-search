@@ -100,6 +100,80 @@ function formatMainDuties(mainDuties: Record<string, string[]>): string[] {
   return duties;
 }
 
+function ExpandableListSection({
+  title,
+  icon: Icon,
+  iconColorClass,
+  iconBgClass,
+  cardBgClass,
+  dotColorClass,
+  items,
+  defaultShowCount,
+}: {
+  title: string;
+  icon: React.ElementType;
+  iconColorClass: string;
+  iconBgClass: string;
+  cardBgClass: string;
+  dotColorClass: string;
+  items: string[];
+  defaultShowCount: number;
+}) {
+  const [showAll, setShowAll] = useState(false);
+
+  if (!items || items.length === 0) return null;
+
+  return (
+    <Card className={`border-0 shadow-sm ${cardBgClass} hover:shadow-lg transition-all duration-300 rounded-xl`}>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className={`p-1.5 ${iconBgClass} rounded-lg`}>
+              <Icon className={`w-3.5 h-3.5 ${iconColorClass}`} />
+            </div>
+            <h3 className="font-bold text-gray-900 text-sm">{title}</h3>
+          </div>
+          {items.length > defaultShowCount && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setShowAll(!showAll)}
+              className="h-6 text-xs text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded-md transition-colors"
+            >
+              {showAll ? (
+                <>
+                  <ChevronUp className="w-3 h-3 mr-1" /> Less
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-3 h-3 mr-1" />+ {items.length - defaultShowCount} More
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+        <ul className="space-y-2 text-sm">
+          <AnimatePresence>
+            {(showAll ? items : items.slice(0, defaultShowCount)).map((item, index) => (
+              <motion.li
+                key={index}
+                initial={{ opacity: 0, x: -10, height: 0 }}
+                animate={{ opacity: 1, x: 0, height: 'auto' }}
+                exit={{ opacity: 0, x: -10, height: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="flex items-start gap-2 text-gray-700"
+              >
+                <div className={`w-1.5 h-1.5 ${dotColorClass} rounded-full mt-2 flex-shrink-0`} />
+                <span className="leading-relaxed text-xs">{item}</span>
+              </motion.li>
+            ))}
+          </AnimatePresence>
+        </ul>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function NocJobDescription({
   job,
   onSaveJob,
@@ -122,9 +196,6 @@ export function NocJobDescription({
   const [nocProfile, setNocProfile] = useState<NocProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showAllRequirements, setShowAllRequirements] = useState(false);
-  const [showAllResponsibilities, setShowAllResponsibilities] = useState(false);
-  const [showAllAdditionalInfo, setShowAllAdditionalInfo] = useState(false);
   const [openPremium, setOpenPremium] = useState(false);
 
   useEffect(() => {
@@ -607,67 +678,16 @@ export function NocJobDescription({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                   >
-                    <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-red-50 hover:shadow-lg transition-all duration-300 rounded-xl">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-gradient-to-br from-red-100 to-red-200 rounded-lg">
-                              <AlertCircle className="w-3.5 h-3.5 text-red-600" />
-                            </div>
-                            <h3 className="font-bold text-gray-900 text-sm">
-                              Requirements
-                            </h3>
-                          </div>
-                          {jobData.requirements.length > 4 && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() =>
-                                setShowAllRequirements(!showAllRequirements)
-                              }
-                              className="h-6 text-xs text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded-md transition-colors"
-                            >
-                              {showAllRequirements ? (
-                                <>
-                                  <ChevronUp className="w-3 h-3 mr-1" />
-                                  Less
-                                </>
-                              ) : (
-                                <>
-                                  <ChevronDown className="w-3 h-3 mr-1" />+
-                                  {jobData.requirements.length - 4} More
-                                </>
-                              )}
-                            </Button>
-                          )}
-                        </div>
-                        <ul className="space-y-2 text-sm">
-                          <AnimatePresence>
-                            {(showAllRequirements
-                              ? jobData.requirements
-                              : jobData.requirements.slice(0, 4)
-                            ).map((req, index) => (
-                              <motion.li
-                                key={index}
-                                initial={{ opacity: 0, x: -10, height: 0 }}
-                                animate={{ opacity: 1, x: 0, height: 'auto' }}
-                                exit={{ opacity: 0, x: -10, height: 0 }}
-                                transition={{
-                                  duration: 0.3,
-                                  delay: index * 0.05,
-                                }}
-                                className="flex items-start gap-2 text-gray-700"
-                              >
-                                <div className="w-1.5 h-1.5 bg-red-400 rounded-full mt-2 flex-shrink-0" />
-                                <span className="leading-relaxed text-xs">
-                                  {req}
-                                </span>
-                              </motion.li>
-                            ))}
-                          </AnimatePresence>
-                        </ul>
-                      </CardContent>
-                    </Card>
+                    <ExpandableListSection
+                      title="Requirements"
+                      icon={AlertCircle}
+                      iconColorClass="text-red-600"
+                      iconBgClass="bg-gradient-to-br from-red-100 to-red-200"
+                      cardBgClass="bg-gradient-to-br from-white to-red-50"
+                      dotColorClass="bg-red-400"
+                      items={jobData.requirements}
+                      defaultShowCount={4}
+                    />
                   </motion.div>
                 )}
               </div>
@@ -679,69 +699,16 @@ export function NocJobDescription({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                   >
-                    <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-green-50 hover:shadow-lg transition-all duration-300 rounded-xl">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-gradient-to-br from-green-100 to-green-200 rounded-lg">
-                              <FileText className="w-3.5 h-3.5 text-green-600" />
-                            </div>
-                            <h3 className="font-bold text-gray-900 text-sm">
-                              Key Responsibilities
-                            </h3>
-                          </div>
-                          {jobData.jobDescription.length > 5 && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() =>
-                                setShowAllResponsibilities(
-                                  !showAllResponsibilities
-                                )
-                              }
-                              className="h-6 text-xs text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded-md transition-colors"
-                            >
-                              {showAllResponsibilities ? (
-                                <>
-                                  <ChevronUp className="w-3 h-3 mr-1" />
-                                  Less
-                                </>
-                              ) : (
-                                <>
-                                  <ChevronDown className="w-3 h-3 mr-1" />+
-                                  {jobData.jobDescription.length - 5} More
-                                </>
-                              )}
-                            </Button>
-                          )}
-                        </div>
-                        <ul className="space-y-2 text-sm">
-                          <AnimatePresence>
-                            {(showAllResponsibilities
-                              ? jobData.jobDescription
-                              : jobData.jobDescription.slice(0, 5)
-                            ).map((desc, index) => (
-                              <motion.li
-                                key={index}
-                                initial={{ opacity: 0, x: -10, height: 0 }}
-                                animate={{ opacity: 1, x: 0, height: 'auto' }}
-                                exit={{ opacity: 0, x: -10, height: 0 }}
-                                transition={{
-                                  duration: 0.3,
-                                  delay: index * 0.05,
-                                }}
-                                className="flex items-start gap-2 text-gray-700"
-                              >
-                                <div className="w-1.5 h-1.5 bg-green-400 rounded-full mt-2 flex-shrink-0" />
-                                <span className="leading-relaxed text-xs">
-                                  {desc}
-                                </span>
-                              </motion.li>
-                            ))}
-                          </AnimatePresence>
-                        </ul>
-                      </CardContent>
-                    </Card>
+                    <ExpandableListSection
+                      title="Key Responsibilities"
+                      icon={FileText}
+                      iconColorClass="text-green-600"
+                      iconBgClass="bg-gradient-to-br from-green-100 to-green-200"
+                      cardBgClass="bg-gradient-to-br from-white to-green-50"
+                      dotColorClass="bg-green-400"
+                      items={jobData.jobDescription}
+                      defaultShowCount={5}
+                    />
                   </motion.div>
                 )}
 
@@ -751,67 +718,16 @@ export function NocJobDescription({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.5, delay: 0.6 }}
                   >
-                    <Card className="border-0 shadow-sm bg-gradient-to-br from-white to-purple-50 hover:shadow-lg transition-all duration-300 rounded-xl">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg">
-                              <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                            </div>
-                            <h3 className="font-bold text-gray-900 text-sm">
-                              Additional Info
-                            </h3>
-                          </div>
-                          {jobData.additionalInfo.length > 3 && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() =>
-                                setShowAllAdditionalInfo(!showAllAdditionalInfo)
-                              } // ✅ use correct setter
-                              className="h-6 text-xs text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded-md transition-colors"
-                            >
-                              {showAllAdditionalInfo ? ( // ✅ use correct state
-                                <>
-                                  <ChevronUp className="w-3 h-3 mr-1" />
-                                  Less
-                                </>
-                              ) : (
-                                <>
-                                  <ChevronDown className="w-3 h-3 mr-1" />+
-                                  {jobData.additionalInfo.length - 3} More
-                                </>
-                              )}
-                            </Button>
-                          )}
-                        </div>
-                        <ul className="space-y-2 text-sm">
-                          <AnimatePresence>
-                            {(showAllAdditionalInfo
-                              ? jobData.additionalInfo
-                              : jobData.additionalInfo.slice(0, 3)
-                            ).map((info, index) => (
-                              <motion.li
-                                key={index}
-                                initial={{ opacity: 0, x: -10, height: 0 }}
-                                animate={{ opacity: 1, x: 0, height: 'auto' }}
-                                exit={{ opacity: 0, x: -10, height: 0 }}
-                                transition={{
-                                  duration: 0.3,
-                                  delay: index * 0.05,
-                                }}
-                                className="flex items-start gap-2 text-gray-700"
-                              >
-                                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                                <span className="leading-relaxed text-xs">
-                                  {info}
-                                </span>
-                              </motion.li>
-                            ))}
-                          </AnimatePresence>
-                        </ul>
-                      </CardContent>
-                    </Card>
+                    <ExpandableListSection
+                      title="Additional Info"
+                      icon={Sparkles}
+                      iconColorClass="text-purple-600"
+                      iconBgClass="bg-gradient-to-br from-purple-100 to-purple-200"
+                      cardBgClass="bg-gradient-to-br from-white to-purple-50"
+                      dotColorClass="bg-purple-400"
+                      items={jobData.additionalInfo}
+                      defaultShowCount={3}
+                    />
                   </motion.div>
                 )}
 

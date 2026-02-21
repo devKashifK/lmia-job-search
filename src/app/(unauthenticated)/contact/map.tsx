@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 
 // Only require Leaflet on the client side
-let L;
+let L: any;
 if (typeof window !== 'undefined') {
   L = require('leaflet');
 }

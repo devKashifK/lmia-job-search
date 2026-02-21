@@ -58,8 +58,8 @@ export function useMatchScore({ job, preferences }: UseMatchScoreProps): MatchSc
         }
 
         // 2. Location Match (Weight: 10%)
-        const jobCity = (job.City || job.city || '').toLowerCase();
-        const jobProvince = (job.Province || job.province || '').toLowerCase();
+        const jobCity = (job.city || job.City || '').toLowerCase();
+        const jobProvince = (job.territory || job.province || job.Province || '').toLowerCase();
 
         // Check Cities
         const cityMatch = preferences.preferred_cities?.some((city) =>
@@ -89,7 +89,7 @@ export function useMatchScore({ job, preferences }: UseMatchScoreProps): MatchSc
         }
 
         // 4. NOC Code Match (Weight: 20%)
-        const jobNoc = String(job.NOC || job.noc || '');
+        const jobNoc = String(job.noc_code || job.NOC || job.noc || '');
         if (preferences.preferred_noc_codes?.length > 0) {
             if (preferences.preferred_noc_codes.includes(jobNoc)) {
                 score += 20;
@@ -99,7 +99,7 @@ export function useMatchScore({ job, preferences }: UseMatchScoreProps): MatchSc
 
         // 5. TEER Match (Weight: 10%)
         // Try to find TEER or infer from NOC
-        let jobTeer = String(job.Teer || job.teer || '');
+        let jobTeer = String(job.teer || job.Teer || '');
         if (!jobTeer && jobNoc.length === 5) {
             jobTeer = jobNoc.charAt(1);
         }

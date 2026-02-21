@@ -11,6 +11,8 @@ import ClientLayout from './client-layout';
 import Script from 'next/script'; // 👈 add this
 import { ControlContextProvider } from '@/context/control';
 import { TrialProvider } from '@/context/trail';
+import { PreventCopyPaste } from '@/components/security/prevent-copy-paste';
+import Honeypot from '@/components/security/honeypot';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -70,7 +72,11 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                   >
-                    <ClientLayout>{children}</ClientLayout>
+                    <PreventCopyPaste />
+                    <ClientLayout>
+                      <Honeypot />
+                      {children}
+                    </ClientLayout>
                     <Toaster />
                     <Sonner position="top-right" richColors closeButton />
                   </ThemeProvider>

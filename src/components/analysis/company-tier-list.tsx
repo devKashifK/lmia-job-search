@@ -16,7 +16,7 @@ import {
     Briefcase,
     TrendingUp
 } from 'lucide-react';
-import db from '@/db';
+import { getTopCompaniesList } from '@/lib/api/analysis';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -102,29 +102,18 @@ export function CompanyTierList() {
             // We'll run parallel queries for each tier to get the top performers
             // This is more efficient than fetching everything and filtering in JS
             const queries = TIERS.map(async (tier) => {
-                const { data, error } = await db.rpc('get_companies_by_tier', {
-                    p_tier: tier.level,
-                    p_is_lmia: isLmia,
-                    p_limit: 3
-                });
+                try {
+                    const { getCompaniesByTier } = await import('@/lib/api/analytics');
+                    const companies = await getCompaniesByTier(tier.level, isLmia, 3);
 
-                if (error) {
+                    return {
+                        tier: tier.level,
+                        companies
+                    };
+                } catch (error) {
                     console.error('Error fetching tier companies:', error);
                     return { tier: tier.level, companies: [] };
                 }
-
-                // Map RPC result to component format
-                const companies = (data || []).map((c: any) => ({
-                    name: c.name,
-                    count: c.count,
-                    locations: c.locations || [],
-                    roleCount: 0 // Not returned by RPC, but optional
-                }));
-
-                return {
-                    tier: tier.level,
-                    companies
-                };
             });
 
             const results = await Promise.all(queries);

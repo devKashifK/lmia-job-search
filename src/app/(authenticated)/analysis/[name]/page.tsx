@@ -99,7 +99,7 @@ import Footer from '@/sections/homepage/footer';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { useQuery } from '@tanstack/react-query';
-import db from '@/db';
+
 import useMobile from '@/hooks/use-mobile';
 import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';
@@ -222,47 +222,17 @@ const FilterSidebar = ({
         currentFilters.searchType === 'lmia' ? 'employer' : 'employer';
       const jobTitleColumn = 'job_title';
 
-      // Use RPC function for better performance with DISTINCT
-      const { data, error } = await db.rpc(
-        'get_distinct_companies_by_job_title',
-        {
-          p_table_name: tableName,
-          p_company_column: companyColumn,
-          p_job_title_column: jobTitleColumn,
-          p_job_title_filter: jobTitleFromUrl || null,
-        }
+      // Use centralized API
+      const { getDistinctCompanies } = await import('@/lib/api/analysis');
+      const companies = await getDistinctCompanies(
+        tableName,
+        companyColumn,
+        jobTitleColumn,
+        jobTitleFromUrl || null
       );
 
-      if (error) {
-        // Fallback to client-side distinct if RPC doesn't exist
-
-        let query = db
-          .from(tableName)
-          .select(companyColumn)
-          .order(companyColumn);
-
-        // Filter by job title if provided
-        if (jobTitleFromUrl) {
-          query = query.ilike(jobTitleColumn, `%${jobTitleFromUrl}%`);
-        }
-
-        const { data: fallbackData, error: fallbackError } = await query;
-
-        if (fallbackError) throw fallbackError;
-
-        // Get unique companies using Set
-        const uniqueCompanies = Array.from(
-          new Set(
-            fallbackData
-              ?.map((row: Record<string, string>) => row[companyColumn])
-              .filter(Boolean)
-          )
-        ).sort();
-
-        return uniqueCompanies as string[];
-      }
-
-      return (data || []) as string[];
+      // API returns { employer: string }[], map to string[]
+      return companies.map((c: any) => c.employer || c.operating_name || c);
     },
     enabled: !!tableName,
   });
@@ -301,68 +271,13 @@ const FilterSidebar = ({
       currentFilters.searchType,
     ],
     queryFn: async () => {
-      const companyColumn =
-        currentFilters.searchType === 'lmia' ? 'operating_name' : 'employer';
-      const locationColumn =
-        currentFilters.searchType === 'lmia' ? 'territory' : 'state';
-
-      const selectCols =
-        currentFilters.searchType === 'lmia'
-          ? [locationColumn, 'city', 'noc_code', 'job_title'].join(', ')
-          : [locationColumn, 'city', 'noc_code', 'job_title'].join(', ');
-
-      const { data, error } = await db
-        .from(tableName)
-        .select(selectCols)
-        .eq(companyColumn, companyName);
-
-      if (error) throw error;
-
-      const result: Record<string, Map<string, number>> = {
-        locations: new Map(),
-        cities: new Map(),
-        nocCodes: new Map(),
-        jobTitles: new Map(),
-      };
-
-      data?.forEach((row: any) => {
-        if (row[locationColumn]) {
-          result.locations.set(
-            row[locationColumn],
-            (result.locations.get(row[locationColumn]) || 0) + 1
-          );
-        }
-        if (row.city) {
-          result.cities.set(row.city, (result.cities.get(row.city) || 0) + 1);
-        }
-        if (row.noc_code) {
-          result.nocCodes.set(
-            row.noc_code,
-            (result.nocCodes.get(row.noc_code) || 0) + 1
-          );
-        }
-        if (row.job_title) {
-          result.jobTitles.set(
-            row.job_title,
-            (result.jobTitles.get(row.job_title) || 0) + 1
-          );
-        }
-      });
-
-      return {
-        locations: Array.from(result.locations.entries())
-          .map(([name, count]) => ({ name, count }))
-          .sort((a, b) => b.count - a.count),
-        cities: Array.from(result.cities.entries())
-          .map(([name, count]) => ({ name, count }))
-          .sort((a, b) => b.count - a.count),
-        nocCodes: Array.from(result.nocCodes.entries())
-          .map(([name, count]) => ({ name, count }))
-          .sort((a, b) => b.count - a.count),
-        jobTitles: Array.from(result.jobTitles.entries())
-          .map(([name, count]) => ({ name, count }))
-          .sort((a, b) => b.count - a.count),
-      };
+      // Use centralized API
+      const { getCompanyFilterOptions } = await import('@/lib/api/analysis');
+      return await getCompanyFilterOptions(
+        tableName,
+        companyName,
+        currentFilters.searchType
+      );
     },
     enabled: !!companyName,
   });
@@ -1084,66 +999,20 @@ function CompanyAnalysisContent({
   } = useQuery({
     queryKey: ['company-analysis', companyName, tableName, filters],
     queryFn: async (): Promise<CompanyAnalysisData> => {
-      if (!companyName) throw new Error('Company name required');
-
-      let baseQuery = db.from(tableName).select(selectCols);
-
-      // Apply company filter
-      baseQuery = baseQuery.eq(companyColumn, companyName);
-
-      // Apply date filters
-      if (filters.searchType === 'lmia') {
-        if (filters.dateFrom) {
-          const yearFrom = parseInt(filters.dateFrom.split('-')[0]);
-          baseQuery = baseQuery.gte('lmia_year', yearFrom);
+      // Use centralized API
+      const { getCompanyAnalysis } = await import('@/lib/api/analysis');
+      const rawData = await getCompanyAnalysis(
+        tableName,
+        companyColumn,
+        companyName,
+        filters.searchType,
+        {
+          dateFrom: filters.dateFrom,
+          dateTo: filters.dateTo
         }
-        if (filters.dateTo) {
-          const yearTo = parseInt(filters.dateTo.split('-')[0]);
-          baseQuery = baseQuery.lte('lmia_year', yearTo);
-        }
-      } else {
-        if (filters.dateFrom)
-          baseQuery = baseQuery.gte('date_of_job_posting', filters.dateFrom);
-        if (filters.dateTo)
-          baseQuery = baseQuery.lte('date_of_job_posting', filters.dateTo);
-      }
+      );
 
-      // Apply location filters
-      if (filters.location.length > 0) {
-        baseQuery = baseQuery.in(locationColumn, filters.location);
-      }
-
-      // Apply job title filters
-      if (filters.jobTitle.length > 0) {
-        baseQuery = baseQuery.in('job_title', filters.jobTitle);
-      }
-
-      // Apply NOC code filters
-      if (filters.nocCode && filters.nocCode.length > 0) {
-        baseQuery = baseQuery.in('noc_code', filters.nocCode);
-      }
-
-      // Apply city filters
-      if (filters.city && filters.city.length > 0) {
-        baseQuery = baseQuery.in('city', filters.city);
-      }
-
-      // Apply LMIA-specific filters
-      if (filters.searchType === 'lmia') {
-        if (filters.program && filters.program.length > 0) {
-          baseQuery = baseQuery.in('program', filters.program);
-        }
-      }
-
-      // Apply Hot Leads specific filters
-      if (filters.searchType === 'hot_leads') {
-        if (filters.category && filters.category.length > 0) {
-          baseQuery = baseQuery.in('category', filters.category);
-        }
-      }
-
-      const { data: jobs, error } = await baseQuery;
-      if (error) throw error;
+      const jobs = rawData;
 
       // Debug information for trending jobs
       if (filters.searchType === 'hot_leads' && jobs && jobs.length > 0) {
@@ -1472,9 +1341,9 @@ function CompanyAnalysisContent({
 
         try {
           const canvas = await html2canvas(chartElement, {
-            backgroundColor: '#ffffff',
+            background: '#ffffff',
             scale: 2,
-          });
+          } as any);
 
           const imgData = canvas.toDataURL('image/png');
           const imgWidth = contentWidth;
@@ -2752,7 +2621,7 @@ function CompanyAnalysisContent({
                             className="h-[450px]"
                           >
                             <DonutChart
-                              data={analysisData?.locationData.map((d) => ({
+                              data={(analysisData?.locationData || []).map((d) => ({
                                 name: d.name,
                                 value: d.value,
                               }))}
@@ -2781,7 +2650,7 @@ function CompanyAnalysisContent({
                             className="h-[450px]"
                           >
                             <BarChart
-                              data={analysisData.cityData.map((d) => ({
+                              data={(analysisData?.cityData || []).map((d) => ({
                                 name: d.name,
                                 value: d.value,
                               }))}
@@ -2810,7 +2679,7 @@ function CompanyAnalysisContent({
                             className="h-[450px]"
                           >
                             <ColumnChart
-                              data={analysisData.nocCodeData}
+                              data={analysisData?.nocCodeData || []}
                               onColumnClick={(nocCode: string) => {
                                 const newSearchParams = new URLSearchParams(
                                   searchParams?.toString() || ''
@@ -2834,7 +2703,7 @@ function CompanyAnalysisContent({
                             className="h-[450px]"
                           >
                             <DonutChart
-                              data={analysisData.categoryData}
+                              data={analysisData?.categoryData || []}
                               centerLabel={'Categories'}
                               centerValue={analysisData?.categoryData?.length}
                               onSegmentClick={(category: string) => {
@@ -2864,7 +2733,7 @@ function CompanyAnalysisContent({
                             className="h-[450px]"
                           >
                             <ColumnChart
-                              data={analysisData.jobTitleData}
+                              data={analysisData?.jobTitleData || []}
                               onColumnClick={(jobTitle: string) => {
                                 const newSearchParams = new URLSearchParams(
                                   searchParams?.toString() || ''
@@ -2892,7 +2761,7 @@ function CompanyAnalysisContent({
                             className="h-[450px] p-0 overflow-visible"
                           >
                             <AreaChart
-                              data={analysisData?.timeData}
+                              data={analysisData?.timeData || []}
                               color="#10b981"
                             />
                           </DashboardCard>
@@ -3105,7 +2974,17 @@ export default function DeepAnalysis({ params }: PageProps) {
   );
 }
 
-const MetricCard = ({ label, value, subtitle, icon }) => {
+const MetricCard = ({
+  label,
+  value,
+  subtitle,
+  icon: Icon,
+}: {
+  label: string;
+  value: string | number;
+  subtitle?: string;
+  icon?: any;
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -3129,11 +3008,11 @@ const MetricCard = ({ label, value, subtitle, icon }) => {
                 </p>
                 {label === 'Growth Rate' && (
                   <motion.div
-                    animate={{ rotate: value?.includes('+') ? 0 : 180 }}
+                    animate={{ rotate: value?.toString().includes('+') ? 0 : 180 }}
                     transition={{ duration: 0.5 }}
                   >
                     <TrendingUp
-                      className={`w-3 h-3 ${value?.includes('+') ? 'text-green-500' : 'text-red-500'
+                      className={`w-3 h-3 ${value?.toString().includes('+') ? 'text-green-500' : 'text-red-500'
                         }`}
                     />
                   </motion.div>
@@ -3154,7 +3033,6 @@ const MetricCard = ({ label, value, subtitle, icon }) => {
               whileTap={{ scale: 0.9 }}
             >
               <Icon
-                icon={icon}
                 className="w-4 h-4 text-brand-600 group-hover:text-brand-700"
               />
             </motion.div>
@@ -3172,24 +3050,24 @@ const MetricCard = ({ label, value, subtitle, icon }) => {
                 transition={{ delay: 0.5 }}
               >
                 <div
-                  className={`w-1.5 h-1.5 rounded-full ${value?.includes('+')
+                  className={`w-1.5 h-1.5 rounded-full ${value?.toString().includes('+')
                     ? 'bg-green-500'
-                    : value?.includes('-')
+                    : value?.toString().includes('-')
                       ? 'bg-red-500'
                       : 'bg-gray-400'
                     }`}
                 />
                 <span
-                  className={`text-xs font-medium ${value?.includes('+')
+                  className={`text-xs font-medium ${value?.toString().includes('+')
                     ? 'text-green-600'
-                    : value?.includes('-')
+                    : value?.toString().includes('-')
                       ? 'text-red-600'
                       : 'text-gray-500'
                     }`}
                 >
-                  {value?.includes('+')
+                  {value?.toString().includes('+')
                     ? 'Growing'
-                    : value?.includes('-')
+                    : value?.toString().includes('-')
                       ? 'Declining'
                       : 'Stable'}
                 </span>
@@ -3241,6 +3119,12 @@ const DashboardCard = ({
   icon: Icon,
   children,
   className = '',
+}: {
+  title: string;
+  subtitle?: string;
+  icon?: any;
+  children?: React.ReactNode;
+  className?: string;
 }) => {
   return (
     <motion.div
@@ -3351,8 +3235,8 @@ const DashboardCard = ({
   );
 };
 
-const AreaChart = ({ data, color = '#10b981' }) => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+const AreaChart = ({ data, color = '#10b981' }: { data: any[]; color?: string }) => {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   // Use 'count' instead of 'value'
   const maxValue = data.length > 0 ? Math.max(...data.map((d) => d.count)) : 1;
   const minValue = data.length > 0 ? Math.min(...data.map((d) => d.count)) : 0;
@@ -3511,8 +3395,18 @@ const COLOR_PALETTE = [
   '#3b82f6',
   '#10b981',
 ];
-const DonutChart = ({ data, centerValue, centerLabel, onSegmentClick }) => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+const DonutChart = ({
+  data,
+  centerValue,
+  centerLabel,
+  onSegmentClick,
+}: {
+  data: any[];
+  centerValue?: string | number;
+  centerLabel?: string;
+  onSegmentClick?: (item: any, index?: number) => void;
+}) => {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const total = (data && data.reduce((sum, item) => sum + item.value, 0)) || 0;
   let currentAngle = -90;
 
@@ -3635,8 +3529,16 @@ const DonutChart = ({ data, centerValue, centerLabel, onSegmentClick }) => {
   );
 };
 
-const BarChart = ({ data, maxValue, onBarClick }) => {
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+const BarChart = ({
+  data,
+  maxValue,
+  onBarClick,
+}: {
+  data: any[];
+  maxValue?: number;
+  onBarClick?: (item: any) => void;
+}) => {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const max =
     maxValue || (data.length > 0 ? Math.max(...data.map((d) => d.value)) : 1);
 
@@ -3688,9 +3590,15 @@ const BarChart = ({ data, maxValue, onBarClick }) => {
   );
 };
 
-const ColumnChart = ({ data, onColumnClick }) => {
+const ColumnChart = ({
+  data,
+  onColumnClick,
+}: {
+  data: any[];
+  onColumnClick?: (item: string) => void;
+}) => {
   // Expects data with 'title' and 'count'
-  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   // Use 'count' instead of 'value' for maxValue calculation
   const maxValue = data.length > 0 ? Math.max(...data.map((d) => d.count)) : 1;
 

@@ -57,7 +57,7 @@ function isJobRecord(jd: unknown): jd is {
 function JobDescription({ id }: JobDescriptionProps) {
   const [nocProfile, setNocProfile] = useState<NocProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { data: jd } = useSelectedColumnRecord();
+  const { record: jd } = useSelectedColumnRecord();
 
   useEffect(() => {
     async function loadNocProfile() {
@@ -70,32 +70,32 @@ function JobDescription({ id }: JobDescriptionProps) {
 
   const jobData = nocProfile
     ? {
-        title: nocProfile.title,
-        company:
-          isJobRecord(jd) && jd.operating_name
-            ? jd.operating_name
-            : 'Unknown Company',
-        location: isJobRecord(jd)
-          ? `${jd.city || 'Unknown City'}, ${jd.state || 'Unknown Province'}`
-          : 'Unknown City, Unknown Province',
-        postedDate:
-          isJobRecord(jd) && jd.date_of_job_posting
-            ? jd.date_of_job_posting
-            : 'Unknown',
-        salary:
-          isJobRecord(jd) && jd.noc_priority
-            ? jd.noc_priority
-            : 'Varies by employer',
-        experienceLevel: 'As per requirements',
-        jobType: 'Full-time',
-        workType: 'On-site',
-        salaryHourly: 'Varies by employer',
-        aboutCompany: nocProfile.overview,
-        jobDescription: formatMainDuties(nocProfile.mainDuties),
-        requirements: nocProfile.employmentRequirements,
-        companyLogoUrl: '/logo.svg',
-        additionalInfo: nocProfile.additionalInfo,
-      }
+      title: nocProfile.title,
+      company:
+        isJobRecord(jd) && jd.operating_name
+          ? jd.operating_name
+          : 'Unknown Company',
+      location: isJobRecord(jd)
+        ? `${jd.city || 'Unknown City'}, ${jd.state || 'Unknown Province'}`
+        : 'Unknown City, Unknown Province',
+      postedDate:
+        isJobRecord(jd) && jd.date_of_job_posting
+          ? jd.date_of_job_posting
+          : 'Unknown',
+      salary:
+        isJobRecord(jd) && jd.noc_priority
+          ? jd.noc_priority
+          : 'Varies by employer',
+      experienceLevel: 'As per requirements',
+      jobType: 'Full-time',
+      workType: 'On-site',
+      salaryHourly: 'Varies by employer',
+      aboutCompany: nocProfile.overview,
+      jobDescription: formatMainDuties(nocProfile.mainDuties),
+      requirements: nocProfile.employmentRequirements,
+      companyLogoUrl: '/logo.svg',
+      additionalInfo: nocProfile.additionalInfo,
+    }
     : null;
 
   if (loading) {
@@ -132,8 +132,6 @@ function JobDescription({ id }: JobDescriptionProps) {
             <JobInfoBadges
               experienceLevel={jobData.experienceLevel}
               jobType={jobData.jobType}
-              workType={jobData.workType}
-              salaryHourly={jobData.salaryHourly}
             />
             <Separator className="my-8" />
             <div className="space-y-10">
@@ -172,15 +170,13 @@ export default JobDescription;
 
 export function AnalysisDialog() {
   const [showPremiumDialog, setShowPremiumDialog] = useState(false);
+  const { record: selectedJob } = useSelectedColumnRecord();
+
   return (
     <PremiumDialog
       open={showPremiumDialog}
       onOpenChange={setShowPremiumDialog}
-      selectedColumn={
-        selectedJob?.job_title || selectedJob?.occupation_title || 'Job'
-      }
       selectedValue={selectedJob}
-      handleSubscribe={() => setShowPremiumDialog(false)}
     />
   );
 }

@@ -1,31 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from '@/hooks/use-session';
-import db from '@/db';
 import { useToast } from '@/hooks/use-toast';
+import {
+    getUserPreferences,
+    upsertUserPreferences,
+    DEFAULT_PREFERENCES,
+    type UserPreferences,
+} from '@/lib/api/users';
 
-export interface UserPreferences {
-    id?: string;
-    user_id?: string;
-    preferred_job_titles: string[];
-    preferred_provinces: string[];
-    preferred_cities: string[];
-    preferred_industries: string[];
-    preferred_noc_codes: string[];
-    preferred_teer_categories: string[]; // TEER 0-5
-    preferred_company_tiers: string[];
-    created_at?: string;
-    updated_at?: string;
-}
-
-const DEFAULT_PREFERENCES: UserPreferences = {
-    preferred_job_titles: [],
-    preferred_provinces: [],
-    preferred_cities: [],
-    preferred_industries: [],
-    preferred_noc_codes: [],
-    preferred_teer_categories: [], // Default empty
-    preferred_company_tiers: [],
-};
+export type { UserPreferences };
 
 export function useUserPreferences() {
     const { session } = useSession();
@@ -35,52 +18,22 @@ export function useUserPreferences() {
     const { data: preferences, isLoading, error } = useQuery({
         queryKey: ['user-preferences', session?.user?.id],
         queryFn: async (): Promise<UserPreferences> => {
-            if (!session?.user?.id) {
-                return DEFAULT_PREFERENCES;
-            }
-
+            if (!session?.user?.id) return DEFAULT_PREFERENCES;
             try {
-                const { data, error } = await db
-                    .from('user_preferences')
-                    .select('*')
-                    .eq('user_id', session.user.id)
-                    .single();
-
-                if (error) {
-                    // If no record exists yet (404), return defaults
-                    if (error.code === 'PGRST116') {
-                        return DEFAULT_PREFERENCES;
-                    }
-                    throw error;
-                }
-
-                return data || DEFAULT_PREFERENCES;
+                return await getUserPreferences(session.user.id);
             } catch (error) {
                 console.error('Error fetching user preferences:', error);
                 return DEFAULT_PREFERENCES;
             }
         },
         enabled: !!session?.user?.id,
-        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+        staleTime: 5 * 60 * 1000,
     });
 
     const updateMutation = useMutation({
         mutationFn: async (updatedPreferences: Partial<UserPreferences>) => {
-            if (!session?.user?.id) {
-                throw new Error('User not authenticated');
-            }
-
-            const { data, error } = await db
-                .from('user_preferences')
-                .upsert({
-                    user_id: session.user.id,
-                    ...updatedPreferences,
-                }, { onConflict: 'user_id' })
-                .select()
-                .single();
-
-            if (error) throw error;
-            return data;
+            if (!session?.user?.id) throw new Error('User not authenticated');
+            return upsertUserPreferences(session.user.id, updatedPreferences);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['user-preferences'] });

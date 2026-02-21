@@ -47,7 +47,7 @@ export default function SimilarJobPostings({ nocCode, state }: Props) {
 
   const { setSelectedRecordID } = useTableStore();
 
-  const handleClick = (recordID) => {
+  const handleClick = (recordID: string) => {
     setSelectedRecordID(recordID);
     navigate.push(`/search/noc-profile/${nocCode}`);
   };
@@ -69,7 +69,7 @@ export default function SimilarJobPostings({ nocCode, state }: Props) {
           {data &&
             data.map((job) => (
               <div
-                onClick={() => handleClick(job.RecordID)}
+                onClick={() => handleClick((job as any).RecordID || job.id)}
                 key={job.id}
                 className="border-b pb-2 pt-2 cursor-pointer"
               >

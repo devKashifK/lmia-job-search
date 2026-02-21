@@ -40,6 +40,9 @@ import { format } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { CreateAlertDialog } from '@/components/alerts/create-alert-dialog';
 import { HomeRecommendations } from '@/components/recommendations/home-recommendations';
+import { useDebounce } from '@/hooks/use-debounce';
+import { useJobSearch } from '@/hooks/use-job-search';
+import { useCheckCredits } from '@/hooks/use-check-credits';
 
 
 interface Suggestion {
@@ -67,15 +70,38 @@ import {
 
 // ... (Suggestion interfaces remain same)
 
+
 export function SearchBox() {
   const { isMobile, isMounted } = useMobile();
-  const [input, setInput] = useState('');
-  const [locationText, setLocationText] = useState(''); // Text display only
+
+  // Use the new hook
+  const {
+    input,
+    setInput, // setInput is used by handleChange
+    suggestions,
+    showSuggestions,
+    setShowSuggestions,
+    isLoadingSuggestions,
+    isSearching, // Use directly
+    searchType,
+    setSearchType,
+    searchBy,
+    setSearchBy,
+    inputRef: searchInputRef, // Use matching ref name
+    suggestionsRef,
+    handleInputChange, // Internal handler
+    handleSearch, // Internal handler
+    handleSuggestionClick: hookHandleSuggestionClick, // We might wrap this
+    fetchSuggestions,
+    setIsSearching,
+    setSuggestions,
+  } = useJobSearch({ initialSearchType: 'hot_leads' });
+
+  // Mapping state names to keep rest of component working
+  // SearchBox used specific local states
+  const [locationText, setLocationText] = useState('');
   const [showLocationMenu, setShowLocationMenu] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  // isSearching was local. mapped to isSearchingInternal
 
   // Location Hierarchy State (Multi-Select)
   const [provinces, setProvinces] = useState<{ province: string }[]>([]);
@@ -84,14 +110,15 @@ export function SearchBox() {
   const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
 
-
-  const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>('hot_leads');
+  // activeField, dateRange, showAlertDialog - kept as UI state
   const [activeField, setActiveField] = useState<'what' | 'where' | 'dates' | null>(null);
-  const [searchBy, setSearchBy] = useState<'all' | 'job_title' | 'category' | 'noc_code' | 'employer' | 'city'>('all');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [showAlertDialog, setShowAlertDialog] = useState(false);
 
-  // ... (existing refs and hooks)
+  // useUpdateCredits, toast, router, session, searchParams - all present in hook but also used locally here for specific logic (location etc)
+  // We can keep them if needed or remove if strictly dup.
+  // SearchBox has A LOT of location logic that useJobSearch does NOT have.
+  // So we keep location logic here.
 
   const { updateCreditsAndSearch } = useUpdateCredits();
   const { toast } = useToast();
@@ -100,8 +127,7 @@ export function SearchBox() {
   const searchParams = useSearchParams();
   const sp = new URLSearchParams(searchParams?.toString() || '');
 
-  const suggestionsRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  // Refs not provided by hook
   const locationMenuRef = useRef<HTMLDivElement>(null);
   const locationInputRef = useRef<HTMLInputElement>(null);
 
@@ -137,6 +163,11 @@ export function SearchBox() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Removed local useDebounce & useEffect for suggestions (handled by hook)
+
+  // Use useCheckCredits hook
+  const { checkCredits } = useCheckCredits();
+
   // close popovers on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -165,48 +196,16 @@ export function SearchBox() {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, []); // check deps
 
-  // suggestions fetcher
-  const fetchSuggestions = async (query: string) => {
-    if (!query.trim()) {
-      setSuggestions([]);
-      return;
-    }
-    setIsLoadingSuggestions(true);
-    try {
-      if (searchType === 'hot_leads') {
-        const { data, error } = await db.rpc('suggest_trending_job', {
-          p_field: searchBy,
-          p_q: query,
-          p_limit: 10,
-        });
-        if (error) throw error;
-        setSuggestions((data as Suggestion[]) || []);
-      } else {
-        const { data, error } = await db.rpc('suggest_lmia', {
-          p_field: searchBy,
-          p_q: query,
-          p_limit: 10,
-        });
-        if (error) throw error;
-        setSuggestions((data as Suggestion[]) || []);
-      }
-    } catch (err) {
-      console.error('Error fetching suggestions:', err);
-      setSuggestions([]);
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  };
+  // fetchSuggestions and useEffect removed (handled by useJobSearch)
 
   // 1. Fetch Provinces
   const fetchProvinces = async () => {
     try {
-      const { data, error } = await db.rpc('get_provinces');
-      if (!error && data) {
-        setProvinces(data as { province: string }[]);
-      }
+      const { getProvinces } = await import('@/lib/api/locations');
+      const provinces = await getProvinces();
+      setProvinces(provinces.map(p => ({ province: p })));
     } catch (err) {
       console.error('Error fetching provinces:', err);
     }
@@ -214,85 +213,10 @@ export function SearchBox() {
 
   // 2. Fetch Cities for ALL selected provinces (with fallback)
   const fetchCitiesForProvinces = async (provincesList: string[]) => {
-    if (provincesList.length === 0) {
-      setCities([]);
-      return;
-    }
-
     try {
-      // Fetch stats for each selected province in parallel
-      const allCitiesArrays = await Promise.all(
-        provincesList.map(async (province) => {
-          // Fetch from matching sources in parallel to get comprehensive list
-          const [rpcRes, trendingRes, lmiaRes] = await Promise.all([
-            // 1. RPC
-            db.rpc('get_cities_by_province', {
-              p_province: province,
-              p_search: '',
-            }),
-            // 2. Trending Job Table (Direct with higher limit)
-            db.from('trending_job')
-              .select('city')
-              .eq('state', province)
-              .limit(5000), // Fetch more to uncover cities missing from RPC/Top lists
-            // 3. LMIA Records Table
-            db.from('lmia_records')
-              .select('City')
-              .eq('Province', province)
-              .limit(5000)
-          ]);
-
-          let citiesForProv: { city: string; province: string }[] = [];
-
-          // Collect from RPC
-          if (!rpcRes.error && rpcRes.data && (rpcRes.data as any[]).length > 0) {
-            const rpcCities = (rpcRes.data as { city: string }[]).map(c => ({ ...c, province }));
-            citiesForProv = [...citiesForProv, ...rpcCities];
-          }
-
-          // Collect from Trending
-          if (!trendingRes.error && trendingRes.data && trendingRes.data.length > 0) {
-            const tCities = trendingRes.data
-              .map(d => d.city)
-              .filter(Boolean)
-              .map(city => ({ city, province }));
-            citiesForProv = [...citiesForProv, ...tCities];
-          }
-
-          // Collect from LMIA
-          if (!lmiaRes.error && lmiaRes.data && lmiaRes.data.length > 0) {
-            const lCities = lmiaRes.data
-              .map(d => d.City)
-              .filter(Boolean)
-              .map(city => ({ city, province }));
-            citiesForProv = [...citiesForProv, ...lCities];
-          }
-
-          // Deduplicate within this province
-          const uniqueCities = new Set<string>();
-          const distinct: { city: string; province: string }[] = [];
-
-          for (const item of citiesForProv) {
-            const normalized = item.city.trim(); // keep casing for display, but could normalize for check
-            if (!uniqueCities.has(normalized)) {
-              uniqueCities.add(normalized);
-              distinct.push({ city: normalized, province });
-            }
-          }
-
-          return distinct.sort((a, b) => a.city.localeCompare(b.city));
-        })
-      );
-
-      // Flatten and deduplicate
-      const flattened = allCitiesArrays.flat();
-
-      // Deduplicate by city name across all provinces (or keep province context)
-      // Since cities are keyed by province in the UI (key=`${c.province}-${c.city}-${idx}`), 
-      // duplicates across provinces are fine (e.g. Springfield in multiple states).
-      // But duplicates within same province should be handled by the per-province logic above.
-
-      setCities(flattened);
+      const { getCitiesForProvinces } = await import('@/lib/api/locations');
+      const cities = await getCitiesForProvinces(provincesList);
+      setCities(cities);
     } catch (err) {
       console.error('Error fetching cities:', err);
     }
@@ -368,7 +292,7 @@ export function SearchBox() {
     setInput(value);
     setShowSuggestions(true);
     setActiveField('what');
-    void fetchSuggestions(value);
+    // Removed direct fetchSuggestions call to verify debounce
   };
 
   // attach date params to URL only for trending jobs
@@ -490,7 +414,7 @@ export function SearchBox() {
         filters.search_by = searchBy;
 
         void trackSearch({
-          userId: session.user.id,
+          id: session.user.id,
           keyword: searchTerm,
           filters: Object.keys(filters).length > 0 ? filters : undefined,
         });
@@ -613,56 +537,7 @@ export function SearchBox() {
     )}
   </div>
 
-  const checkCredits = async () => {
-    if (session?.trial) {
-      // Trial session, allow access
-      return true;
-    }
-    if (!session?.user?.id) {
-      toast({
-        title: 'Error',
-        description: 'You must be logged in to perform this action',
-        variant: 'destructive',
-      });
-      return false;
-    }
-    try {
-      const { data: credits, error } = await db
-        .from('credits')
-        .select('total_credit, used_credit')
-        .eq('id', session.user.id)
-        .single();
-      if (error) throw error;
-      if (!credits) {
-        toast({
-          title: 'Error',
-          description: 'Unable to fetch credits information',
-          variant: 'destructive',
-        });
-        return false;
-      }
-      const remaining = credits.total_credit - (credits.used_credit || 0);
-      if (remaining <= 0) {
-        toast({
-          title: 'No Credits Remaining',
-          description:
-            "You've used all your credits. Please purchase more to continue searching.",
-          variant: 'destructive',
-        });
-        router.push('/dashboard/credits');
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.error('Error checking credits:', error);
-      toast({
-        title: 'Error',
-        description: 'Unable to verify credits. Please try again.',
-        variant: 'destructive',
-      });
-      return false;
-    }
-  };
+  // local checkCredits removed, using hook.
 
   if (!isMounted) {
     return null;

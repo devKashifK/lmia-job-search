@@ -25,7 +25,7 @@ import { useMinimumLoading } from '@/hooks/use-minimum-loading';
 import NewFilterPanel from '@/components/ui/new-filterpanel';
 import AppliedFilters from '@/components/ui/applied-filters';
 import { useTableStore } from '@/context/store';
-import db from '@/db';
+
 import { useQuery } from '@tanstack/react-query';
 import {
   usePathname,
@@ -81,75 +81,7 @@ function stableFiltersKey(
 
 // your existing one, kept
 
-function getPrimaryKey(table: string) {
-  return table === 'lmia' ? 'RecordID' : 'id';
-}
 
-// Columns you allow for search/filters (URL params)
-function getAllowedFields(table: string): string[] {
-  if (table === 'lmia') {
-    return [
-      'territory',
-      'program',
-      'city',
-      'postal_code',
-      'lmia_period',
-      'lmia_year', // numeric
-      'priority_occupation',
-      'employer',
-      'noc_code',
-      'job_title',
-    ];
-  }
-  // trending_job
-  return ['state', 'city', 'category', 'job_title', 'noc_code', 'employer'];
-}
-
-// Subset used for free-text OR search (skip numeric fields like lmia_year)
-function getTextSearchFields(table: string): string[] {
-  if (table === 'lmia') {
-    return [
-      'territory',
-      'program',
-      'city',
-      'postal_code',
-      'lmia_period',
-      'priority_occupation',
-      'employer',
-      'noc_code',
-      'job_title',
-    ];
-  }
-  return ['state', 'city', 'category', 'job_title', 'noc_code', 'employer'];
-}
-
-// Map to normalized *_norm columns (only if you actually created them)
-// For LMIA we assume no *_norm yet; add mappings later if you generate them.
-const NORM_MAP_TRENDING: Record<string, string> = {
-  state: 'state_norm',
-  city: 'city_norm',
-  category: 'category_norm',
-  job_title: 'job_title_norm',
-  noc_code: 'noc_code_norm',
-  employer: 'employer_norm',
-};
-
-const NORM_MAP_LMIA: Record<string, string> = {
-  city: 'city_norm',
-  territory: 'territory_norm',
-  program: 'program_norm',
-  postal_code: 'postal_code_norm',
-  lmia_period: 'lmia_period_norm',
-  priority_occupation: 'priority_occupation_norm',
-  employer: 'employer_norm',
-  noc_code: 'noc_code_norm',
-  job_title: 'job_title_norm',
-  // lmia_year stays numeric, keep raw column
-};
-
-function getNormMap(table: string): Record<string, string> {
-  return table === 'lmia' ? NORM_MAP_LMIA : NORM_MAP_TRENDING;
-}
 
 export function useData(
   query: string,
@@ -164,12 +96,15 @@ export function useData(
   const tableName =
     (sp?.get('t') ?? (searchType === 'lmia' ? 'lmia' : 'trending_job')).trim();
 
-  // ---- table-specific helpers
-  const pk = getPrimaryKey(tableName); // 'id' | 'RecordID'
-  const selectCols = getColumnName(tableName); // select list string
-  const allowedFields = getAllowedFields(tableName); // fields user can search/filter
-  const textSearchFields = getTextSearchFields(tableName); // subset (skip numeric)
-  const normMap = getNormMap(tableName); // only trending_job has *_norm
+  // Note: Local helper logic moved to @/lib/api/jobs.ts
+  // Allowed fields for URL param parsing (duplicated for now to keep stableFiltersKey working locally, 
+  // or we can export it from api)
+  const allowedFields = tableName === 'lmia'
+    ? [
+      'territory', 'program', 'city', 'postal_code', 'lmia_period',
+      'lmia_year', 'priority_occupation', 'employer', 'noc_code', 'job_title',
+    ]
+    : ['state', 'city', 'category', 'job_title', 'noc_code', 'employer'];
 
   // from URL
   const fieldParam = (sp?.get('field') ?? 'all').toLowerCase();
@@ -242,83 +177,18 @@ export function useData(
       ],
       placeholderData: keepPreviousData,
       queryFn: async () => {
-        let builder = db.from(tableName).select(selectCols, { count: 'exact' });
+        const { queryJobs } = await import('@/lib/api/jobs');
 
-        // ---------- free-text search
-        if (q !== '') {
-          if (field === 'all') {
-            // OR across text-searchable columns only (avoid numeric lmia_year)
-            const orExpr = textSearchFields
-              .map((c) => `${c}.ilike.%${q}%`)
-              .join(',');
-            if (orExpr) builder = builder.or(orExpr);
-          } else if (allowedFields.includes(field)) {
-            if (tableName === 'lmia' && field === 'lmia_year') {
-              // numeric year: support exact match if q is numeric, else ignore
-              const num = Number(q);
-              if (Number.isFinite(num))
-                builder = builder.eq('lmia_year', Math.floor(num));
-            } else {
-              builder = builder.ilike(field as any, `%${q}%`);
-            }
-          } else {
-            console.warn('Ignored unknown field:', field);
-          }
-        }
-
-        // ---------- date range
-        if (tableName === 'trending_job') {
-          if (dateFrom) builder = builder.gte('date_of_job_posting', dateFrom);
-          if (dateTo) builder = builder.lte('date_of_job_posting', dateTo);
-        } else if (tableName === 'lmia') {
-          // interpret date range as year range on lmia_year
-          const yf = dateFrom ? Number(dateFrom.slice(0, 4)) : undefined;
-          const yt = dateTo ? Number(dateTo.slice(0, 4)) : undefined;
-          if (Number.isFinite(yf))
-            builder = builder.gte('lmia_year', yf as number);
-          if (Number.isFinite(yt))
-            builder = builder.lte('lmia_year', yt as number);
-        }
-
-        // ---------- filters: AND across columns, OR within a column
-        for (const key of Object.keys(filters)) {
-          const rawVals = filters[key] ?? [];
-          if (!rawVals.length) continue;
-
-          const normCol = normMap[key] ?? key;
-
-          if (normCol !== key) {
-            // normalized column available → use lowercased exact matching
-            const canon = rawVals
-              .map((v) => v.trim().toLowerCase())
-              .filter(Boolean);
-            if (!canon.length) continue;
-            builder =
-              canon.length === 1
-                ? builder.eq(normCol, canon[0])
-                : builder.in(normCol, canon);
-          } else {
-            // no normalization → exact match/in on original values
-            builder =
-              rawVals.length === 1
-                ? builder.eq(key, rawVals[0])
-                : builder.in(key, rawVals);
-          }
-        }
-
-        // ---------- sort (table-specific) then paginate
-        if (tableName === 'trending_job') {
-          builder = builder
-            .order('date_of_job_posting', { ascending: false })
-            .order(pk as any, { ascending: true });
-        } else {
-          builder = builder
-            .order('lmia_year', { ascending: false })
-            .order(pk as any, { ascending: true });
-        }
-
-        const { data, error, count } = await builder.range(from, to);
-        if (error) throw new Error(error.message || 'Failed to fetch');
+        const { data, count } = await queryJobs({
+          tableName,
+          query: q,
+          field,
+          page,
+          pageSize,
+          filters,
+          dateFrom: dateFrom,
+          dateTo: dateTo
+        });
 
         return {
           rows: (data as unknown as LMIA[]) ?? [],
@@ -326,7 +196,7 @@ export function useData(
           page,
           pageSize,
           totalPages: count ? Math.ceil(count / pageSize) : undefined,
-          hasMore: count ? to + 1 < count : (data?.length ?? 0) === pageSize,
+          hasMore: count ? (page * pageSize) < count : (data?.length ?? 0) === pageSize,
         };
       },
     }),
@@ -545,7 +415,7 @@ export function DataPanel({
                         setSavedSet(next);
                       }}
                       employerName={item.employer}
-                      jobTitle={item.job_title || item.occupation_title}
+                      jobTitle={item.job_title}
                       city={item.city}
                       state={item.state}
                       noc={item.noc_code || item['2021_noc']}
@@ -913,28 +783,29 @@ export function NewDataPanel({
 export const useSelectedColumnRecord = () => {
   const { selectedRecordID, dataConfig } = useTableStore.getState();
 
-  const selectProjection =
-    dataConfig.type === 'lmia'
-      ? selectProjectionLMIA
-      : selectProjectionHotLeads;
-
-  const { data, error } = useQuery({
-    queryKey: ['selectedColumnRecord', selectedRecordID, dataConfig.type],
+  const { data: record, isLoading } = useQuery({
+    queryKey: ['selectedColumnRecord', selectedRecordID, dataConfig?.type],
+    enabled: !!selectedRecordID,
     queryFn: async () => {
-      const { data, error } = await db
-        .from(dataConfig.table)
-        .select(selectProjection.split(',').join(' , '))
-        .eq('RecordID', selectedRecordID)
-        .single();
+      if (!selectedRecordID) return null;
 
-      if (error) {
-        throw new Error(error.message);
+      const { queryJobs } = await import('@/lib/api/jobs');
+      const type = dataConfig?.type === 'lmia' ? 'lmia' : 'trending_job';
+      const pk = type === 'lmia' ? 'RecordID' : 'id';
+
+      const { data } = await queryJobs({
+        tableName: type,
+        filters: { [pk]: [String(selectedRecordID)] },
+        pageSize: 1
+      });
+
+      if (!data || data.length === 0) {
+        throw new Error('Record not found');
       }
 
-      return data;
+      return data[0];
     },
-    enabled: !!selectedRecordID,
   });
 
-  return { data, error };
+  return { record, isLoading };
 };

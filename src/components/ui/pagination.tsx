@@ -26,7 +26,7 @@ export default function Pagination({
       // Use the store method (for DataPanel)
       setDataConfig({
         ...(dataConfig || {}),
-        page: page,
+        page: String(page),
       });
     }
     // Use setTimeout to ensure the scroll happens after the page update
@@ -46,7 +46,7 @@ export default function Pagination({
     // Mobile: Show maximum 3 pages, Desktop: 7 pages
     const maxPages = isMobile ? 3 : 7;
     const range = isMobile ? 1 : 3;
-    
+
     if (totalPages > maxPages) {
       if (currentPage <= range + 1) {
         end = maxPages;
@@ -84,11 +84,10 @@ export default function Pagination({
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`${isMobile ? 'px-2 py-1.5' : 'px-3 py-1.5'} rounded-md ${isMobile ? 'text-xs' : 'text-sm'} font-medium transition-colors ${
-            i === currentPage
+          className={`${isMobile ? 'px-2 py-1.5' : 'px-3 py-1.5'} rounded-md ${isMobile ? 'text-xs' : 'text-sm'} font-medium transition-colors ${i === currentPage
               ? 'bg-brand-600 text-white hover:bg-brand-700'
               : 'text-gray-600 hover:bg-gray-50'
-          }`}
+            }`}
           disabled={i === currentPage}
         >
           {i}

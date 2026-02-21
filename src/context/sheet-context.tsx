@@ -13,6 +13,8 @@ interface ShowSheetProps {
   component: React.ComponentType<any>;
   props?: Record<string, any>;
   className?: string;
+  title?: string;
+  description?: string;
 }
 
 const SheetContext = createContext<SheetContextType | undefined>(undefined);

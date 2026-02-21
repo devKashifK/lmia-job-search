@@ -84,8 +84,8 @@ export default function Category({ type }: { type: string }) {
                 ]),
                 keyword: category.noc_priority,
                 method: 'query',
-                page: 1,
-                pageSize: 100,
+                page: '1',
+                pageSize: '100',
               });
 
               setFilterPanelConfig({

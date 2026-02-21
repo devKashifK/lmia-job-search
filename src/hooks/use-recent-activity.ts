@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useSession } from '@/hooks/use-session';
-import db from '@/db';
+import { getSavedJobsWithData } from '@/lib/api/saved-jobs';
+import { getSearchHistory } from '@/lib/api/searches';
 
 export interface ActivityItem {
   id: string;
@@ -27,90 +28,41 @@ export function useRecentActivity(limit: number = 10) {
         const activities: ActivityItem[] = [];
 
         // Fetch recent saved jobs
-        // Note: If created_at doesn't exist in saved_jobs table, only record_id will be fetched
-        const { data: savedJobsData, error: savedJobsError } = await db
-          .from('saved_jobs')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .order('created_at', { ascending: false });
+        const savedJobsData = await getSavedJobsWithData(session.user.id);
 
-        if (!savedJobsError && savedJobsData) {
-          // For each saved job, fetch job details
-          const jobDetailsPromises = savedJobsData.map(async (savedJob) => {
-            // Try LMIA first
-            const { data: lmiaData } = await db
-              .from('lmia_records')
-              .select('job_title, operating_name')
-              .eq('RecordID', savedJob.record_id)
-              .single();
+        savedJobsData.forEach((job) => {
+          const title = job.job_title || job.JobTitle || job.occupation_title;
+          const employer = job.operating_name || job.employer;
 
-            if (lmiaData) {
-              return {
-                ...savedJob,
-                job_title: lmiaData.job_title,
-                employer: lmiaData.operating_name,
-              };
-            }
-
-            // Try Trending Job (previously Hot Leads)
-            const { data: trendingJobData } = await db
-              .from('trending_job')
-              .select('occupation_title, employer')
-              .eq('id', savedJob.record_id)
-              .single();
-
-            if (trendingJobData) {
-              return {
-                ...savedJob,
-                job_title: trendingJobData.occupation_title,
-                employer: trendingJobData.employer,
-              };
-            }
-
-            return null;
-          });
-
-          const jobDetails = await Promise.all(jobDetailsPromises);
-
-          jobDetails.forEach((job) => {
-            if (job && job.job_title && job.employer) {
-              activities.push({
-                id: job.record_id,
-                type: 'saved_job',
-                action: 'Saved a job',
-                details: `${job.job_title} at ${job.employer}`,
-                timestamp: job.created_at || new Date().toISOString(), // Fallback to current time if no timestamp
-                icon: 'bookmark',
-                color: 'text-blue-600',
-                bgColor: 'bg-blue-50',
-              });
-            }
-          });
-        } else if (savedJobsError) {
-          console.error('Error fetching saved jobs:', savedJobsError);
-        }
+          if (title && employer) {
+            activities.push({
+              id: job.RecordID || job.id,
+              type: 'saved_job',
+              action: 'Saved a job',
+              details: `${title} at ${employer}`,
+              timestamp: job.created_at || new Date().toISOString(), // Fallback to current time if no timestamp
+              icon: 'bookmark',
+              color: 'text-blue-600',
+              bgColor: 'bg-blue-50',
+            });
+          }
+        });
 
         // Fetch recent searches
-        const { data: searchesData, error: searchesError } = await db
-          .from('searches')
-          .select('id, keyword, created_at')
-          .eq('id', session.user.id)
-          .order('created_at', { ascending: false });
+        const searchesData = await getSearchHistory(session.user.id);
 
-        if (!searchesError && searchesData) {
-          searchesData.forEach((search) => {
-            activities.push({
-              id: search.id,
-              type: 'search',
-              action: 'Searched',
-              details: search.keyword,
-              timestamp: search.created_at,
-              icon: 'search',
-              color: 'text-purple-600',
-              bgColor: 'bg-purple-50',
-            });
+        searchesData.forEach((search: any) => {
+          activities.push({
+            id: search.id,
+            type: 'search',
+            action: 'Searched',
+            details: search.keyword,
+            timestamp: search.created_at,
+            icon: 'search',
+            color: 'text-purple-600',
+            bgColor: 'bg-purple-50',
           });
-        }
+        });
 
         // Sort all activities by timestamp (most recent first)
         activities.sort(
@@ -127,6 +79,7 @@ export function useRecentActivity(limit: number = 10) {
       }
     },
     enabled: !!session?.user?.id,
-    staleTime: 0, // Always refetch when invalidated for real-time updates
+    staleTime: 60 * 1000, // Cache for 1 minute
   });
 }
+

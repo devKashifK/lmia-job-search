@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useJobSearch } from '@/hooks/use-job-search';
 
 interface CompactSearchProps {
   className?: string;
@@ -30,26 +31,24 @@ export default function CompactSearch({
   placeholder = 'Quick search...',
   defaultSearchType = 'hot_leads',
 }: CompactSearchProps) {
-  const [input, setInput] = useState('');
-  const [isChecking, setIsChecking] = useState(false);
-  const [suggestions, setSuggestions] = useState<
-    { suggestion: string; field?: string }[]
-  >([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>(
-    defaultSearchType
-  );
-  const [isExpanded, setIsExpanded] = useState(false);
+  const {
+    input,
+    setInput,
+    suggestions,
+    showSuggestions,
+    setShowSuggestions,
+    isLoadingSuggestions,
+    isSearching: isChecking,
+    searchType,
+    setSearchType,
+    inputRef: searchInputRef, // Use matching ref name
+    suggestionsRef,
+    handleInputChange: handleChange,
+    handleSearch,
+    handleSuggestionClick,
+  } = useJobSearch({ initialSearchType: defaultSearchType });
 
-  const searchParams = useSearchParams();
-  const sp = new URLSearchParams(searchParams?.toString() || '');
-  const suggestionsRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const { updateCreditsAndSearch } = useUpdateCredits();
-  const navigate = useRouter();
-  const { toast } = useToast();
-  const { session } = useSession();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -66,184 +65,28 @@ export default function CompactSearch({
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [input]);
+  }, [input, suggestionsRef, setShowSuggestions]);
 
-  const fetchSuggestions = async (query: string) => {
-    if (!query.trim()) {
-      setSuggestions([]);
-      return;
-    }
-
-    setIsLoadingSuggestions(true);
-    try {
-      if (searchType === 'hot_leads') {
-        const { data, error } = await db.rpc('suggest_trending_job', {
-          p_field: 'all',
-          p_q: query,
-          p_limit: 6,
-        });
-
-        if (error) throw error;
-        setSuggestions(data || []);
-      } else if (searchType === 'lmia') {
-        const { data, error } = await db.rpc('suggest_lmia', {
-          p_field: 'all',
-          p_q: query,
-          p_limit: 6,
-        });
-        if (error) throw error;
-        setSuggestions(data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
-      setSuggestions([]);
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInput(value);
-    setShowSuggestions(true);
-    fetchSuggestions(value);
-  };
-
-  const handleSuggestionClick = async (suggestion: {
-    suggestion: string;
-    field?: string;
-  }) => {
-    if (!session?.session) {
-      updateCreditsAndSearch(suggestion.suggestion);
-      if (searchType === 'hot_leads') {
-        sp.set('field', suggestion.field ?? 'all');
-        sp.set('t', 'trending_job');
-        navigate.push(
-          `/search/hot-leads/${encodeURIComponent(
-            suggestion.suggestion
-          )}?${sp.toString()}`
-        );
-      } else if (searchType === 'lmia') {
-        sp.set('field', suggestion.field ?? 'all');
-        sp.set('t', 'lmia');
-        navigate.push(
-          `/search/lmia/${encodeURIComponent(
-            suggestion.suggestion
-          )}?${sp.toString()}`
-        );
-      }
-      return;
-    }
-    setInput(suggestion.suggestion);
-    setShowSuggestions(false);
-    startSearch(suggestion.suggestion);
-  };
-
-  const checkCredits = async () => {
-    if (session?.trial) {
-      // Trial session, allow access
-      return true;
-    }
-    if (!session?.user?.id) {
-      toast({
-        title: 'Error',
-        description: 'You must be logged in to perform this action',
-        variant: 'destructive',
-      });
-      return false;
-    }
-
-    try {
-      const { data: credits, error } = await db
-        .from('credits')
-        .select('total_credit, used_credit')
-        .eq('id', session.user.id)
-        .single();
-
-      if (error) throw error;
-
-      if (!credits) {
-        toast({
-          title: 'Error',
-          description: 'Unable to fetch credits information',
-          variant: 'destructive',
-        });
-        return false;
-      }
-
-      const remainingCredits =
-        credits.total_credit - (credits.used_credit || 0);
-
-      if (remainingCredits <= 0) {
-        toast({
-          title: 'No Credits Remaining',
-          description:
-            "You've used all your credits. Please purchase more to continue searching.",
-          variant: 'destructive',
-        });
-        navigate.push('/dashboard/credits');
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error checking credits:', error);
-      toast({
-        title: 'Error',
-        description: 'Unable to verify credits. Please try again.',
-        variant: 'destructive',
-      });
-      return false;
-    }
-  };
-
-  const startSearch = async (searchTerm?: string) => {
-    const query = searchTerm || input;
-    if (!query.trim()) {
-      toast({
-        title: 'Empty Search',
-        description: 'Please enter a search term',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setIsChecking(true);
-    try {
-      const hasCredits = await checkCredits();
-      if (!hasCredits) return;
-
-      await updateCreditsAndSearch(query);
-      if (searchType === 'hot_leads') {
-        sp.set('field', 'all');
-        sp.set('t', 'trending_job');
-        navigate.push(
-          `/search/hot-leads/${encodeURIComponent(query)}?${sp.toString()}`
-        );
-      } else if (searchType === 'lmia') {
-        sp.set('field', 'all');
-        sp.set('t', 'lmia');
-        navigate.push(
-          `/search/lmia/${encodeURIComponent(query)}?${sp.toString()}`
-        );
-      }
-    } finally {
-      setIsChecking(false);
-    }
-  };
+  // Hook handles startSearch, which does: checkCredits -> updateCredits -> router.push.
+  // CompactSearch had explicit "sp" (URLSearchParams) handling for 'field' and 't'.
+  // The hook does: sp.set('field', searchBy). searchBy default is 'all'.
+  // Hook does: sp.set('t', searchType...).
+  // So the hook logic matches CompactSearch logic.
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      startSearch();
+      handleSearch();
     }
   };
 
   const handleFocus = () => {
     setIsExpanded(true);
     setShowSuggestions(true);
-    if (input.trim()) {
-      fetchSuggestions(input);
-    }
+    // manual trigger if input exists?
+    // Hook uses debounce effect. If input exists, it should already have fetched or will fetch on change.
+    // However, on Focus, if we want to show existing suggestions for existing input, the state 'suggestions' might be valid.
+    // If we want to re-fetch:
+    // fetchSuggestions(input); // fetchSuggestions is exposed from hook
   };
 
   return (
@@ -298,7 +141,7 @@ export default function CompactSearch({
 
               <Button
                 size="sm"
-                onClick={() => startSearch()}
+                onClick={() => handleSearch()}
                 disabled={isChecking}
                 className="h-6 px-2 mr-2 text-xs bg-brand-500 hover:bg-brand-600 text-white rounded"
               >

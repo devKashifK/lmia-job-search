@@ -16,19 +16,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useJobSearch } from '@/hooks/use-job-search';
 
 export function SearchBar({ type }: { type: string }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isChecking, setIsChecking] = useState(false);
-  const [suggestions, setSuggestions] = useState<{ suggestion: string }[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [searchType, setSearchType] = useState<string>(type || 'hot_leads');
-  const suggestionsRef = useRef<HTMLDivElement>(null);
-  const { searchWithFuse } = useTableStore();
-  const { updateCreditsAndSearch } = useUpdateCredits();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const navigate = useRouter();
+  const {
+    input: searchQuery,
+    setInput: setSearchQuery,
+    suggestions,
+    showSuggestions,
+    setShowSuggestions, // Ensure this is returned from hook
+    isLoadingSuggestions, // Ensure this is returned
+    isSearching: isChecking, // Map to existing name
+    searchType,
+    setSearchType,
+    inputRef,
+    suggestionsRef,
+    handleInputChange: handleChange, // Map to existing handler name style for minimal diff or use directly
+    handleSearch,
+    handleSuggestionClick,
+    handleClear
+  } = useJobSearch({ initialSearchType: type as 'hot_leads' | 'lmia' });
+
+  // Map hook handlers to component expectations or use hook directly where possible
+  // The hook handles onChange, so we can just pass handleInputChange to input
+
+  // Note: The hook's handleSearch takes (queryOverride?)
+  // The component's handleSearch took (query = searchQuery)
+  // We can wrap if needed, or just use hook's. Hook's handleSearch uses current input if no arg.
+
+  // Re-implement specialized behavior if needed, or rely on hook.
+  // SearchBar had: navigate.push, updateCreditsAndSearch, searchWithFuse.
+  // The hook does: router.push, updateCreditsAndSearch, searchWithFuse.
+  // It effectively replicates the logic.
+
+  // One difference: SearchBar cleared Fuse search on clear. Hook does too.
+
+  // Input Ref: Hook provides one. We can use it.
+
+  // Suggestions Ref: Hook provides one.
+
+  // Click Outside: Hook does NOT handle click outside (it's UI specific). We kept that? 
+  // No, the previous code had useEffect for click outside. useJobSearch does NOT have it?
+  // Let's check the hook again. 
+  // Hook does NOT have click outside. We need to keep it in the component.
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -42,156 +72,11 @@ export function SearchBar({ type }: { type: string }) {
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [suggestionsRef, setShowSuggestions]); // Update dep array
 
-  const fetchSuggestions = async (query: string) => {
-    if (!query.trim()) {
-      setSuggestions([]);
-      return;
-    }
-
-    setIsLoadingSuggestions(true);
-    try {
-      if (searchType === 'hot_leads') {
-        const { data } = await db.rpc('rpc_suggest_hot_leads_new', {
-          term: query,
-          p_limit: 10,
-        });
-
-        setSuggestions(data || []);
-      } else {
-        const { data } = await db.rpc('rpc_suggest_lmia', {
-          term: query,
-          p_limit: 10,
-        });
-
-        setSuggestions(data || []);
-      }
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
-      setSuggestions([]);
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-    setShowSuggestions(true);
-    fetchSuggestions(value);
-  };
-
-  const handleSuggestionClick = async (suggestion: string) => {
-    setSearchQuery(suggestion);
-    setShowSuggestions(false);
-    await handleSearch(suggestion);
-  };
-
-  const checkCredits = async () => {
-    try {
-      const { data: credits } = await db
-        .from('credits')
-        .select('total_credit, used_credit')
-        .single();
-
-      if (!credits) {
-        toast({
-          title: 'Error',
-          description: 'Unable to fetch credits information',
-          variant: 'destructive',
-        });
-        return false;
-      }
-
-      const remainingCredits =
-        credits.total_credit - (credits.used_credit || 0);
-
-      if (remainingCredits <= 0) {
-        toast({
-          title: 'No Credits Remaining',
-          description:
-            "You've used all your credits. Please purchase more to continue searching.",
-          variant: 'destructive',
-        });
-        navigate.push('/dashboard/credits');
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error checking credits:', error);
-      toast({
-        title: 'Error',
-        description: 'Unable to verify credits. Please try again.',
-        variant: 'destructive',
-      });
-      return false;
-    }
-  };
-
-  const handleSearch = async (query = searchQuery) => {
-    if (!query.trim()) {
-      toast({
-        title: 'Empty Search',
-        description: 'Please enter a search term',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setIsChecking(true);
-    try {
-      const hasCredits = await checkCredits();
-      if (!hasCredits) return;
-
-      await updateCreditsAndSearch(query);
-      searchWithFuse(query, searchType);
-
-      const { data: updatedCredits } = await db
-        .from('credits')
-        .select('total_credit, used_credit')
-        .single();
-
-      const remainingCredits = updatedCredits
-        ? updatedCredits.total_credit - (updatedCredits.used_credit || 0)
-        : 0;
-
-      toast({
-        title: 'Search Initiated',
-        description: `Search started for "${query}". You have ${remainingCredits} credits remaining.`,
-        variant: 'success',
-      });
-
-      if (searchType === 'hot_leads') {
-        navigate.push(`/search/hot-leads/${query}`);
-      } else {
-        navigate.push(`/search/lmia/${query}`);
-      }
-    } catch (error) {
-      toast({
-        title: 'Search Failed',
-        description: 'An error occurred while searching. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsChecking(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSearch();
-    }
-  };
-
-  const handleClear = () => {
-    setSearchQuery('');
-    setSuggestions([]);
-    setShowSuggestions(false);
-    searchWithFuse('', searchType);
-    if (inputRef.current) {
-      inputRef.current.focus();
     }
   };
 
@@ -209,7 +94,7 @@ export function SearchBar({ type }: { type: string }) {
             type="text"
             value={searchQuery}
             onChange={handleChange}
-            onKeyDown={handleKeyPress}
+            onKeyDown={onKeyPress}
             onFocus={() => setShowSuggestions(true)}
             placeholder="Search..."
             className="w-full h-8 pl-3 pr-8 text-sm bg-white border border-brand-100 border-r-0 rounded-l-md focus:outline-none focus:ring-1 focus:ring-brand-500/20 focus:border-brand-500/30 transition-all duration-200"
@@ -311,7 +196,7 @@ export function SearchBar({ type }: { type: string }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     className="group p-2 hover:bg-brand-50 cursor-pointer transition-all duration-300"
-                    onClick={() => handleSuggestionClick(suggestion.suggestion)}
+                    onClick={() => handleSuggestionClick(suggestion)}
                   >
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-full bg-brand-100 group-hover:bg-brand-200 transition-colors">

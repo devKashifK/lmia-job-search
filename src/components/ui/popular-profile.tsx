@@ -174,8 +174,8 @@ export default function PopularProfile() {
                             keyword: group.job_title,
                             method: 'query',
                             year: '',
-                            page: 1,
-                            pageSize: 100,
+                            page: '1',
+                            pageSize: '100',
                           });
                         }}
                       >
