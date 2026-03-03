@@ -10,18 +10,18 @@ export interface City {
 }
 
 export async function getProvinces(): Promise<string[]> {
-    const { data, error } = await db.rpc('get_provinces');
+    const { data, error } = await (db as any).rpc('get_provinces');
 
     if (error) {
         console.error('Error fetching provinces:', error);
         return [];
     }
 
-    return (data as Province[])?.map(p => p.province) || [];
+    return ((data as Province[]) ?? []).map(p => p.province);
 }
 
 export async function getCitiesByProvince(province: string, search: string = ''): Promise<string[]> {
-    const { data, error } = await db.rpc('get_cities_by_province', {
+    const { data, error } = await (db as any).rpc('get_cities_by_province', {
         p_province: province,
         p_search: search,
     });
@@ -31,7 +31,7 @@ export async function getCitiesByProvince(province: string, search: string = '')
         return [];
     }
 
-    return (data as City[])?.map(c => c.city) || [];
+    return ((data as City[]) ?? []).map(c => c.city);
 }
 
 export async function getCitiesForProvinces(provincesList: string[]): Promise<{ city: string; province: string }[]> {
@@ -46,7 +46,7 @@ export async function getCitiesForProvinces(provincesList: string[]): Promise<{ 
                 // Fetch from matching sources in parallel to get comprehensive list
                 const [rpcRes, trendingRes, lmiaRes] = await Promise.all([
                     // 1. RPC
-                    db.rpc('get_cities_by_province', {
+                    (db as any).rpc('get_cities_by_province', {
                         p_province: province,
                         p_search: '',
                     }),
@@ -71,8 +71,8 @@ export async function getCitiesForProvinces(provincesList: string[]): Promise<{ 
                 }
 
                 // Collect from Trending
-                if (!trendingRes.error && trendingRes.data && trendingRes.data.length > 0) {
-                    const tCities = trendingRes.data
+                if (!trendingRes.error && trendingRes.data && (trendingRes.data as any[]).length > 0) {
+                    const tCities = (trendingRes.data as any[])
                         .map(d => d.city)
                         .filter(Boolean)
                         .map(city => ({ city, province }));
@@ -80,8 +80,8 @@ export async function getCitiesForProvinces(provincesList: string[]): Promise<{ 
                 }
 
                 // Collect from LMIA
-                if (!lmiaRes.error && lmiaRes.data && lmiaRes.data.length > 0) {
-                    const lCities = lmiaRes.data
+                if (!lmiaRes.error && lmiaRes.data && (lmiaRes.data as any[]).length > 0) {
+                    const lCities = (lmiaRes.data as any[])
                         .map(d => d.city)
                         .filter(Boolean)
                         .map(city => ({ city, province }));

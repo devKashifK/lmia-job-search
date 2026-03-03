@@ -10,7 +10,7 @@ export async function getFacetCounts(
     console.log('DEBUG getFacetCounts:', { table, column, filters, searchTerm, searchField });
 
     // Try RPC first for performance
-    const { data: rpcData, error: rpcError } = await db.rpc(
+    const { data: rpcData, error: rpcError } = await (db as any).rpc(
         'get_facet_counts_with_filters',
         {
             p_table_name: table,
@@ -21,7 +21,7 @@ export async function getFacetCounts(
         }
     );
 
-    console.log('DEBUG RPC result:', { rpcDataLength: rpcData?.length, rpcError });
+    console.log('DEBUG RPC result:', { rpcDataLength: (rpcData as any[])?.length, rpcError });
 
     if (!rpcError && rpcData && (rpcData as any[]).length > 0) {
         const firstItem = (rpcData as any[])[0];

@@ -13,7 +13,7 @@ export async function getTierByNoc(nocCode: string): Promise<string | null> {
         return null; // Return null on error/not found
     }
 
-    return data?.tier || null;
+    return (data as any)?.tier || null;
 }
 
 export interface WageStats {
@@ -34,7 +34,7 @@ export interface CompanyTier {
 }
 
 export async function getWageStats(nocCode: string, province: string | null): Promise<WageStats | null> {
-    const { data, error } = await db.rpc('get_wage_stats', {
+    const { data, error } = await (db as any).rpc('get_wage_stats', {
         p_noc_code: nocCode,
         p_province: province
     });
@@ -50,7 +50,7 @@ export async function getWageStats(nocCode: string, province: string | null): Pr
 }
 
 export async function getCompaniesByTier(tier: number, isLmia: boolean, limit: number = 3): Promise<CompanyTier[]> {
-    const { data, error } = await db.rpc('get_companies_by_tier', {
+    const { data, error } = await (db as any).rpc('get_companies_by_tier', {
         p_tier: tier,
         p_is_lmia: isLmia,
         p_limit: limit
@@ -61,7 +61,7 @@ export async function getCompaniesByTier(tier: number, isLmia: boolean, limit: n
         throw error;
     }
 
-    return (data || []).map((c: any) => ({
+    return ((data as any[]) || []).map((c: any) => ({
         name: c.name,
         count: c.count,
         locations: c.locations || [],

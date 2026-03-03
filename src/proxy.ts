@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { updateSession } from '@/utils/supabase/middleware';
 
 // Simple in-memory store for rate limiting (per instance)
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
@@ -18,13 +19,24 @@ const BLOCKED_USER_AGENTS = [
 ];
 
 export const config = {
-    matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * Feel free to modify this pattern to include more paths.
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    ],
 };
 
 // Mock Blocklist - In production, use Redis/KV or Database
 const BLOCKED_IPS = new Set(['1.2.3.4']); // Example
 
 export async function proxy(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
     const ip = (request as any).ip || request.headers.get('x-forwarded-for') || '127.0.0.1';
     const userAgent = request.headers.get('user-agent')?.toLowerCase() || '';
 
@@ -64,5 +76,6 @@ export async function proxy(request: NextRequest) {
         return new NextResponse('Too Many Requests', { status: 429 });
     }
 
-    return NextResponse.next();
+    // 3. Update Supabase Session
+    return await updateSession(request);
 }

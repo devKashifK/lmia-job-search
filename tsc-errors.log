@@ -1,0 +1,139 @@
+next.config.ts(7,3): error TS2353: Object literal may only specify known properties, and 'eslint' does not exist in type 'NextConfig'.
+src/app/(authenticated)/dashboard/credits/page.tsx(40,37): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/app/(authenticated)/dashboard/credits/page.tsx(195,37): error TS2339: Property 'total_credit' does not exist on type 'never'.
+src/app/(authenticated)/dashboard/profile/page.tsx(314,17): error TS18048: 'preferences.preferred_provinces.length' is possibly 'undefined'.
+src/app/(authenticated)/dashboard/profile/page.tsx(314,67): error TS18048: 'preferences.preferred_cities.length' is possibly 'undefined'.
+src/app/(authenticated)/recommendations/page.tsx(32,9): error TS18048: 'preferences.preferred_provinces.length' is possibly 'undefined'.
+src/app/(authenticated)/recommendations/page.tsx(33,9): error TS18048: 'preferences.preferred_cities.length' is possibly 'undefined'.
+src/app/api/analyze-resume/route.ts(47,58): error TS2345: Argument of type '{ table_name: string; column_name: string; }' is not assignable to parameter of type 'undefined'.
+src/app/api/analyze-resume/route.ts(48,58): error TS2345: Argument of type '{ table_name: string; column_name: string; }' is not assignable to parameter of type 'undefined'.
+src/app/api/payment/initiate/route.ts(99,110): error TS2339: Property 'redirectUrl' does not exist on type '{ merchantId: string; merchantTransactionId: string; instrumentResponse?: { type: string; redirectInfo: { url: string; method: string; }; } | undefined; }'.
+src/components/alerts/create-alert-dialog.tsx(269,17): error TS2353: Object literal may only specify known properties, and 'user_id' does not exist in type 'Partial<JobAlert>'.
+src/components/analysis/featured-company.tsx(52,48): error TS2339: Property 'approved_positions' does not exist on type 'never'.
+src/components/analysis/featured-company.tsx(56,36): error TS2339: Property 'employer' does not exist on type 'never'.
+src/components/analysis/featured-company.tsx(58,43): error TS2339: Property 'city' does not exist on type 'never'.
+src/components/analysis/featured-company.tsx(58,61): error TS2339: Property 'province' does not exist on type 'never'.
+src/components/dashboard/dashboard-stats.tsx(45,57): error TS2339: Property 'used_credit' does not exist on type 'never'.
+src/components/dashboard/recommendations-widget.tsx(74,13): error TS18048: 'preferences.preferred_provinces.length' is possibly 'undefined'.
+src/components/dashboard/recommendations-widget.tsx(75,13): error TS18048: 'preferences.preferred_cities.length' is possibly 'undefined'.
+src/components/job-market-info.tsx(19,11): error TS2339: Property 'data' does not exist on type '{ record: any; isLoading: boolean; }'.
+src/components/profile/job-preferences-section.tsx(662,31): error TS18048: 'preferences.preferred_cities.length' is possibly 'undefined'.
+src/components/search-components.tsx/saved-searches.tsx(46,17): error TS2345: Argument of type '{ save: boolean; }' is not assignable to parameter of type 'never'.
+src/components/search-components.tsx/search-bar.tsx(120,51): error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<"lmia" | "hot_leads">'.
+src/components/ui/new-filterpanel.tsx(581,26): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/components/ui/premium-dialog.tsx(84,66): error TS2345: Argument of type '{ filter_cols: string[]; filter_vals: any[]; }' is not assignable to parameter of type 'undefined'.
+src/components/ui/premium-dialog.tsx(204,66): error TS2345: Argument of type '{ filter_cols: string; filter_vals: string; }' is not assignable to parameter of type 'undefined'.
+src/components/ui/profile-completion-check.tsx(52,34): error TS2339: Property 'preferred_job_titles' does not exist on type 'never'.
+src/components/ui/profile-completion-check.tsx(52,70): error TS2339: Property 'preferred_job_titles' does not exist on type 'never'.
+src/components/ui/profile-completion-check.tsx(55,34): error TS2339: Property 'preferred_provinces' does not exist on type 'never'.
+src/components/ui/profile-completion-check.tsx(55,69): error TS2339: Property 'preferred_provinces' does not exist on type 'never'.
+src/components/ui/search-box-enhanced-backup.tsx(101,70): error TS2345: Argument of type '{ p_field: string; p_q: string; p_limit: number; }' is not assignable to parameter of type 'undefined'.
+src/components/ui/search-box-enhanced-backup.tsx(110,62): error TS2345: Argument of type '{ p_field: string; p_q: string; p_limit: number; }' is not assignable to parameter of type 'undefined'.
+src/context/control.tsx(84,53): error TS2339: Property 'first_visit' does not exist on type 'never'.
+src/hooks/use-credits.tsx(24,39): error TS2339: Property 'total_credit' does not exist on type 'never'.
+src/hooks/use-credits.tsx(24,66): error TS2339: Property 'used_credit' does not exist on type 'never'.
+src/hooks/use-match-score.ts(107,13): error TS18048: 'preferences.preferred_teer_categories.length' is possibly 'undefined'.
+src/hooks/use-match-score.ts(108,17): error TS18048: 'preferences.preferred_teer_categories' is possibly 'undefined'.
+src/lib/api/alerts.ts(29,64): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "job_alerts", never, "POST">', gave the following error.
+    Argument of type 'Partial<JobAlert>' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "job_alerts", never, "POST">', gave the following error.
+    Argument of type 'Partial<JobAlert>' is not assignable to parameter of type 'never[]'.
+      Type 'Partial<JobAlert>' is missing the following properties from type 'never[]': length, pop, push, concat, and 35 more.
+src/lib/api/alerts.ts(49,58): error TS2345: Argument of type '{ is_active: boolean; }' is not assignable to parameter of type 'never'.
+src/lib/api/analytics.ts(16,18): error TS2339: Property 'tier' does not exist on type 'never'.
+src/lib/api/analytics.ts(37,60): error TS2345: Argument of type '{ p_noc_code: string; p_province: string | null; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/analytics.ts(53,67): error TS2345: Argument of type '{ p_tier: number; p_is_lmia: boolean; p_limit: number; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/analytics.ts(64,25): error TS2339: Property 'map' does not exist on type 'never'.
+src/lib/api/comparison.ts(10,95): error TS2345: Argument of type '{ table_name: string; column_name: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/credits.ts(22,19): error TS2339: Property 'total_credit' does not exist on type 'never'.
+src/lib/api/credits.ts(22,47): error TS2339: Property 'used_credit' does not exist on type 'never'.
+src/lib/api/credits.ts(39,17): error TS2345: Argument of type '{ used_credit: any; }' is not assignable to parameter of type 'never'.
+src/lib/api/credits.ts(39,42): error TS2339: Property 'used_credit' does not exist on type 'never'.
+src/lib/api/filters.ts(15,9): error TS2345: Argument of type '{ p_table_name: string; p_column_name: string; p_filters: any; p_search_field: string | null; p_search_term: string | null; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/filters.ts(24,64): error TS2339: Property 'length' does not exist on type 'never'.
+src/lib/api/jobs.ts(14,61): error TS2345: Argument of type '{ term: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/jobs.ts(27,70): error TS2345: Argument of type '{ term: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/jobs.ts(213,40): error TS2339: Property 'JobTitle' does not exist on type 'never'.
+src/lib/api/jobs.ts(214,44): error TS2339: Property 'job_title' does not exist on type 'never'.
+src/lib/api/jobs.ts(225,40): error TS2339: Property 'Category' does not exist on type 'never'.
+src/lib/api/jobs.ts(226,44): error TS2339: Property 'category' does not exist on type 'never'.
+src/lib/api/jobs.ts(238,50): error TS2339: Property 'noc_code' does not exist on type 'never'.
+src/lib/api/jobs.ts(249,50): error TS2339: Property 'tier' does not exist on type 'never'.
+src/lib/api/locations.ts(24,68): error TS2345: Argument of type '{ p_province: string; p_search: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/locations.ts(49,54): error TS2345: Argument of type '{ p_province: string; p_search: string; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/locations.ts(68,61): error TS2339: Property 'data' does not exist on type 'never'.
+src/lib/api/locations.ts(69,47): error TS2339: Property 'data' does not exist on type 'never'.
+src/lib/api/locations.ts(76,37): error TS2339: Property 'city' does not exist on type 'never'.
+src/lib/api/locations.ts(85,37): error TS2339: Property 'city' does not exist on type 'never'.
+src/lib/api/recommendations.ts(153,13): error TS18048: 'preferences.preferred_provinces.length' is possibly 'undefined'.
+src/lib/api/recommendations.ts(154,51): error TS2345: Argument of type 'string[] | undefined' is not assignable to parameter of type 'readonly unknown[]'.
+  Type 'undefined' is not assignable to type 'readonly unknown[]'.
+src/lib/api/recommendations.ts(157,13): error TS18048: 'preferences.preferred_cities.length' is possibly 'undefined'.
+src/lib/api/recommendations.ts(158,46): error TS2345: Argument of type 'string[] | undefined' is not assignable to parameter of type 'readonly unknown[]'.
+  Type 'undefined' is not assignable to type 'readonly unknown[]'.
+src/lib/api/recommendations.ts(166,13): error TS18048: 'preferences.preferred_teer_categories.length' is possibly 'undefined'.
+src/lib/api/recommendations.ts(169,46): error TS2345: Argument of type 'string[] | undefined' is not assignable to parameter of type 'readonly unknown[]'.
+  Type 'undefined' is not assignable to type 'readonly unknown[]'.
+src/lib/api/recommendations.ts(176,41): error TS2698: Spread types may only be created from object types.
+src/lib/api/recommendations.ts(176,73): error TS2339: Property 'RecordID' does not exist on type 'never'.
+src/lib/api/recommendations.ts(198,13): error TS18048: 'preferences.preferred_provinces.length' is possibly 'undefined'.
+src/lib/api/recommendations.ts(199,55): error TS2345: Argument of type 'string[] | undefined' is not assignable to parameter of type 'readonly unknown[]'.
+  Type 'undefined' is not assignable to type 'readonly unknown[]'.
+src/lib/api/recommendations.ts(202,13): error TS18048: 'preferences.preferred_cities.length' is possibly 'undefined'.
+src/lib/api/recommendations.ts(203,54): error TS2345: Argument of type 'string[] | undefined' is not assignable to parameter of type 'readonly unknown[]'.
+  Type 'undefined' is not assignable to type 'readonly unknown[]'.
+src/lib/api/recommendations.ts(207,13): error TS18048: 'preferences.preferred_teer_categories.length' is possibly 'undefined'.
+src/lib/api/recommendations.ts(208,54): error TS2345: Argument of type 'string[] | undefined' is not assignable to parameter of type 'readonly unknown[]'.
+  Type 'undefined' is not assignable to type 'readonly unknown[]'.
+src/lib/api/recommendations.ts(215,45): error TS2698: Spread types may only be created from object types.
+src/lib/api/recommendations.ts(295,9): error TS18048: 'preferences.preferred_teer_categories.length' is possibly 'undefined'.
+src/lib/api/recommendations.ts(306,13): error TS18048: 'preferences.preferred_teer_categories' is possibly 'undefined'.
+src/lib/api/recommendations.ts(388,71): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "job_recommendations", never, "POST">', gave the following error.
+    Argument of type '{ user_id: string; job_id: string; job_source: "lmia" | "trending_job"; score: number; reasons: string[]; }[]' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "job_recommendations", never, "POST">', gave the following error.
+    Argument of type '{ user_id: string; job_id: string; job_source: "lmia" | "trending_job"; score: number; reasons: string[]; }[]' is not assignable to parameter of type 'never[]'.
+      Type '{ user_id: string; job_id: string; job_source: "lmia" | "trending_job"; score: number; reasons: string[]; }' is not assignable to type 'never'.
+src/lib/api/recommendations.ts(442,45): error TS2339: Property 'created_at' does not exist on type 'never'.
+src/lib/api/saved-jobs.ts(16,38): error TS2339: Property 'record_id' does not exist on type 'never'.
+src/lib/api/saved-jobs.ts(54,46): error TS2339: Property 'record_id' does not exist on type 'never'.
+src/lib/api/saved-jobs.ts(61,51): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "saved_jobs", never, "POST">', gave the following error.
+    Argument of type '{ record_id: string; user_id: string; created_at: string; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "saved_jobs", never, "POST">', gave the following error.
+    Object literal may only specify known properties, and 'record_id' does not exist in type 'never[]'.
+src/lib/api/saved-jobs.ts(98,42): error TS2339: Property 'record_id' does not exist on type 'never'.
+src/lib/api/saved-jobs.ts(102,26): error TS2698: Spread types may only be created from object types.
+src/lib/api/saved-jobs.ts(108,36): error TS2339: Property 'record_id' does not exist on type 'never'.
+src/lib/api/saved-jobs.ts(113,21): error TS2698: Spread types may only be created from object types.
+src/lib/api/saved-jobs.ts(115,53): error TS2339: Property 'employer' does not exist on type 'never'.
+src/lib/api/saved-jobs.ts(116,47): error TS2339: Property 'job_title' does not exist on type 'never'.
+src/lib/api/searches.ts(18,17): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "searches", never, "POST">', gave the following error.
+    Argument of type 'SearchRecord' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "searches", never, "POST">', gave the following error.
+    Argument of type 'SearchRecord' is not assignable to parameter of type 'never[]'.
+      Type 'SearchRecord' is missing the following properties from type 'never[]': length, pop, push, concat, and 35 more.
+src/lib/api/searches.ts(32,17): error TS2345: Argument of type '{ save: boolean; }' is not assignable to parameter of type 'never'.
+src/lib/api/searches.ts(51,50): error TS2339: Property 'keyword' does not exist on type 'never'.
+src/lib/api/searches.ts(73,31): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "searches", never, "POST">', gave the following error.
+    Argument of type '{ id: string; keyword: string; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "searches", never, "POST">', gave the following error.
+    Object literal may only specify known properties, and 'id' does not exist in type 'never[]'.
+src/lib/api/searches.ts(124,17): error TS2345: Argument of type '{ keyword: string; }' is not assignable to parameter of type 'never'.
+src/lib/api/suggestions.ts(11,66): error TS2345: Argument of type '{ p_field: string; p_q: string; p_limit: number; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/suggestions.ts(29,58): error TS2345: Argument of type '{ p_field: string; p_q: string; p_limit: number; }' is not assignable to parameter of type 'undefined'.
+src/lib/api/users.ts(60,17): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., "POST">', gave the following error.
+    Argument of type '{ user_id: string; preferred_job_titles?: string[] | undefined; preferred_locations?: string[] | undefined; preferred_provinces?: string[] | undefined; preferred_cities?: string[] | undefined; preferred_industries?: string[] | undefined; ... 10 more ...; updated_at?: string | undefined; }' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Argument of type '{ user_id: string; preferred_job_titles?: string[] | undefined; preferred_locations?: string[] | undefined; preferred_provinces?: string[] | undefined; preferred_cities?: string[] | undefined; preferred_industries?: string[] | undefined; ... 10 more ...; updated_at?: string | undefined; }' is not assignable to parameter of type 'never[]'.
+      Type '{ user_id: string; preferred_job_titles?: string[] | undefined; preferred_locations?: string[] | undefined; preferred_provinces?: string[] | undefined; preferred_cities?: string[] | undefined; ... 11 more ...; updated_at?: string | undefined; }' is missing the following properties from type 'never[]': length, pop, push, concat, and 35 more.
+src/lib/api/users.ts(72,56): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "visitors", never, "POST">', gave the following error.
+    Argument of type 'Record<string, any>' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "visitors", never, "POST">', gave the following error.
+    Argument of type 'Record<string, any>' is not assignable to parameter of type 'never[]'.
+      Type 'Record<string, any>' is missing the following properties from type 'never[]': length, pop, push, concat, and 35 more.

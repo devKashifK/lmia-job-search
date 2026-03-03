@@ -11,7 +11,7 @@ export interface JobSearchResult {
 }
 
 export async function searchLmia(term: string): Promise<JobSearchResult[]> {
-    const { data, error } = await db.rpc('rpc_search_lmia', {
+    const { data, error } = await (db as any).rpc('rpc_search_lmia', {
         term: term,
     });
 
@@ -24,7 +24,7 @@ export async function searchLmia(term: string): Promise<JobSearchResult[]> {
 }
 
 export async function searchTrending(term: string): Promise<JobSearchResult[]> {
-    const { data, error } = await db.rpc('rpc_search_hot_leads_new', {
+    const { data, error } = await (db as any).rpc('rpc_search_hot_leads_new', {
         term: term,
     });
 
@@ -206,25 +206,23 @@ export async function queryJobs({
 
 export async function getJobTitles(): Promise<string[]> {
     const [lmiaRes, trendingRes] = await Promise.all([
-        db.from('lmia').select('JobTitle').not('JobTitle', 'is', null).limit(1000),
+        db.from('lmia').select('job_title').not('job_title', 'is', null).limit(1000),
         db.from('trending_job').select('job_title').not('job_title', 'is', null).limit(1000),
     ]);
     const all = [
-        ...(lmiaRes.data?.map((r) => r.JobTitle) ?? []),
-        ...(trendingRes.data?.map((r) => r.job_title) ?? []),
-    ].filter(Boolean);
+        ...((lmiaRes.data as any[])?.map((r) => r.job_title) ?? []),
+        ...((trendingRes.data as any[])?.map((r) => r.job_title) ?? []),
+    ].filter(Boolean) as string[];
     return [...new Set(all)].sort((a, b) => a.localeCompare(b));
 }
 
 export async function getCategories(): Promise<string[]> {
-    const [lmiaRes, trendingRes] = await Promise.all([
-        db.from('lmia').select('Category').not('Category', 'is', null).limit(1000),
+    const [trendingRes] = await Promise.all([
         db.from('trending_job').select('category').not('category', 'is', null).limit(1000),
     ]);
     const all = [
-        ...(lmiaRes.data?.map((r) => r.Category) ?? []),
-        ...(trendingRes.data?.map((r) => r.category) ?? []),
-    ].filter(Boolean);
+        ...((trendingRes.data as any[])?.map((r) => r.category) ?? []),
+    ].filter(Boolean) as string[];
     return [...new Set(all)].sort((a, b) => a.localeCompare(b));
 }
 
@@ -235,7 +233,7 @@ export async function getNocCodes(): Promise<string[]> {
         .not('noc_code', 'is', null)
         .limit(1000);
     if (error) throw error;
-    return [...new Set((data ?? []).map((r) => r.noc_code).filter(Boolean))].sort((a, b) =>
+    return [...new Set(((data as any[]) ?? []).map((r) => r.noc_code).filter(Boolean) as string[])].sort((a, b) =>
         a.localeCompare(b)
     );
 }
@@ -246,7 +244,7 @@ export async function getCompanyTiers(): Promise<string[]> {
         .select('tier')
         .not('tier', 'is', null);
     if (error) throw error;
-    return [...new Set((data ?? []).map((r) => r.tier).filter(Boolean))].sort();
+    return [...new Set(((data as any[]) ?? []).map((r) => r.tier).filter(Boolean) as string[])].sort();
 }
 
 export async function getLiveFeedCounts(): Promise<{ highEndJobs: number; totalLmias: number }> {

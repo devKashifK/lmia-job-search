@@ -13,9 +13,9 @@ export interface SearchRecord {
  * Insert a new search record
  */
 export async function insertSearch(record: SearchRecord): Promise<{ search_id?: number | string }> {
-    const { data, error } = await db
+    const { data, error } = await (db as any)
         .from('searches')
-        .insert(record)
+        .insert(record as any)
         .select('search_id')
         .single();
 
@@ -27,7 +27,7 @@ export async function insertSearch(record: SearchRecord): Promise<{ search_id?: 
  * Update the saved status of a search
  */
 export async function updateSearchSaved(searchId: number | string, saved: boolean): Promise<void> {
-    const { error } = await db
+    const { error } = await (db as any)
         .from('searches')
         .update({ save: saved })
         .eq('search_id', searchId);
@@ -48,14 +48,14 @@ export async function getRecentSearches(userId: string, limit = 10): Promise<str
         .limit(limit);
 
     if (error) throw error;
-    return [...new Set((data ?? []).map((s) => s.keyword))];
+    return [...new Set(((data as any[]) ?? []).map((s: any) => s.keyword))];
 }
 
 /**
  * Get full search history list for a user (for dashboard)
  */
 export async function getSearchHistory(userId: string) {
-    const { data, error } = await db
+    const { data, error } = await (db as any)
         .from('searches')
         .select('*')
         .eq('id', userId)
@@ -70,7 +70,7 @@ export async function getSearchHistory(userId: string) {
  * Track a job view (stored as a special search entry)
  */
 export async function trackJobView(userId: string, jobId: string, jobSource: 'lmia' | 'trending_job'): Promise<void> {
-    await db.from('searches').insert({
+    await (db as any).from('searches').insert({
         id: userId,
         keyword: `__job_view__:${jobSource}:${jobId}`,
     });
@@ -80,7 +80,7 @@ export async function trackJobView(userId: string, jobId: string, jobSource: 'lm
  * Get usage history of searches in a date range
  */
 export async function getUsageHistoryList(userId: string, startDate: Date, endDate: Date) {
-    const { data, error } = await db
+    const { data, error } = await (db as any)
         .from('searches')
         .select('created_at')
         .eq('id', userId)
@@ -95,7 +95,7 @@ export async function getUsageHistoryList(userId: string, startDate: Date, endDa
  * Delete a specific search by its ID
  */
 export async function deleteSearch(searchId: number | string): Promise<void> {
-    const { error } = await db
+    const { error } = await (db as any)
         .from('searches')
         .delete()
         .eq('search_id', searchId);
@@ -107,7 +107,7 @@ export async function deleteSearch(searchId: number | string): Promise<void> {
  * Clear all search history for a user
  */
 export async function clearSearchHistory(userId: string): Promise<void> {
-    const { error } = await db
+    const { error } = await (db as any)
         .from('searches')
         .delete()
         .eq('id', userId);
@@ -119,7 +119,7 @@ export async function clearSearchHistory(userId: string): Promise<void> {
  * Rename a search
  */
 export async function renameSearch(searchId: number | string, newKeyword: string): Promise<void> {
-    const { error } = await db
+    const { error } = await (db as any)
         .from('searches')
         .update({ keyword: newKeyword })
         .eq('search_id', searchId);

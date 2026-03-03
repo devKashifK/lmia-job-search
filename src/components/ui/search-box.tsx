@@ -109,6 +109,8 @@ export function SearchBox() {
   const [locationStep, setLocationStep] = useState<'province' | 'city'>('province');
   const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [citySearch, setCitySearch] = useState('');
+  const [showMore, setShowMore] = useState(false);
 
   // activeField, dateRange, showAlertDialog - kept as UI state
   const [activeField, setActiveField] = useState<'what' | 'where' | 'dates' | null>(null);
@@ -130,6 +132,7 @@ export function SearchBox() {
   // Refs not provided by hook
   const locationMenuRef = useRef<HTMLDivElement>(null);
   const locationInputRef = useRef<HTMLInputElement>(null);
+  const locationTriggerRef = useRef<HTMLDivElement>(null);
 
   // helpers for dates
   const toYMD = (d: Date) => {
@@ -180,8 +183,15 @@ export function SearchBox() {
       ) {
         setShowSuggestions(false);
       }
-      if (locationMenuRef.current && !locationMenuRef.current.contains(t) && locationInputRef.current && !locationInputRef.current.contains(t)) {
+      // Close location menu when clicking outside BOTH the dropdown AND the trigger
+      if (
+        locationMenuRef.current &&
+        !locationMenuRef.current.contains(t) &&
+        locationTriggerRef.current &&
+        !locationTriggerRef.current.contains(t)
+      ) {
         setShowLocationMenu(false);
+        setActiveField(prev => prev === 'where' ? null : prev);
       }
 
       // Clear active field if clicking outside main container
@@ -196,7 +206,7 @@ export function SearchBox() {
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []); // check deps
+  }, []);
 
   // fetchSuggestions and useEffect removed (handled by useJobSearch)
 
@@ -276,7 +286,8 @@ export function SearchBox() {
 
   const handleApplyLocation = () => {
     setShowLocationMenu(false);
-    // Focus next field or just close
+    setActiveField(null);
+    setCitySearch('');
   };
 
   // reset on "Canada" selection
@@ -285,6 +296,8 @@ export function SearchBox() {
     setSelectedCities([]);
     setLocationText('Canada');
     setShowLocationMenu(false);
+    setActiveField(null);
+    setCitySearch('');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -677,9 +690,10 @@ export function SearchBox() {
 
             {/* Zone 2: Where */}
             <div
+              ref={locationTriggerRef}
               onClick={() => {
                 setActiveField('where');
-                setShowLocationMenu(true);
+                setShowLocationMenu(prev => !prev);
               }}
               className={cn(
                 "relative cursor-pointer hover:bg-gray-50/50 transition-colors",
@@ -935,34 +949,59 @@ export function SearchBox() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setLocationStep('province')}
+                            onClick={() => { setLocationStep('province'); setCitySearch(''); }}
                             className="h-8 px-2 text-gray-500 hover:text-gray-900"
                           >
                             <ArrowRight className="w-4 h-4 rotate-180 mr-1" /> Back
                           </Button>
                           <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                            Cities from {selectedProvinces.length} Provinces
+                            Cities from {selectedProvinces.length} Province{selectedProvinces.length !== 1 ? 's' : ''}
+                          </div>
+                        </div>
+
+                        {/* City search input */}
+                        <div className="px-2 pb-2">
+                          <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl border border-gray-200 focus-within:border-brand-400 focus-within:ring-1 focus-within:ring-brand-200 transition-all">
+                            <Search className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                            <input
+                              type="text"
+                              value={citySearch}
+                              onChange={e => setCitySearch(e.target.value)}
+                              placeholder="Search cities…"
+                              className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
+                              autoFocus
+                            />
+                            {citySearch && (
+                              <button onClick={() => setCitySearch('')} className="text-gray-400 hover:text-gray-600">
+                                <X className="w-3 h-3" />
+                              </button>
+                            )}
                           </div>
                         </div>
 
                         {cities.length > 0 ? (
                           <div className="grid grid-cols-1 gap-1 px-2">
-                            {cities.map((c, idx) => (
-                              <div
-                                key={`${c.province}-${c.city}-${idx}`}
-                                className="flex items-center space-x-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
-                                onClick={() => handleCityToggle(c.city)}
-                              >
-                                <Checkbox
-                                  checked={selectedCities.includes(c.city)}
-                                  className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
-                                />
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-medium text-gray-700">{c.city}</span>
-                                  <span className="text-[10px] text-gray-400">{c.province}</span>
+                            {cities
+                              .filter(c => !citySearch || c.city.toLowerCase().includes(citySearch.toLowerCase()))
+                              .map((c, idx) => (
+                                <div
+                                  key={`${c.province}-${c.city}-${idx}`}
+                                  className="flex items-center space-x-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer"
+                                  onClick={() => handleCityToggle(c.city)}
+                                >
+                                  <Checkbox
+                                    checked={selectedCities.includes(c.city)}
+                                    className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
+                                  />
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-medium text-gray-700">{c.city}</span>
+                                    <span className="text-[10px] text-gray-400">{c.province}</span>
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
+                            {cities.filter(c => !citySearch || c.city.toLowerCase().includes(citySearch.toLowerCase())).length === 0 && (
+                              <div className="p-4 text-center text-gray-400 text-sm">No cities match &ldquo;{citySearch}&rdquo;</div>
+                            )}
                           </div>
                         ) : (
                           <div className="p-4 text-center text-gray-400 text-sm">No cities found.</div>
@@ -984,7 +1023,6 @@ export function SearchBox() {
             </AnimatePresence>
           </div >
 
-          {/* Search By Options (New) */}
           {/* Search By Options (Premium UI) */}
           <div className="flex justify-center mt-6">
             <div className="inline-flex items-center bg-white/80 backdrop-blur-md border border-white/50 shadow-sm rounded-full p-1.5 gap-1">
@@ -1010,83 +1048,109 @@ export function SearchBox() {
             </div>
           </div>
 
-
-
-          {/* Headline (Moved Below Search Bar) */}
-
-
-          {/* Stats & Categories - Organized Container */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 max-w-5xl mx-auto"
-          >
-            {/* Unified Card for Trending & Categories */}
-            <div className="bg-white/50 backdrop-blur-sm border border-gray-100 rounded-3xl px-6 py-4 md:px-8 md:py-6 shadow-sm">
-
-              <div className="text-center mt-12 mb-8 space-y-4">
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight"
-                >
-                  Discover your next <span className="text-brand-600">career move</span>.
-                </motion.h1>
-                {!isMobile && (
-                  <div className="flex justify-center items-center gap-2 text-lg text-gray-500 font-medium">
-                    <span className="text-gray-500 mt-3" >Search for</span>
-                    <TypewriterEffect
-                      title=""
-                      words={['Software Engineers', 'Nurses in Ontario', 'LMIA Jobs', 'Marketing Managers']}
-                      className="text-gray-900 font-semibold"
-                    />
-                  </div>
-                )}
-              </div>
-              {/* Trending Section */}
-              <div className="flex flex-col items-center gap-4 mb-8">
-                <div className="flex items-center gap-2 text-gray-400">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-widest">Trending Now</span>
-                </div>
-                <TrendingSearchBox
-                  dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
-                  dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
-                  checkCredits={checkCredits}
-                  fetchSuggestions={fetchSuggestions}
-                  selectedProvinces={selectedProvinces}
-                  selectedCities={selectedCities}
-                  searchType={searchType}
-                  setInput={setInput}
-                  setShowSuggestions={setShowSuggestions}
-                />
-              </div>
-
-              {/* Divider */}
-              <div className="w-24 h-px bg-gray-200 mx-auto mb-8" />
-
-              {/* Categories Section */}
-              <div className="flex flex-col items-center gap-4">
-                <div className="flex items-center gap-2 text-gray-400">
-                  <Briefcase className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase tracking-widest">Browse Categories</span>
-                </div>
-                <CategoryBox
-                  dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
-                  dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
-                  selectedProvinces={selectedProvinces}
-                  selectedCities={selectedCities}
-                  searchType={searchType}
-                />
-              </div>
-            </div>
-          </motion.div>
-
-          <div className="mt-8">
-            <HomeRecommendations />
+          {/* More toggle button */}
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => setShowMore(prev => !prev)}
+              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold text-gray-500 hover:text-gray-900 bg-white/70 hover:bg-white border border-gray-200 shadow-sm transition-all duration-200"
+            >
+              {showMore ? 'Less' : 'More'}
+              <motion.span
+                animate={{ rotate: showMore ? 180 : 0 }}
+                transition={{ duration: 0.25 }}
+                className="inline-flex"
+              >
+                <ChevronDown className="w-3.5 h-3.5" />
+              </motion.span>
+            </button>
           </div>
+
+          {/* Collapsible section: Trending, Categories & Recommendations */}
+          <AnimatePresence initial={false}>
+            {showMore && (
+              <motion.div
+                key="more-section"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="overflow-hidden"
+              >
+                {/* Stats & Categories - Organized Container */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                  className="mt-8 max-w-5xl mx-auto"
+                >
+                  {/* Unified Card for Trending & Categories */}
+                  <div className="bg-white/50 backdrop-blur-sm border border-gray-100 rounded-3xl px-6 py-4 md:px-8 md:py-6 shadow-sm">
+
+                    <div className="text-center mt-12 mb-8 space-y-4">
+                      <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight leading-tight"
+                      >
+                        Discover your next <span className="text-brand-600">career move</span>.
+                      </motion.h1>
+                      {!isMobile && (
+                        <div className="flex justify-center items-center gap-2 text-lg text-gray-500 font-medium">
+                          <span className="text-gray-500 mt-3" >Search for</span>
+                          <TypewriterEffect
+                            title=""
+                            words={['Software Engineers', 'Nurses in Ontario', 'LMIA Jobs', 'Marketing Managers']}
+                            className="text-gray-900 font-semibold"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {/* Trending Section */}
+                    <div className="flex flex-col items-center gap-4 mb-8">
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <TrendingUp className="w-4 h-4" />
+                        <span className="text-xs font-bold uppercase tracking-widest">Trending Now</span>
+                      </div>
+                      <TrendingSearchBox
+                        dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
+                        dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
+                        checkCredits={checkCredits}
+                        fetchSuggestions={fetchSuggestions}
+                        selectedProvinces={selectedProvinces}
+                        selectedCities={selectedCities}
+                        searchType={searchType}
+                        setInput={setInput}
+                        setShowSuggestions={setShowSuggestions}
+                      />
+                    </div>
+
+                    {/* Divider */}
+                    <div className="w-24 h-px bg-gray-200 mx-auto mb-8" />
+
+                    {/* Categories Section */}
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <Briefcase className="w-4 h-4" />
+                        <span className="text-xs font-bold uppercase tracking-widest">Browse Categories</span>
+                      </div>
+                      <CategoryBox
+                        dateFrom={dateRange?.from ? toYMD(dateRange.from) : undefined}
+                        dateTo={dateRange?.to ? toYMD(dateRange.to) : undefined}
+                        selectedProvinces={selectedProvinces}
+                        selectedCities={selectedCities}
+                        searchType={searchType}
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+
+                <div className="mt-8">
+                  <HomeRecommendations />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
         </motion.div>
       </div >
