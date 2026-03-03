@@ -1,20 +1,10 @@
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 import AuthenticatedLayout from "@/components/ui/authenticated";
 import React from "react";
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
-  // Initialize the server-side Supabase client to read the user's secure cookies
-  const supabase = await createClient();
-
-  // Verify the user's session securely before ANY HTML is sent to the client
-  const { data: { user }, error } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    redirect("/sign-in");
-  }
-
-  // If we reach here, the server has cryptographically verified the user is logged in.
-  // We can safely render the layout immediately without any client-side loading spinners.
+export default function Layout({ children }: { children: React.ReactNode }) {
+  // Auth is checked client-side by <AuthenticatedLayout> which reads from
+  // the localStorage-based Supabase session (db.auth.getSession).
+  // Do NOT use @supabase/ssr server check here — it reads cookies,
+  // but the app's session is stored in localStorage via the JS SDK.
   return <AuthenticatedLayout>{children}</AuthenticatedLayout>;
 }

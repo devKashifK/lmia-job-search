@@ -1,17 +1,29 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-// Determine if we are running in the browser
-const isBrowser = typeof window !== 'undefined';
+let _browserClient: SupabaseClient | null = null;
+let _serverClient: SupabaseClient | null = null;
 
-// If in browser, use our Next.js API proxy to hide real credentials from Network tab
-const supabaseUrl = isBrowser
-  ? '/api/proxy-supabase'
-  : process.env.NEXT_PUBLIC_SUPABASE_URL!;
+function createDb(): SupabaseClient {
+  const isBrowser = typeof window !== "undefined";
 
-const supabaseKey = isBrowser
-  ? 'hidden-key' // Dummy key, real key injected by Middleware
-  : process.env.NEXT_PUBLIC_SUPABASE_KEY!;
+  if (isBrowser) {
+    if (_browserClient) return _browserClient;
+    const proxyUrl = `${window.location.origin}/api/proxy-supabase`;
+    _browserClient = createClient(proxyUrl, "hidden-key");
+    return _browserClient;
+  }
 
-const db = createClient(supabaseUrl, supabaseKey);
+  if (_serverClient) return _serverClient;
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const key = process.env.SUPABASE_KEY || process.env.NEXT_PUBLIC_SUPABASE_KEY!;
+  _serverClient = createClient(url, key);
+  return _serverClient;
+}
+
+const db = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    return (createDb() as any)[prop];
+  },
+});
 
 export default db;
