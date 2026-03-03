@@ -6,7 +6,7 @@ import { updateSession } from '@/utils/supabase/middleware';
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
 
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const MAX_REQUESTS = 100; // 100 requests per minute
+const MAX_REQUESTS = 500; // 500 requests per minute per IP
 
 const BLOCKED_USER_AGENTS = [
     'python-requests',
@@ -53,9 +53,12 @@ export async function proxy(request: NextRequest) {
         }
     }
 
-    // Skip rate limiting for static assets
-    if (request.nextUrl.pathname.startsWith('/_next') ||
-        request.nextUrl.pathname.startsWith('/static')) {
+    // Skip rate limiting for static assets and internal API routes
+    if (
+        request.nextUrl.pathname.startsWith('/_next') ||
+        request.nextUrl.pathname.startsWith('/static') ||
+        request.nextUrl.pathname.startsWith('/api/')
+    ) {
         return NextResponse.next();
     }
 
