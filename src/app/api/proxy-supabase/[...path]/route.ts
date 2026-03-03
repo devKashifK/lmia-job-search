@@ -13,10 +13,12 @@ async function proxyRequest(request: NextRequest, props: { params: Promise<{ pat
     const pathArray = params.path || [];
     const targetPath = '/' + pathArray.join('/');
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
+    // Accept both runtime-secret vars and NEXT_PUBLIC_ build-time vars
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_KEY || process.env.NEXT_PUBLIC_SUPABASE_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
+        console.error('[proxy-supabase] Missing env vars. Set SUPABASE_URL and SUPABASE_KEY on the server.');
         return new Response('Supabase configuration missing', { status: 500 });
     }
 

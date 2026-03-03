@@ -9,47 +9,25 @@ export function PreventCopyPaste() {
             return;
         }
 
-        // Disable Right Click
-        const handleContextMenu = (e: MouseEvent) => {
-            e.preventDefault();
+        // [TEMP: DevTools unblocked for debugging — re-enable when done]
+        // Disable Right Click — temporarily disabled
+        const handleContextMenu = (_e: MouseEvent) => {
+            // e.preventDefault();
         };
 
-        // Disable Key Combinations
+        // Key combinations — DevTools shortcuts temporarily allowed for debugging
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Prevent F12 (DevTools)
-            if (e.key === 'F12') {
-                e.preventDefault();
-            }
+            // -- F12, Ctrl+Shift+I/J/C: temporarily open for production debugging --
+            // if (e.key === 'F12') e.preventDefault();
+            // if (e.ctrlKey && e.shiftKey && e.key === 'I') e.preventDefault();
+            // if (e.ctrlKey && e.shiftKey && e.key === 'J') e.preventDefault();
+            // if (e.ctrlKey && e.shiftKey && e.key === 'C') e.preventDefault();
+            // if (e.ctrlKey && e.key === 'u') e.preventDefault();
 
-            // Prevent Ctrl+Shift+I (DevTools)
-            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
-                e.preventDefault();
-            }
-
-            // Prevent Ctrl+Shift+J (DevTools Console)
-            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
-                e.preventDefault();
-            }
-
-            // Prevent Ctrl+Shift+C (Inspect Element)
-            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-                e.preventDefault();
-            }
-
-            // Prevent Ctrl+U (View Source)
-            if (e.ctrlKey && e.key === 'u') {
-                e.preventDefault();
-            }
-
-            // Prevent Ctrl+C (Copy)
+            // Copy/cut still blocked
             if (e.ctrlKey && e.key === 'c') {
                 e.preventDefault();
             }
-
-            // Prevent Ctrl+V (Paste) -- Optional, user might want to paste into search inputs?
-            // Leaving paste enabled for better UX in forms, but blocking copy/cut.
-
-            // Prevent Ctrl+X (Cut)
             if (e.ctrlKey && e.key === 'x') {
                 e.preventDefault();
             }

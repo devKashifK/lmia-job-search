@@ -22,8 +22,11 @@ function createDb(): SupabaseClient {
 
 const db = new Proxy({} as SupabaseClient, {
   get(_target, prop) {
-    return (createDb() as any)[prop];
+    const client = createDb();
+    const value = (client as any)[prop];
+    return typeof value === "function" ? value.bind(client) : value;
   },
 });
 
 export default db;
+

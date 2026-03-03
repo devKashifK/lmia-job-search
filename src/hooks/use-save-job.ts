@@ -80,7 +80,7 @@ export function useSaveJob(recordId: string | undefined) {
     }
 
     try {
-      const saved = await checkIfSaved(recordId, session);
+      const saved = await checkIfSaved(recordId, session?.user?.id);
       setIsSaved(saved);
       return saved;
     } catch (error) {
