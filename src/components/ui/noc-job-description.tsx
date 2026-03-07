@@ -40,6 +40,7 @@ import {
   Contact,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { parseJobDescription } from '@/utils/parse-job-description';
 
 interface NocProfile {
   code: string;
@@ -68,6 +69,7 @@ interface Job {
   priority_occupation?: string;
   approved_positions?: number;
   territory?: string;
+  job_description?: string;
 }
 
 interface NocJobDescriptionProps {
@@ -283,21 +285,37 @@ export function NocJobDescription({
     }
   }, [job?.noc_code, job?.['2021_noc']]);
 
+  // Parse structured JSON from DB (falls back gracefully to plain text or NOC profile)
+  const parsedDesc = parseJobDescription(job?.job_description);
+
   const jobData = {
-    title: nocProfile?.title,
+    title: nocProfile?.title || job?.job_title,
     company: job?.employer,
     location: `${job?.city}, ${job?.state}`,
-    salary: job?.priority_occupation || 'Varies by employer',
+    // Prefer salary extracted from JSON, then DB priority_occupation, then generic fallback
+    salary: parsedDesc?.salary || job?.priority_occupation || 'Varies by employer',
     postedDate: job?.date_of_job_posting || 'Unknown',
     experienceLevel: 'As per requirements',
     jobType: 'Full-time',
     workType: 'On-site',
     salaryHourly: 'Varies by employer',
-    aboutCompany: nocProfile?.overview,
-    jobDescription: formatMainDuties(nocProfile?.mainDuties ?? {}), // ✅ safe fallback
-    requirements: nocProfile?.employmentRequirements ?? [], // ✅ safe fallback
+    // Overview: parsed overview → NOC overview
+    aboutCompany: parsedDesc?.overview ?? nocProfile?.overview,
+    // Responsibilities: parsed → NOC main duties
+    jobDescription: parsedDesc
+      ? parsedDesc.responsibilities
+      : formatMainDuties(nocProfile?.mainDuties ?? {}),
+    // Requirements: parsed → NOC employment requirements
+    requirements: parsedDesc
+      ? parsedDesc.requirements
+      : (nocProfile?.employmentRequirements ?? []),
     companyLogoUrl: '/logo.svg',
-    additionalInfo: nocProfile?.additionalInfo ?? [], // ✅ safe fallback
+    // Additional Info: parsed → NOC additional info
+    additionalInfo: parsedDesc
+      ? parsedDesc.additionalInfo
+      : (nocProfile?.additionalInfo ?? []),
+    // External link to original job posting (Job Bank etc.)
+    jobUrl: parsedDesc?.jobUrl ?? null,
   };
 
   const goTo = (path: string) => router.push(path);
@@ -511,6 +529,25 @@ export function NocJobDescription({
                           state={job?.state}
                           className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2.5 py-1.5 text-xs transition-all duration-200 hover:scale-105"
                         />
+
+                        {jobData.jobUrl && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => window.open(jobData.jobUrl!, '_blank', 'noopener,noreferrer')}
+                                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2.5 py-1.5 text-xs hover:scale-105 transition-all duration-200 gap-1"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                Original
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">View original job posting</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
 
                         <Tooltip>
                           <TooltipTrigger asChild>

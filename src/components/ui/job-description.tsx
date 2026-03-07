@@ -9,6 +9,7 @@ import { JobRequirements } from '@/components/job-description/job-requirements';
 import { Separator } from '@/components/ui/separator';
 import { useSelectedColumnRecord } from './dynamic-data-view';
 import { PremiumDialog } from './premium-dialog';
+import { parseJobDescription } from '@/utils/parse-job-description';
 
 interface NocProfile {
   code: string;
@@ -50,6 +51,7 @@ function isJobRecord(jd: unknown): jd is {
   state?: string;
   date_of_job_posting?: string;
   noc_priority?: string;
+  job_description?: string;
 } {
   return typeof jd === 'object' && jd !== null;
 }
@@ -68,9 +70,11 @@ function JobDescription({ id }: JobDescriptionProps) {
     loadNocProfile();
   }, [id]);
 
-  const jobData = nocProfile
+  const parsedDesc = isJobRecord(jd) ? parseJobDescription(jd.job_description) : null;
+
+  const jobData = nocProfile || parsedDesc
     ? {
-      title: nocProfile.title,
+      title: nocProfile?.title || 'Job Description',
       company:
         isJobRecord(jd) && jd.operating_name
           ? jd.operating_name
@@ -83,18 +87,24 @@ function JobDescription({ id }: JobDescriptionProps) {
           ? jd.date_of_job_posting
           : 'Unknown',
       salary:
-        isJobRecord(jd) && jd.noc_priority
-          ? jd.noc_priority
-          : 'Varies by employer',
+        parsedDesc?.salary ||
+        (isJobRecord(jd) && jd.noc_priority ? jd.noc_priority : 'Varies by employer'),
       experienceLevel: 'As per requirements',
       jobType: 'Full-time',
       workType: 'On-site',
       salaryHourly: 'Varies by employer',
-      aboutCompany: nocProfile.overview,
-      jobDescription: formatMainDuties(nocProfile.mainDuties),
-      requirements: nocProfile.employmentRequirements,
+      // Prefer per-job parsed description; fall back to NOC profile
+      aboutCompany: parsedDesc?.overview ?? nocProfile?.overview,
+      jobDescription: parsedDesc
+        ? parsedDesc.responsibilities
+        : formatMainDuties(nocProfile?.mainDuties ?? {}),
+      requirements: parsedDesc
+        ? parsedDesc.requirements
+        : (nocProfile?.employmentRequirements ?? []),
       companyLogoUrl: '/logo.svg',
-      additionalInfo: nocProfile.additionalInfo,
+      additionalInfo: parsedDesc
+        ? parsedDesc.additionalInfo
+        : (nocProfile?.additionalInfo ?? []),
     }
     : null;
 
