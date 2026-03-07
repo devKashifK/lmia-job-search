@@ -69,7 +69,7 @@ interface Job {
   priority_occupation?: string;
   approved_positions?: number;
   territory?: string;
-  job_description?: string;
+  job_description?: unknown;
 }
 
 interface NocJobDescriptionProps {
@@ -701,9 +701,14 @@ export function NocJobDescription({
                             Overview
                           </h3>
                         </div>
-                        <p className="text-gray-700 text-sm leading-relaxed">
-                          {jobData.aboutCompany}
-                        </p>
+                        {/* Split on sentence boundaries so long blobs are readable */}
+                        <div className="space-y-1.5">
+                          {jobData.aboutCompany!.split(/(?<=\.)\s+/).filter(Boolean).map((sentence, i) => (
+                            <p key={i} className="text-gray-700 text-sm leading-relaxed">
+                              {sentence}
+                            </p>
+                          ))}
+                        </div>
                       </CardContent>
                     </Card>
                   </motion.div>

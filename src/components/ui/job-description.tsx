@@ -51,7 +51,7 @@ function isJobRecord(jd: unknown): jd is {
   state?: string;
   date_of_job_posting?: string;
   noc_priority?: string;
-  job_description?: string;
+  job_description?: unknown;
 } {
   return typeof jd === 'object' && jd !== null;
 }
