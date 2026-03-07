@@ -12,9 +12,11 @@
  *   responsibilities: string[]
  * }
  *
- * FORMAT B — Flat scraped (all keys at top-level or inside overview as a "description" blob):
+ * FORMAT B — Flat scraped (all keys at top-level, with optional nested overview.description):
  * {
- *   overview: { description: "long concatenated text…" },
+ *   overview: { description: "long concatenated text including Tasks..." },
+ *   "Education": "Grade 12",
+ *   "Experience": "1-2 Years",
  *   "Employer Name": "...",
  *   "Wage/Salary Info": "...",
  *   "Posted Date": "..."
@@ -39,64 +41,121 @@ export interface ParsedJobDescription {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helpers
+// Key classification sets
 // ─────────────────────────────────────────────────────────────────────────────
 
-/**
- * Keys that are explicitly handled — won't be caught by the catch-all loops.
- */
+/** Top-level keys handled explicitly — skipped by the catch-all loop */
 const KNOWN_TOP_LEVEL = new Set([
     'jobUrl', 'overview', 'jobDetails', 'whoCanApply', 'responsibilities',
 ]);
+
+/** Top-level keys that map to Requirements (Format B flat) */
+const TOP_LEVEL_REQUIREMENT_KEYS = new Set([
+    'Education', 'education',
+    'Experience', 'experience',
+    'Languages', 'languages',
+    'Skills', 'skills',
+    'Qualifications', 'qualifications',
+    'Certifications', 'certifications',
+    'License', 'license', 'Licence', 'licence',
+]);
+
+/** Top-level keys to extract salary from (Format B flat) */
+const TOP_LEVEL_SALARY_KEYS = ['Wage/Salary Info', 'Salary', 'salary', 'Pay', 'pay', 'Compensation'];
+
+/** Keys inside `overview` that are handled explicitly */
 const KNOWN_OVERVIEW = new Set([
-    'Tasks', 'On site', 'Education', 'Languages', 'Experience',
-    // description-style keys — handled as overview text, not as requirements
+    'Tasks', 'On site',
+    'Education', 'Languages', 'Experience',
     'description', 'Description', 'Job Description', 'job_description',
     'Summary', 'summary',
 ]);
+
+/** Keys inside `jobDetails` that are handled explicitly */
 const KNOWN_DETAILS = new Set([
     'Salary', 'Source', 'Location', 'vacancies',
     'Terms of employment', 'Starts as soon as possible', 'detail_1',
 ]);
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
 /**
- * Splits a concatenated description blob into individual bullet items.
- *
- * Handles patterns like:
- *   "Education- Food Safe Certificate- Journeyperson Cook"
- *   → ["Food Safe Certificate", "Journeyperson Cook"]
- *
- * Returns null when it cannot find meaningful bullet structure.
+ * Splits a "- item1 - item2" style string into individual bullet strings.
+ * Returns null if no bullet structure is found.
  */
 function extractBullets(text: string): string[] | null {
-    // Split on "- " that follows a word character (avoids splitting on em-dashes etc.)
-    const raw = text.split(/(?<=[A-Za-z0-9.,)])- /).map((s) => s.trim()).filter(Boolean);
-    // Only treat as bullet list if we got at least 2 items
-    return raw.length >= 2 ? raw : null;
+    const parts = text.split(/(?<=[A-Za-z0-9.,)])- /).map((s) => s.trim()).filter(Boolean);
+    return parts.length >= 2 ? parts : null;
+}
+
+/**
+ * Parses a combined description blob that may contain embedded tasks.
+ *
+ * A typical pattern:
+ *   "Description This Job has been imported... Skills and Abilities Tasks - Do X - Do Y Security and safety - Bondable"
+ *
+ * Returns { overviewText, tasks } where:
+ *   - overviewText = prose before any task section
+ *   - tasks = individual task strings extracted from the "Tasks - " section
+ */
+function parseDescriptionBlob(raw: string): { overviewText: string; tasks: string[] } {
+    // Strip leading "Description " prefix (common in flat scrapers)
+    let text = raw.replace(/^Description\s+/i, '').trim();
+
+    // Task section markers — split at any of these
+    const taskSectionMatch = text.match(
+        /\b(Skills and Abilities\s+)?Tasks\s*-\s*/i
+    );
+
+    if (!taskSectionMatch || taskSectionMatch.index === undefined) {
+        // No tasks section found — return the whole text as overview
+        return { overviewText: text, tasks: [] };
+    }
+
+    const taskStart = taskSectionMatch.index;
+    const afterTaskMarker = text.slice(taskStart + taskSectionMatch[0].length);
+
+    // Prose part before the Tasks section
+    const overviewText = text.slice(0, taskStart).trim();
+
+    // Split the tasks section on " - " bullet markers
+    // Stop at known non-task section markers like "Security and safety", "Employment terms"
+    const nonTaskBreak = afterTaskMarker.search(
+        /\b(Security and safety|Employment terms|Additional Comment|About US|About The Team|For more information)\b/i
+    );
+    const taskSection = nonTaskBreak !== -1
+        ? afterTaskMarker.slice(0, nonTaskBreak)
+        : afterTaskMarker;
+
+    const tasks = taskSection
+        .split(/\s*-\s+/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 3); // filter out very short fragments
+
+    return { overviewText, tasks };
 }
 
 /**
  * Tries to resolve the overview text from several possible sources, in priority order.
- * Returns a short, clean prose string (or null).
  */
-function resolveOverview(ov: Record<string, string>): string | null {
+function resolveOverview(ov: Record<string, string>): { text: string | null; extractedTasks: string[] } {
     // 1. Job Bank "On site" field → strip the redundant "Responsibilities …" suffix
     if (ov['On site']) {
         const cleaned = ov['On site'].split('Responsibilities')[0].trim();
-        if (cleaned) return cleaned;
+        if (cleaned) return { text: cleaned, extractedTasks: [] };
     }
 
-    // 2. Explicit description-style keys (any scraper format)
+    // 2. Explicit description-style keys (any scraper format) — may contain embedded tasks
     for (const key of ['description', 'Description', 'Job Description', 'Summary', 'summary']) {
-        if (ov[key]) return ov[key];
+        if (ov[key]) {
+            const { overviewText, tasks } = parseDescriptionBlob(ov[key]);
+            return { text: overviewText || null, extractedTasks: tasks };
+        }
     }
 
-    // 3. Fallback: first string value that looks like a sentence (ends with '.')
-    for (const val of Object.values(ov)) {
-        if (typeof val === 'string' && val.includes('.')) return val;
-    }
-
-    return null;
+    return { text: null, extractedTasks: [] };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -107,11 +166,9 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
     if (!raw) return null;
 
     // ── Resolve to a plain object ────────────────────────────────────────────
-    // Supabase JSONB columns return already-parsed JS objects, NOT strings.
     let data: Record<string, unknown>;
 
     if (typeof raw === 'object' && !Array.isArray(raw)) {
-        // Already parsed by Supabase (JSONB column)
         data = raw as Record<string, unknown>;
     } else if (typeof raw === 'string') {
         try {
@@ -119,11 +176,9 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
             if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
                 data = parsed as Record<string, unknown>;
             } else {
-                // Primitive JSON (number, bool) or array → treat as plain overview text
                 return { overview: raw, responsibilities: [], requirements: [], additionalInfo: [], jobUrl: null, salary: null };
             }
         } catch {
-            // Not valid JSON — treat the whole string as a plain-text overview
             return { overview: raw, responsibilities: [], requirements: [], additionalInfo: [], jobUrl: null, salary: null };
         }
     } else {
@@ -132,32 +187,33 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
 
     // ── Normalise nested objects ──────────────────────────────────────────────
     const ov = (typeof data.overview === 'object' && data.overview && !Array.isArray(data.overview)
-        ? data.overview
-        : {}) as Record<string, string>;
+        ? data.overview : {}) as Record<string, string>;
 
     const details = (typeof data.jobDetails === 'object' && data.jobDetails && !Array.isArray(data.jobDetails)
-        ? data.jobDetails
-        : {}) as Record<string, string>;
+        ? data.jobDetails : {}) as Record<string, string>;
 
-    // ── Overview ──────────────────────────────────────────────────────────────
-    const overview: string | null = resolveOverview(ov);
+    // ── Overview (+ extract embedded tasks from description blobs) ───────────
+    const { text: overview, extractedTasks } = resolveOverview(ov);
 
     // ── Responsibilities ──────────────────────────────────────────────────────
     let responsibilities: string[] = [];
 
-    if (Array.isArray(data.responsibilities)) {
-        // FORMAT A: explicit array
+    if (Array.isArray(data.responsibilities) && (data.responsibilities as unknown[]).length > 0) {
+        // Format A: explicit array
         responsibilities = (data.responsibilities as string[]).filter(Boolean);
     } else if (ov.Tasks) {
-        // FORMAT A fallback: Tasks string → try to split into bullets
+        // Format A fallback: Tasks string → try to split into bullets
         const bullets = extractBullets(ov.Tasks);
-        responsibilities = bullets ?? (ov.Tasks ? [ov.Tasks] : []);
+        responsibilities = bullets ?? [ov.Tasks];
+    } else if (extractedTasks.length > 0) {
+        // Format B: tasks extracted from description blob
+        responsibilities = extractedTasks;
     }
 
     // ── Requirements ──────────────────────────────────────────────────────────
     const requirements: string[] = [];
 
-    // Known structured requirement fields (Format A)
+    // Known structured fields inside overview (Format A)
     if (ov.Education) requirements.push(`Education: ${ov.Education}`);
     if (ov.Languages) requirements.push(`Languages: ${ov.Languages}`);
     if (ov.Experience) requirements.push(`Experience: ${ov.Experience}`);
@@ -165,20 +221,19 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
     // Who can apply (Format A)
     if (Array.isArray(data.whoCanApply)) {
         const eligible = (data.whoCanApply as string[]).filter(Boolean);
-        if (eligible.length) {
-            requirements.push(`Who can apply: ${eligible.join(', ')}`);
+        if (eligible.length) requirements.push(`Who can apply: ${eligible.join(', ')}`);
+    }
+
+    // Format B: top-level requirement keys (Education, Experience, Languages, etc.)
+    for (const [key, val] of Object.entries(data)) {
+        if (TOP_LEVEL_REQUIREMENT_KEYS.has(key) && typeof val === 'string' && val.trim()) {
+            requirements.push(`${key}: ${val.trim()}`);
         }
     }
 
-    // Catch-all: unknown overview keys that are SHORT (< 200 chars) → Requirements
-    // Long blobs (descriptions) are intentionally excluded here — they go to Overview.
+    // Catch-all: short unknown overview keys → Requirements
     for (const [key, val] of Object.entries(ov)) {
-        if (
-            !KNOWN_OVERVIEW.has(key) &&
-            typeof val === 'string' &&
-            val.trim() &&
-            val.trim().length < 200
-        ) {
+        if (!KNOWN_OVERVIEW.has(key) && typeof val === 'string' && val.trim() && val.trim().length < 200) {
             requirements.push(`${key}: ${val.trim()}`);
         }
     }
@@ -203,8 +258,12 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
     }
 
     // Catch-all: unknown top-level keys → Additional Info (Format B flat fields)
+    // Skip requirement keys (already handled) and known structured keys
     for (const [key, val] of Object.entries(data)) {
         if (KNOWN_TOP_LEVEL.has(key)) continue;
+        if (TOP_LEVEL_REQUIREMENT_KEYS.has(key)) continue; // already in requirements
+        if (TOP_LEVEL_SALARY_KEYS.includes(key)) continue; // extracted separately
+
         if (Array.isArray(val)) {
             const items = (val as unknown[]).filter((v) => typeof v === 'string' && (v as string).trim()).map(String);
             if (items.length) additionalInfo.push(`${key}: ${items.join(', ')}`);
@@ -214,14 +273,25 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
     }
 
     // ── Salary ────────────────────────────────────────────────────────────────
-    // Also check top-level "Wage/Salary Info" for Format B scrapers
-    const salary =
-        details.Salary ??
-        (typeof data['Wage/Salary Info'] === 'string' ? (data['Wage/Salary Info'] as string) : null) ??
-        null;
+    let salary: string | null = details.Salary ?? null;
+    if (!salary) {
+        for (const key of TOP_LEVEL_SALARY_KEYS) {
+            if (typeof data[key] === 'string' && (data[key] as string).trim()) {
+                salary = (data[key] as string).trim();
+                break;
+            }
+        }
+    }
 
     // ── Job URL ───────────────────────────────────────────────────────────────
     const jobUrl = typeof data.jobUrl === 'string' ? data.jobUrl : null;
 
-    return { overview, responsibilities, requirements, additionalInfo, jobUrl, salary };
+    return {
+        overview,
+        responsibilities,
+        requirements: [...new Set(requirements)],
+        additionalInfo: [...new Set(additionalInfo)],
+        jobUrl,
+        salary,
+    };
 }
