@@ -58,6 +58,9 @@ interface AllJobsListProps {
   className?: string;
   totalCount?: number; // Total count from database
   searchType?: 'lmia' | 'hot_leads';
+  // Optional external sort control (lifted to parent for server-side sorting)
+  sortConfig?: SortConfig;
+  onSortChange?: (sort: SortConfig) => void;
 }
 
 export function AllJobsList({
@@ -69,6 +72,8 @@ export function AllJobsList({
   className = '',
   totalCount,
   searchType = 'hot_leads',
+  sortConfig: externalSortConfig,
+  onSortChange: externalOnSortChange,
 }: AllJobsListProps) {
   const { session } = useSession();
   const {
@@ -78,7 +83,10 @@ export function AllJobsList({
     isLoading: isLoadingSavedJobs,
     LoginAlertComponent,
   } = useSaveJobList();
-  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+  // Internal sort state — only used when no external sort is provided
+  const [internalSortConfig, setInternalSortConfig] = useState<SortConfig>(null);
+  const sortConfig = externalSortConfig !== undefined ? externalSortConfig : internalSortConfig;
+  const setSortConfig = externalOnSortChange ?? setInternalSortConfig;
 
   // Load saved jobs from database on mount or when jobs change
   useEffect(() => {
@@ -124,10 +132,11 @@ export function AllJobsList({
 
   const { preferences } = useUserPreferences();
 
-  // Sort jobs if sort config is set
+  // When external sort is set, data is already sorted server-side — skip client sort
   const sortedJobs = useMemo(() => {
-    return sortJobs(jobs, sortConfig);
-  }, [jobs, sortConfig]);
+    if (externalSortConfig !== undefined) return jobs; // server already sorted
+    return sortJobs(jobs, internalSortConfig);
+  }, [jobs, externalSortConfig, internalSortConfig]);
 
   // Calculate saved count - prioritize database state over local state
   const savedCount = sortedJobs.filter((job, index) => {

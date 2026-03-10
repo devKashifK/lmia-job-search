@@ -1008,7 +1008,13 @@ function CompanyAnalysisContent({
         filters.searchType,
         {
           dateFrom: filters.dateFrom,
-          dateTo: filters.dateTo
+          dateTo: filters.dateTo,
+          location: filters.location?.length ? filters.location : undefined,
+          city: filters.city?.length ? filters.city : undefined,
+          jobTitle: filters.jobTitle?.length ? filters.jobTitle : undefined,
+          nocCode: filters.nocCode?.length ? filters.nocCode : undefined,
+          category: filters.category?.length ? filters.category : undefined,
+          program: filters.program?.length ? filters.program : undefined,
         }
       );
 
@@ -1432,8 +1438,19 @@ function CompanyAnalysisContent({
               transition={{ duration: 0.3 }}
               className="sticky top-4 z-20 flex items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm"
             >
-              {/* Left Section: Filter Toggle, Company Icon & Name */}
-              <div className="flex items-center gap-4 flex-1 min-w-0">
+              {/* Left Section: Home, Filter Toggle, Company Icon & Name */}
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                {/* Home Icon Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  title="Home"
+                  className="h-9 w-9 p-0 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-brand-50 shrink-0"
+                  onClick={() => router.push('/')}
+                >
+                  <Home className="w-5 h-5" />
+                </Button>
+
                 {/* Filter Toggle Button */}
                 <Button
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -1768,7 +1785,7 @@ function CompanyAnalysisContent({
                         toast.info('Company already in comparison list', {
                           action: {
                             label: 'View Comparison',
-                            onClick: () => router.push('/compare'),
+                            onClick: () => router.push('/compare/tool'),
                           },
                         });
                         return;
@@ -1780,7 +1797,7 @@ function CompanyAnalysisContent({
                           {
                             action: {
                               label: 'View Comparison',
-                              onClick: () => router.push('/compare'),
+                              onClick: () => router.push('/compare/tool'),
                             },
                           }
                         );
@@ -1804,10 +1821,10 @@ function CompanyAnalysisContent({
                           description:
                             comparedList.length >= 2
                               ? 'Ready to compare multiple companies'
-                              : 'Add more companies to start comparing',
+                              : 'Add one more company to start comparing',
                           action: {
-                            label: 'View Comparison',
-                            onClick: () => router.push('/compare'),
+                            label: 'Go to Comparator',
+                            onClick: () => router.push('/compare/tool'),
                           },
                           duration: 5000,
                         }
@@ -1841,15 +1858,7 @@ function CompanyAnalysisContent({
                   View Jobs
                 </Button>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push('/')}
-                  className="border-gray-300 hover:border-brand-300 hover:bg-brand-50 transition-all"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Home
-                </Button>
+
 
                 {/* Navigation Menu */}
                 <DropdownMenu>
@@ -1864,10 +1873,7 @@ function CompanyAnalysisContent({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => router.push('/')}>
-                      <Home className="w-4 h-4 mr-2" />
-                      Home
-                    </DropdownMenuItem>
+
                     <DropdownMenuItem onClick={() => router.push('/search')}>
                       <Search className="w-4 h-4 mr-2" />
                       Search Jobs
@@ -2223,24 +2229,7 @@ function CompanyAnalysisContent({
                         </PopoverContent>
                       </Popover>
                     </div>
-                    <Tabs
-                      value={viewMode}
-                      onValueChange={(v) =>
-                        setViewMode(v as 'charts' | 'table')
-                      }
-                      className="w-auto"
-                    >
-                      <TabsList className="h-9">
-                        <TabsTrigger value="charts" className="text-xs px-3">
-                          <BarChart3 className="w-4 h-4 mr-1.5" />
-                          Charts
-                        </TabsTrigger>
-                        {/* <TabsTrigger value="table" className="text-xs px-3">
-                          <TableIcon className="w-4 h-4 mr-1.5" />
-                          Table
-                        </TabsTrigger> */}
-                      </TabsList>
-                    </Tabs>
+
                   </div>
 
                   {/* Data Freshness & Quick Stats - Compact */}

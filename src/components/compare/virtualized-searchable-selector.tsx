@@ -18,7 +18,8 @@ interface VirtualizedSearchableSelectorProps {
   options: Array<{ name: string; count: number }>;
   placeholder: string;
   isLoading?: boolean;
-  excludeValue?: string;
+  excludeValue?: string;        // exclude a single value (legacy)
+  excludeValues?: string[];     // exclude multiple values
 }
 
 export function VirtualizedSearchableSelector({
@@ -28,23 +29,30 @@ export function VirtualizedSearchableSelector({
   placeholder,
   isLoading,
   excludeValue,
+  excludeValues,
 }: VirtualizedSearchableSelectorProps) {
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
   const parentRef = React.useRef<HTMLDivElement>(null);
 
   const filteredOptions = React.useMemo(() => {
-    let filtered = (options || []).filter((opt) => opt.name !== excludeValue);
-    
+    const excluded = new Set<string>(
+      [
+        ...(excludeValue ? [excludeValue] : []),
+        ...(excludeValues ?? []),
+      ].filter(Boolean)
+    );
+    let filtered = (options || []).filter((opt) => !excluded.has(opt.name));
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((opt) =>
         opt.name.toLowerCase().includes(query)
       );
     }
-    
+
     return filtered;
-  }, [options, excludeValue, searchQuery]);
+  }, [options, excludeValue, excludeValues, searchQuery]);
 
   const rowVirtualizer = useVirtualizer({
     count: filteredOptions.length,
@@ -202,7 +210,7 @@ export function VirtualizedSearchableSelector({
               </div>
             </div>
           )}
-          
+
           {/* Results count */}
           {!isLoading && filteredOptions.length > 0 && (
             <div className="border-t px-3 py-1.5 text-[10px] text-gray-500">

@@ -55,6 +55,12 @@ jobs:
             STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
             STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
             NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+            SMTP_HOST=smtp.titan.email
+            SMTP_PORT=465
+            SMTP_USER=noreply@jobmaze.ca
+            SMTP_PASS=Noreply54321***
+            SMTP_FROM="JobMaze <noreply@jobmaze.ca>"
+            CRON_SECRET=jobmaze_cron_secret_2026_xyz
 
 
   # ───────────────────────────────────────

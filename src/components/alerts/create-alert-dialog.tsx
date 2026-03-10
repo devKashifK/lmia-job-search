@@ -273,6 +273,31 @@ export function CreateAlertDialog({
                 is_active: true,
             });
 
+            // Trigger Confirmation Email
+            try {
+                const summaryParts = [];
+                if (jobTitles.length > 0) summaryParts.push(jobTitles.join(', '));
+                if (selectedCities.length > 0) {
+                    summaryParts.push(selectedCities.join(', '));
+                } else if (selectedProvinces.length > 0) {
+                    summaryParts.push(selectedProvinces.join(', '));
+                } else if (locationText) {
+                    summaryParts.push(locationText);
+                }
+
+                await fetch('/api/alerts/confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: session.user.id,
+                        alertName: name,
+                        criteriaSummary: summaryParts.join(' • ') || 'Custom Job Search'
+                    })
+                });
+            } catch (err) {
+                console.error('Failed to send confirmation email:', err);
+            }
+
             setSuccess(true);
             setTimeout(() => { onOpenChange(false); setSuccess(false); }, 1500);
 

@@ -562,10 +562,20 @@ export function SearchBox() {
       <div
         className={
           isMobile
-            ? 'w-full max-w-full mx-auto px-4 pt-16 pb-10'
-            : 'w-full max-w-7xl mx-auto px-6 pt-32 pb-16' // Dramatically reduced padding for "Eye Level"
+            ? 'w-full max-w-full mx-auto px-4 pt-20 pb-10'
+            : 'w-full max-w-7xl mx-auto px-6 pt-40 pb-16' // Dramatically reduced padding for "Eye Level"
         }
       >
+        {!isMobile && (
+          <div className="flex justify-center items-center gap-2 mb-6 text-lg text-gray-500 font-medium">
+            <span className="text-gray-500 text-3xl mt-3" >Search for</span>
+            <TypewriterEffect
+              title=""
+              words={['Software Engineers', 'Nurses in Ontario', 'LMIA Jobs', 'Marketing Managers']}
+              className="text-gray-900 font-semibold"
+            />
+          </div>
+        )}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -573,7 +583,7 @@ export function SearchBox() {
           className="relative z-20"
         >
           {/* Tabs (Moved outside bar) - Subtle */}
-          <div className="flex justify-center gap-6 mb-2">
+          <div className="flex justify-center gap-6  mb-4">
             <button
               onClick={() => setSearchType('hot_leads')}
               className={cn(
@@ -1049,10 +1059,10 @@ export function SearchBox() {
           </div>
 
           {/* More toggle button */}
-          <div className="flex justify-center mt-4">
+          <div className="flex justify-center mt-12">
             <button
               onClick={() => setShowMore(prev => !prev)}
-              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-semibold text-gray-500 hover:text-gray-900 bg-white/70 hover:bg-white border border-gray-200 shadow-sm transition-all duration-200"
+              className="inline-flex items-center gap-1.5 px-6 py-2 rounded-full text-lg font-semibold text-gray-500 hover:text-gray-900 bg-white/70 hover:bg-white border border-gray-200 shadow-sm transition-all duration-200"
             >
               {showMore ? 'Less' : 'More'}
               <motion.span
@@ -1095,16 +1105,7 @@ export function SearchBox() {
                       >
                         Discover your next <span className="text-brand-600">career move</span>.
                       </motion.h1>
-                      {!isMobile && (
-                        <div className="flex justify-center items-center gap-2 text-lg text-gray-500 font-medium">
-                          <span className="text-gray-500 mt-3" >Search for</span>
-                          <TypewriterEffect
-                            title=""
-                            words={['Software Engineers', 'Nurses in Ontario', 'LMIA Jobs', 'Marketing Managers']}
-                            className="text-gray-900 font-semibold"
-                          />
-                        </div>
-                      )}
+
                     </div>
                     {/* Trending Section */}
                     <div className="flex flex-col items-center gap-4 mb-8">

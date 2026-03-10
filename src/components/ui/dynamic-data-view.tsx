@@ -86,7 +86,9 @@ function stableFiltersKey(
 export function useData(
   query: string,
   fieldFromProp?: string,
-  searchType?: 'lmia' | 'hot_leads'
+  searchType?: 'lmia' | 'hot_leads',
+  sortField?: string,
+  sortDirection?: 'asc' | 'desc'
 ) {
   const router = useRouter();
   const pathname = usePathname();
@@ -174,6 +176,8 @@ export function useData(
         filtersKey,
         dateFrom ?? null,
         dateTo ?? null,
+        sortField ?? null,
+        sortDirection ?? null,
       ],
       placeholderData: keepPreviousData,
       queryFn: async () => {
@@ -187,7 +191,9 @@ export function useData(
           pageSize,
           filters,
           dateFrom: dateFrom,
-          dateTo: dateTo
+          dateTo: dateTo,
+          sortField,
+          sortDirection,
         });
 
         return {
@@ -468,7 +474,14 @@ export function NewDataPanel({
   searchType: 'lmia' | 'hot_leads';
 }) {
   const { isMobile } = useMobile();
-  const { data, error, isLoading, setPage } = useData(query, field, searchType);
+  const [sortConfig, setSortConfig] = React.useState<import('./job-sort-popover').SortConfig>(null);
+  const { data, error, isLoading, setPage } = useData(
+    query,
+    field,
+    searchType,
+    sortConfig?.field,
+    sortConfig?.direction
+  );
   const [selectedJob, setSelectedJob] = React.useState<any>(null);
   const [selectedJobId, setSelectedJobId] = React.useState<number | undefined>(
     undefined
@@ -641,6 +654,8 @@ export function NewDataPanel({
                 totalCount={data?.count}
                 className="h-full"
                 searchType={searchType as 'lmia' | 'hot_leads'}
+                sortConfig={sortConfig}
+                onSortChange={setSortConfig}
               />
             </div>
 
@@ -744,6 +759,8 @@ export function NewDataPanel({
                 totalCount={data?.count}
                 className="h-full"
                 searchType={searchType as 'lmia' | 'hot_leads'}
+                sortConfig={sortConfig}
+                onSortChange={setSortConfig}
               />
             </div>
             <div className="flex-1 min-w-0 max-w-4xl">

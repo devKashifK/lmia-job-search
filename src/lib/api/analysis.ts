@@ -8,11 +8,18 @@ export async function getCompanyAnalysis(
     filters?: {
         dateFrom?: string;
         dateTo?: string;
+        location?: string[];   // state (trending_job) or territory (lmia)
+        city?: string[];
+        jobTitle?: string[];
+        nocCode?: string[];
+        category?: string[];
+        program?: string[];
     }
 ) {
     let q = db.from(tableName).select('*').eq(companyColumn, companyName);
 
     if (filters) {
+        // ── Date filters ──────────────────────────────────────────────────────
         if (searchType === 'lmia') {
             if (filters.dateFrom) {
                 const yearFrom = parseInt(filters.dateFrom.split('-')[0]);
@@ -25,6 +32,38 @@ export async function getCompanyAnalysis(
         } else {
             if (filters.dateFrom) q = q.gte('date_of_job_posting', filters.dateFrom);
             if (filters.dateTo) q = q.lte('date_of_job_posting', filters.dateTo);
+        }
+
+        // ── Location / State / Territory ──────────────────────────────────────
+        if (filters.location && filters.location.length > 0) {
+            const locationColumn = searchType === 'lmia' ? 'territory' : 'state';
+            q = q.in(locationColumn, filters.location);
+        }
+
+        // ── City ──────────────────────────────────────────────────────────────
+        if (filters.city && filters.city.length > 0) {
+            q = q.in('city', filters.city);
+        }
+
+        // ── Job Title ─────────────────────────────────────────────────────────
+        if (filters.jobTitle && filters.jobTitle.length > 0) {
+            q = q.in('job_title', filters.jobTitle);
+        }
+
+        // ── NOC Code ──────────────────────────────────────────────────────────
+        if (filters.nocCode && filters.nocCode.length > 0) {
+            const nocColumn = searchType === 'lmia' ? 'noc_code' : 'noc_code';
+            q = q.in(nocColumn, filters.nocCode);
+        }
+
+        // ── Category (trending_job only) ──────────────────────────────────────
+        if (filters.category && filters.category.length > 0 && searchType === 'hot_leads') {
+            q = q.in('category', filters.category);
+        }
+
+        // ── Program (lmia only) ───────────────────────────────────────────────
+        if (filters.program && filters.program.length > 0 && searchType === 'lmia') {
+            q = q.in('program', filters.program);
         }
     }
 

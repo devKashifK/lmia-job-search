@@ -2,7 +2,8 @@
 import db from '@/db';
 
 export interface JobAlert {
-    id: string; // The user ID
+    id: string;
+    user_id: string;
     name: string;
     criteria: any;
     frequency: 'daily' | 'weekly' | 'instant';
@@ -14,7 +15,7 @@ export async function getUserAlerts(userId: string): Promise<JobAlert[]> {
     const { data, error } = await db
         .from('job_alerts')
         .select('*')
-        .eq('id', userId)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
     if (error) {

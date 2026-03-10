@@ -158,8 +158,18 @@ export function SearchPageHeader({
         <div className="bg-white border-b border-gray-200">
             <div className="mx-auto px-16 py-3 sm:px-16 w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    {/* Left Side: Icon + Title + Info */}
+                    {/* Left Side: Home + Icon + Title + Info */}
                     <div className="flex items-center gap-3">
+                        {/* Home Icon Button */}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            title="Home"
+                            className="h-9 w-9 p-0 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-brand-50 shrink-0"
+                            onClick={() => router.push('/')}
+                        >
+                            <Home className="w-5 h-5" />
+                        </Button>
                         {/* Main Icon */}
                         <div className={cn(
                             "h-9 w-9 rounded-lg flex items-center justify-center shrink-0 border shadow-sm",
@@ -199,20 +209,12 @@ export function SearchPageHeader({
 
                     {/* Right Action Buttons */}
                     <div className="flex items-center gap-2 self-start sm:self-center">
+
                         <Button
                             variant="outline"
                             size="sm"
                             className="h-8 gap-1.5 bg-white text-gray-700 hover:bg-gray-50 border-gray-200 shadow-sm text-xs"
-                            onClick={() => router.push('/')}
-                        >
-                            <ArrowLeft className="w-3.5 h-3.5" />
-                            Home
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 gap-1.5 bg-white text-gray-700 hover:bg-gray-50 border-gray-200 shadow-sm text-xs"
-                            onClick={() => router.push('/comparator')}
+                            onClick={() => router.push('/compare/tool')}
                         >
                             <GitCompare className="w-3.5 h-3.5" />
                             Comparator

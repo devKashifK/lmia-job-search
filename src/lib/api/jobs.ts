@@ -96,6 +96,8 @@ interface QueryJobsParams {
     filters?: Record<string, string[]>;
     dateFrom?: string;
     dateTo?: string;
+    sortField?: string;       // column to sort by
+    sortDirection?: 'asc' | 'desc';
 }
 
 export async function queryJobs({
@@ -106,7 +108,9 @@ export async function queryJobs({
     pageSize = 10,
     filters = {},
     dateFrom,
-    dateTo
+    dateTo,
+    sortField,
+    sortDirection = 'desc',
 }: QueryJobsParams): Promise<{ data: any[]; count: number | null }> {
     console.log('DEBUG: queryJobs params:', { tableName, query, field, page, pageSize, filters, dateFrom, dateTo });
     const from = (page - 1) * pageSize;
@@ -180,8 +184,12 @@ export async function queryJobs({
         }
     });
 
-    // 4. Sorting
-    if (tableName === 'trending_job') {
+    // 4. Sorting — use caller's sort if provided, otherwise sensible defaults
+    if (sortField) {
+        builder = builder
+            .order(sortField, { ascending: sortDirection === 'asc' })
+            .order(pk, { ascending: true });
+    } else if (tableName === 'trending_job') {
         builder = builder
             .order('date_of_job_posting', { ascending: false })
             .order(pk, { ascending: true });

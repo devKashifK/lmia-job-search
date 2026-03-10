@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
+
 import {
   ArrowLeftRight,
   Building2,
@@ -15,6 +17,8 @@ import {
   Menu,
   LayoutDashboard,
   CreditCard,
+  TrendingUp,
+  Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,12 +42,15 @@ import { useSession } from '@/hooks/use-session';
 import {
   Bookmark,
   Search,
+  Check,
+  ArrowRight,
   X,
   ChevronDown,
   ChevronUp,
   Clock,
   Trash2,
   Info,
+  Plus,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -101,6 +108,25 @@ const COMPARISON_TYPES = [
 
 export default function ComparePage() {
   const { isMobile } = useMobile();
+  const router = useRouter();
+  const sp = useSearchParams();
+
+  // Data source: trending_job (Hot Leads) or lmia
+  const [dataSource, setDataSource] = useState<'trending_job' | 'lmia'>(
+    () => (sp?.get('t') === 'lmia' ? 'lmia' : 'trending_job')
+  );
+
+  const handleDataSourceChange = (source: 'trending_job' | 'lmia') => {
+    setDataSource(source);
+    setEntity1('');
+    setEntity2('');
+    setEntity3('');
+    // Update URL so useCompareData re-fetches with correct table
+    const next = new URLSearchParams(sp?.toString() ?? '');
+    next.set('t', source);
+    router.replace(`/compare/tool?${next.toString()}`, { scroll: false });
+  };
+
   const [comparisonType, setComparisonType] =
     useState<ComparisonType>('job_title');
   const [entity1, setEntity1] = useState<string>('');
@@ -108,6 +134,30 @@ export default function ComparePage() {
   const [entity3, setEntity3] = useState<string>('');
   const [showResults, setShowResults] = useState(false);
   const [enable3Way, setEnable3Way] = useState(false);
+  // Pending type change — used to confirm-before-clear
+  const [pendingType, setPendingType] = useState<ComparisonType | null>(null);
+
+  const applyTypeChange = (type: ComparisonType) => {
+    // If selections are filled warn the user first 
+    if ((entity1 || entity2) && type !== comparisonType) {
+      setPendingType(type);
+      return;
+    }
+    setComparisonType(type);
+    setEntity1('');
+    setEntity2('');
+    setEntity3('');
+  };
+
+  const confirmTypeChange = () => {
+    if (pendingType) {
+      setComparisonType(pendingType);
+      setEntity1('');
+      setEntity2('');
+      setEntity3('');
+      setPendingType(null);
+    }
+  };
 
   // Load comparison from URL parameters or localStorage
   React.useEffect(() => {
@@ -141,9 +191,15 @@ export default function ComparePage() {
                 setEntity3(comparedList[2].name);
                 setEnable3Way(true);
               }
-              // Show a helpful toast
               toast.info(`Comparing ${comparedList.length} companies`, {
                 description: 'You can modify selections or add more below',
+              });
+            } else if (comparedList.length === 1) {
+              // Pre-fill first slot and prompt user to pick a second company
+              setComparisonType('employer');
+              setEntity1(comparedList[0].name);
+              toast.info(`${comparedList[0].name} is selected`, {
+                description: 'Now pick a second company to compare against',
               });
             }
           } catch (err) {
@@ -153,6 +209,7 @@ export default function ComparePage() {
       }
     }
   }, []);
+
   const [selectedSavedJob1, setSelectedSavedJob1] = useState<any>(null);
   const [selectedSavedJob2, setSelectedSavedJob2] = useState<any>(null);
   const [showAllSavedJobs, setShowAllSavedJobs] = useState(false);
@@ -162,6 +219,7 @@ export default function ComparePage() {
   const [comparedCompanies, setComparedCompanies] = useState<any[]>([]);
 
   const { data: options, isLoading } = useCompareData(comparisonType);
+  const { data: employerOptions, isLoading: employersLoading } = useCompareData('employer');
   const { data: savedJobs, isLoading: savedJobsLoading } = useSavedJobs();
   const { session } = useSession();
   const queryClient = useQueryClient();
@@ -231,6 +289,18 @@ export default function ComparePage() {
     } else {
       toast.info('All slots filled. Remove a company to add this one.');
     }
+  };
+
+  // Handle adding company to queue from within tool
+  const handleAddToQueue = (companyName: string) => {
+    if (comparedCompanies.some(c => c.name === companyName)) {
+      toast.info(`${companyName} is already in the queue`);
+      return;
+    }
+    const updated = [...comparedCompanies, { name: companyName }];
+    setComparedCompanies(updated);
+    localStorage.setItem('comparedCompanies', JSON.stringify(updated));
+    toast.success(`${companyName} added to comparison queue`);
   };
 
   // Get entity value from job based on comparison type
@@ -505,6 +575,34 @@ export default function ComparePage() {
                 </div>
               </div>
 
+              {/* Center: Data Source Toggle */}
+              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+                <button
+                  onClick={() => handleDataSourceChange('trending_job')}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+                    dataSource === 'trending_job'
+                      ? 'bg-white text-brand-600 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  )}
+                >
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  Trending Jobs
+                </button>
+                <button
+                  onClick={() => handleDataSourceChange('lmia')}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+                    dataSource === 'lmia'
+                      ? 'bg-white text-brand-600 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  )}
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  LMIA
+                </button>
+              </div>
+
               {/* Right Section: Action Buttons */}
               <motion.div
                 initial={{ opacity: 0, x: 10 }}
@@ -577,7 +675,7 @@ export default function ComparePage() {
             >
               <Card className="border-0 bg-gradient-to-br from-brand-50/50 to-white shadow-sm">
                 <div className={isMobile ? "p-4" : "p-6"}>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-brand-500 rounded-xl">
                         <Building2 className="w-4 h-4 text-white" />
@@ -592,19 +690,42 @@ export default function ComparePage() {
                             {comparedCompanies.length}
                           </Badge>
                         </h3>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Click a company to fill a comparison slot below
+                        </p>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleClearQueue}
-                      className="text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl"
-                    >
-                      <X className="w-4 h-4 mr-1.5" />
-                      Clear
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="hidden sm:flex border-brand-200 text-brand-600 hover:bg-brand-50">
+                            <Plus className="w-3.5 h-3.5 mr-1" /> Add Company
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-[300px] p-2">
+                          <div className="text-xs font-semibold text-gray-500 mb-2 px-2">Search companies to add</div>
+                          <VirtualizedSearchableSelector
+                            value=""
+                            onValueChange={handleAddToQueue}
+                            options={(employerOptions || []).map(o => ({ name: o.value, count: o.count }))}
+                            placeholder="Search companies..."
+                            isLoading={employersLoading}
+                            excludeValues={comparedCompanies.map(c => c.name)}
+                          />
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClearQueue}
+                        className="text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl"
+                      >
+                        <X className="w-4 h-4 mr-1.5" />
+                        Clear
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {comparedCompanies.map((company, idx) => (
                       <motion.div
                         key={idx}
@@ -615,7 +736,7 @@ export default function ComparePage() {
                       >
                         <button
                           onClick={() => handleSelectFromQueue(company.name)}
-                          className="bg-white border-0 shadow-sm text-gray-900 pl-4 pr-10 py-2.5 text-sm font-medium cursor-pointer hover:shadow-md hover:scale-105 transition-all rounded-full"
+                          className="bg-white border border-brand-200 shadow-sm text-gray-900 pl-4 pr-10 py-2.5 text-sm font-medium cursor-pointer hover:shadow-md hover:scale-105 hover:bg-brand-50 transition-all rounded-full"
                         >
                           {company.name}
                         </button>
@@ -631,6 +752,32 @@ export default function ComparePage() {
                       </motion.div>
                     ))}
                   </div>
+                  {/* Compare from queue shortcut */}
+                  {comparedCompanies.length >= 2 && (
+                    <div className="pt-3 border-t border-brand-100 flex items-center gap-3">
+                      <Button
+                        onClick={() => {
+                          setComparisonType('employer');
+                          setEntity1(comparedCompanies[0].name);
+                          setEntity2(comparedCompanies[1].name);
+                          if (comparedCompanies[2]) {
+                            setEntity3(comparedCompanies[2].name);
+                            setEnable3Way(true);
+                          }
+                          saveToRecentComparisons(comparedCompanies[0].name, comparedCompanies[1].name, 'employer');
+                          setShowResults(true);
+                        }}
+                        size="sm"
+                        className="bg-brand-500 hover:bg-brand-600 text-white"
+                      >
+                        <BarChart3 className="w-4 h-4 mr-1.5" />
+                        Compare {comparedCompanies.length >= 3 ? `Top 3` : 'These 2'} Now
+                      </Button>
+                      <span className="text-xs text-gray-500">
+                        or click individual chips to fill slots manually
+                      </span>
+                    </div>
+                  )}
                 </div>
               </Card>
             </motion.div>
@@ -638,21 +785,64 @@ export default function ComparePage() {
 
           {!showResults ? (
             <>
-              {/* Comparison Type Selection */}
+              {/* Onboarding Empty State */}
+              {!hasSavedJobs && comparedCompanies.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-8"
+                >
+                  <Card className="bg-gradient-to-r from-brand-50 to-brand-100/50 border-brand-200 shadow-sm overflow-hidden">
+                    <div className={cn("flex flex-col md:flex-row items-center gap-6", isMobile ? "p-5" : "p-6")}>
+                      <div className="flex-shrink-0 p-3 bg-white rounded-2xl shadow-sm">
+                        <BarChart3 className="w-8 h-8 text-brand-600" />
+                      </div>
+                      <div className={isMobile ? "text-center" : ""}>
+                        <h2 className="text-lg font-bold text-gray-900 mb-1">
+                          Welcome to the Comparator Tool
+                        </h2>
+                        <p className="text-sm text-gray-600 max-w-2xl">
+                          Compare employers, cities, jobs, or states side-by-side using real Canadian job market data.
+                          See who's hiring, wage differences, and growth trends instantly.
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              )}
+
+              {/* Step 1: Comparison Type Selection */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="mt-8 mb-8 "
               >
-                <h2
-                  className={cn(
-                    'font-bold text-gray-900 mb-6',
-                    isMobile ? 'text-base' : 'text-xl'
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      1
+                    </div>
+                    <h2
+                      className={cn(
+                        'font-bold text-gray-900',
+                        isMobile ? 'text-base' : 'text-xl'
+                      )}
+                    >
+                      Choose What to Compare
+                    </h2>
+                  </div>
+                  {comparisonType === 'employer' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.location.href = '/search'}
+                      className="text-brand-600 hover:bg-brand-50 text-xs hidden sm:flex h-8"
+                    >
+                      Browse Top Companies <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                    </Button>
                   )}
-                >
-                  Choose Comparison Type
-                </h2>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {COMPARISON_TYPES.map((type, index) => {
                     const Icon = type.icon;
@@ -666,11 +856,7 @@ export default function ComparePage() {
                           duration: 0.3,
                           delay: 0.1 + index * 0.05,
                         }}
-                        onClick={() => {
-                          setComparisonType(type.value);
-                          setEntity1('');
-                          setEntity2('');
-                        }}
+                        onClick={() => applyTypeChange(type.value)}
                         className={cn(
                           'relative rounded-2xl transition-all duration-300 group text-left overflow-hidden',
                           isMobile ? 'p-4' : 'p-6',
@@ -761,6 +947,9 @@ export default function ComparePage() {
                             <span>{comp.entity1}</span>
                             <span className="text-gray-400 text-xs">vs</span>
                             <span>{comp.entity2}</span>
+                            <Badge className="ml-1 bg-white text-[10px] text-gray-500 border-gray-200">
+                              {COMPARISON_TYPES.find(t => t.value === comp.type)?.label || comp.type}
+                            </Badge>
                           </motion.button>
                         ))}
                       </div>
@@ -1259,15 +1448,11 @@ export default function ComparePage() {
                     isMobile ? 'p-4' : 'p-8'
                   )}
                 >
-                  {/* 3-Way Toggle */}
-                  <div
-                    className={cn(
-                      'flex items-center justify-between border-b border-gray-200',
-                      isMobile
-                        ? 'mb-4 pb-4 flex-col gap-3 items-start'
-                        : 'mb-6 pb-6'
-                    )}
-                  >
+                  {/* Step 2: Select entities — replaces old "3-Way Toggle" header */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      2
+                    </div>
                     <div>
                       <h3
                         className={cn(
@@ -1275,7 +1460,7 @@ export default function ComparePage() {
                           isMobile ? 'text-xs mb-0.5' : 'text-sm mb-1'
                         )}
                       >
-                        Comparison Mode
+                        Select Entities to Compare
                       </h3>
                       <p
                         className={cn(
@@ -1283,39 +1468,63 @@ export default function ComparePage() {
                           isMobile ? 'text-[10px]' : 'text-xs'
                         )}
                       >
-                        Compare 2 or 3 entities side-by-side
+                        Search and pick {enable3Way ? '3' : '2'} {selectedType?.label.toLowerCase()} to compare
                       </p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={enable3Way}
-                          onChange={(e) => {
-                            setEnable3Way(e.target.checked);
-                            if (!e.target.checked) setEntity3('');
-                          }}
-                          className={cn(
-                            'text-brand-600 bg-gray-100 border-gray-300 rounded focus:ring-brand-500',
-                            isMobile ? 'w-3.5 h-3.5' : 'w-4 h-4'
-                          )}
-                        />
-                        <span
-                          className={cn(
-                            'font-medium text-gray-700',
-                            isMobile ? 'text-xs' : 'text-sm'
-                          )}
-                        >
-                          3-Way Comparison
-                        </span>
-                        {enable3Way && (
-                          <Badge className="bg-brand-100 text-brand-700 text-[10px]">
-                            Beta
-                          </Badge>
-                        )}
-                      </label>
-                    </div>
                   </div>
+                  <div className={cn(
+                    'flex items-center justify-between border-b border-gray-200 mb-4 pb-3'
+                  )}>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          const next = !enable3Way;
+                          setEnable3Way(next);
+                          if (!next) setEntity3('');
+                        }}
+                        className={cn(
+                          'flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all text-sm font-medium',
+                          enable3Way
+                            ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm'
+                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                        )}
+                      >
+                        <div className={cn(
+                          'w-4 h-4 rounded-full flex items-center justify-center transition-colors',
+                          enable3Way ? 'bg-brand-500 text-white' : 'bg-gray-200'
+                        )}>
+                          {enable3Way && <Check className="w-3 h-3" />}
+                        </div>
+                        3-Way Comparison
+                        <Badge className={cn(
+                          'ml-1 text-[10px] px-1.5 py-0 border-0',
+                          enable3Way ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 text-gray-500'
+                        )}>
+                          Beta
+                        </Badge>
+                      </button>
+                    </div>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="hidden sm:flex border-brand-200 text-brand-600 hover:bg-brand-50">
+                          <Plus className="w-3.5 h-3.5 mr-1" /> Add Company to Queue
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-[300px] p-2">
+                        <div className="text-xs font-semibold text-gray-500 mb-2 px-2">Search companies to add to queue</div>
+                        <VirtualizedSearchableSelector
+                          value=""
+                          onValueChange={handleAddToQueue}
+                          options={(employerOptions || []).map(o => ({ name: o.value, count: o.count }))}
+                          placeholder="Search companies..."
+                          isLoading={employersLoading}
+                          excludeValues={comparedCompanies.map(c => c.name)}
+                        />
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
 
                   <div
                     className={cn(
@@ -1455,7 +1664,7 @@ export default function ComparePage() {
                               .toLowerCase()
                               .slice(0, -1)}...`}
                             isLoading={isLoading}
-                            excludeValue={entity1}
+                            excludeValues={[entity1, entity2]}
                           />
                         </motion.div>
                       </>
@@ -1490,7 +1699,9 @@ export default function ComparePage() {
               entity1={entity1}
               entity2={entity2}
               entity3={enable3Way ? entity3 : undefined}
+              dataSource={dataSource}
               onReset={handleReset}
+              onModify={() => setShowResults(false)}
             />
           )}
         </div>
@@ -1498,6 +1709,6 @@ export default function ComparePage() {
 
       {/* Mobile: Bottom Navigation */}
       {isMobile && <BottomNav />}
-    </BackgroundWrapper>
+    </BackgroundWrapper >
   );
 }

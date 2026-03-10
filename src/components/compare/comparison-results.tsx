@@ -84,7 +84,9 @@ interface ComparisonResultsProps {
   entity1: string;
   entity2: string;
   entity3?: string;
+  dataSource?: 'trending_job' | 'lmia';
   onReset: () => void;
+  onModify?: () => void;  // go back to setup without clearing selections
 }
 
 export default function ComparisonResults({
@@ -92,7 +94,9 @@ export default function ComparisonResults({
   entity1,
   entity2,
   entity3,
+  dataSource = 'trending_job',
   onReset,
+  onModify,
 }: ComparisonResultsProps) {
   const { isMobile } = useMobile();
   const { data, isLoading } = useComparisonData(type, entity1, entity2, entity3);
@@ -101,15 +105,17 @@ export default function ComparisonResults({
   const [comparisonNotes, setComparisonNotes] = React.useState('');
   const resultsRef = React.useRef<HTMLDivElement>(null);
 
-  // Export as PDF
+  // Export as PDF — uses a toast ID to prevent stuck loading spinner
   const handleExportPDF = async () => {
     if (!resultsRef.current) return;
-
+    const toastId = 'pdf-export';
     try {
-      toast.loading('Generating PDF...');
+      toast.loading('Generating PDF...', { id: toastId });
       const canvas = await html2canvas(resultsRef.current, {
         logging: false,
         useCORS: true,
+        allowTaint: true,
+        scale: 1.5,
       } as any);
 
       const imgData = canvas.toDataURL('image/png');
@@ -118,23 +124,25 @@ export default function ComparisonResults({
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`comparison-${entity1}-vs-${entity2}.pdf`);
+      const filename = entity3
+        ? `comparison-${entity1}-vs-${entity2}-vs-${entity3}.pdf`
+        : `comparison-${entity1}-vs-${entity2}.pdf`;
+      pdf.save(filename);
 
-      toast.dismiss();
-      toast.success('PDF downloaded successfully!');
+      toast.success('PDF downloaded successfully!', { id: toastId });
     } catch (error) {
-      toast.dismiss();
-      toast.error('Failed to generate PDF');
-      console.error(error);
+      toast.error('Failed to generate PDF. Try a smaller section.', { id: toastId });
+      console.error('[PDF Export]', error);
     }
   };
 
-  // Share link
+  // Share link — includes entity3 for 3-way comparisons
   const handleShareLink = () => {
     const url = new URL(window.location.href);
     url.searchParams.set('type', type);
     url.searchParams.set('entity1', entity1);
     url.searchParams.set('entity2', entity2);
+    if (entity3) url.searchParams.set('entity3', entity3);
 
     navigator.clipboard.writeText(url.toString());
     toast.success('Share link copied to clipboard!');
@@ -227,15 +235,27 @@ export default function ComparisonResults({
         "flex mb-6",
         isMobile ? "flex-col gap-3" : "items-center justify-between"
       )}>
-        <Button
-          onClick={onReset}
-          variant="outline"
-          size={isMobile ? "sm" : "default"}
-          className={isMobile ? "w-full" : ""}
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          New Comparison
-        </Button>
+        <div className={cn("flex items-center gap-2", isMobile && "w-full")}>
+          <Button
+            onClick={onReset}
+            variant="outline"
+            size={isMobile ? "sm" : "default"}
+            className={isMobile ? "flex-1" : ""}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            New Comparison
+          </Button>
+          {onModify && (
+            <Button
+              onClick={onModify}
+              variant="outline"
+              size={isMobile ? "sm" : "default"}
+              className={cn("border-brand-300 text-brand-600 hover:bg-brand-50", isMobile && "flex-1")}
+            >
+              Change Entities
+            </Button>
+          )}
+        </div>
 
         {/* Export/Share Actions */}
         <div className={cn(
@@ -271,16 +291,14 @@ export default function ComparisonResults({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {!isMobile && (
-            <Button
-              onClick={() => setSaveDialogOpen(true)}
-              size="sm"
-              className="bg-brand-500 hover:bg-brand-600"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Save Comparison
-            </Button>
-          )}
+          <Button
+            onClick={() => setSaveDialogOpen(true)}
+            size="sm"
+            className={cn("bg-brand-500 hover:bg-brand-600", isMobile && "flex-1")}
+          >
+            <Save className="w-4 h-4 mr-2" />
+            Save
+          </Button>
         </div>
       </div>
 
@@ -293,10 +311,25 @@ export default function ComparisonResults({
           transition={{ duration: 0.5 }}
           className="mb-6"
         >
+          {/* Data source + entity header */}
           <div className={cn(
             "relative overflow-hidden rounded-xl border-2 border-brand-200/50 bg-gradient-to-br from-blue-50 via-white to-green-50 shadow-lg",
             isMobile ? "p-4" : "p-6"
           )}>
+            {/* Data source badge */}
+            <div className="absolute top-3 right-3">
+              <Badge
+                variant="outline"
+                className={cn(
+                  "text-[10px] font-semibold border",
+                  dataSource === 'lmia'
+                    ? 'bg-purple-50 text-purple-700 border-purple-200'
+                    : 'bg-blue-50 text-blue-700 border-blue-200'
+                )}
+              >
+                {dataSource === 'lmia' ? '🛡️ LMIA Data' : '📈 Trending Jobs'}
+              </Badge>
+            </div>
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/5 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-green-500/5 rounded-full blur-3xl" />
             <div className={cn(
@@ -375,6 +408,64 @@ export default function ComparisonResults({
               </div>
             </div>
           </div>
+        </motion.div>
+
+        {/* Winner Summary Callout */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.08 }}
+          className="mb-4"
+        >
+          {(() => {
+            const winner = data1.totalJobs >= data2.totalJobs ? entity1 : entity2;
+            const loser = data1.totalJobs >= data2.totalJobs ? entity2 : entity1;
+            const winnerJobs = Math.max(data1.totalJobs, data2.totalJobs);
+            const loserJobs = Math.min(data1.totalJobs, data2.totalJobs);
+            const delta = loserJobs > 0
+              ? Math.round(((winnerJobs - loserJobs) / loserJobs) * 100)
+              : 100;
+            const winnerGrowth = data1.totalJobs >= data2.totalJobs ? data1.growthRate : data2.growthRate;
+            const tied = data1.totalJobs === data2.totalJobs;
+            return (
+              <div className={cn(
+                'flex items-center gap-3 rounded-xl border-2 px-4 py-3',
+                tied
+                  ? 'border-gray-200 bg-gray-50'
+                  : 'border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50'
+              )}>
+                <div className={cn(
+                  'text-2xl flex-shrink-0',
+                  tied ? '' : ''
+                )}>{tied ? '🤝' : '🏆'}</div>
+                <div className="flex-1 min-w-0">
+                  <p className={cn(
+                    'font-bold text-gray-900',
+                    isMobile ? 'text-sm' : 'text-base'
+                  )}>
+                    {tied ? 'Tied — equal job volume' : (
+                      <><span className="text-amber-700">{winner}</span> leads by {delta}% ({(winnerJobs - loserJobs).toLocaleString()} more jobs)</>
+                    )}
+                  </p>
+                  {!tied && winnerGrowth !== undefined && (
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {winnerGrowth > 0
+                        ? `Growing ${winnerGrowth}% — market is expanding`
+                        : winnerGrowth < 0
+                          ? `Declining ${Math.abs(winnerGrowth)}% — shrinking market`
+                          : 'Stable market'}
+                    </p>
+                  )}
+                </div>
+                <Badge className={cn(
+                  'shrink-0 text-[10px] px-2 py-0.5',
+                  tied ? 'bg-gray-200 text-gray-700' : 'bg-amber-100 text-amber-800 border-amber-200'
+                )}>
+                  {tied ? 'Draw' : 'Leader'}
+                </Badge>
+              </div>
+            );
+          })()}
         </motion.div>
 
         {/* AI Summary */}
@@ -509,7 +600,7 @@ export default function ComparisonResults({
             icon={Building2}
             label="Unique Employers"
             value1={data1.uniqueEmployers}
-            value2={data1.uniqueEmployers}
+            value2={data2.uniqueEmployers}
             entity1={entity1}
             entity2={entity2}
           />
