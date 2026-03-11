@@ -955,37 +955,39 @@ export function SearchBox() {
                       </>
                     ) : (
                       <>
-                        <div className="flex items-center justify-between px-2 mb-2 sticky top-0 bg-white z-10 py-2 border-b border-gray-50">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => { setLocationStep('province'); setCitySearch(''); }}
-                            className="h-8 px-2 text-gray-500 hover:text-gray-900"
-                          >
-                            <ArrowRight className="w-4 h-4 rotate-180 mr-1" /> Back
-                          </Button>
-                          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                            Cities from {selectedProvinces.length} Province{selectedProvinces.length !== 1 ? 's' : ''}
+                        <div className="sticky top-0 bg-white z-10 pt-2 pb-2 border-b border-gray-100 shadow-sm">
+                          <div className="flex items-center justify-between px-2 mb-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => { setLocationStep('province'); setCitySearch(''); }}
+                              className="h-8 px-2 text-gray-500 hover:text-gray-900"
+                            >
+                              <ArrowRight className="w-4 h-4 rotate-180 mr-1" /> Back
+                            </Button>
+                            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                              Cities from {selectedProvinces.length} Province{selectedProvinces.length !== 1 ? 's' : ''}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* City search input */}
-                        <div className="px-2 pb-2">
-                          <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl border border-gray-200 focus-within:border-brand-400 focus-within:ring-1 focus-within:ring-brand-200 transition-all">
-                            <Search className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                            <input
-                              type="text"
-                              value={citySearch}
-                              onChange={e => setCitySearch(e.target.value)}
-                              placeholder="Search cities…"
-                              className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
-                              autoFocus
-                            />
-                            {citySearch && (
-                              <button onClick={() => setCitySearch('')} className="text-gray-400 hover:text-gray-600">
-                                <X className="w-3 h-3" />
-                              </button>
-                            )}
+                          {/* City search input */}
+                          <div className="px-2">
+                            <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl border border-gray-200 focus-within:border-brand-400 focus-within:ring-1 focus-within:ring-brand-200 transition-all">
+                              <Search className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                              <input
+                                type="text"
+                                value={citySearch}
+                                onChange={e => setCitySearch(e.target.value)}
+                                placeholder="Search cities…"
+                                className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
+                                autoFocus
+                              />
+                              {citySearch && (
+                                <button onClick={() => setCitySearch('')} className="text-gray-400 hover:text-gray-600">
+                                  <X className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </div>
 

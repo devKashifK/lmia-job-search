@@ -30,8 +30,31 @@ export async function getCompanyAnalysis(
                 q = q.lte('lmia_year', yearTo);
             }
         } else {
-            if (filters.dateFrom) q = q.gte('date_of_job_posting', filters.dateFrom);
-            if (filters.dateTo) q = q.lte('date_of_job_posting', filters.dateTo);
+            // Hot Leads specific date handling
+            if (filters.dateFrom) {
+                try {
+                    const parsedFrom = new Date(filters.dateFrom);
+                    if (!isNaN(parsedFrom.getTime())) {
+                        q = q.gte('date_of_job_posting', parsedFrom.toISOString().split('T')[0]);
+                    } else {
+                        q = q.gte('date_of_job_posting', filters.dateFrom); // Fallback
+                    }
+                } catch (e) {
+                    q = q.gte('date_of_job_posting', filters.dateFrom);
+                }
+            }
+            if (filters.dateTo) {
+                try {
+                    const parsedTo = new Date(filters.dateTo);
+                    if (!isNaN(parsedTo.getTime())) {
+                        q = q.lte('date_of_job_posting', parsedTo.toISOString().split('T')[0]);
+                    } else {
+                        q = q.lte('date_of_job_posting', filters.dateTo); // Fallback
+                    }
+                } catch (e) {
+                    q = q.lte('date_of_job_posting', filters.dateTo);
+                }
+            }
         }
 
         // ── Location / State / Territory ──────────────────────────────────────
@@ -70,6 +93,7 @@ export async function getCompanyAnalysis(
     const { data, error } = await q;
 
     if (error) throw error;
+
     return data;
 }
 

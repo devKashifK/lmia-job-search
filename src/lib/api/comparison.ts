@@ -1,7 +1,7 @@
 import db from '@/db';
 
 export interface ComparisonData {
-    value: string;
+    name: string;
     count: number;
 }
 
@@ -10,7 +10,7 @@ export async function getComparisonData(table: string, column: string): Promise<
     const { data: rpcData, error: rpcError } = await db.rpc('get_distinct_values_with_count', {
         table_name: table,
         column_name: column
-    });
+    } as any);
 
     if (!rpcError && rpcData) {
         return rpcData as ComparisonData[];
@@ -49,7 +49,7 @@ export async function getComparisonData(table: string, column: string): Promise<
     }
 
     return Object.entries(counts)
-        .map(([value, count]) => ({ value, count }))
+        .map(([value, count]) => ({ name: value, count }))
         .sort((a, b) => b.count - a.count); // sort desc by count
 }
 

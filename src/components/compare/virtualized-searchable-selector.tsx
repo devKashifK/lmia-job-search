@@ -42,13 +42,17 @@ export function VirtualizedSearchableSelector({
         ...(excludeValues ?? []),
       ].filter(Boolean)
     );
-    let filtered = (options || []).filter((opt) => !excluded.has(opt.name));
+    let filtered = (options || []).filter((opt) => {
+      const displayName = opt?.name || (opt as any)?.value;
+      return displayName && !excluded.has(displayName);
+    });
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((opt) =>
-        opt.name.toLowerCase().includes(query)
-      );
+      filtered = filtered.filter((opt) => {
+        const displayName = opt?.name || (opt as any)?.value;
+        return displayName && displayName.toLowerCase().includes(query);
+      });
     }
 
     return filtered;
@@ -87,10 +91,10 @@ export function VirtualizedSearchableSelector({
               <span className="font-medium text-gray-900 truncate text-xs">
                 {value}
               </span>
-              {options?.find((opt) => opt.name === value) && (
+              {options?.find((opt) => opt?.name === value) && (
                 <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 ml-auto shrink-0">
                   {options
-                    .find((opt) => opt.name === value)
+                    .find((opt) => opt?.name === value)
                     ?.count.toLocaleString()}
                 </Badge>
               )}
@@ -142,7 +146,9 @@ export function VirtualizedSearchableSelector({
                   rowVirtualizer.getVirtualItems().map((virtualItem) => {
                     const option = filteredOptions[virtualItem.index];
                     if (!option) return null;
-                    const isSelected = value === option.name;
+                    const displayName = option?.name || (option as any)?.value;
+                    if (!displayName) return null;
+                    const isSelected = value === displayName;
 
                     return (
                       <div
@@ -155,7 +161,7 @@ export function VirtualizedSearchableSelector({
                         style={{
                           transform: `translateY(${virtualItem.start}px)`,
                         }}
-                        onClick={() => handleSelect(option.name)}
+                        onClick={() => handleSelect(displayName)}
                       >
                         <div className="flex items-center gap-1.5 flex-1 min-w-0">
                           <Check
@@ -164,7 +170,7 @@ export function VirtualizedSearchableSelector({
                               isSelected ? 'opacity-100 text-brand-600' : 'opacity-0'
                             )}
                           />
-                          <span className="truncate">{option.name}</span>
+                          <span className="truncate">{displayName}</span>
                         </div>
                         <Badge
                           variant="outline"

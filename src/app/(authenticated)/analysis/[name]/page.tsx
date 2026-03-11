@@ -1018,7 +1018,35 @@ function CompanyAnalysisContent({
         }
       );
 
-      const jobs = rawData;
+      // Client-side date filtering fallback to avoid aggressive caching bugs
+      let jobs = rawData;
+
+      if (jobs && jobs.length > 0 && (filters.dateFrom || filters.dateTo)) {
+        jobs = jobs.filter(job => {
+          if (filters.searchType === 'lmia') {
+            const year = parseInt(job.lmia_year);
+            if (isNaN(year)) return true; // keep if undefined format
+            if (filters.dateFrom && year < parseInt(filters.dateFrom.split('-')[0])) return false;
+            if (filters.dateTo && year > parseInt(filters.dateTo.split('-')[0])) return false;
+            return true;
+          } else {
+            if (!job.date_of_job_posting) return true;
+            const jobTime = new Date(job.date_of_job_posting).getTime();
+            if (isNaN(jobTime)) return true;
+
+            if (filters.dateFrom) {
+              const fromTime = new Date(filters.dateFrom).getTime();
+              if (!isNaN(fromTime) && jobTime < fromTime) return false;
+            }
+            if (filters.dateTo) {
+              // Inclusive of the end day
+              const toTime = new Date(filters.dateTo).getTime() + (24 * 60 * 60 * 1000) - 1;
+              if (!isNaN(toTime) && jobTime > toTime) return false;
+            }
+            return true;
+          }
+        });
+      }
 
       // Debug information for trending jobs
       if (filters.searchType === 'hot_leads' && jobs && jobs.length > 0) {
@@ -1047,27 +1075,35 @@ function CompanyAnalysisContent({
         if (filters.searchType === 'lmia') {
           timeKey = job.lmia_year?.toString() || 'Unknown';
         } else {
-          // For trending_job, try multiple approaches to get year
+          // For trending_job, dynamically group by Day, Month, or Year based on filter span
           try {
-            // First try: direct year column
-            if (job.year && job.year !== null && job.year !== undefined) {
-              timeKey = job.year.toString();
-            }
-            // Second try: extract from date_of_job_posting
-            else if (job.date_of_job_posting) {
+            if (job.date_of_job_posting) {
               const date = new Date(job.date_of_job_posting);
               if (!isNaN(date.getTime())) {
-                timeKey = date.getFullYear().toString();
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+
+                const hasNarrowFilter = filters.dateFrom && filters.dateTo &&
+                  (new Date(filters.dateTo).getTime() - new Date(filters.dateFrom).getTime()) <= 90 * 24 * 60 * 60 * 1000;
+
+                if (hasNarrowFilter) {
+                  timeKey = `${y}-${m}-${d}`;
+                } else if (filters.dateFrom || filters.dateTo) {
+                  timeKey = `${y}-${m}`;
+                } else {
+                  timeKey = y.toString();
+                }
               } else {
-                timeKey = 'Unknown';
+                timeKey = job.year ? job.year.toString() : 'Unknown';
               }
-            }
-            // Final fallback
-            else {
+            } else if (job.year) {
+              timeKey = job.year.toString();
+            } else {
               timeKey = 'Unknown';
             }
           } catch (e) {
-            console.error('Error extracting year from job data:', e, job);
+            console.error('Error extracting time from job data:', e, job);
             timeKey = 'Unknown';
           }
         }

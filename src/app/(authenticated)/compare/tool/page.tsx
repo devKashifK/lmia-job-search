@@ -707,7 +707,7 @@ export default function ComparePage() {
                           <VirtualizedSearchableSelector
                             value=""
                             onValueChange={handleAddToQueue}
-                            options={(employerOptions || []).map(o => ({ name: o.value, count: o.count }))}
+                            options={(employerOptions || [])}
                             placeholder="Search companies..."
                             isLoading={employersLoading}
                             excludeValues={comparedCompanies.map(c => c.name)}
@@ -1516,7 +1516,7 @@ export default function ComparePage() {
                         <VirtualizedSearchableSelector
                           value=""
                           onValueChange={handleAddToQueue}
-                          options={(employerOptions || []).map(o => ({ name: o.value, count: o.count }))}
+                          options={(employerOptions || [])}
                           placeholder="Search companies..."
                           isLoading={employersLoading}
                           excludeValues={comparedCompanies.map(c => c.name)}
@@ -1558,7 +1558,7 @@ export default function ComparePage() {
                       <VirtualizedSearchableSelector
                         value={entity1}
                         onValueChange={setEntity1}
-                        options={(options || []).map(o => ({ name: o.value, count: o.count }))}
+                        options={(options || [])}
                         placeholder={`Search ${selectedType?.label
                           .toLowerCase()
                           .slice(0, -1)}...`}
@@ -1612,7 +1612,7 @@ export default function ComparePage() {
                       <VirtualizedSearchableSelector
                         value={entity2}
                         onValueChange={setEntity2}
-                        options={(options || []).map(o => ({ name: o.value, count: o.count }))}
+                        options={(options || [])}
                         placeholder={`Search ${selectedType?.label
                           .toLowerCase()
                           .slice(0, -1)}...`}
@@ -1659,7 +1659,7 @@ export default function ComparePage() {
                           <VirtualizedSearchableSelector
                             value={entity3}
                             onValueChange={setEntity3}
-                            options={(options || []).map(o => ({ name: o.value, count: o.count }))}
+                            options={(options || [])}
                             placeholder={`Search ${selectedType?.label
                               .toLowerCase()
                               .slice(0, -1)}...`}
