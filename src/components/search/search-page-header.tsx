@@ -50,6 +50,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { format, parseISO, isValid } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { AttributeName } from '@/helpers/attribute';
+import { AIChatHelper } from '@/components/ui/ai-chat-helper';
 
 const DATE_PRESETS = [
     { label: 'Last 30 days', days: 30 },
@@ -64,6 +65,7 @@ interface SearchPageHeaderProps {
     title?: string;
     field?: string;
     count?: number;
+    searchContext?: any[];
 }
 
 export function SearchPageHeader({
@@ -71,6 +73,7 @@ export function SearchPageHeader({
     title,
     field,
     count,
+    searchContext,
 }: SearchPageHeaderProps) {
     const router = useRouter();
     const pathname = usePathname();
@@ -209,7 +212,7 @@ export function SearchPageHeader({
 
                     {/* Right Action Buttons */}
                     <div className="flex items-center gap-2 self-start sm:self-center">
-
+                        <AIChatHelper searchContext={searchContext || []} />
                         <Button
                             variant="outline"
                             size="sm"
@@ -260,35 +263,37 @@ export function SearchPageHeader({
             </div>
 
             {/* Applied Filters Bar (if active) */}
-            {(activeFilters.length > 0) && (
-                <div className="px-20 py-3 sm:px-20 bg-gray-50/50 border-t border-gray-100 flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mr-2">Active Filters:</span>
+            {
+                (activeFilters.length > 0) && (
+                    <div className="px-20 py-3 sm:px-20 bg-gray-50/50 border-t border-gray-100 flex flex-wrap items-center gap-2">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mr-2">Active Filters:</span>
 
-                    {activeFilters.map((filter, idx) => (
-                        <Badge
-                            key={`${filter.key}-${filter.value}-${idx}`}
-                            variant="secondary"
-                            className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 h-7 px-2.5 text-xs flex items-center gap-1.5 transition-colors"
-                        >
-                            <span className="font-medium text-gray-500"><AttributeName name={filter.key} />:</span>
-                            <span className="font-semibold text-gray-900">{filter.value}</span>
-                            <button
-                                onClick={() => removeFilter(filter.key, filter.value)}
-                                className="ml-1 p-0.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+                        {activeFilters.map((filter, idx) => (
+                            <Badge
+                                key={`${filter.key}-${filter.value}-${idx}`}
+                                variant="secondary"
+                                className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 h-7 px-2.5 text-xs flex items-center gap-1.5 transition-colors"
                             >
-                                <X className="w-3 h-3" />
-                            </button>
-                        </Badge>
-                    ))}
+                                <span className="font-medium text-gray-500"><AttributeName name={filter.key} />:</span>
+                                <span className="font-semibold text-gray-900">{filter.value}</span>
+                                <button
+                                    onClick={() => removeFilter(filter.key, filter.value)}
+                                    className="ml-1 p-0.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <X className="w-3 h-3" />
+                                </button>
+                            </Badge>
+                        ))}
 
-                    <button
-                        onClick={clearFilters}
-                        className="text-[10px] font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 px-2 py-1 rounded-md transition-colors ml-auto sm:ml-0"
-                    >
-                        Clear All
-                    </button>
-                </div>
-            )}
-        </div>
+                        <button
+                            onClick={clearFilters}
+                            className="text-[10px] font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 px-2 py-1 rounded-md transition-colors ml-auto sm:ml-0"
+                        >
+                            Clear All
+                        </button>
+                    </div>
+                )
+            }
+        </div >
     );
 }

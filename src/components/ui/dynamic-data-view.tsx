@@ -267,6 +267,7 @@ export default function DynamicDataView({
                 title={title}
                 field={field}
                 count={count}
+                searchContext={data?.rows || []}
               />
             ) : (
               <div className="px-16 pt-2">
