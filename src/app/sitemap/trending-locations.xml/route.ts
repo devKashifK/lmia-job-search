@@ -1,0 +1,48 @@
+import { NextResponse } from 'next/server';
+import db from '@/db';
+
+export const revalidate = 86400;
+
+export async function GET() {
+    const baseUrl = 'https://jobmaze.ca';
+
+    try {
+        // Use RPC to fetch all unique states from trending_job
+        const { data, error } = await (db as any).rpc('get_trending_job_distinct_values', {
+            p_column_name: 'state'
+        });
+
+        if (error) throw error;
+
+        const uniqueLocations = (data as any[] || [])
+            .map(item => typeof item === 'object' ? Object.values(item)[0] : item)
+            .filter(Boolean)
+            .map(String);
+
+        const toSlug = (text: any) => {
+            if (!text || typeof text !== 'string') return '';
+            return text.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+        };
+
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${uniqueLocations.map(loc => `
+  <url>
+    <loc>${baseUrl}/trending-jobs-in/${toSlug(loc)}?value=${encodeURIComponent(loc)}</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>`).join('')}
+</urlset>`;
+
+    return new NextResponse(xml, {
+        headers: { 
+            'Content-Type': 'application/xml',
+            'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate',
+        },
+    });
+    } catch (error) {
+        console.error('Sitemap Error (trending-locations):', error);
+        return new NextResponse('Internal Error', { status: 500 });
+    }
+}

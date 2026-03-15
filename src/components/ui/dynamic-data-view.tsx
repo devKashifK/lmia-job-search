@@ -241,6 +241,19 @@ export default function DynamicDataView({
   const { data } = useData(title, field, searchType);
   const count = data?.count;
 
+  // Determine the display title (if title is 'all', pick a better one from filters)
+  const displayTitle = React.useMemo(() => {
+    if (title.toLowerCase() !== 'all') return title;
+    // Try to find a descriptive filter
+    return (
+      searchParams?.get('state') ||
+      searchParams?.get('city') ||
+      searchParams?.get('q') ||
+      searchParams?.get('employer') ||
+      'All Results'
+    );
+  }, [title, searchParams]);
+
   // Wait for client-side mounting to determine device type
   if (!isMounted) {
     return null;
@@ -264,14 +277,14 @@ export default function DynamicDataView({
             {useNewHeader ? (
               <SearchPageHeader
                 currentSearchType={searchType}
-                title={title}
+                title={displayTitle}
                 field={field}
                 count={count}
               />
             ) : (
               <div className="px-16 pt-2">
                 <PageTitle
-                  title={title}
+                  title={displayTitle}
                   count={count}
                   showSearch={!isMobile}
                   searchPlaceholder={

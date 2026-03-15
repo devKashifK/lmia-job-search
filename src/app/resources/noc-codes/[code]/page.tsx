@@ -92,13 +92,13 @@ export default async function NocDetailPage({ params }: PageProps) {
                         </p>
 
                         <div className="mt-8 flex flex-wrap gap-4">
-                            <Link href={`/search/lmia/all?field=noc_code&q=${profile.code}&t=lmia`}>
+                            <Link href={`/search/lmia/${profile.code}?field=noc_code&t=lmia`}>
                                 <Button size="lg" className="bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/20 px-8">
                                     <Briefcase className="w-4 h-4 mr-2" />
                                     View Active LMIA Jobs
                                 </Button>
                             </Link>
-                            <Link href={`/search/hot-leads/all?field=noc_code&q=${profile.code}&t=trending_job`}>
+                            <Link href={`/search/hot-leads/${profile.code}?field=noc_code&t=trending_job`}>
                                 <Button size="lg" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8">
                                     <MapPin className="w-4 h-4 mr-2" />
                                     View Trending Jobs

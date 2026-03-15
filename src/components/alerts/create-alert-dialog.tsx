@@ -31,7 +31,9 @@ import {
     ArrowRight,
     X,
     Layers,
-    Briefcase
+    Briefcase,
+    ChevronDown,
+    Search
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSession } from '@/hooks/use-session';
@@ -54,6 +56,14 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { MultiSelect } from "@/components/ui/multi-select";
 import { useJobTitles } from "@/hooks/use-job-data";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface CreateAlertDialogProps {
     open: boolean;
@@ -87,6 +97,7 @@ export function CreateAlertDialog({
     const [frequency, setFrequency] = useState('daily');
     const [nocCode, setNocCode] = useState('');
     const [tier, setTier] = useState('');
+    const [searchBy, setSearchBy] = useState('all');
 
     // Fetch Tier when NOC changes
     useEffect(() => {
@@ -113,6 +124,7 @@ export function CreateAlertDialog({
     const [locationStep, setLocationStep] = useState<'province' | 'city'>('province');
     const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
     const [selectedCities, setSelectedCities] = useState<string[]>([]);
+    const [citySearch, setCitySearch] = useState('');
 
     // UI State
     const [loading, setLoading] = useState(false);
@@ -135,6 +147,7 @@ export function CreateAlertDialog({
 
             setNocCode(criteria.noc || '');
             setTier(criteria.tier || '');
+            setSearchBy(criteria.searchBy || 'all');
 
             // 2. Location Initialization
             // We need to parse the location string back into selectedCities if possible, 
@@ -173,6 +186,7 @@ export function CreateAlertDialog({
 
             // Reset steps
             setLocationStep('province');
+            setCitySearch('');
             setSuccess(false);
 
             // Load initial provinces
@@ -262,6 +276,7 @@ export function CreateAlertDialog({
                 tier: tier !== 'all' ? tier : undefined,
                 location: selectedCities.length > 0 ? selectedCities : (selectedProvinces.length > 0 ? selectedProvinces : locationText),
                 locationType: selectedCities.length > 0 ? 'cities' : (selectedProvinces.length > 0 ? 'provinces' : 'raw'),
+                searchBy: searchBy,
             };
 
             const { createAlert } = await import('@/lib/api/alerts');
@@ -360,7 +375,37 @@ export function CreateAlertDialog({
                                 <div className="space-y-3">
                                     {/* JOB TITLE (Multi-Select) */}
                                     <div className="space-y-1">
-                                        <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Job Titles</Label>
+                                        <div className="flex items-center justify-between">
+                                            <Label className="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Job Titles</Label>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <button className="text-[10px] font-bold text-brand-600 hover:text-brand-700 transition-colors flex items-center gap-1 uppercase tracking-wider focus:outline-none">
+                                                        Search By: {searchBy === 'all' ? 'All' : (searchBy === 'noc_code' ? 'NOC' : searchBy.replace('_', ' '))}
+                                                        <ChevronDown className="w-2.5 h-2.5" />
+                                                    </button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-[180px]">
+                                                    <DropdownMenuLabel className="text-[10px] font-bold uppercase text-gray-400">Search By</DropdownMenuLabel>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem onClick={() => setSearchBy('all')} className="text-xs">
+                                                        Keywords (All)
+                                                        {searchBy === 'all' && <Check className="ml-auto w-3 h-3" />}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => setSearchBy('job_title')} className="text-xs">
+                                                        Job Title
+                                                        {searchBy === 'job_title' && <Check className="ml-auto w-3 h-3" />}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => setSearchBy('category')} className="text-xs">
+                                                        Category
+                                                        {searchBy === 'category' && <Check className="ml-auto w-3 h-3" />}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => setSearchBy('employer')} className="text-xs">
+                                                        Employer
+                                                        {searchBy === 'employer' && <Check className="ml-auto w-3 h-3" />}
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
                                         <div className="relative">
                                             <MultiSelect
                                                 options={jobTitleOptions.map(t => ({ value: t, label: t }))}
@@ -428,31 +473,56 @@ export function CreateAlertDialog({
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        onClick={() => setLocationStep('province')}
+                                                                        onClick={() => { setLocationStep('province'); setCitySearch(''); }}
                                                                         className="h-7 px-2 text-gray-500 hover:text-gray-900 text-xs"
                                                                     >
                                                                         <ArrowRight className="w-3 h-3 rotate-180 mr-1" /> Back
                                                                     </Button>
                                                                 </div>
 
+                                                                {/* City search input */}
+                                                                <div className="px-2 mb-2">
+                                                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100 focus-within:border-brand-400 focus-within:ring-1 focus-within:ring-brand-200 transition-all">
+                                                                        <Search className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                                                                        <input
+                                                                            type="text"
+                                                                            value={citySearch}
+                                                                            onChange={e => setCitySearch(e.target.value)}
+                                                                            placeholder="Search cities…"
+                                                                            className="flex-1 bg-transparent text-xs text-gray-700 placeholder:text-gray-400 focus:outline-none"
+                                                                            autoFocus
+                                                                        />
+                                                                        {citySearch && (
+                                                                            <button onClick={() => setCitySearch('')} className="text-gray-400 hover:text-gray-600">
+                                                                                <X className="w-3 h-3" />
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+
                                                                 {cities.length > 0 ? (
                                                                     <div className="grid grid-cols-1 gap-1">
-                                                                        {cities.map((c, idx) => (
-                                                                            <div
-                                                                                key={`${c.province}-${c.city}-${idx}`}
-                                                                                className="flex items-center space-x-3 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                                                                                onClick={() => handleCityToggle(c.city)}
-                                                                            >
-                                                                                <Checkbox
-                                                                                    checked={selectedCities.includes(c.city)}
-                                                                                    className="h-3.5 w-3.5 border-gray-300 data-[state=checked]:bg-brand-600"
-                                                                                />
-                                                                                <div className="flex flex-col">
-                                                                                    <span className="text-xs font-medium text-gray-700">{c.city}</span>
-                                                                                    <span className="text-[10px] text-gray-400">{c.province}</span>
+                                                                        {cities
+                                                                            .filter(c => !citySearch || c.city.toLowerCase().includes(citySearch.toLowerCase()))
+                                                                            .map((c, idx) => (
+                                                                                <div
+                                                                                    key={`${c.province}-${c.city}-${idx}`}
+                                                                                    className="flex items-center space-x-3 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                                                                                    onClick={() => handleCityToggle(c.city)}
+                                                                                >
+                                                                                    <Checkbox
+                                                                                        checked={selectedCities.includes(c.city)}
+                                                                                        className="h-3.5 w-3.5 border-gray-300 data-[state=checked]:bg-brand-600"
+                                                                                    />
+                                                                                    <div className="flex flex-col">
+                                                                                        <span className="text-xs font-medium text-gray-700">{c.city}</span>
+                                                                                        <span className="text-[10px] text-gray-400">{c.province}</span>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        ))}
+                                                                            ))}
+                                                                        {cities.filter(c => !citySearch || c.city.toLowerCase().includes(citySearch.toLowerCase())).length === 0 && (
+                                                                            <div className="p-4 text-center text-gray-400 text-[10px]">No cities match &ldquo;{citySearch}&rdquo;</div>
+                                                                        )}
                                                                     </div>
                                                                 ) : (
                                                                     <div className="p-4 text-center text-gray-400 text-xs">No cities found.</div>

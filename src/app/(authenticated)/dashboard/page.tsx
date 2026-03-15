@@ -22,9 +22,11 @@ import useMobile from '@/hooks/use-mobile';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { RecentActivityFeed } from '@/components/dashboard/recent-activity-feed';
 import { RecommendationsWidget } from '@/components/dashboard/recommendations-widget';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
   const { session } = useSession();
+  const router = useRouter();
   const { isMobile, isMounted } = useMobile();
 
   // Get time-based greeting
@@ -198,7 +200,7 @@ export default function DashboardPage() {
                     Our AI search helper can guide you to the best LMIA opportunities.
                   </p>
                 </div>
-                <Button variant="secondary" size="sm" className="text-brand-900 bg-white hover:bg-brand-50 border-0 h-9 text-xs font-semibold px-4 shadow-sm">
+                <Button onClick={() => router.push('/contact')} variant="secondary" size="sm" className="text-brand-900 bg-white hover:bg-brand-50 border-0 h-9 text-xs font-semibold px-4 shadow-sm">
                   Contact Support
                 </Button>
               </div>

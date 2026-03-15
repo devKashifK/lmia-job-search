@@ -36,6 +36,7 @@ export default function Sitemap() {
                         </h2>
                         <ul className="space-y-3">
                             <li><Link href="/search" className="text-brand-600 hover:underline">Job Search</Link></li>
+                            <li><Link href="/insights" className="text-brand-600 hover:underline">In-Demand Jobs by Province</Link></li>
                             <li><Link href="/resources/documentation" className="text-brand-600 hover:underline">Documentation & Guide</Link></li>
                             <li><Link href="/resources/noc-codes" className="text-brand-600 hover:underline">NOC Codes Directory</Link></li>
                             <li><Link href="/blog" className="text-brand-600 hover:underline">Blog</Link></li>

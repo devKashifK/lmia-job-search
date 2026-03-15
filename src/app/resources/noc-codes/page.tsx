@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 import { getAllNocSummaries } from '@/lib/noc-service';
 import { NocSearch } from '@/components/resources/noc-search';
-import { NocCard } from '@/components/resources/noc-card';
+import { NocIndexClient } from '@/components/resources/noc-index-client';
 import { Metadata } from 'next';
-import { BookOpen, Search, Briefcase, GraduationCap } from 'lucide-react';
+import { Search, Briefcase, GraduationCap } from 'lucide-react';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 
 export const metadata: Metadata = {
@@ -17,12 +17,8 @@ export default async function NocIndexPage({
     searchParams: Promise<{ q?: string }>;
 }) {
     const params = await searchParams;
-    const query = params.q?.toLowerCase() || '';
+    const query = params.q || '';
     const allNocs = await getAllNocSummaries();
-
-    const filteredNocs = allNocs.filter((noc) =>
-        noc.code.includes(query) || noc.title.toLowerCase().includes(query)
-    );
 
     return (
         <BackgroundWrapper>
@@ -40,7 +36,7 @@ export default async function NocIndexPage({
                                 Find Your <span className="text-brand-600">NOC Code</span>
                             </h1>
                             <p className="mt-4 text-xl text-gray-600 mb-10 leading-relaxed">
-                                The National Occupational Classification (NOC) is Canada's system for describing occupations.
+                                The National Occupational Classification (NOC) is Canada&apos;s system for describing occupations.
                                 Find your code to determine eligibility for immigration programs like Express Entry.
                             </p>
 
@@ -68,35 +64,8 @@ export default async function NocIndexPage({
                     </div>
                 </div>
 
-                {/* Content Grid */}
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-24">
-                    <div className="border-b border-gray-200 pb-5 mb-8 flex items-center justify-between">
-                        <h3 className="text-xl font-bold text-gray-900">
-                            Browsing {filteredNocs.length} Occupations
-                        </h3>
-                        <span className="text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                            NOC 2021 Version
-                        </span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {(filteredNocs.length > 0 ? (
-                            filteredNocs.map((noc) => (
-                                <div key={noc.code} className="h-full transform transition-all duration-200 hover:-translate-y-1">
-                                    <NocCard noc={noc} />
-                                </div>
-                            ))
-                        ) : (
-                            <div className="col-span-full text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                                <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900">No occupations found</h3>
-                                <p className="text-gray-500 mt-1">
-                                    We couldn&apos;t find any matches for &quot;{query}&quot;. Try generic terms like &quot;Manager&quot; or &quot;Engineer&quot;.
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                {/* Content Logic (Client Side) */}
+                <NocIndexClient allNocs={allNocs} initialQuery={query} />
             </div>
         </BackgroundWrapper>
     );
