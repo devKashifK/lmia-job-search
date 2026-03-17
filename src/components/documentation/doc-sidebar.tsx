@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Book, Compass, Database, Zap, CreditCard, ChevronRight, BarChart3, Users, Bell, Shield } from 'lucide-react';
+import { Book, Compass, Database, Zap, CreditCard, ChevronRight, BarChart3, Users, Bell, Shield, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -25,6 +25,11 @@ const sections = [
         id: 'dashboard-analysis',
         title: 'Dashboard & Analysis',
         icon: BarChart3,
+    },
+    {
+        id: 'market-insights',
+        title: 'Job Market Insights',
+        icon: TrendingUp,
     },
     {
         id: 'features-guide',

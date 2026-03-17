@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { DocSidebar } from '@/components/documentation/doc-sidebar';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
-import { Book, Compass, Database, Zap, CreditCard, ChevronRight, BarChart3, Users, Bell, Shield, TrendingUp, Search, CheckCircle2, AlertCircle, Info, ArrowUpRight, Lock, Coins, FileSearch, Sparkles, BookOpen } from 'lucide-react';
+import { Book, Compass, Database, Zap, CreditCard, ChevronRight, BarChart3, Users, Bell, Shield, TrendingUp, Search, CheckCircle2, AlertCircle, Info, ArrowUpRight, Lock, Coins, FileSearch, Sparkles, BookOpen, Globe, Flame, Rocket } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -286,6 +286,70 @@ export default function DocumentationPage() {
                                                 </div>
                                             </li>
                                         </ul>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Job Market Insights */}
+                            <section id="market-insights" className="scroll-mt-24">
+                                <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center text-brand-600">
+                                            <TrendingUp className="w-6 h-6" />
+                                        </div>
+                                        <h2 className="text-3xl font-bold text-gray-900">Job Market Insights</h2>
+                                    </div>
+
+                                    <div className="prose prose-lg text-gray-600 max-w-none">
+                                        <p>
+                                            The <strong>Insights</strong> page provides a bird's-eye view of the Canadian labor market, helping you identify regional hotspots and high-growth sectors.
+                                        </p>
+
+                                        <div className="grid md:grid-cols-2 gap-8 my-8 not-prose">
+                                            <div>
+                                                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                                    <Globe className="w-5 h-5 text-brand-600" />
+                                                    Regional Intelligence
+                                                </h3>
+                                                <p className="text-sm text-gray-600 mb-4">
+                                                    Filter job demand by specific province or territory. This is essential for applicants targeting specific provincial nomination programs (PNPs) or the Atlantic Immigration Program (AIP).
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                                    <Database className="w-5 h-5 text-brand-600" />
+                                                    Data Sources
+                                                </h3>
+                                                <p className="text-sm text-gray-600 mb-4">
+                                                    Toggle between <strong>Trending Jobs</strong> (live market pulse and salary expectations) and <strong>LMIA</strong> (official government-approved sponsorship data).
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-orange-50 rounded-2xl p-6 border border-orange-100 my-8 flex gap-4 not-prose">
+                                            <Flame className="w-6 h-6 text-orange-600 flex-shrink-0" />
+                                            <div>
+                                                <h4 className="font-bold text-orange-900 text-sm mb-1">Hot NOC Indicators</h4>
+                                                <p className="text-sm text-orange-800 leading-relaxed">
+                                                    Our system automatically flags "Hot NOCs"—occupations that are appearing in the top ranks across 3 or more provinces simultaneously. These represent the most widespread opportunities in Canada.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid md:grid-cols-3 gap-4 not-prose">
+                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                <h4 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-2">Year Filtering</h4>
+                                                <p className="text-xs text-gray-500">Compare current 2026 trends against all-time historical data.</p>
+                                            </div>
+                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                <h4 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-2">Salary Benchmarking</h4>
+                                                <p className="text-xs text-gray-500">View real-time average hourly wages for trending professions.</p>
+                                            </div>
+                                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                <h4 className="font-bold text-gray-900 text-xs uppercase tracking-wider mb-2">Precision Search</h4>
+                                                <p className="text-xs text-gray-500">Quickly search for specific NOC codes or job titles within each region.</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </section>

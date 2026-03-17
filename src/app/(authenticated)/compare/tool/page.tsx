@@ -64,6 +64,7 @@ import { toast } from 'sonner';
 import useMobile from '@/hooks/use-mobile';
 import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';
+import Footer from '@/sections/homepage/footer';
 
 type ComparisonType = 'job_title' | 'state' | 'city' | 'employer';
 
@@ -535,70 +536,79 @@ export default function ComparePage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="sticky top-4 z-20 flex items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm"
+              className="sticky top-4 z-20 flex items-center justify-between gap-4 mb-8 p-3 rounded-2xl bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
             >
-              {/* Left Section: Back Button, Icon & Title */}
-              <div className="flex items-center gap-4 flex-1 min-w-0">
-                {/* Back to Comparator Button */}
-                <Button
-                  onClick={() => window.location.href = '/compare'}
-                  variant="outline"
-                  size="sm"
-                  className="h-8 w-8 p-0 rounded-lg bg-white text-gray-700 border-gray-300 hover:border-brand-300 hover:bg-brand-50 transition-all"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
+              {/* Left Section: Back, Home & Title */}
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 p-1 bg-gray-50/50 rounded-xl border border-gray-100">
+                  <Button
+                    onClick={() => window.location.href = '/compare'}
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 w-9 p-0 rounded-lg hover:bg-white hover:shadow-sm transition-all"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-gray-600" />
+                  </Button>
+                  
+                  <div className="w-px h-4 bg-gray-200 mx-0.5" />
+
+                  <Button
+                    onClick={() => window.location.href = '/'}
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 w-9 p-0 rounded-lg hover:bg-white hover:shadow-sm transition-all"
+                    title="Home"
+                  >
+                    <Home className="w-4 h-4 text-gray-600" />
+                  </Button>
+                </div>
 
                 {/* Title with Icon */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 ml-2">
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{
-                      duration: 0.3,
-                      type: 'spring',
-                      stiffness: 200,
-                    }}
-                    className="p-2 bg-brand-100 rounded-lg"
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="p-2 bg-brand-50 rounded-xl border border-brand-100/50 shadow-sm"
                   >
-                    <ArrowLeftRight className="w-5 h-5 text-brand-600" />
+                    <ArrowLeftRight className="w-4 h-4 text-brand-600" />
                   </motion.div>
 
-                  <div className=''>
-                    <h1 className="text-lg  font-semibold text-gray-900">
+                  <div className="hidden sm:block">
+                    <h1 className="text-sm font-extrabold text-gray-900 leading-none tracking-tight">
                       Compare & Analyze
                     </h1>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Select entities to compare side by side
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                      Multi-Entity Intelligence
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Center: Data Source Toggle */}
-              <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
+              <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-xl p-1 shadow-inner">
                 <button
                   onClick={() => handleDataSourceChange('trending_job')}
                   className={cn(
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-widest transition-all duration-300',
                     dataSource === 'trending_job'
-                      ? 'bg-white text-brand-600 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'bg-white text-brand-600 shadow-sm ring-1 ring-black/5'
+                      : 'text-gray-400 hover:text-gray-600'
                   )}
                 >
-                  <TrendingUp className="w-3.5 h-3.5" />
-                  Trending Jobs
+                  <TrendingUp className="w-3 h-3" />
+                  Trending
                 </button>
                 <button
                   onClick={() => handleDataSourceChange('lmia')}
                   className={cn(
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all',
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-widest transition-all duration-300',
                     dataSource === 'lmia'
-                      ? 'bg-white text-brand-600 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'bg-white text-brand-600 shadow-sm ring-1 ring-black/5'
+                      : 'text-gray-400 hover:text-gray-600'
                   )}
                 >
-                  <Shield className="w-3.5 h-3.5" />
+                  <Shield className="w-3 h-3" />
                   LMIA
                 </button>
               </div>
@@ -610,43 +620,38 @@ export default function ComparePage() {
                 transition={{ duration: 0.3, delay: 0.15 }}
                 className="flex items-center gap-2"
               >
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => window.location.href = '/compare'}
-                  className="border-gray-300 hover:border-brand-300 hover:bg-brand-50 transition-all"
-                  title="Back to landing"
-                >
-                  <Home className="w-4 h-4" />
-                </Button>
-
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all"
-                      title="Menu"
+                      className="h-9 w-9 p-0 border-gray-200 hover:border-brand-300 hover:bg-brand-50 transition-all rounded-xl"
                     >
-                      <Menu className="w-4 h-4" />
+                      <Menu className="w-4 h-4 text-gray-600" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => window.location.href = '/'}>
-                      <Home className="w-4 h-4 mr-2" />
-                      Home
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => window.location.href = '/search'}>
-                      <Search className="w-4 h-4 mr-2" />
+                  <DropdownMenuContent align="end" className="w-48 p-2 rounded-2xl border-gray-100 shadow-2xl backdrop-blur-xl bg-white/90">
+                    <DropdownMenuItem 
+                      onClick={() => window.location.href = '/search'}
+                      className="rounded-xl focus:bg-brand-50 focus:text-brand-700"
+                    >
+                      <Search className="w-4 h-4 mr-2 opacity-70" />
                       Search Jobs
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => window.location.href = '/dashboard'}>
-                      <LayoutDashboard className="w-4 h-4 mr-2" />
+                    <DropdownMenuItem 
+                      onClick={() => window.location.href = '/dashboard'}
+                      className="rounded-xl focus:bg-brand-50 focus:text-brand-700"
+                    >
+                      <LayoutDashboard className="w-4 h-4 mr-2 opacity-70" />
                       Dashboard
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => window.location.href = '/pricing'}>
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      Pricing
+                    <DropdownMenuSeparator className="bg-gray-50" />
+                    <DropdownMenuItem 
+                      onClick={() => window.location.href = '/pricing'}
+                      className="rounded-xl focus:bg-brand-50 focus:text-brand-700"
+                    >
+                      <CreditCard className="w-4 h-4 mr-2 opacity-70" />
+                      Premium
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -671,90 +676,95 @@ export default function ComparePage() {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-8"
+              className="mb-12"
             >
-              <Card className="border-0 bg-gradient-to-br from-brand-50/50 to-white shadow-sm">
-                <div className={isMobile ? "p-4" : "p-6"}>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-brand-500 rounded-xl">
-                        <Building2 className="w-4 h-4 text-white" />
+              <Card className="relative overflow-hidden border-0 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] group/queue">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50/50 rounded-full blur-[80px] -mr-32 -mt-32 transition-colors group-hover/queue:bg-brand-100/30" />
+                
+                <div className={isMobile ? "p-6" : "p-10"}>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                    <div className="flex items-center gap-5">
+                      <div className="p-4 bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl shadow-xl shadow-brand-500/20">
+                        <Building2 className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                          Comparison Queue
-                          <Badge
-                            variant="secondary"
-                            className="bg-brand-500 text-white border-0 rounded-full px-2.5"
-                          >
-                            {comparedCompanies.length}
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-xl font-black text-gray-900 tracking-tight leading-none">Comparison Queue</h3>
+                          <Badge className="bg-brand-600 text-white border-0 rounded-full px-3 py-0.5 font-black text-[10px]">
+                            {comparedCompanies.length} ACTIVE
                           </Badge>
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          Click a company to fill a comparison slot below
-                        </p>
+                        </div>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1.5">Your Selected Entity Repository</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    
+                    <div className="flex items-center gap-3">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline" size="sm" className="hidden sm:flex border-brand-200 text-brand-600 hover:bg-brand-50">
-                            <Plus className="w-3.5 h-3.5 mr-1" /> Add Company
+                          <Button variant="outline" size="sm" className="h-10 px-5 border-gray-100 bg-gray-50/50 hover:bg-white hover:border-brand-200 rounded-xl transition-all font-bold text-xs text-brand-700">
+                            <Plus className="w-4 h-4 mr-2" /> DISCOVER MORE
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[300px] p-2">
-                          <div className="text-xs font-semibold text-gray-500 mb-2 px-2">Search companies to add</div>
+                        <DropdownMenuContent align="end" className="w-[320px] p-3 rounded-2xl border-gray-100 shadow-2xl backdrop-blur-xl bg-white/90">
+                          <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 px-2">Inject Company Vector</div>
                           <VirtualizedSearchableSelector
                             value=""
                             onValueChange={handleAddToQueue}
                             options={(employerOptions || [])}
-                            placeholder="Search companies..."
+                            placeholder="Search by name..."
                             isLoading={employersLoading}
                             excludeValues={comparedCompanies.map(c => c.name)}
                           />
                         </DropdownMenuContent>
                       </DropdownMenu>
+
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={handleClearQueue}
-                        className="text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-xl"
+                        className="h-10 px-4 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all font-bold text-xs"
                       >
-                        <X className="w-4 h-4 mr-1.5" />
-                        Clear
+                        <X className="w-4 h-4 mr-2" />
+                        FLUSH
                       </Button>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2 mb-4">
+
+                  <div className="flex flex-wrap gap-3 mb-8">
                     {comparedCompanies.map((company, idx) => (
                       <motion.div
                         key={idx}
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.8, opacity: 0 }}
-                        className="group relative"
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="relative group/chip"
                       >
                         <button
                           onClick={() => handleSelectFromQueue(company.name)}
-                          className="bg-white border border-brand-200 shadow-sm text-gray-900 pl-4 pr-10 py-2.5 text-sm font-medium cursor-pointer hover:shadow-md hover:scale-105 hover:bg-brand-50 transition-all rounded-full"
+                          className="bg-gray-50/50 border border-gray-100 hover:border-brand-300 hover:bg-white text-gray-900 px-6 py-3 text-sm font-black transition-all rounded-[1.2rem] shadow-sm hover:shadow-xl hover:shadow-brand-500/5"
                         >
-                          {company.name}
+                          {company.name.toUpperCase()}
                         </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRemoveFromQueue(company.name);
                           }}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors"
+                          className="absolute -top-2 -right-2 h-6 w-6 bg-white border border-gray-100 text-gray-400 hover:text-red-500 hover:border-red-100 rounded-full flex items-center justify-center opacity-0 group-hover/chip:opacity-100 transition-all shadow-xl"
                         >
-                          <X className="w-3.5 h-3.5 text-gray-500" />
+                          <X className="w-3.5 h-3.5" />
                         </button>
                       </motion.div>
                     ))}
                   </div>
-                  {/* Compare from queue shortcut */}
+
                   {comparedCompanies.length >= 2 && (
-                    <div className="pt-3 border-t border-brand-100 flex items-center gap-3">
+                    <div className="pt-8 border-t-2 border-dashed border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                        <p className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                          Queue ready for multi-vector analysis
+                        </p>
+                      </div>
                       <Button
                         onClick={() => {
                           setComparisonType('employer');
@@ -767,15 +777,11 @@ export default function ComparePage() {
                           saveToRecentComparisons(comparedCompanies[0].name, comparedCompanies[1].name, 'employer');
                           setShowResults(true);
                         }}
-                        size="sm"
-                        className="bg-brand-500 hover:bg-brand-600 text-white"
+                        className="h-12 px-8 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-black shadow-lg shadow-brand-500/20 transition-all hover:-translate-y-1 active:scale-95 group"
                       >
-                        <BarChart3 className="w-4 h-4 mr-1.5" />
-                        Compare {comparedCompanies.length >= 3 ? `Top 3` : 'These 2'} Now
+                        <BarChart3 className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" />
+                        INITIALIZE {comparedCompanies.length >= 3 ? `TOP 3` : 'DUAL'} ENGINE
                       </Button>
-                      <span className="text-xs text-gray-500">
-                        or click individual chips to fill slots manually
-                      </span>
                     </div>
                   )}
                 </div>
@@ -785,25 +791,30 @@ export default function ComparePage() {
 
           {!showResults ? (
             <>
-              {/* Onboarding Empty State */}
               {!hasSavedJobs && comparedCompanies.length === 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="mb-8"
                 >
-                  <Card className="bg-gradient-to-r from-brand-50 to-brand-100/50 border-brand-200 shadow-sm overflow-hidden">
-                    <div className={cn("flex flex-col md:flex-row items-center gap-6", isMobile ? "p-5" : "p-6")}>
-                      <div className="flex-shrink-0 p-3 bg-white rounded-2xl shadow-sm">
-                        <BarChart3 className="w-8 h-8 text-brand-600" />
-                      </div>
-                      <div className={isMobile ? "text-center" : ""}>
-                        <h2 className="text-lg font-bold text-gray-900 mb-1">
-                          Welcome to the Comparator Tool
+                  <Card className="relative overflow-hidden border-0 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] group/banner">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/5 rounded-full blur-[100px] -mr-32 -mt-32 transition-colors duration-1000 group-hover/banner:bg-brand-500/10" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-100/30 rounded-full blur-[80px] -ml-20 -mb-20" />
+                    
+                    <div className={cn("relative flex flex-col md:flex-row items-center gap-8", isMobile ? "p-6" : "p-10")}>
+                      <motion.div 
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        className="flex-shrink-0 p-5 bg-gradient-to-br from-brand-500 to-brand-600 rounded-[2rem] shadow-xl shadow-brand-500/20"
+                      >
+                        <BarChart3 className="w-10 h-10 text-white" />
+                      </motion.div>
+                      <div className={isMobile ? "text-center" : "text-left"}>
+                        <h2 className="text-2xl font-black text-gray-900 mb-2 tracking-tight">
+                          Welcome to the Comparator Engine
                         </h2>
-                        <p className="text-sm text-gray-600 max-w-2xl">
-                          Compare employers, cities, jobs, or states side-by-side using real Canadian job market data.
-                          See who's hiring, wage differences, and growth trends instantly.
+                        <p className="text-gray-600 max-w-2xl leading-relaxed font-medium">
+                          Harness real-time Canadian market intelligence. Compare employers, cities, jobs, or states side-by-side to uncover competitive insights, wage benchmarks, and regional growth vectors.
                         </p>
                       </div>
                     </div>
@@ -843,7 +854,7 @@ export default function ComparePage() {
                     </Button>
                   )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {COMPARISON_TYPES.map((type, index) => {
                     const Icon = type.icon;
                     const isSelected = comparisonType === type.value;
@@ -858,40 +869,40 @@ export default function ComparePage() {
                         }}
                         onClick={() => applyTypeChange(type.value)}
                         className={cn(
-                          'relative rounded-2xl transition-all duration-300 group text-left overflow-hidden',
-                          isMobile ? 'p-4' : 'p-6',
+                          'relative rounded-[2.5rem] transition-all duration-500 group text-left overflow-hidden border-2',
+                          isMobile ? 'p-5' : 'p-8',
                           isSelected
-                            ? 'bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand-500/30 scale-[1.02]'
-                            : 'bg-white hover:shadow-xl shadow-sm border border-gray-100 hover:border-gray-200'
+                            ? 'bg-brand-600 border-brand-400 shadow-2xl shadow-brand-500/30 scale-[1.02]'
+                            : 'bg-white hover:shadow-2xl shadow-sm border-gray-100 hover:border-brand-200'
                         )}
                       >
-                        {/* Background Overlay for Selected */}
+                        {/* Selected Glow Effect */}
                         {isSelected && (
-                          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-[40px] -mr-16 -mt-16" />
                         )}
 
                         <div className="relative z-10">
                           <div
                             className={cn(
-                              'rounded-xl mb-4 inline-flex transition-all',
-                              isMobile ? 'p-2.5' : 'p-3',
+                              'rounded-2xl mb-6 inline-flex transition-all duration-500',
+                              isMobile ? 'p-3' : 'p-4',
                               isSelected
-                                ? 'bg-white/20 backdrop-blur-sm'
-                                : 'bg-brand-50 group-hover:bg-brand-100'
+                                ? 'bg-white/20 backdrop-blur-md shadow-inner'
+                                : 'bg-brand-50 group-hover:bg-brand-100 group-hover:scale-110'
                             )}
                           >
                             <Icon
                               className={cn(
-                                'transition-all',
-                                isMobile ? 'w-5 h-5' : 'w-6 h-6',
+                                'transition-all duration-500',
+                                isMobile ? 'w-5 h-5' : 'w-7 h-7',
                                 isSelected ? 'text-white' : 'text-brand-600'
                               )}
                             />
                           </div>
                           <h3
                             className={cn(
-                              'font-bold mb-1.5',
-                              isMobile ? 'text-base' : 'text-lg',
+                              'font-black mb-2 tracking-tight leading-none',
+                              isMobile ? 'text-lg' : 'text-xl',
                               isSelected ? 'text-white' : 'text-gray-900'
                             )}
                           >
@@ -899,13 +910,19 @@ export default function ComparePage() {
                           </h3>
                           <p
                             className={cn(
+                              'font-medium leading-relaxed',
                               isMobile ? 'text-xs' : 'text-sm',
-                              isSelected ? 'text-white/90' : 'text-gray-600'
+                              isSelected ? 'text-white/80' : 'text-gray-500'
                             )}
                           >
                             {type.description}
                           </p>
                         </div>
+
+                        {/* Hover Overlay */}
+                        {!isSelected && (
+                          <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-brand-500 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+                        )}
                       </motion.button>
                     );
                   })}
@@ -920,39 +937,41 @@ export default function ComparePage() {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="mb-8"
                 >
-                  <Card className="border-0 bg-white shadow-sm">
-                    <div className={isMobile ? "p-4" : "p-6"}>
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-gray-100 rounded-xl">
-                            <Clock className="w-4 h-4 text-gray-700" />
-                          </div>
-                          <h3 className="font-bold text-gray-900">
-                            Recently Compared
-                          </h3>
+                  <Card className="relative overflow-hidden border-0 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] p-8 group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-gray-50 rounded-full blur-[80px] -mr-32 -mt-32 transition-colors group-hover:bg-brand-50/50" />
+                    
+                    <div className="relative flex items-center justify-between mb-8">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-gray-50 rounded-2xl group-hover:bg-brand-50 transition-colors">
+                          <Clock className="w-5 h-5 text-gray-700" />
                         </div>
-                        <Badge className="bg-gray-100 text-gray-700 border-0 rounded-full px-3">
-                          {recentComparisons.length}
-                        </Badge>
+                        <div>
+                          <h3 className="text-xl font-black text-gray-900 tracking-tight leading-none mb-1">Recently Compared</h3>
+                          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Your Quick History</p>
+                        </div>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {recentComparisons.map((comp, idx) => (
-                          <motion.button
-                            key={idx}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => handleQuickCompare(comp)}
-                            className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-full text-sm font-medium text-gray-700 transition-all border border-gray-200 hover:border-gray-300"
-                          >
-                            <span>{comp.entity1}</span>
-                            <span className="text-gray-400 text-xs">vs</span>
-                            <span>{comp.entity2}</span>
-                            <Badge className="ml-1 bg-white text-[10px] text-gray-500 border-gray-200">
-                              {COMPARISON_TYPES.find(t => t.value === comp.type)?.label || comp.type}
-                            </Badge>
-                          </motion.button>
-                        ))}
-                      </div>
+                      <Badge className="bg-gray-100 text-gray-600 border-0 rounded-full px-4 py-1.5 font-bold text-xs">
+                        {recentComparisons.length} SESSIONS
+                      </Badge>
+                    </div>
+
+                    <div className="relative flex flex-wrap gap-3">
+                      {recentComparisons.map((comp, idx) => (
+                        <motion.button
+                          key={idx}
+                          whileHover={{ scale: 1.02, y: -2 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleQuickCompare(comp)}
+                          className="flex items-center gap-3 px-5 py-3 bg-gray-50/50 hover:bg-white rounded-2xl text-sm font-bold text-gray-700 transition-all border border-gray-100/50 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/5 group/item"
+                        >
+                          <span className="truncate max-w-[120px]">{comp.entity1}</span>
+                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-white border border-gray-100 text-[10px] text-gray-400 font-black shadow-sm group-hover/item:border-brand-200 group-hover/item:text-brand-500">VS</div>
+                          <span className="truncate max-w-[120px]">{comp.entity2}</span>
+                          <Badge className="ml-1 bg-white text-[9px] text-brand-600 font-black border-brand-100 px-2 py-0">
+                            {COMPARISON_TYPES.find(t => t.value === comp.type)?.label.toUpperCase() || comp.type.toUpperCase()}
+                          </Badge>
+                        </motion.button>
+                      ))}
                     </div>
                   </Card>
                 </motion.div>
@@ -1034,27 +1053,30 @@ export default function ComparePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="mb-6"
+                  className="mb-12"
                 >
-                  <Card className="p-8 text-center bg-gradient-to-br from-brand-50/30 to-brand-100/20 border-brand-100">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="p-4 bg-gradient-to-br from-brand-100 to-brand-200 rounded-full">
-                        <Bookmark className="w-8 h-8 text-brand-600" />
+                  <Card className="relative overflow-hidden p-12 text-center bg-white border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] group/empty">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-brand-50/50 via-transparent to-transparent opacity-50" />
+                    <div className="relative flex flex-col items-center gap-6">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-brand-500/20 rounded-full blur-2xl group-hover/empty:scale-150 transition-transform duration-1000" />
+                        <div className="relative p-6 bg-gradient-to-br from-brand-100 to-brand-50 rounded-[2rem] shadow-inner">
+                          <Bookmark className="w-10 h-10 text-brand-600 animate-pulse-slow" />
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      <div className="max-w-md mx-auto">
+                        <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">
                           No Saved Jobs Yet
                         </h3>
-                        <p className="text-sm text-gray-600 mb-4">
-                          Save jobs to quickly compare them here
+                        <p className="text-gray-500 mb-8 font-medium leading-relaxed">
+                          Your comparison power grows as you save. Track interesting roles and companies to unlock side-by-side market intelligence.
                         </p>
                         <Button
                           onClick={() => (window.location.href = '/')}
-                          variant="outline"
-                          className="border-brand-300 hover:bg-brand-50"
+                          className="h-12 px-8 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-bold shadow-lg shadow-brand-500/20 transition-all hover:-translate-y-1 active:scale-95"
                         >
-                          <Sparkles className="w-4 h-4 mr-2" />
-                          Browse Jobs
+                          <Sparkles className="w-5 h-5 mr-3" />
+                          Explore Opportunities
                         </Button>
                       </div>
                     </div>
@@ -1068,73 +1090,41 @@ export default function ComparePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="mb-6"
+                  className="mb-8"
                 >
-                  <Card
-                    className={cn(
-                      'bg-gradient-to-br from-brand-50/50 via-brand-100/20 to-brand-50/50 border-brand-200',
-                      isMobile ? 'p-4' : 'p-6'
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        'flex items-center mb-4',
-                        isMobile ? 'gap-2' : 'gap-3'
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          'bg-gradient-to-br from-brand-500 to-brand-600 rounded-xl',
-                          isMobile ? 'p-1.5' : 'p-2'
-                        )}
-                      >
-                        <Bookmark
-                          className={cn(
-                            isMobile ? 'w-4 h-4' : 'w-5 h-5',
-                            'text-white'
-                          )}
-                        />
+                  <Card className="relative overflow-hidden bg-white border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] p-10 group">
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-brand-50/50 rounded-full blur-[100px] -mr-32 -mt-32 transition-colors duration-1000 group-hover:bg-brand-100/30" />
+                    
+                    <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                      <div className="flex items-center gap-5">
+                        <div className="p-4 bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl shadow-xl shadow-brand-500/20">
+                          <Bookmark className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-2">Compare Your Saved Jobs</h3>
+                          <p className="text-xs text-brand-600 font-bold uppercase tracking-widest">Market Intelligence Workbench</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3
-                          className={cn(
-                            'font-bold text-gray-900',
-                            isMobile ? 'text-sm' : 'text-lg'
-                          )}
-                        >
-                          Compare Your Saved Jobs
-                        </h3>
-                        <p
-                          className={cn(
-                            'text-gray-600',
-                            isMobile ? 'text-xs' : 'text-sm'
-                          )}
-                        >
-                          Select 2 jobs to compare
-                        </p>
-                      </div>
-                      {!isMobile && (
-                        <Badge variant="outline" className="bg-white">
-                          {savedJobs.length} saved
-                        </Badge>
-                      )}
+                      <Badge className="bg-brand-50 text-brand-700 border-2 border-brand-100 rounded-full px-5 py-2 font-black text-xs">
+                        {savedJobs.length} JOBS BOOKMARKED
+                      </Badge>
                     </div>
 
-                    {/* Search Bar */}
+                    {/* Modern Search Bar */}
                     {savedJobs.length > 3 && (
-                      <div className="relative mb-4">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <div className="relative mb-8 max-w-md">
+                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-brand-400 group-focus-within:text-brand-600 transition-colors" />
                         <Input
                           type="text"
-                          placeholder="Search saved jobs..."
+                          placeholder="Filter your saved repository..."
                           value={savedJobsSearch}
                           onChange={(e) => setSavedJobsSearch(e.target.value)}
-                          className="pl-10 h-9 text-sm"
+                          className="pl-12 h-12 text-sm bg-gray-50/50 border-gray-100 rounded-2xl focus:bg-white transition-all shadow-inner font-medium placeholder:text-gray-400"
                         />
                         {savedJobsSearch && (
                           <button
                             onClick={() => setSavedJobsSearch('')}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
                           >
                             <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
                           </button>
@@ -1233,92 +1223,79 @@ export default function ComparePage() {
                                     >
                                       <Trash2 className="w-3 h-3 text-red-500" />
                                     </button>
-
-                                    {isSelected && (
-                                      <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold shadow-lg">
-                                        {isSelected1 ? '1' : '2'}
-                                      </div>
-                                    )}
-                                    <div
-                                      className={cn(
-                                        'flex items-start',
-                                        isMobile ? 'gap-1.5' : 'gap-2'
-                                      )}
-                                    >
+                                    <div className={cn("p-6 flex items-start gap-4", isMobile ? "gap-3" : "gap-4")}>
                                       <div
                                         className={cn(
-                                          'rounded-lg shrink-0',
-                                          isMobile ? 'p-1.5' : 'p-2',
+                                          'w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center transition-all duration-500',
                                           isSelected
-                                            ? 'bg-brand-100'
-                                            : 'bg-gray-100'
+                                            ? 'bg-white/20 backdrop-blur-md rotate-0'
+                                            : 'bg-white shadow-sm border border-gray-100 group-hover/job:bg-brand-50 group-hover/job:rotate-12'
                                         )}
                                       >
                                         <TypeIcon
                                           className={cn(
-                                            isMobile
-                                              ? 'w-3.5 h-3.5'
-                                              : 'w-4 h-4',
+                                            'w-6 h-6 transition-colors duration-500',
                                             isSelected
-                                              ? 'text-brand-600'
-                                              : 'text-gray-600'
+                                              ? 'text-white'
+                                              : 'text-brand-600'
                                           )}
                                         />
                                       </div>
                                       <div className="flex-1 min-w-0">
                                         <p
                                           className={cn(
-                                            'font-semibold text-gray-900 truncate',
-                                            isMobile ? 'text-xs' : 'text-sm'
+                                            'font-black truncate tracking-tight',
+                                            isMobile ? 'text-sm' : 'text-base',
+                                            isSelected ? 'text-white' : 'text-gray-900'
                                           )}
                                         >
                                           {jobValue}
                                         </p>
                                         <p
                                           className={cn(
-                                            'text-gray-500 mt-0.5 truncate',
-                                            isMobile ? 'text-[10px]' : 'text-xs'
+                                            'truncate font-bold mt-0.5',
+                                            isMobile ? 'text-[10px]' : 'text-xs',
+                                            isSelected ? 'text-white/80' : 'text-gray-500'
                                           )}
                                         >
                                           {job.operating_name || job.employer}
                                         </p>
-                                        <p
-                                          className={cn(
-                                            'text-gray-400 mt-0.5',
-                                            isMobile ? 'text-[10px]' : 'text-xs'
-                                          )}
-                                        >
-                                          {job.city},{' '}
-                                          {job.state || job.territory}
-                                        </p>
+                                        <div className="flex items-center gap-2 mt-2">
+                                          <MapPin className={cn("w-3 h-3", isSelected ? "text-white/60" : "text-gray-400")} />
+                                          <p
+                                            className={cn(
+                                              'font-bold truncate',
+                                              isMobile ? 'text-[10px]' : 'text-xs',
+                                              isSelected ? 'text-white/60' : 'text-gray-400'
+                                            )}
+                                          >
+                                            {job.city}, {job.state || job.territory}
+                                          </p>
+                                        </div>
                                       </div>
                                     </div>
+                                    
+                                    {/* Select Indicator */}
+                                    {isSelected && (
+                                       <div className="absolute top-4 right-4 animate-in fade-in zoom-in duration-300">
+                                         <div className="w-6 h-6 rounded-full bg-white text-brand-600 flex items-center justify-center shadow-lg">
+                                           <Check className="w-3.5 h-3.5 font-black" />
+                                         </div>
+                                       </div>
+                                    )}
                                   </motion.div>
                                 </TooltipTrigger>
-                                <TooltipContent side="top" className="max-w-xs">
-                                  <div className="space-y-1">
-                                    <p className="font-semibold text-xs">
+                                <TooltipContent side="top" className="max-w-xs p-4 rounded-2xl bg-gray-900 text-white border-0 shadow-2xl">
+                                  <div className="space-y-2">
+                                    <p className="font-black text-sm leading-tight">
                                       {job.job_title || job.occupation_title}
                                     </p>
-                                    {job.noc_code && (
-                                      <p className="text-xs text-gray-600">
-                                        NOC: {job.noc_code || job['2021_noc']}
-                                      </p>
-                                    )}
-                                    {job.date_of_job_posting && (
-                                      <p className="text-xs text-gray-600">
-                                        Posted:{' '}
-                                        {new Date(
-                                          job.date_of_job_posting
-                                        ).toLocaleDateString()}
-                                      </p>
-                                    )}
-                                    <p className="text-xs text-gray-500">
-                                      Type:{' '}
-                                      {job.type === 'lmia'
-                                        ? 'LMIA'
-                                        : 'Hot Leads'}
-                                    </p>
+                                    <div className="flex flex-wrap gap-2 pt-1 border-t border-white/10">
+                                      {job.noc_code && (
+                                        <Badge className="bg-white/10 text-white border-0 text-[9px] font-black">NOC {job.noc_code}</Badge>
+                                      )}
+                                      <Badge className="bg-brand-500 text-white border-0 text-[9px] font-black uppercase">{job.type === 'lmia' ? 'LMIA' : 'LEAD'}</Badge>
+                                    </div>
                                   </div>
                                 </TooltipContent>
                               </Tooltip>
@@ -1330,22 +1307,22 @@ export default function ComparePage() {
 
                     {/* View All Button */}
                     {!savedJobsLoading && filteredSavedJobs.length > 6 && (
-                      <div className="flex justify-center mb-4">
+                      <div className="flex justify-center mb-10">
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={() => setShowAllSavedJobs(!showAllSavedJobs)}
-                          className="text-sm text-brand-600 hover:text-brand-700"
+                          className="px-6 h-10 rounded-xl border-gray-100 hover:border-brand-200 hover:bg-brand-50 text-xs font-black uppercase tracking-widest transition-all"
                         >
                           {showAllSavedJobs ? (
                             <>
-                              <ChevronUp className="w-4 h-4 mr-1" />
-                              Show Less
+                              <ChevronUp className="w-4 h-4 mr-2" />
+                              Minimize History
                             </>
                           ) : (
                             <>
-                              <ChevronDown className="w-4 h-4 mr-1" />
-                              View All ({filteredSavedJobs.length} jobs)
+                              <ChevronDown className="w-4 h-4 mr-2" />
+                              Expand Full Repository ({filteredSavedJobs.length})
                             </>
                           )}
                         </Button>
@@ -1374,34 +1351,39 @@ export default function ComparePage() {
                     {/* Compare Button for Saved Jobs */}
                     {selectedSavedJob1 && selectedSavedJob2 && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
                         className="flex justify-center"
                       >
                         <Button
                           onClick={handleCompareSavedJobs}
-                          className="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700"
+                          className="h-14 px-10 bg-gradient-to-r from-brand-600 to-brand-800 hover:from-brand-700 hover:to-brand-900 text-white rounded-[1.5rem] font-black tracking-tight text-lg shadow-2xl shadow-brand-500/30 transition-all hover:-translate-y-1 active:scale-95 group"
                         >
-                          <BarChart3 className="w-4 h-4 mr-2" />
-                          Compare Selected Jobs
+                          <BarChart3 className="w-5 h-5 mr-3 transition-transform group-hover:rotate-12" />
+                          Initialize Intelligence Capture
                         </Button>
                       </motion.div>
                     )}
 
                     {/* Suggested Comparisons */}
                     {suggestedComparisons.length > 0 && (
-                      <div className="mt-6 pt-6 border-t border-brand-200">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Info className="w-4 h-4 text-brand-600" />
-                          <h4 className="text-sm font-bold text-gray-900">
-                            Suggested Comparisons
-                          </h4>
+                      <div className="mt-12 pt-10 border-t-2 border-dashed border-gray-100">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="p-2 bg-amber-50 rounded-xl">
+                            <Sparkles className="w-4 h-4 text-amber-500" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-black text-gray-900 uppercase tracking-widest">
+                              Engine Suggestions
+                            </h4>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter mt-0.5">Automated Intelligence Vectors</p>
+                          </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-3">
                           {suggestedComparisons.map((suggestion, idx) => (
                             <motion.button
                               key={idx}
-                              whileHover={{ scale: 1.05 }}
+                              whileHover={{ scale: 1.05, y: -2 }}
                               whileTap={{ scale: 0.95 }}
                               onClick={() => {
                                 setComparisonType(suggestion.type);
@@ -1412,10 +1394,12 @@ export default function ComparePage() {
                                 setEntity1(val1);
                                 setEntity2(val2);
                               }}
-                              className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-brand-100 to-brand-200 border border-brand-300 rounded-lg text-xs hover:shadow-md transition-all"
+                              className="flex items-center gap-3 px-5 py-3 bg-gradient-to-br from-amber-50/50 to-orange-50/50 hover:from-white border border-amber-100 rounded-2xl text-xs font-black shadow-sm hover:shadow-xl hover:shadow-orange-500/5 transition-all group/suggestion"
                             >
-                              <Sparkles className="w-3 h-3 text-brand-600" />
-                              <span className="font-medium text-gray-700">
+                              <div className="w-6 h-6 rounded-lg bg-amber-500/10 flex items-center justify-center group-hover/suggestion:bg-amber-500/20 transition-colors">
+                                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                              </div>
+                              <span className="text-amber-900 uppercase">
                                 {suggestion.label}
                               </span>
                             </motion.button>
@@ -1444,37 +1428,28 @@ export default function ComparePage() {
               >
                 <Card
                   className={cn(
-                    'bg-white shadow-xl border-2 border-gray-100',
-                    isMobile ? 'p-4' : 'p-8'
+                    'relative overflow-hidden bg-white border-0 shadow-[0_20px_50px_rgba(0,0,0,0.08)]',
+                    isMobile ? 'p-6 rounded-[2.5rem]' : 'p-12 rounded-[3rem]'
                   )}
                 >
-                  {/* Step 2: Select entities — replaces old "3-Way Toggle" header */}
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      2
+                  <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-400 via-brand-600 to-brand-400" />
+                  
+                  {/* Step 2 Header */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-brand-600 text-white flex items-center justify-center text-lg font-black shadow-lg shadow-brand-500/20">
+                        2
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-black text-gray-900 tracking-tight leading-none mb-1">
+                          Select Entities to Compare
+                        </h3>
+                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">
+                          Picking {enable3Way ? '3' : '2'} {selectedType?.label.toLowerCase()} for deep analysis
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3
-                        className={cn(
-                          'font-bold text-gray-900',
-                          isMobile ? 'text-xs mb-0.5' : 'text-sm mb-1'
-                        )}
-                      >
-                        Select Entities to Compare
-                      </h3>
-                      <p
-                        className={cn(
-                          'text-gray-600',
-                          isMobile ? 'text-[10px]' : 'text-xs'
-                        )}
-                      >
-                        Search and pick {enable3Way ? '3' : '2'} {selectedType?.label.toLowerCase()} to compare
-                      </p>
-                    </div>
-                  </div>
-                  <div className={cn(
-                    'flex items-center justify-between border-b border-gray-200 mb-4 pb-3'
-                  )}>
+
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => {
@@ -1483,27 +1458,28 @@ export default function ComparePage() {
                           if (!next) setEntity3('');
                         }}
                         className={cn(
-                          'flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all text-sm font-medium',
+                          'flex items-center gap-3 px-5 py-2.5 rounded-2xl border-2 transition-all text-sm font-bold',
                           enable3Way
-                            ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm'
-                            : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                            ? 'bg-brand-50 border-brand-200 text-brand-700 shadow-sm shadow-brand-500/10'
+                            : 'bg-white border-gray-100 text-gray-500 hover:border-brand-100 hover:bg-brand-50/50'
                         )}
                       >
                         <div className={cn(
-                          'w-4 h-4 rounded-full flex items-center justify-center transition-colors',
-                          enable3Way ? 'bg-brand-500 text-white' : 'bg-gray-200'
+                          'w-5 h-5 rounded-lg flex items-center justify-center transition-all duration-300',
+                          enable3Way ? 'bg-brand-600 text-white rotate-0' : 'bg-gray-200 text-transparent rotate-90'
                         )}>
-                          {enable3Way && <Check className="w-3 h-3" />}
+                          <Check className="w-3.5 h-3.5" />
                         </div>
-                        3-Way Comparison
+                        3-Way Mode
                         <Badge className={cn(
-                          'ml-1 text-[10px] px-1.5 py-0 border-0',
-                          enable3Way ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 text-gray-500'
+                          'ml-1 text-[9px] px-2 py-0 border-0 font-black tracking-tighter',
+                          enable3Way ? 'bg-brand-200 text-brand-800' : 'bg-gray-100 text-gray-400'
                         )}>
-                          Beta
+                          BETA
                         </Badge>
                       </button>
                     </div>
+                  </div>
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -1523,10 +1499,8 @@ export default function ComparePage() {
                         />
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </div>
 
-
-                  <div
+                    <div
                     className={cn(
                       'flex items-center justify-center',
                       isMobile ? 'flex-col gap-3' : 'gap-8'
@@ -1567,34 +1541,33 @@ export default function ComparePage() {
                       />
                     </motion.div>
 
-                    {/* VS Indicator */}
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 200,
-                        delay: 0.5,
-                      }}
-                      className="flex-shrink-0"
-                    >
-                      <div className="relative">
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-lg">
-                          <span className="text-white font-bold text-lg">
+                    {/* VS Indicator 1 */}
+                    <div className="flex-shrink-0 py-4">
+                      <div className="relative group/vs">
+                        <motion.div 
+                          animate={{ 
+                            scale: [1, 1.1, 1],
+                            rotate: [0, 5, -5, 0]
+                          }}
+                          transition={{ duration: 5, repeat: Infinity }}
+                          className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center shadow-xl shadow-brand-500/20 z-10 relative"
+                        >
+                          <span className="text-white font-black text-xl italic tracking-tighter">
                             VS
                           </span>
-                        </div>
+                        </motion.div>
+                        <div className="absolute inset-0 bg-brand-500/20 rounded-[1.5rem] blur-2xl group-hover/vs:scale-150 transition-transform duration-700" />
                         <motion.div
                           animate={{ rotate: 360 }}
                           transition={{
-                            duration: 20,
+                            duration: 15,
                             repeat: Infinity,
                             ease: 'linear',
                           }}
-                          className="absolute inset-0 rounded-full border-2 border-dashed border-brand-300"
+                          className="absolute inset--2 rounded-[2rem] border-2 border-dashed border-brand-200 opacity-50"
                         />
                       </div>
-                    </motion.div>
+                    </div>
 
                     {/* Entity 2 */}
                     <motion.div
@@ -1625,24 +1598,23 @@ export default function ComparePage() {
                     {enable3Way && (
                       <>
                         {/* VS Indicator 2 */}
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{
-                            type: 'spring',
-                            stiffness: 200,
-                            delay: 0.5,
-                          }}
-                          className="flex-shrink-0"
-                        >
-                          <div className="relative">
-                            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-lg">
-                              <span className="text-white font-bold text-lg">
+                        <div className="flex-shrink-0 py-4">
+                          <div className="relative group/vs">
+                            <motion.div 
+                              animate={{ 
+                                scale: [1, 1.1, 1],
+                                rotate: [0, -5, 5, 0]
+                              }}
+                              transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
+                              className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center shadow-xl shadow-brand-500/20 z-10 relative"
+                            >
+                              <span className="text-white font-black text-xl italic tracking-tighter">
                                 VS
                               </span>
-                            </div>
+                            </motion.div>
+                            <div className="absolute inset-0 bg-brand-500/20 rounded-[1.5rem] blur-2xl group-hover/vs:scale-150 transition-transform duration-700" />
                           </div>
-                        </motion.div>
+                        </div>
 
                         <motion.div
                           initial={{ x: 50, opacity: 0 }}
@@ -1709,6 +1681,9 @@ export default function ComparePage() {
 
       {/* Mobile: Bottom Navigation */}
       {isMobile && <BottomNav />}
+
+      {/* Standard Footer */}
+      {!showResults && <Footer />}
     </BackgroundWrapper >
   );
 }

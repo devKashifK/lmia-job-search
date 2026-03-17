@@ -58,11 +58,11 @@ export default function Navbar({ className }: { className?: string }) {
           <NavigationMenuList className="hidden md:flex items-center gap-1 bg-gray-100/50 p-1 rounded-full border border-gray-200/30">
             {[
               { name: 'Search', href: '/search' },
+              { name: 'Insights', href: '/insights' },
               { name: 'Analysis', href: '/analysis' },
               { name: 'Comparator', href: '/compare' },
               { name: 'NOC Guide', href: '/resources/noc-codes' },
               { name: 'Pricing', href: '/pricing' },
-              { name: 'Contact', href: '/contact' },
             ].map((item) => (
               <NavigationMenuItem key={item.name}>
                 <CustomLink

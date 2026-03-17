@@ -11,6 +11,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
+import { CustomTooltip } from './shared';
 
 interface JobTitleBarChartProps {
     data: any[];
@@ -18,47 +19,60 @@ interface JobTitleBarChartProps {
     entity2: string;
 }
 
-import { CustomTooltip } from './shared';
-
 export default function JobTitleBarChart({ data, entity1, entity2 }: JobTitleBarChartProps) {
     return (
         <ResponsiveContainer width="100%" height={320}>
-            <BarChart data={data} barGap={8} layout="vertical">
+            <BarChart data={data} barGap={12} margin={{ top: 10, right: 10, left: -20, bottom: 40 }}>
                 <defs>
-                    <linearGradient id="colorJob1" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#f97316" stopOpacity={1} />
-                        <stop offset="100%" stopColor="#fb923c" stopOpacity={0.8} />
-                    </linearGradient>
-                    <linearGradient id="colorJob2" x1="0" y1="0" x2="1" y2="0">
+                    <linearGradient id="colorEntity1Jobs" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
                         <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.8} />
                     </linearGradient>
+                    <linearGradient id="colorEntity2Jobs" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#34d399" stopOpacity={0.8} />
+                    </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 10, fill: '#6b7280' }} stroke="#e5e7eb" />
-                <YAxis
-                    dataKey="name"
-                    type="category"
-                    width={150}
-                    tick={{ fontSize: 10, fill: '#6b7280' }}
-                    stroke="#e5e7eb"
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0} />
+            <XAxis 
+              dataKey="name" 
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 600 }}
+              dy={10}
+            />
+            <YAxis 
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 600 }}
+              tickFormatter={(value) => value.toLocaleString()}
+            />
+                <Tooltip 
+                    content={<CustomTooltip />} 
+                    cursor={{ fill: 'rgba(0,0,0,0.02)', radius: 10 }}
                 />
-                <Tooltip content={<CustomTooltip />} />
                 <Legend
-                    wrapperStyle={{ paddingTop: '10px', fontSize: '11px' }}
+                    verticalAlign="top"
+                    align="right"
                     iconType="circle"
+                    wrapperStyle={{ paddingBottom: '30px', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '10px', fontWeight: 800 }}
                 />
                 <Bar
                     dataKey={entity1}
-                    fill="url(#colorJob1)"
-                    radius={[0, 6, 6, 0]}
-                    maxBarSize={25}
+                    fill="url(#colorEntity1Jobs)"
+                    radius={[8, 8, 0, 0]}
+                    maxBarSize={32}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
                 />
                 <Bar
                     dataKey={entity2}
-                    fill="url(#colorJob2)"
-                    radius={[0, 6, 6, 0]}
-                    maxBarSize={25}
+                    fill="url(#colorEntity2Jobs)"
+                    radius={[8, 8, 0, 0]}
+                    maxBarSize={32}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
+                    animationBegin={200}
                 />
             </BarChart>
         </ResponsiveContainer>

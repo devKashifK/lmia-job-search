@@ -59,7 +59,7 @@ export default function Company() {
 
   const handleViewDetails = (company: string) => {
     router.push(
-      `/company/${encodeURIComponent(company)}?field=employer&t=lmia`
+      `/search/hot-leads/${encodeURIComponent(company)}?field=employer&t=trending_job`
     );
   };
 

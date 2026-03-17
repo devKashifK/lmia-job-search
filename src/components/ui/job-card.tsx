@@ -321,6 +321,49 @@ export default function JobCard({
         <div className="bg-red-500 text-white text-[10px] px-1">DEBUG: {score}%</div>
         <MatchScoreBadge score={score || 0} size="sm" showLabel={false} />
       </div>
+
+      {/* JSON-LD Structured Data for Google Jobs */}
+      {jobTitle && employerName && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org/',
+              '@type': 'JobPosting',
+              title: jobTitle,
+              description: `Join ${employerName} as a ${jobTitle} in ${location || 'Canada'}. ${noc ? `NOC Code: ${noc}.` : ''}`,
+              datePosted: datePosted || lmiaYear ? `${lmiaYear}-01-01` : new Date().toISOString().split('T')[0],
+              validThrough: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0],
+              employmentType: 'FULL_TIME',
+              hiringOrganization: {
+                '@type': 'Organization',
+                name: employerName,
+                sameAs: 'https://jobmaze.ca',
+              },
+              jobLocation: {
+                '@type': 'Place',
+                address: {
+                  '@type': 'PostalAddress',
+                  addressLocality: city || undefined,
+                  addressRegion: state || territory || undefined,
+                  addressCountry: 'CA',
+                },
+              },
+              ...(salary && {
+                baseSalary: {
+                  '@type': 'MonetaryAmount',
+                  currency: 'CAD',
+                  value: {
+                    '@type': 'QuantitativeValue',
+                    value: parseFloat(salary.replace(/[^0-9.]/g, '')),
+                    unitText: 'HOUR',
+                  },
+                },
+              }),
+            }),
+          }}
+        />
+      )}
     </div>
   );
 }

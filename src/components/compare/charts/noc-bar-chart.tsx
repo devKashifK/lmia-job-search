@@ -11,6 +11,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
+import { CustomTooltip } from './shared';
 
 interface NocBarChartProps {
     data: any[];
@@ -18,48 +19,60 @@ interface NocBarChartProps {
     entity2: string;
 }
 
-import { CustomTooltip } from './shared';
-
 export default function NocBarChart({ data, entity1, entity2 }: NocBarChartProps) {
     return (
-        <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data} barGap={8}>
+        <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={data} barGap={12} margin={{ top: 10, right: 10, left: -20, bottom: 40 }}>
                 <defs>
-                    <linearGradient id="colorNOC1" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#6366f1" stopOpacity={1} />
-                        <stop offset="100%" stopColor="#818cf8" stopOpacity={0.8} />
+                    <linearGradient id="colorEntity1Noc" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.8} />
                     </linearGradient>
-                    <linearGradient id="colorNOC2" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#14b8a6" stopOpacity={1} />
-                        <stop offset="100%" stopColor="#2dd4bf" stopOpacity={0.8} />
+                    <linearGradient id="colorEntity2Noc" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10b981" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#34d399" stopOpacity={0.8} />
                     </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 10, fill: '#6b7280' }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={100}
-                    stroke="#e5e7eb"
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0} />
+                <XAxis 
+                    dataKey="name" 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 600 }}
+                    dy={10}
                 />
-                <YAxis tick={{ fontSize: 10, fill: '#6b7280' }} stroke="#e5e7eb" />
-                <Tooltip content={<CustomTooltip />} />
+                <YAxis 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#6B7280', fontSize: 10, fontWeight: 600 }}
+                    tickFormatter={(value) => value.toLocaleString()}
+                />
+                <Tooltip 
+                    content={<CustomTooltip />} 
+                    cursor={{ fill: 'rgba(0,0,0,0.02)', radius: 10 }}
+                />
                 <Legend
-                    wrapperStyle={{ paddingTop: '15px', fontSize: '11px' }}
+                    verticalAlign="top"
+                    align="right"
                     iconType="circle"
+                    wrapperStyle={{ paddingBottom: '30px', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '10px', fontWeight: 800 }}
                 />
                 <Bar
                     dataKey={entity1}
-                    fill="url(#colorNOC1)"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={40}
+                    fill="url(#colorEntity1Noc)"
+                    radius={[8, 8, 0, 0]}
+                    maxBarSize={32}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
                 />
                 <Bar
                     dataKey={entity2}
-                    fill="url(#colorNOC2)"
-                    radius={[6, 6, 0, 0]}
-                    maxBarSize={40}
+                    fill="url(#colorEntity2Noc)"
+                    radius={[8, 8, 0, 0]}
+                    maxBarSize={32}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
+                    animationBegin={200}
                 />
             </BarChart>
         </ResponsiveContainer>

@@ -1,9 +1,18 @@
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
+import BackgroundWrapper from '@/components/ui/background-wrapper';
+import { motion } from 'framer-motion';
 import React from 'react';
-import { Cookie, Settings, Info } from 'lucide-react';
+import { Cookie, Settings, Eye, Shield, Activity, MonitorSmartphone } from 'lucide-react';
+import Link from 'next/link';
+import { Metadata } from 'next';
 
-export default function CookiesPolicy() {
+export const metadata: Metadata = {
+  title: 'Cookie Policy | JobMaze',
+  description: 'Learn how JobMaze uses cookies to improve your experience, analyze traffic, and ensure security.',
+};
+
+const CookiesPage = () => {
     return (
         <>
             <Navbar />
@@ -84,3 +93,5 @@ export default function CookiesPolicy() {
         </>
     );
 }
+
+export default CookiesPage;

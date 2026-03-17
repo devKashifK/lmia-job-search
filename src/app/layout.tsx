@@ -17,10 +17,31 @@ import Honeypot from '@/components/security/honeypot';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Job Maze - LMIA Job Search',
-  description: 'Find LMIA jobs in Canada',
+  metadataBase: new URL('https://jobmaze.ca'),
+  title: 'JobMaze - LMIA Job Search',
+  description: 'Find LMIA-approved jobs across Canada. Explore hiring trends, locations, and salaries with JobMaze data intelligence.',
   icons: {
     icon: '/logo.svg',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_CA',
+    url: 'https://jobmaze.ca',
+    title: 'JobMaze - LMIA Job Search & Canadian Hiring Data',
+    description: 'Empowering global talent with data intelligence. Find LMIA jobs and uncover hidden opportunities in the Canadian job market.',
+    siteName: 'JobMaze',
+    images: [{
+      url: '/og-image.png',
+      width: 1200,
+      height: 630,
+      alt: 'JobMaze Data Intelligence',
+    }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'JobMaze - LMIA Job Search',
+    description: 'Find LMIA jobs and uncover hidden opportunities in the Canadian job market.',
+    images: ['/og-image.png'],
   },
 };
 

@@ -1,8 +1,17 @@
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
+import BackgroundWrapper from '@/components/ui/background-wrapper';
+import { motion } from 'framer-motion';
+import { Shield, Lock, Eye, FileText, Server, UserCheck } from 'lucide-react';
+import { Metadata } from 'next';
 import React from 'react';
 
-function PrivacyPolicy() {
+export const metadata: Metadata = {
+  title: 'Privacy Policy | JobMaze',
+  description: 'Read our Privacy Policy to understand how JobMaze protects and manages your personal data and job search history.',
+};
+
+const PrivacyPage = () => {
   return (
     <>
       <Navbar />
@@ -198,4 +207,4 @@ function PrivacyPolicy() {
   );
 }
 
-export default PrivacyPolicy;
+export default PrivacyPage;

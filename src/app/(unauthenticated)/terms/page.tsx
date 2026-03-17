@@ -1,8 +1,17 @@
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
 import React from 'react';
+import BackgroundWrapper from '@/components/ui/background-wrapper';
+import { motion } from 'framer-motion';
+import { Scale, FileText, AlertCircle, CheckCircle2, Shield, UserCheck } from 'lucide-react';
+import { Metadata } from 'next';
 
-function Terms() {
+export const metadata: Metadata = {
+  title: 'Terms of Service | JobMaze',
+  description: 'Review the Terms of Service governing your use of the JobMaze platform. Understand your rights and responsibilities as a user.',
+};
+
+const TermsPage = () => {
   return (
     <>
       <Navbar />
@@ -311,4 +320,4 @@ function Terms() {
   );
 }
 
-export default Terms;
+export default TermsPage;

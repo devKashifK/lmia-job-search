@@ -52,7 +52,7 @@ export default function Hero() {
       </div>
 
       <div className={isMobile ? "relative w-full px-4" : "relative max-w-7xl mx-auto px-6 lg:px-8"}>
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row lg:items-start items-center gap-12 lg:gap-20">
 
           {/* Left Content: High Density Value Prop */}
           <motion.div

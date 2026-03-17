@@ -21,6 +21,10 @@ const Intelligence = dynamic(() => import('@/sections/homepage/intelligence'), {
   ssr: false
 });
 
+const InDemandTeaser = dynamic(() => import('@/sections/homepage/in-demand-teaser'), {
+  ssr: false
+});
+
 export default function Home() {
   return (
     <BackgroundWrapper>
@@ -32,7 +36,7 @@ export default function Home() {
       <Intelligence />
       {/* <UseCases /> */}
       <Company />
-      {/* <SeeItAction /> */}
+      <InDemandTeaser />
       <Pricing />
       <Testimonials />
       {/* <FAQ /> */}

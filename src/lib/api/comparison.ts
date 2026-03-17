@@ -55,20 +55,42 @@ export async function getComparisonData(table: string, column: string): Promise<
 
 // Fetch benchmark/average data for context
 export async function getBenchmarkData(table: string, type: string) {
-    // Get total count first
-    const { count: totalCount } = await db
+    // 1. Get exact total count
+    const { count: totalCount, error: countError } = await db
         .from(table)
         .select('*', { count: 'exact', head: true });
 
-    // Sample larger set for better accuracy
+    if (countError || totalCount === null) return null;
+
+    // 2. Try to get real distinct counts via RPC for perfect accuracy
+    const { data: rpcData, error: rpcError } = await db.rpc('get_distinct_values_with_count', {
+        table_name: table,
+        column_name: type
+    } as any) as any;
+
+    if (!rpcError && rpcData && Array.isArray(rpcData)) {
+        const uniqueValues = rpcData.length;
+        const counts = rpcData.map((d: any) => Number(d.count)).sort((a: number, b: number) => a - b);
+        const medianJobs = counts[Math.floor(counts.length / 2)] || 1;
+        const avgJobsPerValue = uniqueValues > 0 ? Math.round(totalCount / uniqueValues) : 0;
+
+        return {
+            totalJobs: totalCount,
+            uniqueValues,
+            avgJobsPerValue: Math.max(avgJobsPerValue, medianJobs),
+            medianJobs,
+            topValues: rpcData.slice(0, 5).map((v: any) => ({ name: v.name, count: Number(v.count) })),
+        };
+    }
+
+    // 3. Fallback: Sample-based estimation
     const { data, error } = await db
         .from(table)
-        .select('*')
-        .limit(50000); // Increased sample size
+        .select(type)
+        .limit(50000);
 
-    if (error || !data || !totalCount) return null;
+    if (error || !data) return null;
 
-    // Count unique values
     const valueMap = new Map<string, number>();
     data.forEach((row: any) => {
         const value = row[type];
@@ -78,20 +100,24 @@ export async function getBenchmarkData(table: string, type: string) {
     });
 
     const uniqueValues = valueMap.size;
-    // Use median instead of mean for more realistic benchmark
-    const counts = Array.from(valueMap.values()).sort((a, b) => a - b);
-    const medianJobs = counts[Math.floor(counts.length / 2)] || 1;
+    const countsInSample = Array.from(valueMap.values()).sort((a, b) => a - b);
+    const medianInSample = countsInSample[Math.floor(countsInSample.length / 2)] || 1;
+    const totalJobsInSample = countsInSample.reduce((sum, c) => sum + c, 0);
 
-    // Also calculate mean for reference
-    const totalJobs = counts.reduce((sum, c) => sum + c, 0);
-    const avgJobsPerValue = Math.round(totalJobs / uniqueValues);
+    // Scaling factors
+    const scaleFactor = totalCount / (totalJobsInSample || 1);
+    const avgJobsPerValue = uniqueValues > 0 ? Math.round(totalCount / uniqueValues) : 0;
+    const scaledMedian = Math.round(medianInSample * scaleFactor);
 
     return {
         totalJobs: totalCount,
         uniqueValues,
-        avgJobsPerValue: Math.max(avgJobsPerValue, medianJobs), // Use higher of avg or median
-        medianJobs,
-        topValues: calculateTopValues(data, type),
+        avgJobsPerValue: Math.max(avgJobsPerValue, scaledMedian),
+        medianJobs: scaledMedian,
+        topValues: calculateTopValues(data, type).map(v => ({
+            name: v.name,
+            count: Math.round(v.count * scaleFactor) // Scale top values too!
+        })),
     };
 }
 

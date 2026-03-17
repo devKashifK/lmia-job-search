@@ -2,8 +2,14 @@ import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
 import React from 'react';
 import { Shield, Lock, Server, Eye, AlertTriangle } from 'lucide-react';
+import { Metadata } from 'next';
 
-export default function Security() {
+export const metadata: Metadata = {
+  title: 'Security | Safe & Secure Job Search on JobMaze',
+  description: 'Learn about our commitment to keeping your data and job search safe and secure. We use enterprise-grade security protocols.',
+};
+
+export default function SecurityPage() {
     return (
         <>
             <Navbar />

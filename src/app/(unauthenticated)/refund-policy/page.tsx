@@ -1,7 +1,17 @@
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
+import BackgroundWrapper from '@/components/ui/background-wrapper';
+import { motion } from 'framer-motion';
+import { Receipt, RotateCcw, Clock, HelpCircle, CheckCircle2, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Metadata } from 'next';
 
-export default function NoRefundPolicy() {
+export const metadata: Metadata = {
+  title: 'Refund Policy | JobMaze',
+  description: 'Details regarding our refund policy for premium subscriptions, eligible claims, and cancellation processes.',
+};
+
+const RefundPolicyPage = () => {
   return (
     <>
       <Navbar />
@@ -110,3 +120,5 @@ export default function NoRefundPolicy() {
     </>
   );
 }
+
+export default RefundPolicyPage;

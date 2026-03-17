@@ -4,9 +4,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   async rewrites() {
     return [
       /** TRENDING / HOT-LEADS SECTION **/
@@ -52,11 +49,19 @@ const nextConfig: NextConfig = {
         destination: '/search/lmia/:cat?field=category&t=lmia',
       },
 
-      /** ANALYSIS SECTION **/
       {
         source: '/analysis/:slug',
         has: [{ type: 'query', key: 'value', value: '(?<val>.*)' }],
         destination: '/analysis/:val',
+      },
+    ]
+  },
+  async redirects() {
+    return [
+      {
+        source: '/company/:keyword',
+        destination: '/search/hot-leads/:keyword?field=employer&t=trending_job',
+        permanent: true,
       },
     ]
   }
