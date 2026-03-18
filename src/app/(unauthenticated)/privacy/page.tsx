@@ -7,8 +7,9 @@ import { Metadata } from 'next';
 import React from 'react';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | JobMaze',
-  description: 'Read our Privacy Policy to understand how JobMaze protects and manages your personal data and job search history.',
+  title: 'Privacy Policy',
+  description: 'Learn how JobMaze protects your personal information and maintains data privacy across our job search platform.',
+  keywords: ['jobmaze privacy policy', 'data protection job portal'],
 };
 
 const PrivacyPage = () => {

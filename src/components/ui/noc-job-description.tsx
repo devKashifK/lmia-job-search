@@ -530,7 +530,7 @@ export function NocJobDescription({
                           className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2.5 py-1.5 text-xs transition-all duration-200 hover:scale-105"
                         />
 
-                        {jobData.jobUrl && (
+                        {/* {jobData.jobUrl && (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
@@ -547,7 +547,7 @@ export function NocJobDescription({
                               <p className="text-xs">View original job posting</p>
                             </TooltipContent>
                           </Tooltip>
-                        )}
+                        )} */}
 
                         <Tooltip>
                           <TooltipTrigger asChild>

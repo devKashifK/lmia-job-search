@@ -57,9 +57,12 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       description = `Discover high-demand LMIA Jobs in ${value}. Featured roles with LMIA available. Your gateway to working in ${value} starts at JobMaze.`;
       break;
     default:
-      if (search !== 'all') {
-         title = `${value} Jobs in ${city} (LMIA) | JobMaze`;
-         description = `Explore ${value} LMIA jobs in ${city}. LMIA supported positions available. Secure your future with JobMaze.`;
+      if (search === 'all') {
+        title = 'Direct LMIA Job Search – Foreign Worker Sponsorship';
+        description = 'Search jobs with active LMIA approvals. Connect with Canadian employers ready to sponsor foreign workers across all provinces.';
+      } else {
+        title = `${value} Jobs in ${city} (LMIA) | JobMaze`;
+        description = `Explore ${value} LMIA jobs in ${city}. LMIA supported positions available. Secure your future with JobMaze.`;
       }
       break;
   }
@@ -67,9 +70,16 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   // Construct Canonical URL without query parameters to centralize SEO juice
   const canonicalUrl = `https://jobmaze.ca/search/lmia/${search !== 'all' ? search : ''}`;
 
+  let keywords: string[] = [];
+
+  if (search === 'all') {
+    keywords = ['lmia jobs search', 'canada visa sponsorship jobs', 'foreign worker jobs'];
+  }
+
   return {
     title,
     description,
+    keywords,
     alternates: {
       canonical: canonicalUrl,
     },

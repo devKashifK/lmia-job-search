@@ -7,8 +7,9 @@ import { Scale, FileText, AlertCircle, CheckCircle2, Shield, UserCheck } from 'l
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | JobMaze',
-  description: 'Review the Terms of Service governing your use of the JobMaze platform. Understand your rights and responsibilities as a user.',
+  title: 'Terms of Service – JobMaze',
+  description: 'Review the terms of service governing the use of JobMaze job search platform and its features.',
+  keywords: ['jobmaze terms of service'],
 };
 
 const TermsPage = () => {

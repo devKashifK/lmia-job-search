@@ -7,8 +7,9 @@ import { Search, Briefcase, GraduationCap } from 'lucide-react';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 
 export const metadata: Metadata = {
-    title: 'NOC Codes Guide | LMIA Job Matches',
-    description: 'Complete guide to National Occupational Classification (NOC) codes for Canadian immigration and job search.',
+    title: 'Canada NOC Codes Database – Job Classification',
+    description: 'Browse the complete Canadian NOC code database to understand occupations, TEER levels, and job classifications.',
+    keywords: ['noc codes canada', 'canada occupation list'],
 };
 
 export default async function NocIndexPage({

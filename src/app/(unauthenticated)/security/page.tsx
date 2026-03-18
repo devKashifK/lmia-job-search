@@ -5,8 +5,9 @@ import { Shield, Lock, Server, Eye, AlertTriangle } from 'lucide-react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Security | Safe & Secure Job Search on JobMaze',
-  description: 'Learn about our commitment to keeping your data and job search safe and secure. We use enterprise-grade security protocols.',
+  title: 'Security – JobMaze Platform Protection',
+  description: 'Learn how JobMaze protects users through secure infrastructure, encrypted data, and privacy-first design.',
+  keywords: ['jobmaze security', 'secure job platform'],
 };
 
 export default function SecurityPage() {

@@ -2,8 +2,9 @@ import { Metadata } from 'next';
 import ClientPage from './client';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Get in Touch with JobMaze',
-  description: 'Contact the JobMaze team for support, business inquiries, or feedback. We are here to help you navigate the Canadian job market.',
+  title: 'Contact',
+  description: 'Contact JobMaze for support, partnerships, or platform inquiries related to Canadian job search and LMIA job opportunities.',
+  keywords: ['contact jobmaze', 'canada job portal support'],
 };
 
 export default function Page() {

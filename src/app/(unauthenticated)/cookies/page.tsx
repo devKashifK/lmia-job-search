@@ -8,8 +8,9 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy | JobMaze',
-  description: 'Learn how JobMaze uses cookies to improve your experience, analyze traffic, and ensure security.',
+  title: 'Cookie Policy',
+  description: 'Learn how JobMaze uses cookies and tracking technologies to improve user experience and platform functionality.',
+  keywords: ['jobmaze cookies policy', 'website cookies canada'],
 };
 
 const CookiesPage = () => {

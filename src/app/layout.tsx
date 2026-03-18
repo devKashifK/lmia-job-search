@@ -18,8 +18,9 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://jobmaze.ca'),
-  title: 'JobMaze - LMIA Job Search',
-  description: 'Find LMIA-approved jobs across Canada. Explore hiring trends, locations, and salaries with JobMaze data intelligence.',
+  title: 'JobMaze – AI Job Search Platform for Canada Jobs',
+  description: 'Discover jobs across Canada with JobMaze. Search real-time vacancies, LMIA opportunities, and immigration-friendly jobs with powerful AI search tools.',
+  keywords: ['canada jobs', 'lmia jobs canada', 'job search canada', 'noc job search', 'jobmaze'],
   icons: {
     icon: '/logo.svg',
   },
@@ -27,20 +28,20 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_CA',
     url: 'https://jobmaze.ca',
-    title: 'JobMaze - LMIA Job Search & Canadian Hiring Data',
-    description: 'Empowering global talent with data intelligence. Find LMIA jobs and uncover hidden opportunities in the Canadian job market.',
+    title: 'JobMaze – AI Job Search Platform for Canada Jobs',
+    description: 'Discover jobs across Canada with JobMaze. Search real-time vacancies, LMIA opportunities, and immigration-friendly jobs with powerful AI search tools.',
     siteName: 'JobMaze',
     images: [{
       url: '/og-image.png',
       width: 1200,
       height: 630,
-      alt: 'JobMaze Data Intelligence',
+      alt: 'JobMaze – AI Job Search Platform for Canada Jobs',
     }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'JobMaze - LMIA Job Search',
-    description: 'Find LMIA jobs and uncover hidden opportunities in the Canadian job market.',
+    title: 'JobMaze – AI Job Search Platform for Canada Jobs',
+    description: 'Discover jobs across Canada with JobMaze. Search real-time vacancies, LMIA opportunities, and immigration-friendly jobs with powerful AI search tools.',
     images: ['/og-image.png'],
   },
 };

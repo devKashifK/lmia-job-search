@@ -139,7 +139,7 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search }: {
         )
         : region.rows;
 
-    const hasSalary = !isLmia && filteredRows.some(r => r.avg_salary);
+
     const fieldParam = isLmia ? 'territory' : 'state';
 
     return (
@@ -171,11 +171,7 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search }: {
                             <th className="text-left py-2.5 px-3 text-xs font-semibold text-gray-500">
                                 NOC Code{!isLmia && ' · Level'} · Title
                             </th>
-                            {hasSalary && (
-                                <th className="text-right py-2.5 px-2 text-xs font-semibold text-gray-500 whitespace-nowrap hidden sm:table-cell">
-                                    Avg $/hr
-                                </th>
-                            )}
+
                             <th className="text-right py-2.5 px-4 text-xs font-semibold text-gray-500 whitespace-nowrap">
                                 No. Jobs ↑
                             </th>
@@ -201,15 +197,7 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search }: {
                                         )}
                                     </div>
                                 </td>
-                                {hasSalary && (
-                                    <td className="text-right py-2.5 px-2 hidden sm:table-cell">
-                                        {row.avg_salary ? (
-                                            <span className="text-gray-600 text-xs tabular-nums">${row.avg_salary}</span>
-                                        ) : (
-                                            <span className="text-gray-300 text-xs">—</span>
-                                        )}
-                                    </td>
-                                )}
+
                                 <td className="text-right py-2.5 px-4">
                                     <span className="text-gray-900 font-semibold text-xs tabular-nums">
                                         {row.count.toLocaleString()}
@@ -228,7 +216,7 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search }: {
                         ))}
                         {filteredRows.length === 0 && (
                             <tr>
-                                <td colSpan={hasSalary ? 5 : 4} className="text-center py-10 text-gray-400 text-xs">
+                                <td colSpan={4} className="text-center py-10 text-gray-400 text-xs">
                                     {q ? `No NOC codes match "${search}"` : 'No data available for this region'}
                                 </td>
                             </tr>
@@ -561,7 +549,7 @@ export default function InDemandJobsPage() {
                                 r.title.toLowerCase().includes(sq)
                             )
                             : canada.rows;
-                        const hasSalary = !isLmia && canadaRows.some(r => r.avg_salary);
+
 
                         return (
                             <motion.div
@@ -585,9 +573,7 @@ export default function InDemandJobsPage() {
                                         <tr className="border-b border-white/10">
                                             <th className="w-10 text-center py-2.5 text-xs font-semibold text-white/50">#</th>
                                             <th className="text-left py-2.5 px-3 text-xs font-semibold text-white/60">NOC Code · Title</th>
-                                            {hasSalary && (
-                                                <th className="text-right py-2.5 px-2 text-xs font-semibold text-white/60 hidden sm:table-cell">Avg $/hr</th>
-                                            )}
+
                                             <th className="text-right py-2.5 px-5 text-xs font-semibold text-white/60">No. Jobs ↑</th>
                                             <th className="w-8"></th>
                                         </tr>
@@ -611,15 +597,7 @@ export default function InDemandJobsPage() {
                                                         )}
                                                     </div>
                                                 </td>
-                                                {hasSalary && (
-                                                    <td className="text-right py-2.5 px-2 hidden sm:table-cell">
-                                                        {row.avg_salary ? (
-                                                            <span className="text-white/70 text-xs tabular-nums">${row.avg_salary}</span>
-                                                        ) : (
-                                                            <span className="text-white/30 text-xs">—</span>
-                                                        )}
-                                                    </td>
-                                                )}
+
                                                 <td className="text-right py-2.5 px-5">
                                                     <span className="text-white font-bold text-xs tabular-nums">{row.count.toLocaleString()}</span>
                                                 </td>
@@ -636,7 +614,7 @@ export default function InDemandJobsPage() {
                                         ))}
                                         {canadaRows.length === 0 && (
                                             <tr>
-                                                <td colSpan={hasSalary ? 5 : 4} className="text-center py-8 text-white/50 text-xs">
+                                                <td colSpan={4} className="text-center py-8 text-white/50 text-xs">
                                                     No NOC codes match &ldquo;{search}&rdquo;
                                                 </td>
                                             </tr>

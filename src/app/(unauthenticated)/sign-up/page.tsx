@@ -2,8 +2,9 @@ import { Metadata } from 'next';
 import ClientPage from './client';
 
 export const metadata: Metadata = {
-  title: 'Sign Up | Create a JobMaze Account',
-  description: 'Create your free JobMaze account. Connect with top Canadian employers, find LMIA jobs, and secure your future.',
+  title: 'Sign Up – Create Your JobMaze Account',
+  description: 'Join JobMaze today to discover LMIA-approved jobs, get personalized recommendations, and start your career in Canada.',
+  keywords: ['jobmaze registration', 'create account canada jobs'],
 };
 
 export default function Page() {

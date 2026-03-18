@@ -8,8 +8,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 export const metadata: Metadata = {
-    title: 'Documentation | Job Maze',
-    description: 'Master your job search with our comprehensive guide to LMIA data, NOC codes, and platform features.',
+    title: 'JobMaze Documentation – Platform Guides & Help',
+    description: 'Access JobMaze documentation including tutorials, guides, and technical resources for using the job search platform.',
+    keywords: ['jobmaze documentation', 'job platform guide'],
 };
 
 export default function DocumentationPage() {

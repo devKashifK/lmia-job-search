@@ -1,4 +1,11 @@
+import { Metadata } from 'next';
 import Navbar from '@/components/ui/nabvar';
+
+export const metadata: Metadata = {
+    title: 'Sitemap – JobMaze',
+    description: 'View the complete sitemap of JobMaze to navigate job search tools, resources, and platform features.',
+    keywords: ['jobmaze sitemap'],
+};
 import Footer from '@/sections/homepage/footer';
 import Link from 'next/link';
 import React from 'react';

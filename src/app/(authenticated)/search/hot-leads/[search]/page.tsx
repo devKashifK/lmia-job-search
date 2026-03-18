@@ -58,10 +58,13 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       description = `Discover high-demand Jobs in ${value}. Featured roles with LMIA available. Your gateway to working in ${value} starts at JobMaze.`;
       break;
     default:
-      if (search !== 'all') {
-         // Generic search fallback
-         title = `${value} Jobs in ${city} (LMIA) | JobMaze`;
-         description = `Explore ${value} jobs in ${city}. LMIA supported positions available. Secure your future with JobMaze.`;
+      if (search === 'all') {
+        title = 'Hot Leads – Most Applied Jobs in Canada';
+        description = 'Explore the most popular and trending job opportunities in Canada. Discover high-demand roles with real-time application data.';
+      } else {
+        // Generic search fallback
+        title = `${value} Jobs in ${city} (LMIA) | JobMaze`;
+        description = `Explore ${value} jobs in ${city}. LMIA supported positions available. Secure your future with JobMaze.`;
       }
       break;
   }
@@ -69,9 +72,16 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   // Construct Canonical URL without query parameters to centralize SEO juice
   const canonicalUrl = `https://jobmaze.ca/search/hot-leads/${search !== 'all' ? search : ''}`;
 
+  let keywords: string[] = [];
+
+  if (search === 'all') {
+    keywords = ['hot jobs canada', 'trending jobs canada', 'high demand jobs'];
+  }
+
   return {
     title,
     description,
+    keywords,
     alternates: {
       canonical: canonicalUrl,
     },

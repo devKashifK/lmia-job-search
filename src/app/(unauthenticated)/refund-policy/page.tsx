@@ -7,8 +7,9 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Refund Policy | JobMaze',
-  description: 'Details regarding our refund policy for premium subscriptions, eligible claims, and cancellation processes.',
+  title: 'Refund Policy – JobMaze',
+  description: 'Review JobMaze refund policy and guidelines for subscription plans and service purchases.',
+  keywords: ['jobmaze refund policy', 'subscription refund canada'],
 };
 
 const RefundPolicyPage = () => {

@@ -2,8 +2,9 @@ import { Metadata } from 'next';
 import ClientPage from './client';
 
 export const metadata: Metadata = {
-  title: 'Search LMIA Jobs & Trends | JobMaze',
-  description: 'Search and filter Canadian job openings. Find LMIA-approved employers, compare salaries, and discover in-demand NOC roles tailored to your profile.',
+  title: 'Advanced Job Search – Find Your Next Role in Canada',
+  description: 'Use JobMaze’s advanced AI search to find jobs, LMIA opportunities, and market trends. Filter by NOC code, province, and industry.',
+  keywords: ['canada job search', 'ai job search', 'lmia search', 'jobmaze search'],
 };
 
 export default function SearchPage() {
