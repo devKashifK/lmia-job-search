@@ -41,7 +41,7 @@ interface ApiResponse {
     hotNocs: string[];
 }
 
-type YearFilter = '2026' | 'all';
+type YearFilter = '2026' | '2025' | '2024' | '2023' | '2022' | 'all';
 type SourceFilter = 'trending' | 'lmia';
 
 // ─── Color themes ─────────────────────────────────────────────────────────────
@@ -68,15 +68,55 @@ const THEMES: Record<string, Theme> = {
         viewLinkHover: 'hover:text-brand-700',
         loaderColor: 'text-brand-500',
     },
-    'trending-all': {
-        heroGradient: 'from-violet-700 via-brand-600 to-violet-800',
-        tabActive: 'bg-brand-600 text-white shadow-sm shadow-brand-200',
-        panelHeader: 'from-brand-600 to-violet-700',
-        nocBadge: 'bg-brand-50 text-brand-700 border-brand-100',
+    'trending-2025': {
+        heroGradient: 'from-indigo-600 via-brand-600 to-indigo-700',
+        tabActive: 'bg-indigo-600 text-white shadow-sm shadow-brand-200',
+        panelHeader: 'from-indigo-600 to-indigo-700',
+        nocBadge: 'bg-indigo-50 text-indigo-700 border-indigo-100',
         rowHover: 'hover:bg-brand-50/50',
-        viewLink: 'text-brand-600',
-        viewLinkHover: 'hover:text-brand-700',
+        viewLink: 'text-indigo-600',
+        viewLinkHover: 'hover:text-indigo-700',
+        loaderColor: 'text-indigo-500',
+    },
+    'trending-2024': {
+        heroGradient: 'from-violet-600 via-indigo-600 to-violet-700',
+        tabActive: 'bg-violet-600 text-white shadow-sm shadow-violet-200',
+        panelHeader: 'from-violet-600 to-violet-700',
+        nocBadge: 'bg-violet-50 text-violet-700 border-violet-100',
+        rowHover: 'hover:bg-brand-50/50',
+        viewLink: 'text-violet-600',
+        viewLinkHover: 'hover:text-violet-700',
         loaderColor: 'text-violet-500',
+    },
+    'trending-2023': {
+        heroGradient: 'from-purple-600 via-violet-600 to-purple-700',
+        tabActive: 'bg-purple-600 text-white shadow-sm shadow-purple-200',
+        panelHeader: 'from-purple-600 to-purple-700',
+        nocBadge: 'bg-purple-50 text-purple-700 border-purple-100',
+        rowHover: 'hover:bg-brand-50/50',
+        viewLink: 'text-purple-600',
+        viewLinkHover: 'hover:text-purple-700',
+        loaderColor: 'text-purple-500',
+    },
+    'trending-2022': {
+        heroGradient: 'from-fuchsia-600 via-purple-600 to-fuchsia-700',
+        tabActive: 'bg-fuchsia-600 text-white shadow-sm shadow-fuchsia-200',
+        panelHeader: 'from-fuchsia-600 to-fuchsia-700',
+        nocBadge: 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100',
+        rowHover: 'hover:bg-brand-50/50',
+        viewLink: 'text-fuchsia-600',
+        viewLinkHover: 'hover:text-fuchsia-700',
+        loaderColor: 'text-fuchsia-500',
+    },
+    'trending-all': {
+        heroGradient: 'from-slate-700 via-slate-600 to-slate-800',
+        tabActive: 'bg-slate-600 text-white shadow-sm shadow-slate-200',
+        panelHeader: 'from-slate-600 to-slate-700',
+        nocBadge: 'bg-slate-50 text-slate-700 border-slate-100',
+        rowHover: 'hover:bg-brand-50/50',
+        viewLink: 'text-slate-600',
+        viewLinkHover: 'hover:text-slate-700',
+        loaderColor: 'text-slate-500',
     },
     'lmia-2026': {
         heroGradient: 'from-orange-600 via-orange-500 to-amber-600',
@@ -88,17 +128,64 @@ const THEMES: Record<string, Theme> = {
         viewLinkHover: 'hover:text-orange-700',
         loaderColor: 'text-orange-500',
     },
-    'lmia-all': {
-        heroGradient: 'from-orange-600 via-amber-500 to-violet-700',
-        tabActive: 'bg-orange-500 text-white shadow-sm shadow-orange-200',
-        panelHeader: 'from-orange-500 to-violet-600',
-        nocBadge: 'bg-orange-50 text-orange-700 border-orange-100',
+    'lmia-2025': {
+        heroGradient: 'from-rose-600 via-orange-500 to-rose-700',
+        tabActive: 'bg-rose-600 text-white shadow-sm shadow-rose-200',
+        panelHeader: 'from-rose-600 to-rose-700',
+        nocBadge: 'bg-rose-50 text-rose-700 border-rose-100',
         rowHover: 'hover:bg-orange-50/50',
-        viewLink: 'text-orange-600',
-        viewLinkHover: 'hover:text-orange-700',
-        loaderColor: 'text-violet-500',
+        viewLink: 'text-rose-600',
+        viewLinkHover: 'hover:text-rose-700',
+        loaderColor: 'text-rose-500',
+    },
+    'lmia-2024': {
+        heroGradient: 'from-pink-600 via-rose-500 to-pink-700',
+        tabActive: 'bg-pink-600 text-white shadow-sm shadow-pink-200',
+        panelHeader: 'from-pink-600 to-pink-700',
+        nocBadge: 'bg-pink-50 text-pink-700 border-pink-100',
+        rowHover: 'hover:bg-orange-50/50',
+        viewLink: 'text-pink-600',
+        viewLinkHover: 'hover:text-pink-700',
+        loaderColor: 'text-pink-500',
+    },
+    'lmia-2023': {
+        heroGradient: 'from-red-600 via-pink-500 to-red-700',
+        tabActive: 'bg-red-600 text-white shadow-sm shadow-red-200',
+        panelHeader: 'from-red-600 to-red-700',
+        nocBadge: 'bg-red-50 text-red-700 border-red-100',
+        rowHover: 'hover:bg-orange-50/50',
+        viewLink: 'text-red-600',
+        viewLinkHover: 'hover:text-red-700',
+        loaderColor: 'text-red-500',
+    },
+    'lmia-2022': {
+        heroGradient: 'from-amber-600 via-red-500 to-amber-700',
+        tabActive: 'bg-amber-600 text-white shadow-sm shadow-amber-200',
+        panelHeader: 'from-amber-600 to-amber-700',
+        nocBadge: 'bg-amber-50 text-amber-700 border-amber-100',
+        rowHover: 'hover:bg-orange-50/50',
+        viewLink: 'text-amber-600',
+        viewLinkHover: 'hover:text-amber-700',
+        loaderColor: 'text-amber-500',
+    },
+    'lmia-all': {
+        heroGradient: 'from-slate-700 via-orange-500 to-slate-800',
+        tabActive: 'bg-slate-600 text-white shadow-sm shadow-slate-200',
+        panelHeader: 'from-slate-600 to-slate-700',
+        nocBadge: 'bg-slate-50 text-slate-700 border-slate-100',
+        rowHover: 'hover:bg-orange-50/50',
+        viewLink: 'text-slate-600',
+        viewLinkHover: 'hover:text-slate-700',
+        loaderColor: 'text-slate-500',
     },
 };
+
+const ATLANTIC_PROVINCES = [
+    'Nova Scotia', 
+    'New Brunswick', 
+    'Prince Edward Island', 
+    'Newfoundland and Labrador'
+];
 
 // ─── Province tabs ────────────────────────────────────────────────────────────
 
@@ -203,9 +290,22 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search }: {
                                         {row.count.toLocaleString()}
                                     </span>
                                 </td>
-                                <td className="py-2.5 pr-3">
+                                 <td className="py-2.5 pr-3">
                                     <Link
-                                        href={`/search/${isLmia ? 'lmia' : 'hot-leads'}/${encodeURIComponent(row.noc_code)}?field=noc_code&t=${isLmia ? 'lmia' : 'trending_job'}`}
+                                        href={(() => {
+                                            const base = `/search/${isLmia ? 'lmia' : 'hot-leads'}/${encodeURIComponent(row.noc_code)}`;
+                                            const params = new URLSearchParams();
+                                            params.set('field', 'noc_code');
+                                            params.set('t', isLmia ? 'lmia' : 'trending_job');
+                                            
+                                            if (region.key === 'atlantic') {
+                                                ATLANTIC_PROVINCES.forEach(p => params.append(fieldParam, p));
+                                            } else if (region.key !== 'canada' && region.key !== 'all') {
+                                                params.set(fieldParam, region.region);
+                                            }
+                                            
+                                            return `${base}?${params.toString()}`;
+                                        })()}
                                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                                         title={`Search ${row.noc_code} jobs`}
                                     >
@@ -232,11 +332,17 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search }: {
                 </span>
                 <Link
                     href={(() => {
-                        const base = isLmia ? '/search/lmia' : '/search/hot-leads';
+                        const base = `/${isLmia ? 'search/lmia' : 'search/hot-leads'}/all`;
+                        const params = new URLSearchParams();
+                        params.set('field', fieldParam); // searching by state/territory
+                        
                         if (region.key === 'atlantic') {
-                            return `${base}/all?field=${fieldParam}&q=Atlantic`;
+                            ATLANTIC_PROVINCES.forEach(p => params.append(fieldParam, p));
+                        } else if (region.key !== 'canada' && region.key !== 'all') {
+                            params.set(fieldParam, region.region);
                         }
-                        return `${base}/${encodeURIComponent(region.region)}?field=${fieldParam}`;
+                        
+                        return `${base}?${params.toString()}`;
                     })()}
                     className={`flex items-center gap-1 text-xs font-medium transition-colors ${theme.viewLink} ${theme.viewLinkHover}`}
                 >
@@ -290,7 +396,7 @@ function SourceToggle({ value, onChange }: { value: SourceFilter; onChange: (v: 
     );
 }
 
-function YearToggle({ value, onChange }: { value: YearFilter; onChange: (v: YearFilter) => void }) {
+function YearToggle({ value, onChange, isLmia }: { value: YearFilter; onChange: (v: YearFilter) => void; isLmia: boolean }) {
     return (
         <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 text-gray-500">
@@ -298,10 +404,19 @@ function YearToggle({ value, onChange }: { value: YearFilter; onChange: (v: Year
                 <span className="text-xs font-medium hidden sm:inline">Period</span>
             </div>
             <div className="flex bg-gray-100 rounded-lg p-0.5 gap-0.5">
-                <button onClick={() => onChange('2026')} className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap ${value === '2026' ? 'bg-brand-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
-                    2026
-                </button>
-                <button onClick={() => onChange('all')} className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap ${value === 'all' ? 'bg-violet-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                {['2026', '2025', '2024', '2023', '2022'].map((y) => (
+                    <button
+                        key={y}
+                        onClick={() => onChange(y as YearFilter)}
+                        className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap ${value === y ? (isLmia ? 'bg-orange-500 text-white shadow-sm' : 'bg-brand-600 text-white shadow-sm') : 'text-gray-500 hover:text-gray-700'}`}
+                    >
+                        {y}
+                    </button>
+                ))}
+                <button
+                    onClick={() => onChange('all')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap ${value === 'all' ? 'bg-slate-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                >
                     All Time
                 </button>
             </div>
@@ -367,7 +482,8 @@ export default function InDemandJobsPage() {
         const urlYear = sp.get('year');
         const urlSource = sp.get('source');
         const urlRegion = sp.get('region');
-        if (urlYear === '2026' || urlYear === 'all') setYear(urlYear);
+        const validYears = ['2026', '2025', '2024', '2023', '2022', 'all'];
+        if (urlYear && validYears.includes(urlYear)) setYear(urlYear as YearFilter);
         if (urlSource === 'trending' || urlSource === 'lmia') setSource(urlSource);
         if (urlRegion) setActiveTab(urlRegion);
     }, []);
@@ -462,7 +578,7 @@ export default function InDemandJobsPage() {
                         <div className="flex flex-wrap items-center gap-3 py-2.5 border-b border-gray-100">
                             <SourceToggle value={source} onChange={setSource} />
                             <div className="w-px h-5 bg-gray-200 flex-shrink-0" />
-                            <YearToggle value={year} onChange={setYear} />
+                            <YearToggle value={year} onChange={setYear} isLmia={isLmia} />
 
                             <div className="ml-auto flex items-center gap-2">
                                 {/* Timestamp */}

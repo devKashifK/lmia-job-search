@@ -57,9 +57,11 @@ export default function Company() {
   const { updateCreditsAndSearch } = useUpdateCredits();
   const { data: companies, isLoading } = useTrendingCompanies();
 
-  const handleViewDetails = (company: string) => {
+  const handleViewDetails = (company: string, source: 'lmia' | 'trending_job') => {
+    const base = source === 'lmia' ? 'lmia' : 'hot-leads';
+    const table = source === 'lmia' ? 'lmia' : 'trending_job';
     router.push(
-      `/search/hot-leads/${encodeURIComponent(company)}?field=employer&t=trending_job`
+      `/search/${base}/${encodeURIComponent(company)}?field=employer&t=${table}`
     );
   };
 
@@ -100,7 +102,7 @@ export default function Company() {
                 <div
                   onClick={() => {
                     updateCreditsAndSearch(group.title);
-                    handleViewDetails(group.title);
+                    handleViewDetails(group.title, group.source);
                   }}
                   className="group relative bg-white rounded-xl p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-lg hover:border-brand-100 transition-all duration-300 cursor-pointer overflow-hidden"
                 >
@@ -130,7 +132,7 @@ export default function Company() {
                   {/* Metrics & Sparkline Row */}
                   <div className="flex items-end justify-between mb-4">
                     <div>
-                      <p className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider mb-0.5">Active LMIAs</p>
+                      <p className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider mb-0.5">{group.source === 'lmia' ? 'Active LMIAs' : 'Job Openings'}</p>
                       <p className="text-2xl font-bold text-gray-900 tabular-nums tracking-tight">
                         {group.count.toLocaleString()}
                       </p>

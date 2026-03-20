@@ -53,7 +53,7 @@ export const hotLeadsColumns: ColumnWithIcon[] = [
     header: () => (
       <div className="flex items-center gap-1">
         <PersonStanding className="h-3 w-3 text-black/50" />
-        <span className="text-xs">State </span>
+        <span className="text-xs">State</span>
       </div>
     ),
   },

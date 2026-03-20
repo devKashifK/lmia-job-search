@@ -38,6 +38,8 @@ export interface ParsedJobDescription {
     jobUrl: string | null;
     /** Salary string extracted from jobDetails (may override DB salary field) */
     salary: string | null;
+    /** Combined results of any unknown fields from the JSON */
+    extraSections: Record<string, string | string[]>;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -100,62 +102,116 @@ function extractBullets(text: string): string[] | null {
  *   - overviewText = prose before any task section
  *   - tasks = individual task strings extracted from the "Tasks - " section
  */
-function parseDescriptionBlob(raw: string): { overviewText: string; tasks: string[] } {
+function parseDescriptionBlob(raw: string): { overviewText: string; tasks: string[]; extraSections: Record<string, string[]> } {
     // Strip leading "Description " prefix (common in flat scrapers)
     let text = raw.replace(/^Description\s+/i, '').trim();
 
-    // Task section markers — split at any of these
-    const taskSectionMatch = text.match(
-        /\b(Skills and Abilities\s+)?Tasks\s*-\s*/i
-    );
+    // ─────────────────────────────────────────────────────────────────────────
+    // Privacy and Source Stripping
+    // ─────────────────────────────────────────────────────────────────────────
+    // Strip URLs
+    text = text.replace(/https?:\/\/[^\s]+/gi, '');
+    // Strip Email addresses
+    text = text.replace(/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, '');
+    // Strip Phone numbers (common North American formats)
+    text = text.replace(/\b(?:\+?1[-. ]?)?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})\b/g, '');
+    
+    // Strip Source-related footers and phrases
+    const sourcePhrases = [
+        /\bFor the complete posting please visit.*\b/i,
+        /\bVisit our website at.*\b/i,
+        /\bSource:.*\b/i,
+        /\bOriginally posted on.*\b/i,
+        /\bThis job has been imported from.*\b/i,
+        /\bJob Bank job number:.*\b/i,
+    ];
+    sourcePhrases.forEach(p => {
+        text = text.replace(p, '');
+    });
 
-    if (!taskSectionMatch || taskSectionMatch.index === undefined) {
-        // No tasks section found — return the whole text as overview
-        return { overviewText: text, tasks: [] };
+    const extraSections: Record<string, string[]> = {};
+    const tasks: string[] = [];
+    let overviewText = text;
+
+    // 1. Identify common section markers
+    // Note: We avoid leading \b for cases like "profitabilityQualifications" (missing space)
+    // but we require a trailing symbol (:, *, or \n) to ensure it's a header
+    const sectionMarkers = [
+        { key: 'responsibilities', pattern: /Key Responsibilities[:*]+/i, title: 'Key Responsibilities' },
+        { key: 'qualifications', pattern: /Qualifications (and|&) Education[:*]+/i, title: 'Qualifications' },
+        { key: 'requirements', pattern: /(Employment )?Requirements[:*]+/i, title: 'Requirements' },
+        { key: 'tasks', pattern: /(Skills and Abilities\s+)?Tasks\s*(?:-|:|\*)/i, title: 'Tasks' },
+        { key: 'benefits', pattern: /Benefits[:*]+/i, title: 'Benefits' },
+        { key: 'schedule', pattern: /Schedule[:*]+/i, title: 'Schedule' },
+        { key: 'work_with', pattern: /Work with[:*]+/i, title: 'Work With' },
+    ];
+
+    // Find all occurrences of markers
+    const foundMarkers = sectionMarkers
+        .map(m => {
+            const match = text.match(m.pattern);
+            return match ? { ...m, index: match.index!, length: match[0].length } : null;
+        })
+        .filter((m): m is any => m !== null)
+        .sort((a, b) => a.index - b.index);
+
+    if (foundMarkers.length > 0) {
+        overviewText = text.slice(0, foundMarkers[0].index).replace(/[,;.\s\-]+$/, '').trim();
+        if (overviewText) overviewText += '.'; // Ensure it ends with a period if it was cut
+
+        for (let i = 0; i < foundMarkers.length; i++) {
+            const current = foundMarkers[i];
+            const next = foundMarkers[i + 1];
+            let sectionContent = text.slice(current.index + current.length, next ? next.index : undefined).trim();
+            
+            // Clean leading punctuation like commas or dashes left behind
+            sectionContent = sectionContent.replace(/^[,;.\s\-]+/, '').trim();
+
+            // Split content into bullets if markers exist (* or -)
+            let bullets = sectionContent.split(/\s*(?:\n|\*|-)\s+/).map(s => s.trim()).filter(s => s.length > 3);
+            
+            if (bullets.length <= 1) {
+                // Try splitting by sentences if no bullets found
+                bullets = sectionContent.split(/(?<=[.!?])\s+(?=[A-Z])/).map(s => s.trim()).filter(s => s.length > 10);
+            }
+
+            if (current.key === 'tasks' || current.key === 'responsibilities') {
+                tasks.push(...bullets);
+            } else {
+                extraSections[current.title] = bullets;
+            }
+        }
+    } else {
+        // Fallback: If no markers but contains bullets (* or -), try to extract them
+        const bulletSplit = text.split(/\s*(?:\n|\*|-)\s+/);
+        if (bulletSplit.length > 2) {
+            overviewText = bulletSplit[0].trim();
+            tasks.push(...bulletSplit.slice(1).map(s => s.trim()).filter(s => s.length > 3));
+        }
     }
 
-    const taskStart = taskSectionMatch.index;
-    const afterTaskMarker = text.slice(taskStart + taskSectionMatch[0].length);
-
-    // Prose part before the Tasks section
-    const overviewText = text.slice(0, taskStart).trim();
-
-    // Split the tasks section on " - " bullet markers
-    // Stop at known non-task section markers like "Security and safety", "Employment terms"
-    const nonTaskBreak = afterTaskMarker.search(
-        /\b(Security and safety|Employment terms|Additional Comment|About US|About The Team|For more information)\b/i
-    );
-    const taskSection = nonTaskBreak !== -1
-        ? afterTaskMarker.slice(0, nonTaskBreak)
-        : afterTaskMarker;
-
-    const tasks = taskSection
-        .split(/\s*-\s+/)
-        .map((s) => s.trim())
-        .filter((s) => s.length > 3); // filter out very short fragments
-
-    return { overviewText, tasks };
+    return { overviewText, tasks, extraSections };
 }
 
 /**
  * Tries to resolve the overview text from several possible sources, in priority order.
  */
-function resolveOverview(ov: Record<string, string>): { text: string | null; extractedTasks: string[] } {
+function resolveOverview(ov: Record<string, string>): { text: string | null; extractedTasks: string[]; extraSections: Record<string, string[]> } {
     // 1. Job Bank "On site" field → strip the redundant "Responsibilities …" suffix
     if (ov['On site']) {
         const cleaned = ov['On site'].split('Responsibilities')[0].trim();
-        if (cleaned) return { text: cleaned, extractedTasks: [] };
+        if (cleaned) return { text: cleaned, extractedTasks: [], extraSections: {} };
     }
 
     // 2. Explicit description-style keys (any scraper format) — may contain embedded tasks
     for (const key of ['description', 'Description', 'Job Description', 'Summary', 'summary']) {
         if (ov[key]) {
-            const { overviewText, tasks } = parseDescriptionBlob(ov[key]);
-            return { text: overviewText || null, extractedTasks: tasks };
+            const { overviewText, tasks, extraSections } = parseDescriptionBlob(ov[key]);
+            return { text: overviewText || null, extractedTasks: tasks, extraSections };
         }
     }
 
-    return { text: null, extractedTasks: [] };
+    return { text: null, extractedTasks: [], extraSections: {} };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -166,9 +222,9 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
     if (!raw) return null;
 
     // ── Resolve to a plain object ────────────────────────────────────────────
-    let data: Record<string, unknown>;
+    let data: Record<string, unknown> = {};
 
-    if (typeof raw === 'object' && !Array.isArray(raw)) {
+    if (typeof raw === 'object' && raw !== null && !Array.isArray(raw)) {
         data = raw as Record<string, unknown>;
     } else if (typeof raw === 'string') {
         try {
@@ -176,14 +232,16 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
             if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
                 data = parsed as Record<string, unknown>;
             } else {
-                return { overview: raw, responsibilities: [], requirements: [], additionalInfo: [], jobUrl: null, salary: null };
+                return { overview: raw, responsibilities: [], requirements: [], additionalInfo: [], jobUrl: null, salary: null, extraSections: {} };
             }
         } catch {
-            return { overview: raw, responsibilities: [], requirements: [], additionalInfo: [], jobUrl: null, salary: null };
+            return { overview: raw, responsibilities: [], requirements: [], additionalInfo: [], jobUrl: null, salary: null, extraSections: {} };
         }
     } else {
         return null;
     }
+
+    const extraSections: Record<string, string | string[]> = {};
 
     // ── Normalise nested objects ──────────────────────────────────────────────
     const ov = (typeof data.overview === 'object' && data.overview && !Array.isArray(data.overview)
@@ -193,7 +251,10 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
         ? data.jobDetails : {}) as Record<string, string>;
 
     // ── Overview (+ extract embedded tasks from description blobs) ───────────
-    const { text: overview, extractedTasks } = resolveOverview(ov);
+    const { text: overview, extractedTasks, extraSections: blobSections } = resolveOverview(ov);
+
+    // Merge blob sections into extraSections
+    Object.assign(extraSections, blobSections);
 
     // ── Responsibilities ──────────────────────────────────────────────────────
     let responsibilities: string[] = [];
@@ -220,21 +281,23 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
 
     // Who can apply (Format A)
     if (Array.isArray(data.whoCanApply)) {
-        const eligible = (data.whoCanApply as string[]).filter(Boolean);
+        const eligible = (data.whoCanApply as unknown[]).filter(v => typeof v === 'string').map(String);
         if (eligible.length) requirements.push(`Who can apply: ${eligible.join(', ')}`);
     }
 
     // Format B: top-level requirement keys (Education, Experience, Languages, etc.)
     for (const [key, val] of Object.entries(data)) {
-        if (TOP_LEVEL_REQUIREMENT_KEYS.has(key) && typeof val === 'string' && val.trim()) {
-            requirements.push(`${key}: ${val.trim()}`);
+        if (TOP_LEVEL_REQUIREMENT_KEYS.has(key) && typeof val === 'string') {
+            const strVal = val.trim();
+            if (strVal) requirements.push(`${key}: ${strVal}`);
         }
     }
 
     // Catch-all: short unknown overview keys → Requirements
     for (const [key, val] of Object.entries(ov)) {
-        if (!KNOWN_OVERVIEW.has(key) && typeof val === 'string' && val.trim() && val.trim().length < 200) {
-            requirements.push(`${key}: ${val.trim()}`);
+        const strVal = String(val).trim();
+        if (!KNOWN_OVERVIEW.has(key) && strVal && strVal.length < 200) {
+            requirements.push(`${key}: ${strVal}`);
         }
     }
 
@@ -248,7 +311,8 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
         const v = details['Starts as soon as possible'];
         additionalInfo.push(v ? `Starts: ${v}` : 'Starts as soon as possible');
     }
-    if (details.Source) additionalInfo.push(`Source: ${details.Source}`);
+    // Skip Source field
+    // if (details.Source) additionalInfo.push(`Source: ${details.Source}`);
 
     // Catch-all: unknown jobDetails keys → Additional Info
     for (const [key, val] of Object.entries(details)) {
@@ -266,9 +330,18 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
 
         if (Array.isArray(val)) {
             const items = (val as unknown[]).filter((v) => typeof v === 'string' && (v as string).trim()).map(String);
-            if (items.length) additionalInfo.push(`${key}: ${items.join(', ')}`);
-        } else if (typeof val === 'string' && val.trim()) {
-            additionalInfo.push(`${key}: ${val.trim()}`);
+            if (items.length) {
+                additionalInfo.push(`${key}: ${items.join(', ')}`);
+                // Also add to extraSections if not a requirement key
+                extraSections[key] = items;
+            }
+        } else if (typeof val === 'string') {
+            const strVal = val.trim();
+            if (strVal) {
+                additionalInfo.push(`${key}: ${strVal}`);
+                // Also add to extraSections if not a requirement key
+                extraSections[key] = strVal;
+            }
         }
     }
 
@@ -293,5 +366,6 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
         additionalInfo: [...new Set(additionalInfo)],
         jobUrl,
         salary,
+        extraSections,
     };
 }

@@ -109,6 +109,28 @@ export function SearchPageHeader({
         router.push(`${pathname}?${newSearchParams.toString()}`);
     };
 
+    const removeDateFilter = () => {
+        const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
+        newSearchParams.delete('date_from');
+        newSearchParams.delete('date_to');
+        newSearchParams.set('page', '1');
+        router.push(`${pathname}?${newSearchParams.toString()}`);
+    };
+
+    const switchSearchType = (type: 'hot_leads' | 'lmia') => {
+        if (type === currentSearchType) return;
+        
+        const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
+        newSearchParams.set('t', type === 'hot_leads' ? 'trending_job' : 'lmia');
+        newSearchParams.set('page', '1');
+        
+        // Re-construct the path
+        const searchTerm = pathname.split('/').pop() || 'all';
+        const newPath = `/search/${type === 'hot_leads' ? 'hot-leads' : 'lmia'}/${searchTerm}`;
+        
+        router.push(`${newPath}?${newSearchParams.toString()}`);
+    };
+
     const clearFilters = () => {
         const newSearchParams = new URLSearchParams();
         const preserve = ['t', 'field', 'pageSize', 'q'];
@@ -117,9 +139,8 @@ export function SearchPageHeader({
             if (v) newSearchParams.set(k, v);
         });
 
-        if (searchParams?.get('t')) {
-            newSearchParams.set('t', searchParams.get('t')!);
-        }
+        // Ensure current table is preserved
+        newSearchParams.set('t', currentSearchType === 'hot_leads' ? 'trending_job' : 'lmia');
 
         router.push(`${pathname}?${newSearchParams.toString()}`);
     };
@@ -192,10 +213,31 @@ export function SearchPageHeader({
 
                             {/* Metadata Row: Source • Field • Count */}
                             <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-500">
-                                <span className="font-medium text-gray-900">
-                                    {currentSearchType === 'hot_leads' ? 'Trending Jobs' : 'LMIA Data'}
-                                </span>
-                                <span className="text-gray-300">•</span>
+                                <div className="flex items-center bg-gray-100 rounded-full p-0.5 border border-gray-200">
+                                    <button 
+                                        onClick={() => switchSearchType('hot_leads')}
+                                        className={cn(
+                                            "px-2 py-0.5 rounded-full transition-all text-[10px] font-bold uppercase tracking-tight",
+                                            currentSearchType === 'hot_leads' 
+                                                ? "bg-white text-emerald-600 shadow-sm" 
+                                                : "text-gray-400 hover:text-gray-600"
+                                        )}
+                                    >
+                                        Trending
+                                    </button>
+                                    <button 
+                                        onClick={() => switchSearchType('lmia')}
+                                        className={cn(
+                                            "px-2 py-0.5 rounded-full transition-all text-[10px] font-bold uppercase tracking-tight",
+                                            currentSearchType === 'lmia' 
+                                                ? "bg-white text-brand-600 shadow-sm" 
+                                                : "text-gray-400 hover:text-gray-600"
+                                        )}
+                                    >
+                                        LMIA
+                                    </button>
+                                </div>
+                                <span className="text-gray-300 mx-0.5">•</span>
                                 <span>
                                     {count !== undefined ? `${count.toLocaleString()} results found` : 'Results'}
                                 </span>
@@ -260,7 +302,7 @@ export function SearchPageHeader({
             </div>
 
             {/* Applied Filters Bar (if active) */}
-            {(activeFilters.length > 0) && (
+            {(activeFilters.length > 0 || hasDateFilter) && (
                 <div className="px-20 py-3 sm:px-20 bg-gray-50/50 border-t border-gray-100 flex flex-wrap items-center gap-2">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mr-2">Active Filters:</span>
 
@@ -280,6 +322,25 @@ export function SearchPageHeader({
                             </button>
                         </Badge>
                     ))}
+
+                    {hasDateFilter && (
+                        <Badge
+                            variant="secondary"
+                            className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 h-7 px-2.5 text-xs flex items-center gap-1.5 transition-colors"
+                        >
+                            <CalendarDays className="w-3.5 h-3.5 text-brand-500" />
+                            <span className="font-semibold text-gray-900">
+                                {dateFrom ? format(parseISO(dateFrom as string), 'MMM d, yyyy') : '...'} 
+                                {dateTo ? ` - ${format(parseISO(dateTo as string), 'MMM d, yyyy')}` : ''}
+                            </span>
+                            <button
+                                onClick={removeDateFilter}
+                                className="ml-1 p-0.5 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                <X className="w-3 h-3" />
+                            </button>
+                        </Badge>
+                    )}
 
                     <button
                         onClick={clearFilters}

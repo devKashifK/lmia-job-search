@@ -22,37 +22,23 @@ interface UseJobSearchProps {
 }
 
 export function useJobSearch({ initialSearchType = 'hot_leads', onSearchComplete }: UseJobSearchProps = {}) {
+    // Hooks
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    
+    // Get values from URL or defaults
+    const sp = new URLSearchParams(searchParams?.toString() || '');
+    const urlSearchType = sp.get('t') === 'lmia' ? 'lmia' : 'hot_leads';
+    const urlSearchBy = sp.get('field') as any || 'all';
+
     // State
     const [input, setInput] = useState('');
-    const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>(initialSearchType as 'hot_leads' | 'lmia'); // Type as string to match initialSearchType generic or force cast?
-    // Better:
-    // const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>((initialSearchType as 'hot_leads' | 'lmia') || 'hot_leads'); 
-
-    // Actually, let's keep it string to be safe but cast where needed OR fix the type definition.
-    // UseJobSearchProps: initialSearchType?: 'hot_leads' | 'lmia' | string;
-
-    // Let's just fix the hook state type if we can.
-
-    // If I change line 27:
-    // const [searchType, setSearchType] = useState<string>(initialSearchType);
-    // to
-    // const [searchType, setSearchType] = useState(initialSearchType);
-    // It infers string.
-
-    // Let's force it to be compatible.
-    // The components expect 'hot_leads' | 'lmia'.
-
-    // I will change the type in the hook.
+    const [searchType, setSearchType] = useState<'hot_leads' | 'lmia'>(urlSearchType);
+    const [searchBy, setSearchBy] = useState<'all' | 'job_title' | 'category' | 'noc_code' | 'employer' | 'city'>(urlSearchBy);
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
-    const [searchBy, setSearchBy] = useState<'all' | 'job_title' | 'category' | 'noc_code' | 'employer' | 'city'>('all'); // Added for SearchBox compatibility
-
-    // Hooks
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const sp = new URLSearchParams(searchParams?.toString() || '');
     const { session } = useSession();
     const { updateCreditsAndSearch } = useUpdateCredits();
     const { toast } = useToast();

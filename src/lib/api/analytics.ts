@@ -95,6 +95,7 @@ export interface TopEmployer {
     color: string;
     sparkline: number[];
     description: string;
+    source: 'lmia' | 'trending_job';
 }
 
 const COLORS = [
@@ -110,91 +111,129 @@ const COLORS = [
 ];
 
 export async function getTrendingCompanies(): Promise<TopEmployer[]> {
-    // 1. Get Top 3 NOCs by count
-    const { data: topNocs, error: nocError } = await db
-        .from('lmia')
-        .select('noc_code_norm')
-        .not('noc_code_norm', 'is', null)
-        .limit(5000);
-
-    if (nocError) throw nocError;
-
-    const nocCounts: Record<string, number> = {};
-    topNocs?.forEach((row: any) => {
-        if (row.noc_code_norm) {
-            nocCounts[row.noc_code_norm] = (nocCounts[row.noc_code_norm] || 0) + 1;
-        }
-    });
-
-    const top3Nocs = Object.entries(nocCounts)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 3)
-        .map(([code]) => code);
-
-    // 2. For each NOC, get Top 2 Employers
     const finalResults: TopEmployer[] = [];
 
-    for (let i = 0; i < top3Nocs.length; i++) {
-        const noc = top3Nocs[i];
-
-        // Fetch employers for this NOC
-        const { data: employers, error: empError } = await db
+    // --- 1. GET FROM LMIA (Top 3 NOCs, 2 Employers each) ---
+    try {
+        const { data: topNocsLmia } = await db
             .from('lmia')
-            .select('employer_norm, job_title')
-            .eq('noc_code_norm', noc)
-            .not('employer_norm', 'is', null)
-            .limit(500);
+            .select('noc_code_norm')
+            .not('noc_code_norm', 'is', null)
+            .limit(3000);
 
-        if (empError) continue;
-
-        // Aggregate Employers
-        const empCounts: Record<string, { count: number, roles: Set<string> }> = {};
-        employers?.forEach((row: any) => {
-            let name = row.employer_norm?.trim();
-            if (!name) return;
-
-            // Filter out companies starting with numbers (e.g. 123456 Canada Inc)
-            if (/^\d/.test(name)) return;
-
-            // Title Case
-            name = name.toLowerCase().split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-
-            if (!empCounts[name]) {
-                empCounts[name] = { count: 0, roles: new Set() };
+        const nocCountsLmia: Record<string, number> = {};
+        topNocsLmia?.forEach((row: any) => {
+            if (row.noc_code_norm) {
+                nocCountsLmia[row.noc_code_norm] = (nocCountsLmia[row.noc_code_norm] || 0) + 1;
             }
-            empCounts[name].count++;
-            if (row.job_title) empCounts[name].roles.add(row.job_title);
         });
 
-        // Get Top 2
-        const top2 = Object.entries(empCounts)
-            .sort(([, a], [, b]) => b.count - a.count)
-            .slice(0, 2);
+        const top3NocsLmia = Object.entries(nocCountsLmia)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 3)
+            .map(([code]) => code);
 
-        // Format as TopEmployer
-        top2.forEach(([name, stats]) => {
-            const globalIndex = finalResults.length;
-            const colorIndex = globalIndex % COLORS.length;
-            const initials = name.substring(0, 2).toUpperCase();
-            const trendValue = Math.floor(Math.random() * 23) + 2;
-            const sparkline = Array.from({ length: 7 }, () => Math.floor(Math.random() * 40) + 20);
+        for (const noc of top3NocsLmia) {
+            const { data: employers } = await db
+                .from('lmia')
+                .select('employer_norm, job_title')
+                .eq('noc_code_norm', noc)
+                .not('employer_norm', 'is', null)
+                .limit(200);
 
-            // Use NOC as description or top role
-            const description = `NOC ${noc}: ${Array.from(stats.roles)[0] || 'Various'}`;
+            const empCounts: Record<string, { count: number, roles: Set<string> }> = {};
+            employers?.forEach((row: any) => {
+                let name = row.employer_norm?.trim();
+                if (!name || /^\d/.test(name)) return;
+                name = name.toLowerCase().split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-            finalResults.push({
-                title: name,
-                count: stats.count,
-                trend: `+${trendValue}%`,
-                initials,
-                color: COLORS[colorIndex],
-                sparkline,
-                description,
+                if (!empCounts[name]) empCounts[name] = { count: 0, roles: new Set() };
+                empCounts[name].count++;
+                if (row.job_title) empCounts[name].roles.add(row.job_title);
             });
-        });
+
+            Object.entries(empCounts)
+                .sort(([, a], [, b]) => b.count - a.count)
+                .slice(0, 2)
+                .forEach(([name, stats]) => {
+                    const colorIndex = finalResults.length % COLORS.length;
+                    finalResults.push({
+                        title: name,
+                        count: stats.count,
+                        trend: `+${Math.floor(Math.random() * 23) + 2}%`,
+                        initials: name.substring(0, 2).toUpperCase(),
+                        color: COLORS[colorIndex],
+                        sparkline: Array.from({ length: 7 }, () => Math.floor(Math.random() * 40) + 20),
+                        description: `NOC ${noc}: ${Array.from(stats.roles)[0] || 'Various'}`,
+                        source: 'lmia'
+                    });
+                });
+        }
+    } catch (e) {
+        console.error('Error fetching lmia trending companies:', e);
     }
 
-    return finalResults;
+    // --- 2. GET FROM TRENDING JOBS (Top 3 NOCs, 2 Employers each) ---
+    try {
+        const { data: topNocsJobs } = await db
+            .from('trending_job')
+            .select('noc_code')
+            .not('noc_code', 'is', null)
+            .limit(3000);
+
+        const nocCountsJobs: Record<string, number> = {};
+        topNocsJobs?.forEach((row: any) => {
+            if (row.noc_code) {
+                nocCountsJobs[row.noc_code] = (nocCountsJobs[row.noc_code] || 0) + 1;
+            }
+        });
+
+        const top3NocsJobs = Object.entries(nocCountsJobs)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 3)
+            .map(([code]) => code);
+
+        for (const noc of top3NocsJobs) {
+            const { data: employers } = await db
+                .from('trending_job')
+                .select('employer, job_title')
+                .eq('noc_code', noc)
+                .not('employer', 'is', null)
+                .limit(200);
+
+            const empCounts: Record<string, { count: number, roles: Set<string> }> = {};
+            employers?.forEach((row: any) => {
+                let name = row.employer?.trim();
+                if (!name || /^\d/.test(name)) return;
+                name = name.toLowerCase().split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+                if (!empCounts[name]) empCounts[name] = { count: 0, roles: new Set() };
+                empCounts[name].count++;
+                if (row.job_title) empCounts[name].roles.add(row.job_title);
+            });
+
+            Object.entries(empCounts)
+                .sort(([, a], [, b]) => b.count - a.count)
+                .slice(0, 2)
+                .forEach(([name, stats]) => {
+                    const colorIndex = finalResults.length % COLORS.length;
+                    finalResults.push({
+                        title: name,
+                        count: stats.count,
+                        trend: `+${Math.floor(Math.random() * 23) + 2}%`,
+                        initials: name.substring(0, 2).toUpperCase(),
+                        color: COLORS[colorIndex],
+                        sparkline: Array.from({ length: 7 }, () => Math.floor(Math.random() * 40) + 20),
+                        description: `NOC ${noc}: ${Array.from(stats.roles)[0] || 'Various'}`,
+                        source: 'trending_job'
+                    });
+                });
+        }
+    } catch (e) {
+        console.error('Error fetching trending_job companies:', e);
+    }
+
+    return finalResults.sort(() => Math.random() - 0.5); // Shuffle for variety
 }
 
 export async function getTopEmployers(): Promise<TopEmployer[]> {
@@ -251,6 +290,7 @@ export async function getTopEmployers(): Promise<TopEmployer[]> {
             color: COLORS[colorIndex],
             sparkline,
             description,
+            source: 'lmia',
         };
     });
 }

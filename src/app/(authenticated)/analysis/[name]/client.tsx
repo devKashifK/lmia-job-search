@@ -1026,10 +1026,10 @@ function CompanyAnalysisContent({
       );
 
       // Client-side date filtering fallback to avoid aggressive caching bugs
-      let jobs = rawData;
+      let jobs: any[] = rawData;
 
       if (jobs && jobs.length > 0 && (filters.dateFrom || filters.dateTo)) {
-        jobs = jobs.filter(job => {
+        jobs = (jobs as any[]).filter(job => {
           if (filters.searchType === 'lmia') {
             const year = parseInt(job.lmia_year);
             if (isNaN(year)) return true; // keep if undefined format
@@ -1483,16 +1483,27 @@ function CompanyAnalysisContent({
             >
               {/* Left Section: Home, Filter Toggle, Company Icon & Name */}
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                {/* Home Icon Button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  title="Home"
-                  className="h-9 w-9 p-0 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-brand-50 shrink-0"
-                  onClick={() => router.push('/')}
-                >
-                  <Home className="w-5 h-5" />
-                </Button>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    title="Back"
+                    className="h-9 w-9 p-0 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-brand-50"
+                    onClick={() => router.back()}
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </Button>
+                  {/* Home Icon Button */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    title="Home"
+                    className="h-9 w-9 p-0 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-brand-50 shrink-0"
+                    onClick={() => router.push('/')}
+                  >
+                    <Home className="w-5 h-5" />
+                  </Button>
+                </div>
 
                 {/* Filter Toggle Button */}
                 <Button
@@ -1575,63 +1586,7 @@ function CompanyAnalysisContent({
                   <RefreshCw className="w-4 h-4" />
                 </Button>
 
-                {/* Bookmark Button */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const saved = localStorage.getItem('savedCompanies');
-                    const savedList = saved ? JSON.parse(saved) : [];
-                    const isBookmarked = savedList.some(
-                      (c: any) =>
-                        c.name === companyName && c.type === filters.searchType
-                    );
-
-                    if (isBookmarked) {
-                      const updated = savedList.filter(
-                        (c: any) =>
-                          !(
-                            c.name === companyName &&
-                            c.type === filters.searchType
-                          )
-                      );
-                      localStorage.setItem(
-                        'savedCompanies',
-                        JSON.stringify(updated)
-                      );
-                      toast.success('Company removed from bookmarks');
-                    } else {
-                      savedList.push({
-                        name: companyName,
-                        type: filters.searchType,
-                        savedAt: new Date().toISOString(),
-                      });
-                      localStorage.setItem(
-                        'savedCompanies',
-                        JSON.stringify(savedList)
-                      );
-                      toast.success('Company bookmarked!');
-                    }
-                    // Force re-render
-                    setIsFilterOpen((prev) => prev);
-                  }}
-                  className="border-gray-300 hover:border-yellow-300 hover:bg-yellow-50 transition-all"
-                  title="Bookmark this company"
-                >
-                  {(() => {
-                    const saved = localStorage.getItem('savedCompanies');
-                    const savedList = saved ? JSON.parse(saved) : [];
-                    const isBookmarked = savedList.some(
-                      (c: any) =>
-                        c.name === companyName && c.type === filters.searchType
-                    );
-                    return isBookmarked ? (
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    ) : (
-                      <StarOff className="w-4 h-4" />
-                    );
-                  })()}
-                </Button>
+                {/* Bookmark Button removed as it only saves to localStorage */}
 
                 {/* Export Dropdown */}
                 {/* <DropdownMenu>
@@ -1889,15 +1844,13 @@ function CompanyAnalysisContent({
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    const searchParams = new URLSearchParams();
-                    searchParams.set('employer', companyName);
-                    searchParams.set('t', filters.searchType);
-                    router.push(`/search?${searchParams.toString()}`);
+                    const type = filters.searchType === 'lmia' ? 'lmia' : 'hot-leads';
+                    router.push(`/search/${type}/${encodeURIComponent(companyName)}?field=employer`);
                   }}
-                  className="border-brand-300 bg-brand-50 hover:bg-brand-100 hover:border-brand-400 transition-all"
+                  className="border-brand-300 bg-brand-50 hover:bg-brand-100 hover:border-brand-400 transition-all font-medium"
                   title="View all jobs"
                 >
-                  <ExternalLink className="w-4 h-4 mr-1" />
+                  <ExternalLink className="w-4 h-4 mr-1.5" />
                   View Jobs
                 </Button>
 
@@ -2973,10 +2926,7 @@ function CompanyAnalysisContent({
   );
 }
 
-type PageProps = {
-  params: Promise<{ name: string }>;
-  searchParams?: Record<string, string | string[] | undefined>;
-};
+// DeepAnalysis uses the same PageProps structure as defined above
 
 export default function DeepAnalysis({ params }: PageProps) {
   return (

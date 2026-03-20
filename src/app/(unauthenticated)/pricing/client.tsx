@@ -22,12 +22,9 @@ import { X, Sparkles, User, Shield } from 'lucide-react'; // Added new lucide ic
 // For now, I'll just add the metadata and the new imports.
 // The instruction implies that `const PricingPage = () => {` would follow this block.
 
-type Currency = 'CAD' | 'INR';
-
 type Plan = {
   name: string;
   cadPrice?: string;
-  inrPrice?: string;
   period?: string;
   description?: string;
   features: string[];
@@ -41,7 +38,6 @@ const individualPlans: Plan[] = [
   {
     name: 'Free Plan',
     cadPrice: '$0',
-    inrPrice: '₹0',
     description: 'Try the basics before upgrading',
     features: [
       '5 job searches',
@@ -56,7 +52,6 @@ const individualPlans: Plan[] = [
   {
     name: 'Pay-as-you-go',
     cadPrice: '$0.50',
-    inrPrice: '₹34.38',
     period: '/search',
     description: 'Only pay when you need a search',
     features: [
@@ -71,7 +66,6 @@ const individualPlans: Plan[] = [
   {
     name: 'Pay-as-you-go Bundle',
     cadPrice: '$3',
-    inrPrice: '₹199',
     period: '/10 searches',
     description: 'Save with a bundle of searches',
     features: [
@@ -87,7 +81,6 @@ const individualPlans: Plan[] = [
   {
     name: 'Weekly Plan',
     cadPrice: '$10',
-    inrPrice: '₹599',
     period: '/week',
     description: 'Unlimited access for 7 days',
     features: [
@@ -103,7 +96,6 @@ const individualPlans: Plan[] = [
   {
     name: 'Monthly Plan',
     cadPrice: '$25',
-    inrPrice: '₹1,499',
     period: '/month',
     description: 'Best value for power users',
     features: [
@@ -124,7 +116,6 @@ const employerPlans: Plan[] = [
   {
     name: 'Starter Plan',
     cadPrice: '$49',
-    inrPrice: '₹3,105',
     period: '/month',
     description: 'Essentials for small teams',
     features: ['Employer analytics dashboard', '100 employer contacts / month'],
@@ -136,7 +127,6 @@ const employerPlans: Plan[] = [
   {
     name: 'Pro Plan',
     cadPrice: '$99',
-    inrPrice: '₹6,271',
     period: '/month',
     description: 'Advanced tools for growing teams',
     features: [
@@ -152,7 +142,6 @@ const employerPlans: Plan[] = [
   {
     name: 'Enterprise',
     cadPrice: 'Custom',
-    inrPrice: 'Custom',
     description: 'Scale with confidence',
     features: [
       'API access',
@@ -167,13 +156,8 @@ const employerPlans: Plan[] = [
   },
 ];
 
-function Price({ plan, currency }: { plan: Plan; currency: Currency }) {
-  const value =
-    plan.cadPrice === 'Custom' || plan.inrPrice === 'Custom'
-      ? 'Custom'
-      : currency === 'CAD'
-        ? plan.cadPrice ?? '—'
-        : plan.inrPrice ?? '—';
+function Price({ plan }: { plan: Plan }) {
+  const value = plan.cadPrice === 'Custom' ? 'Custom' : plan.cadPrice ?? '—';
 
   return (
     <div className="mb-4">
@@ -191,11 +175,9 @@ function Price({ plan, currency }: { plan: Plan; currency: Currency }) {
 
 function PlanCard({
   plan,
-  currency,
   index,
 }: {
   plan: Plan;
-  currency: Currency;
   index: number;
 }) {
   return (
@@ -242,7 +224,7 @@ function PlanCard({
             </p>
           </div>
 
-          <Price plan={plan} currency={currency} />
+          <Price plan={plan} />
 
           <div className="w-full h-px bg-gray-100 my-6" />
 
@@ -282,12 +264,8 @@ function PlanCard({
               </Button>
             ) : (
               <PaymentButton
-                amount={parseFloat(
-                  currency === 'CAD'
-                    ? plan.cadPrice?.replace('$', '') || '0'
-                    : plan.inrPrice?.replace('₹', '').replace(',', '') || '0'
-                )}
-                currency={currency}
+                amount={parseFloat(plan.cadPrice?.replace('$', '') || '0')}
+                currency="CAD"
                 planName={plan.name}
                 className={cn(
                   'w-full h-12 rounded-xl font-bold shadow-md hover:shadow-xl transition-all',
@@ -309,7 +287,6 @@ function PlanCard({
 
 const PricingPage = () => {
   const { isMobile } = useMobile();
-  const [currency, setCurrency] = useState<Currency>('CAD');
 
   return (
     <BackgroundWrapper>
@@ -355,29 +332,6 @@ const PricingPage = () => {
               >
                 Choose the perfect plan to unlock comprehensive job market insights and verified employer contacts.
               </motion.p>
-
-              {/* Currency Toggle - Pill Shape */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="inline-flex p-1 bg-white border border-gray-200 rounded-full shadow-sm"
-              >
-                {['CAD', 'INR'].map((curr) => (
-                  <button
-                    key={curr}
-                    onClick={() => setCurrency(curr as Currency)}
-                    className={cn(
-                      "px-6 py-2 rounded-full text-sm font-bold transition-all duration-300",
-                      currency === curr
-                        ? "bg-gray-900 text-white shadow-md"
-                        : "text-gray-500 hover:text-gray-900"
-                    )}
-                  >
-                    {curr}
-                  </button>
-                ))}
-              </motion.div>
             </div>
 
             {/* Individual Plans Section */}
@@ -396,7 +350,6 @@ const PricingPage = () => {
                   <PlanCard
                     key={plan.name}
                     plan={plan}
-                    currency={currency}
                     index={idx}
                   />
                 ))}
@@ -419,7 +372,6 @@ const PricingPage = () => {
                   <PlanCard
                     key={plan.name}
                     plan={plan}
-                    currency={currency}
                     index={idx + individualPlans.length}
                   />
                 ))}

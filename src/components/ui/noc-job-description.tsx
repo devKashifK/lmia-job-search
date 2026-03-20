@@ -166,7 +166,7 @@ function ExpandableListSection({
                 className="flex items-start gap-2 text-gray-700"
               >
                 <div className={`w-1.5 h-1.5 ${dotColorClass} rounded-full mt-2 flex-shrink-0`} />
-                <span className="leading-relaxed text-xs">{item}</span>
+                <span className="leading-relaxed text-sm">{item}</span>
               </motion.li>
             ))}
           </AnimatePresence>
@@ -316,6 +316,7 @@ export function NocJobDescription({
       : (nocProfile?.additionalInfo ?? []),
     // External link to original job posting (Job Bank etc.)
     jobUrl: parsedDesc?.jobUrl ?? null,
+    extraSections: parsedDesc?.extraSections ?? {},
   };
 
   const goTo = (path: string) => router.push(path);
@@ -522,33 +523,6 @@ export function NocJobDescription({
                       </div>
 
                       <div className="flex flex-col gap-1.5 flex-shrink-0">
-                        <ShareButton
-                          jobTitle={nocProfile?.title}
-                          employer={job?.employer}
-                          city={job?.city}
-                          state={job?.state}
-                          className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2.5 py-1.5 text-xs transition-all duration-200 hover:scale-105"
-                        />
-
-                        {/* {jobData.jobUrl && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => window.open(jobData.jobUrl!, '_blank', 'noopener,noreferrer')}
-                                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2.5 py-1.5 text-xs hover:scale-105 transition-all duration-200 gap-1"
-                              >
-                                <ExternalLink className="w-3.5 h-3.5" />
-                                Original
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">View original job posting</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        )} */}
-
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -585,40 +559,6 @@ export function NocJobDescription({
                             </p>
                           </TooltipContent>
                         </Tooltip>
-
-                        <div className="flex gap-1">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setOpenPremium(true)}
-                                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
-                              >
-                                <Phone className="w-3.5 h-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">Upgrade to unlock Phone</p>
-                            </TooltipContent>
-                          </Tooltip>
-
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setOpenPremium(true)}
-                                className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
-                              >
-                                <Mail className="w-3.5 h-3.5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">Upgrade to unlock Email</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -643,9 +583,9 @@ export function NocJobDescription({
                         Quick Info
                       </h3>
                     </div>
-                    <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="grid grid-cols-2 gap-3 text-sm">
                       <div className="bg-gray-50 rounded-lg p-2">
-                        <p className="text-gray-500 uppercase tracking-wide mb-1">
+                        <p className="text-gray-500 uppercase tracking-wide text-[10px] mb-1">
                           Experience
                         </p>
                         <p className="font-medium text-gray-900">
@@ -653,7 +593,7 @@ export function NocJobDescription({
                         </p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-2">
-                        <p className="text-gray-500 uppercase tracking-wide mb-1">
+                        <p className="text-gray-500 uppercase tracking-wide text-[10px] mb-1">
                           Type
                         </p>
                         <p className="font-medium text-gray-900">
@@ -661,7 +601,7 @@ export function NocJobDescription({
                         </p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-2">
-                        <p className="text-gray-500 uppercase tracking-wide mb-1">
+                        <p className="text-gray-500 uppercase tracking-wide text-[10px] mb-1">
                           Work Mode
                         </p>
                         <p className="font-medium text-gray-900">
@@ -669,7 +609,7 @@ export function NocJobDescription({
                         </p>
                       </div>
                       <div className="bg-gray-50 rounded-lg p-2">
-                        <p className="text-gray-500 uppercase tracking-wide mb-1">
+                        <p className="text-gray-500 uppercase tracking-wide text-[10px] mb-1">
                           Salary
                         </p>
                         <p className="font-medium text-gray-900 truncate">
@@ -773,6 +713,37 @@ export function NocJobDescription({
                   </motion.div>
                 )}
 
+                {/* Dynamic Extra Sections */}
+                {Object.entries(jobData.extraSections).map(([title, content], idx) => {
+                  // Skip if empty or already handled
+                  if (!content || (Array.isArray(content) && content.length === 0)) return null;
+                  
+                  // Limit the number of dynamic sections to avoid overwhelming
+                  if (idx > 10) return null;
+
+                  const items = Array.isArray(content) ? content : [content];
+                  
+                  return (
+                    <motion.div
+                      key={title}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.6 + (idx * 0.1) }}
+                    >
+                      <ExpandableListSection
+                        title={title}
+                        icon={Briefcase}
+                        iconColorClass="text-brand-600"
+                        iconBgClass="bg-gradient-to-br from-brand-100 to-brand-200"
+                        cardBgClass="bg-gradient-to-br from-white to-brand-50"
+                        dotColorClass="bg-brand-400"
+                        items={items}
+                        defaultShowCount={3}
+                      />
+                    </motion.div>
+                  );
+                })}
+
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -780,7 +751,13 @@ export function NocJobDescription({
                 >
                   <Button
                     className="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white w-full shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl py-3"
-                    onClick={() => setOpenPremium(true)}
+                    onClick={() => {
+                      if (!session) {
+                        router.push('/sign-in');
+                      } else {
+                        setOpenPremium(true);
+                      }
+                    }}
                   >
                     <Contact className="w-4 h-4 mr-2" />
                     Contact Employer
@@ -807,7 +784,7 @@ export function NocJobDescription({
                   </div>
                   <Button
                     className="w-full bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700"
-                    onClick={() => setOpenPremium(false)}
+                    onClick={() => router.push('/pricing')}
                   >
                     Upgrade to Premium
                   </Button>
