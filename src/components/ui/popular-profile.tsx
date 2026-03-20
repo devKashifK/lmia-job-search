@@ -99,7 +99,7 @@ export default function PopularProfile() {
           const Icon = group.icon;
           return (
             <motion.div
-              key={group.job_title}
+              key={`${group.job_title}-${idx}`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

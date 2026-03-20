@@ -2512,8 +2512,8 @@ function CompanyAnalysisContent({
                                       .includes(searchQuery.toLowerCase())
                                     : true
                                 )
-                                .map((job) => (
-                                  <TableRow key={job.title}>
+                                .map((job, idx) => (
+                                  <TableRow key={`${job.title}-${idx}`}>
                                     <TableCell className="font-medium">
                                       {job.title}
                                     </TableCell>
