@@ -82,7 +82,7 @@ function toRows(map: ProvMap, limit = 15, hotSet?: Set<string>): NocRow[] {
 
 const PAGE_SIZE = 100_000;
 
-async function fetchTrendingRows(year: string) {
+async function fetchTrendingRows(year: string, dateFrom?: string | null, dateTo?: string | null) {
     const all: any[] = [];
     let from = 0;
     while (true) {
@@ -91,7 +91,10 @@ async function fetchTrendingRows(year: string) {
             .select('noc_code, job_title, tier, state, salary')
             .not('noc_code', 'is', null)
             .not('state', 'is', null);
-        if (year !== 'all') {
+        if (year === 'custom' && (dateFrom || dateTo)) {
+            if (dateFrom) q = q.gte('date_of_job_posting', dateFrom);
+            if (dateTo) q = q.lte('date_of_job_posting', dateTo);
+        } else if (year !== 'all') {
             q = q.gte('date_of_job_posting', `${year}-01-01`).lte('date_of_job_posting', `${year}-12-31`);
         }
         const { data, error } = await q.range(from, from + PAGE_SIZE - 1);
@@ -104,7 +107,7 @@ async function fetchTrendingRows(year: string) {
     return all;
 }
 
-async function fetchLmiaRows(year: string) {
+async function fetchLmiaRows(year: string, dateFrom?: string | null, dateTo?: string | null) {
     const all: any[] = [];
     let from = 0;
     while (true) {
@@ -113,7 +116,21 @@ async function fetchLmiaRows(year: string) {
             .select('noc_code_norm, job_title, territory')
             .not('noc_code_norm', 'is', null)
             .not('territory', 'is', null);
-        if (year !== 'all') {
+        if (year === 'custom' && (dateFrom || dateTo)) {
+            const years: number[] = [];
+            if (dateFrom && dateTo) {
+                const sY = parseInt(dateFrom.split('-')[0]);
+                const eY = parseInt(dateTo.split('-')[0]);
+                for (let y = sY; y <= eY; y++) if (!isNaN(y)) years.push(y);
+            } else if (dateFrom) {
+                const y = parseInt(dateFrom.split('-')[0]);
+                if (!isNaN(y)) years.push(y);
+            } else if (dateTo) {
+                const y = parseInt(dateTo.split('-')[0]);
+                if (!isNaN(y)) years.push(y);
+            }
+            if (years.length > 0) q = q.in('lmia_year', years);
+        } else if (year !== 'all') {
             q = q.eq('lmia_year', parseInt(year));
         }
         const { data, error } = await q.range(from, from + PAGE_SIZE - 1);
@@ -155,13 +172,31 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const year = searchParams.get('year') ?? '2026';
         const source = searchParams.get('source') ?? 'trending';
+        const dateFrom = searchParams.get('date_from');
+        const dateTo = searchParams.get('date_to');
         const isLmia = source === 'lmia';
 
         // ── 1. True count ─────────────────────────────────────────────────────
         let countQuery = db
             .from(isLmia ? 'lmia' : 'trending_job')
             .select('*', { count: 'exact', head: true });
-        if (year !== 'all') {
+        if (year === 'custom' && (dateFrom || dateTo)) {
+            if (isLmia) {
+                const years: number[] = [];
+                if (dateFrom && dateTo) {
+                    const sY = parseInt(dateFrom.split('-')[0]);
+                    const eY = parseInt(dateTo.split('-')[0]);
+                    for (let y = sY; y <= eY; y++) if (!isNaN(y)) years.push(y);
+                } else if (dateFrom) {
+                    const y = parseInt(dateFrom.split('-')[0]);
+                    if (!isNaN(y)) years.push(y);
+                }
+                if (years.length > 0) countQuery = (countQuery as any).in('lmia_year', years);
+            } else {
+                if (dateFrom) countQuery = (countQuery as any).gte('date_of_job_posting', dateFrom);
+                if (dateTo) countQuery = (countQuery as any).lte('date_of_job_posting', dateTo);
+            }
+        } else if (year !== 'all') {
             if (isLmia) {
                 countQuery = (countQuery as any).eq('lmia_year', parseInt(year));
             } else {
@@ -174,7 +209,9 @@ export async function GET(request: Request) {
         if (countError) throw countError;
 
         // ── 2. Fetch rows ─────────────────────────────────────────────────────
-        const rawRows = isLmia ? await fetchLmiaRows(year) : await fetchTrendingRows(year);
+        const rawRows = isLmia 
+            ? await fetchLmiaRows(year, dateFrom, dateTo) 
+            : await fetchTrendingRows(year, dateFrom, dateTo);
 
         // ── 3. Aggregate ──────────────────────────────────────────────────────
         const provinceMaps: Record<string, ProvMap> = {};

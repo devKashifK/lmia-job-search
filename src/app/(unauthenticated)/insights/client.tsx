@@ -1,17 +1,23 @@
 'use client';
 
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    TrendingUp, MapPin, Briefcase, Globe, ChevronRight,
+    TrendingUp, MapPin, Briefcase, Globe, ChevronRight, ChevronLeft,
     BarChart3, Users, Loader2, RefreshCw, Search,
     Calendar, Database, Share2, Check, Flame, Clock,
-    DollarSign, ExternalLink, LineChart, ArrowRight, Lightbulb, TrendingDown, RefreshCcw
+    DollarSign, ExternalLink, LineChart, ArrowRight, Lightbulb, TrendingDown, RefreshCcw, ChevronDown
 } from 'lucide-react';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
 import Link from 'next/link';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarUI } from '@/components/ui/calendar';
+import { format, parseISO, isValid } from 'date-fns';
+import { DateRange } from 'react-day-picker';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 
 
@@ -41,8 +47,22 @@ interface ApiResponse {
     hotNocs: string[];
 }
 
-type YearFilter = '2026' | '2025' | '2024' | '2023' | '2022' | 'all';
+type YearFilter = '2026' | '2025' | '2024' | '2023' | '2022' | 'all' | 'custom';
 type SourceFilter = 'trending' | 'lmia';
+
+function getDateParams(year: YearFilter, dateRange: DateRange | undefined) {
+    const params = new URLSearchParams();
+    if (year === 'custom' && dateRange?.from) {
+        params.set('date_from', format(dateRange.from, 'yyyy-MM-dd'));
+        if (dateRange.to) {
+            params.set('date_to', format(dateRange.to, 'yyyy-MM-dd'));
+        }
+    } else if (year !== 'all' && year !== 'custom') {
+        params.set('date_from', `${year}-01-01`);
+        params.set('date_to', `${year}-12-31`);
+    }
+    return params;
+}
 
 // ─── Color themes ─────────────────────────────────────────────────────────────
 
@@ -210,13 +230,15 @@ const REGION_TABS = [
 
 // ─── Region Panel ─────────────────────────────────────────────────────────────
 
-function RegionPanel({ region, index, theme, isLmia, fullWidth, search }: {
+function RegionPanel({ region, index, theme, isLmia, fullWidth, search, year, dateRange }: {
     region: RegionData;
     index: number;
     theme: Theme;
     isLmia: boolean;
     fullWidth: boolean;
     search: string;
+    year: YearFilter;
+    dateRange: DateRange | undefined;
 }) {
     const q = search.trim().toLowerCase();
     const filteredRows = q
@@ -303,6 +325,10 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search }: {
                                             } else if (region.key !== 'canada' && region.key !== 'all') {
                                                 params.set(fieldParam, region.region);
                                             }
+                                            
+                                            // Add date parameters
+                                            const dateParams = getDateParams(year, dateRange);
+                                            dateParams.forEach((v, k) => params.set(k, v));
                                             
                                             return `${base}?${params.toString()}`;
                                         })()}
@@ -396,7 +422,21 @@ function SourceToggle({ value, onChange }: { value: SourceFilter; onChange: (v: 
     );
 }
 
-function YearToggle({ value, onChange, isLmia }: { value: YearFilter; onChange: (v: YearFilter) => void; isLmia: boolean }) {
+function YearToggle({ value, onChange, isLmia, dateRange, onDateRangeChange }: { 
+    value: YearFilter; 
+    onChange: (v: YearFilter) => void; 
+    isLmia: boolean;
+    dateRange: DateRange | undefined;
+    onDateRangeChange: (range: DateRange | undefined) => void;
+}) {
+    const [open, setOpen] = useState(false);
+    const [pendingRange, setPendingRange] = useState<DateRange | undefined>(dateRange);
+
+    // Keep pendingRange in sync when dateRange changes from outside or on open
+    useEffect(() => {
+        if (open) setPendingRange(dateRange);
+    }, [open, dateRange]);
+
     return (
         <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 text-gray-500">
@@ -419,6 +459,58 @@ function YearToggle({ value, onChange, isLmia }: { value: YearFilter; onChange: 
                 >
                     All Time
                 </button>
+
+                <div className="w-px h-4 bg-gray-300 my-auto mx-0.5" />
+
+                <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                        <button
+                            onClick={() => {
+                                setOpen(true);
+                                onChange('custom');
+                            }}
+                            className={cn(
+                                "px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-1.5",
+                                value === 'custom' 
+                                    ? (isLmia ? 'bg-orange-500 text-white shadow-sm' : 'bg-brand-600 text-white shadow-sm') 
+                                    : 'text-gray-500 hover:text-gray-700'
+                            )}
+                        >
+                            {value === 'custom' && dateRange?.from ? (
+                                <>
+                                    {format(dateRange.from, 'MMM d')} - {dateRange.to ? format(dateRange.to, 'MMM d') : '...'}
+                                </>
+                            ) : (
+                                "Custom Range"
+                            )}
+                            <ChevronDown className="w-3 h-3 opacity-50" />
+                        </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="end">
+                        <CalendarUI
+                            initialFocus
+                            mode="range"
+                            defaultMonth={pendingRange?.from || dateRange?.from}
+                            selected={pendingRange}
+                            onSelect={(range: DateRange | undefined) => {
+                                setPendingRange(range);
+                            }}
+                            numberOfMonths={2}
+                            showManualInput={true}
+                            showActionButtons={true}
+                            onApply={() => {
+                                onDateRangeChange(pendingRange);
+                                if (pendingRange?.from) onChange('custom');
+                                setOpen(false);
+                            }}
+                            onClear={() => {
+                                onDateRangeChange(undefined);
+                                onChange('all');
+                                setOpen(false);
+                            }}
+                        />
+                    </PopoverContent>
+                </Popover>
             </div>
         </div>
     );
@@ -472,6 +564,53 @@ export default function InDemandJobsPage() {
     const [year, setYear] = useState<YearFilter>('2026');
     const [source, setSource] = useState<SourceFilter>('trending');
 
+    // --- Date Range State ---
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+        const sp = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+        const from = sp.get('date_from');
+        const to = sp.get('date_to');
+        if (from && to) {
+            return { from: parseISO(from), to: parseISO(to) };
+        }
+        return undefined;
+    });
+    
+    // ─── Scroll logic ─────────────────────────────────────────────────────────
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [canScrollLeft, setCanScrollLeft] = useState(false);
+    const [canScrollRight, setCanScrollRight] = useState(true);
+
+    const checkScrollLimits = useCallback(() => {
+        if (scrollContainerRef.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+            setCanScrollLeft(scrollLeft > 5);
+            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+        }
+    }, []);
+
+    useEffect(() => {
+        const el = scrollContainerRef.current;
+        if (el) {
+            el.addEventListener('scroll', checkScrollLimits);
+            checkScrollLimits();
+            window.addEventListener('resize', checkScrollLimits);
+            return () => {
+                el.removeEventListener('scroll', checkScrollLimits);
+                window.removeEventListener('resize', checkScrollLimits);
+            };
+        }
+    }, [checkScrollLimits, regions]); // Re-check when regions load
+
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollContainerRef.current) {
+            const amount = 300;
+            scrollContainerRef.current.scrollBy({
+                left: direction === 'left' ? -amount : amount,
+                behavior: 'smooth'
+            });
+        }
+    };
+
     const themeKey = `${source}-${year}` as keyof typeof THEMES;
     const theme = THEMES[themeKey] ?? THEMES['trending-2026'];
     const isLmia = source === 'lmia';
@@ -492,7 +631,14 @@ export default function InDemandJobsPage() {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`/api/insights?year=${year}&source=${source}`);
+            let url = `/api/insights?year=${year}&source=${source}`;
+            if (year === 'custom' && dateRange?.from) {
+                url += `&date_from=${format(dateRange.from, 'yyyy-MM-dd')}`;
+                if (dateRange.to) {
+                    url += `&date_to=${format(dateRange.to, 'yyyy-MM-dd')}`;
+                }
+            }
+            const res = await fetch(url);
             if (!res.ok) throw new Error('Failed to fetch');
             const data: ApiResponse = await res.json();
             setRegions(data.regions ?? []);
@@ -503,7 +649,7 @@ export default function InDemandJobsPage() {
         } finally {
             setLoading(false);
         }
-    }, [year, source]);
+    }, [year, source, dateRange]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -578,7 +724,13 @@ export default function InDemandJobsPage() {
                         <div className="flex flex-wrap items-center gap-3 py-2.5 border-b border-gray-100">
                             <SourceToggle value={source} onChange={setSource} />
                             <div className="w-px h-5 bg-gray-200 flex-shrink-0" />
-                            <YearToggle value={year} onChange={setYear} isLmia={isLmia} />
+                             <YearToggle 
+                                value={year} 
+                                onChange={setYear} 
+                                isLmia={isLmia} 
+                                dateRange={dateRange}
+                                onDateRangeChange={setDateRange}
+                             />
 
                             <div className="ml-auto flex items-center gap-2">
                                 {/* Timestamp */}
@@ -614,20 +766,57 @@ export default function InDemandJobsPage() {
                                 />
                             </div>
 
-                            <div className="flex gap-1.5 overflow-x-auto no-scrollbar flex-1 py-0.5">
-                                {REGION_TABS.map(tab => (
-                                    <button
-                                        key={tab.key}
-                                        onClick={() => setActiveTab(tab.key)}
-                                        className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${activeTab === tab.key
-                                                ? theme.tabActive
-                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
-                                            }`}
-                                    >
-                                        <span className="hidden sm:inline">{tab.label}</span>
-                                        <span className="sm:hidden">{tab.short}</span>
-                                    </button>
-                                ))}
+                            <div className="relative flex-1 flex items-center min-w-0">
+                                <AnimatePresence>
+                                    {canScrollLeft && (
+                                        <motion.button
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: -10 }}
+                                            onClick={() => scroll('left')}
+                                            className="absolute left-0 z-20 p-1 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full shadow-lg text-gray-600 hover:text-gray-900 transition-all -ml-2"
+                                        >
+                                            <ChevronLeft className="w-4 h-4" />
+                                        </motion.button>
+                                    )}
+                                </AnimatePresence>
+
+                                <div 
+                                    ref={scrollContainerRef}
+                                    className="flex gap-1.5 overflow-x-auto no-scrollbar flex-1 py-1 px-1"
+                                >
+                                    {REGION_TABS.map(tab => (
+                                        <button
+                                            key={tab.key}
+                                            onClick={() => setActiveTab(tab.key)}
+                                            className={`flex-shrink-0 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap border ${activeTab === tab.key
+                                                    ? `${theme.tabActive} border-transparent scale-[1.02]`
+                                                    : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-200'
+                                                }`}
+                                        >
+                                            <span className="hidden sm:inline">{tab.label}</span>
+                                            <span className="sm:hidden">{tab.short}</span>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <AnimatePresence>
+                                    {canScrollRight && (
+                                        <motion.button
+                                            initial={{ opacity: 0, x: 10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: 10 }}
+                                            onClick={() => scroll('right')}
+                                            className="absolute right-0 z-20 p-1 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full shadow-lg text-gray-600 hover:text-gray-900 transition-all -mr-2"
+                                        >
+                                            <ChevronRight className="w-4 h-4" />
+                                        </motion.button>
+                                    )}
+                                </AnimatePresence>
+
+                                {/* Gradient Fades */}
+                                <div className={`absolute left-0 top-0 bottom-0 w-8 pointer-events-none bg-gradient-to-r from-white to-transparent z-10 transition-opacity duration-300 ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`} />
+                                <div className={`absolute right-0 top-0 bottom-0 w-8 pointer-events-none bg-gradient-to-l from-white to-transparent z-10 transition-opacity duration-300 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`} />
                             </div>
                         </div>
                     </div>
@@ -719,7 +908,13 @@ export default function InDemandJobsPage() {
                                                 </td>
                                                 <td className="py-2.5 pr-3">
                                                     <Link
-                                                        href={`/search/${isLmia ? 'lmia' : 'hot-leads'}/${encodeURIComponent(row.noc_code)}?field=noc_code&t=${isLmia ? 'lmia' : 'trending_job'}`}
+                                                        href={(() => {
+                                                            const base = `/search/${isLmia ? 'lmia' : 'hot-leads'}/${encodeURIComponent(row.noc_code)}`;
+                                                            const params = getDateParams(year, dateRange);
+                                                            params.set('field', 'noc_code');
+                                                            params.set('t', isLmia ? 'lmia' : 'trending_job');
+                                                            return `${base}?${params.toString()}`;
+                                                        })()}
                                                         className="opacity-0 group-hover:opacity-100 transition-opacity"
                                                         title={`Search ${row.noc_code} jobs`}
                                                     >
@@ -757,6 +952,8 @@ export default function InDemandJobsPage() {
                                         isLmia={isLmia}
                                         fullWidth={visibleRegions.length === 1}
                                         search={search}
+                                        year={year}
+                                        dateRange={dateRange}
                                     />
                                 ))}
                             </div>
@@ -783,10 +980,22 @@ export default function InDemandJobsPage() {
                                 Search LMIA-approved positions or trending job postings by NOC code, location, and more.
                             </p>
                             <div className="flex flex-wrap gap-3 justify-center">
-                                <Link href="/search/lmia/all" className="px-6 py-3 bg-white text-gray-800 font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all text-sm">
+                                <Link
+                                    href={(() => {
+                                        const params = getDateParams(year, dateRange);
+                                        return `/search/lmia/all?${params.toString()}`;
+                                    })()}
+                                    className="px-6 py-3 bg-white text-gray-800 font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all text-sm"
+                                >
                                     Search LMIA Jobs
                                 </Link>
-                                <Link href="/search/hot-leads/all" className="px-6 py-3 bg-white/15 text-white border border-white/30 font-bold rounded-xl hover:bg-white/25 transition-colors text-sm">
+                                <Link
+                                    href={(() => {
+                                        const params = getDateParams(year, dateRange);
+                                        return `/search/hot-leads/all?${params.toString()}`;
+                                    })()}
+                                    className="px-6 py-3 bg-white/15 text-white border border-white/30 font-bold rounded-xl hover:bg-white/25 transition-colors text-sm"
+                                >
                                     Browse Trending Jobs
                                 </Link>
                             </div>

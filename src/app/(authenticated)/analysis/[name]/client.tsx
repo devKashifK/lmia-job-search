@@ -3585,18 +3585,21 @@ const ColumnChart = ({
   const maxValue = data.length > 0 ? Math.max(...data.map((d) => d.count)) : 1;
 
   return (
-    <div className="h-full flex items-end justify-around gap-4 p-4">
+    <div className={cn(
+      "h-full flex items-end p-4 pt-10 transition-all duration-500",
+      data.length <= 3 ? "justify-center gap-12 sm:gap-20" : "justify-around gap-2 sm:gap-4"
+    )}>
       {data.map((item, index) => {
         // Assign color based on index, cycling through the palette
         const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
         // Use 'count' instead of 'value' for height percentage
         const heightPercentage =
-          maxValue > 0 ? (item.count / maxValue) * 100 : 0;
+          maxValue > 0 ? (item.count / maxValue) * 92 : 0;
         const isHovered = hoveredIndex === index;
         return (
           <div
             key={index}
-            className="flex-1 flex flex-col items-center gap-2 transition-all duration-200 h-full"
+            className="flex-1 flex flex-col items-center gap-2 transition-all duration-200 h-full max-w-[100px] sm:max-w-[120px]"
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
             style={{ opacity: hoveredIndex === null || isHovered ? 1 : 0.5 }}
