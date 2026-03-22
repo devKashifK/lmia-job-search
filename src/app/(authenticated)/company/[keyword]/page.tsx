@@ -4,6 +4,12 @@ type PageProps = {
   params: Promise<{ segment: string; keyword: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
+
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  return [{ keyword: 'company' }];
+}
 export default async function CompanyPage({ params, searchParams }: PageProps) {
   const { keyword } = await params;
   const { field } = await searchParams;

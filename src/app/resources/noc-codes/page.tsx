@@ -12,13 +12,7 @@ export const metadata: Metadata = {
     keywords: ['noc codes canada', 'canada occupation list'],
 };
 
-export default async function NocIndexPage({
-    searchParams,
-}: {
-    searchParams: Promise<{ q?: string }>;
-}) {
-    const params = await searchParams;
-    const query = params.q || '';
+export default async function NocIndexPage() {
     const allNocs = await getAllNocSummaries();
 
     return (
@@ -66,7 +60,7 @@ export default async function NocIndexPage({
                 </div>
 
                 {/* Content Logic (Client Side) */}
-                <NocIndexClient allNocs={allNocs} initialQuery={query} />
+                <NocIndexClient allNocs={allNocs} />
             </div>
         </BackgroundWrapper>
     );

@@ -2,6 +2,8 @@ import React from 'react';
 import { SearchResultsLayout } from '@/components/ui/search-result-layout';
 import { Metadata } from 'next';
 
+export const dynamic = 'force-static';
+
 type PageProps = {
   params: Promise<{ search: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -10,6 +12,10 @@ type PageProps = {
 // Helper function to capitalize words
 function capitalize(str: string) {
   return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+
+export async function generateStaticParams() {
+  return [{ search: 'all' }]; // Provide at least one valid path for static export
 }
 
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {

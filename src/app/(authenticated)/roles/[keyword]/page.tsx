@@ -1,20 +1,18 @@
-"use client";
 import React from "react";
-import { useParams } from "next/navigation";
-import DynamicDataView from "@/components/ui/dynamic-data-view";
+import RolesClient from "./client";
 
-export default function RolesPage() {
-  const params = useParams();
-  const keyword = params?.keyword as string;
+export const dynamic = "force-static";
 
-  if (!keyword) {
-    return <div>No keyword found</div>;
-  }
+export async function generateStaticParams() {
+  return [{ keyword: "all" }];
+}
 
-  return (
-    <DynamicDataView
-      title={decodeURIComponent(keyword)}
-      field="job_title"
-    />
-  );
+type PageProps = {
+  params: Promise<{ keyword: string }>;
+};
+
+export default async function RolesPage({ params }: PageProps) {
+  const { keyword } = await params;
+
+  return <RolesClient keyword={keyword} />;
 }

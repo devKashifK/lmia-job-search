@@ -4,6 +4,12 @@ import Footer from '@/sections/homepage/footer';
 import React from 'react';
 import JobMarketInfo from '@/components/job-market-info';
 
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  return [{ id: '1111' }]; // Provide at least one valid path for static export
+}
+
 async function NocProfile({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return (

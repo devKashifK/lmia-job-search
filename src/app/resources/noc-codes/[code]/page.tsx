@@ -1,5 +1,11 @@
 import { getNocProfile, getTeerCategory } from '@/lib/noc-service';
 import { Metadata } from 'next';
+
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+    return [{ code: '21222' }];
+}
 import { notFound } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

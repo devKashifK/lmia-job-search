@@ -1,10 +1,16 @@
+import { Metadata } from 'next';
+import ClientPage from './client';
+
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  return [{ name: 'company' }]; // Provide at least one valid path for static export
+}
+
 type PageProps = {
   params: Promise<{ name: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
-
-import { Metadata } from 'next';
-import ClientPage from './client';
 
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { name } = await params;

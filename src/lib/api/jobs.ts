@@ -1,4 +1,4 @@
-'use server';
+// 'use server' removed for static export compatibility
 
 import db from '@/db';
 

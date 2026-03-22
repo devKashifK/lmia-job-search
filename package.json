@@ -6,13 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "mobile:build": "./scripts/mobile-build.sh",
+    "mobile:sync": "npx cap sync",
+    "mobile:run:android": "npm run mobile:build && npx cap run android",
+    "mobile:open:ios": "npx cap open ios",
+    "mobile:open:android": "npx cap open android"
   },
   "dependencies": {
     "@ag-grid-community/client-side-row-model": "^32.3.3",
     "@ag-grid-community/core": "^32.3.3",
     "@ag-grid-community/react": "^32.3.3",
     "@ag-grid-community/styles": "^33.0.3",
+    "@capacitor/android": "^8.2.0",
+    "@capacitor/cli": "^8.2.0",
+    "@capacitor/core": "^8.2.0",
+    "@capacitor/ios": "^8.2.0",
     "@google/genai": "^1.3.0",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.9.1",

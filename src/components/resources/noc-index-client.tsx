@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useSession } from '@/hooks/use-session';
 import { useUserPreferences } from '@/hooks/use-user-preferences';
 import { NocSummary } from '@/lib/noc-service';
@@ -20,10 +21,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface NocIndexClientProps {
     allNocs: NocSummary[];
-    initialQuery: string;
 }
 
-export function NocIndexClient({ allNocs, initialQuery }: NocIndexClientProps) {
+export function NocIndexClient({ allNocs }: NocIndexClientProps) {
+    const searchParams = useSearchParams();
+    const initialQuery = searchParams.get('q') || '';
     const { session } = useSession();
     const { preferences } = useUserPreferences();
     
