@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
             ],
             mode: 'payment',
             success_url: `${appUrl}/payment/verify?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${appUrl}/payment/cancel`,
+            cancel_url: `${appUrl}/pricing`,
             customer_email: userEmail,
             metadata: {
                 userId: userId,
