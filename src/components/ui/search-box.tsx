@@ -323,39 +323,9 @@ export function SearchBox() {
     }
   };
 
-  const handleSuggestionClick = async (s: Suggestion) => {
-    if (!session?.session) {
-      updateCreditsAndSearch(s?.suggestion);
-      sp.set('field', s.field ?? 'all');
-
-      // Handle Location in URL
-      sp.delete('state');
-      sp.delete('city');
-      if (selectedCities.length > 0) {
-        selectedCities.forEach(c => sp.append('city', c));
-        selectedProvinces.forEach(p => sp.append('state', p));
-      } else {
-        selectedProvinces.forEach(p => sp.append('state', p));
-      }
-
-      attachRangeParams(sp);
-
-      if (searchType === 'hot_leads') {
-        sp.set('t', 'trending_job');
-        router.push(
-          `/search/hot-leads/${encodeURIComponent(
-            s.suggestion
-          )}?${sp.toString()}`
-        );
-      } else {
-        sp.set('t', 'lmia');
-        router.push(
-          `/search/lmia/${encodeURIComponent(s.suggestion)}?${sp.toString()}`
-        );
-      }
-      return;
-    }
+  const handleSuggestionClick = (s: Suggestion) => {
     setInput(s.suggestion);
+    if (s.field) setSearchBy(s.field as any);
     setShowSuggestions(false);
   };
 

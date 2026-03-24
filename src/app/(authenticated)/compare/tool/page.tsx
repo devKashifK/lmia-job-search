@@ -169,15 +169,17 @@ export default function ComparePage() {
       const urlEntity2 = params.get('entity2');
       const urlEntity3 = params.get('entity3');
 
-      if (urlType && urlEntity1 && urlEntity2) {
+      if (urlType) {
         setComparisonType(urlType);
-        setEntity1(urlEntity1);
-        setEntity2(urlEntity2);
-        if (urlEntity3) {
-          setEntity3(urlEntity3);
-          setEnable3Way(true);
+        if (urlEntity1 && urlEntity2) {
+          setEntity1(urlEntity1);
+          setEntity2(urlEntity2);
+          if (urlEntity3) {
+            setEntity3(urlEntity3);
+            setEnable3Way(true);
+          }
+          setShowResults(true);
         }
-        setShowResults(true);
       } else {
         // Load from comparedCompanies localStorage
         const compared = localStorage.getItem('comparedCompanies');

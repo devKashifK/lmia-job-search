@@ -37,24 +37,28 @@ const FEATURES = [
     {
         icon: Briefcase,
         title: 'Job Titles',
+        type: 'job_title',
         description: 'Compare salaries, requirements, and growth potential across different positions',
         metrics: ['Salary ranges', 'Job demand', 'Required skills'],
     },
     {
         icon: MapPin,
         title: 'Locations',
+        type: 'state',
         description: 'Analyze job markets, cost of living, and opportunities across cities or states',
         metrics: ['Market size', 'Opportunities', 'Regional trends'],
     },
     {
         icon: Building2,
         title: 'Companies',
+        type: 'employer',
         description: 'Compare employers side-by-side with detailed metrics and insights',
         metrics: ['Company size', 'Job postings', 'Market presence'],
     },
     {
         icon: Users,
         title: '3-Way Comparison',
+        type: 'job_title', // Defaulting to job_title for now as it's the standard
         description: 'Go beyond head-to-head with advanced 3-way comparison capabilities',
         metrics: ['Multiple entities', 'Detailed analysis', 'Side-by-side view'],
     },
@@ -89,8 +93,12 @@ export default function CompareLandingPage() {
     const router = useRouter();
     const { isMobile } = useMobile();
 
-    const handleLaunchTool = () => {
-        router.push('/compare/tool');
+    const handleLaunchTool = (type?: string) => {
+        if (type) {
+            router.push(`/compare/tool?type=${type}`);
+        } else {
+            router.push('/compare/tool');
+        }
     };
 
     return (
@@ -134,7 +142,7 @@ export default function CompareLandingPage() {
                         <div className={cn("flex items-center justify-center gap-3", isMobile ? "flex-col mb-8" : "flex-row mb-10")}>
                             <Button
                                 size={isMobile ? "default" : "lg"}
-                                onClick={handleLaunchTool}
+                                onClick={() => handleLaunchTool()}
                                 className="bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/25 rounded-lg px-6 py-5 font-semibold transition-all transform hover:-translate-y-0.5"
                             >
                                 <Zap className="w-4 h-4 mr-2 fill-white" />
@@ -195,7 +203,7 @@ export default function CompareLandingPage() {
                                     >
                                         <Card
                                             className="group relative h-full bg-white border-2 border-brand-100 rounded-2xl p-5 hover:shadow-lg hover:border-brand-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-                                            onClick={handleLaunchTool}
+                                            onClick={() => handleLaunchTool(feature.type)}
                                         >
                                             <div className="flex items-start gap-4">
                                                 <div className="inline-flex p-2.5 rounded-xl bg-brand-50 group-hover:scale-105 transition-transform">
@@ -275,7 +283,7 @@ export default function CompareLandingPage() {
 
                                 <Button
                                     size="lg"
-                                    onClick={handleLaunchTool}
+                                    onClick={() => handleLaunchTool()}
                                     className="bg-white text-brand-600 hover:bg-gray-50 shadow-lg rounded-lg px-8 py-5 font-bold transition-all transform hover:-translate-y-0.5"
                                 >
                                     Get Started Free

@@ -171,7 +171,7 @@ export function useJobSearch({ initialSearchType = 'hot_leads', onSearchComplete
         // Optional: Set searchBy if suggestion has field info
         if (s.field) setSearchBy(s.field as any);
 
-        handleSearch(s.suggestion);
+        setShowSuggestions(false);
     };
 
     const handleClear = () => {

@@ -2624,6 +2624,7 @@ function CompanyAnalysisContent({
                                   `Filtered by location: ${location}`
                                 );
                               }}
+                              total={analysisData?.totalJobs}
                             />
                           </DashboardCard>
                         </div>
@@ -2649,6 +2650,7 @@ function CompanyAnalysisContent({
                                 );
                                 toast.success(`Filtered by city: ${city}`);
                               }}
+                              total={analysisData?.totalJobs}
                             />
                           </DashboardCard>
                         </div>
@@ -2677,6 +2679,7 @@ function CompanyAnalysisContent({
                                   `Filtered by NOC code: ${nocCode}`
                                 );
                               }}
+                              total={analysisData?.totalJobs}
                             />
                           </DashboardCard>
                         </div>
@@ -2703,6 +2706,7 @@ function CompanyAnalysisContent({
                                   `Filtered by category: ${category}`
                                 );
                               }}
+                              total={analysisData?.totalJobs}
                             />
                           </DashboardCard>
                         </div>
@@ -2731,6 +2735,7 @@ function CompanyAnalysisContent({
                                   `Filtered by job title: ${jobTitle}`
                                 );
                               }}
+                              total={analysisData?.totalJobs}
                             />
                           </DashboardCard>
                         </div>
@@ -3382,14 +3387,17 @@ const DonutChart = ({
   centerValue,
   centerLabel,
   onSegmentClick,
+  total: propTotal,
 }: {
   data: any[];
   centerValue?: string | number;
   centerLabel?: string;
   onSegmentClick?: (item: any, index?: number) => void;
+  total?: number;
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const total = (data && data.reduce((sum, item) => sum + item.value, 0)) || 0;
+  const dataSum = (data && data.reduce((sum, item) => sum + item.value, 0)) || 0;
+  const total = propTotal ?? dataSum;
   let currentAngle = -90;
 
   const paths =
@@ -3515,14 +3523,18 @@ const BarChart = ({
   data,
   maxValue,
   onBarClick,
+  total: propTotal,
 }: {
   data: any[];
   maxValue?: number;
   onBarClick?: (item: any) => void;
+  total?: number;
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const max =
-    maxValue || (data.length > 0 ? Math.max(...data.map((d) => d.value)) : 1);
+  const dataMax = (data.length > 0 ? Math.max(...data.map((d) => d.value)) : 1);
+  const max = maxValue || dataMax;
+  const dataSum = (data && data.reduce((sum, item) => sum + item.value, 0)) || 0;
+  const total = propTotal ?? dataSum;
 
   return (
     <div className="h-full w-full overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-brand-300 scrollbar-track-gray-100">
@@ -3530,7 +3542,8 @@ const BarChart = ({
         {data.map((item, index) => {
           // Assign color based on index, cycling through the palette
           const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
-          const percentage = max > 0 ? (item.value / max) * 100 : 0;
+          const percentage = total > 0 ? (item.value / total) * 100 : 0;
+          const barWidth = max > 0 ? (item.value / max) * 100 : 0;
           const isHovered = hoveredIndex === index;
           return (
             <div
@@ -3551,7 +3564,7 @@ const BarChart = ({
                 <div
                   className="absolute inset-y-0 left-0 rounded-lg transition-all duration-500 ease-out"
                   style={{
-                    width: `${percentage}%`,
+                    width: `${barWidth}%`,
                     backgroundColor: assignedColor, // Use assigned color
                     transform: isHovered ? 'scaleY(1.1)' : 'scaleY(1)',
                   }}
@@ -3575,14 +3588,17 @@ const BarChart = ({
 const ColumnChart = ({
   data,
   onColumnClick,
+  total: propTotal,
 }: {
   data: any[];
   onColumnClick?: (item: string) => void;
+  total?: number;
 }) => {
   // Expects data with 'title' and 'count'
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  // Use 'count' instead of 'value' for maxValue calculation
   const maxValue = data.length > 0 ? Math.max(...data.map((d) => d.count)) : 1;
+  const dataSum = (data && data.reduce((sum, item) => sum + item.count, 0)) || 0;
+  const total = propTotal ?? dataSum;
 
   return (
     <div className={cn(
@@ -3593,8 +3609,9 @@ const ColumnChart = ({
         // Assign color based on index, cycling through the palette
         const assignedColor = COLOR_PALETTE[index % COLOR_PALETTE.length];
         // Use 'count' instead of 'value' for height percentage
-        const heightPercentage =
+        const barHeight =
           maxValue > 0 ? (item.count / maxValue) * 92 : 0;
+        const displayPercentage = total > 0 ? (item.count / total) * 100 : 0;
         const isHovered = hoveredIndex === index;
         return (
           <div
@@ -3608,14 +3625,14 @@ const ColumnChart = ({
               {isHovered && (
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full mb-2 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-lg whitespace-nowrap z-10">
                   {/* Use 'count' in tooltip */}
-                  {item.count} ({heightPercentage.toFixed(1)}%)
+                  {item.count} ({displayPercentage.toFixed(1)}%)
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
                 </div>
               )}
               <div
                 className="w-full rounded-t-lg transition-all duration-500 ease-out cursor-pointer relative overflow-hidden hover:shadow-lg"
                 style={{
-                  height: `${heightPercentage}%`,
+                  height: `${barHeight}%`,
                   backgroundColor: assignedColor, // Use assigned color
                   minHeight: '2px',
                   transform: isHovered ? 'scaleX(1.05)' : 'scaleX(1)',
