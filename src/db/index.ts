@@ -11,15 +11,17 @@ function createDb(): SupabaseClient {
   if (isBrowser) {
     if (_browserClient) return _browserClient;
     
-    // On Capacitor, window.location.origin is capacitor://localhost
-    // We should use direct Supabase URL if not on a standard http/https domain
-    const isMobile = window.location.protocol.startsWith('capacitor') || 
-                     window.location.protocol.startsWith('http:') === false && 
-                     window.location.protocol.startsWith('https:') === false;
-
+    // On Capacitor, window.Capacitor is defined
+    const isMobile = (window as any).Capacitor !== undefined ||
+                     window.location.protocol.startsWith('capacitor') || 
+                     (!window.location.protocol.startsWith('http:') && !window.location.protocol.startsWith('https:'));
+    
+    // Always use direct Supabase URL if was specially provided during build
+    // but on mobile we MUST avoid the /api/proxy-supabase route as it is disabled in static export
     if (isMobile) {
       _browserClient = createClient(url, key);
     } else {
+      // Standard web browser uses the proxy
       const proxyUrl = `${window.location.origin}/api/proxy-supabase`;
       _browserClient = createClient(proxyUrl, "hidden-key");
     }
