@@ -44,7 +44,7 @@ export function WageComparisonDisplay({ noc, province, currentWage }: WageCompar
 
     if (comparison.loading || !comparison.median) return null;
 
-    const { diff } = comparison;
+    const { diff, median } = comparison;
     const isPositive = diff > 5;
     const isNegative = diff < -5;
 
@@ -57,9 +57,16 @@ export function WageComparisonDisplay({ noc, province, currentWage }: WageCompar
                 isNegative ? <TrendingDown className="h-3 w-3" /> :
                     <Minus className="h-3 w-3" />}
 
-            {isPositive ? `${diff.toFixed(0)}% Above Market` :
-                isNegative ? `${Math.abs(diff).toFixed(0)}% Below Market` :
-                    'Market Average'}
+            {(() => {
+                const absDiff = Math.abs(diff);
+                if (absDiff >= 200) {
+                    const ratio = currentWage / median;
+                    return isPositive ? `${ratio.toFixed(1)}x Above Market` : `${(1 / ratio).toFixed(1)}x Below Market`;
+                }
+                return isPositive ? `${diff.toFixed(0)}% Above Market` :
+                    isNegative ? `${Math.abs(diff).toFixed(0)}% Below Market` :
+                        'Market Average';
+            })()}
         </div>
     );
 }

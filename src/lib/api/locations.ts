@@ -9,6 +9,26 @@ export interface City {
     city: string;
 }
 
+const PROVINCE_NORM: Record<string, string> = {
+    'AB': 'Alberta', 'Alberta': 'Alberta',
+    'BC': 'British Columbia', 'British Columbia': 'British Columbia',
+    'MB': 'Manitoba', 'Manitoba': 'Manitoba',
+    'NB': 'New Brunswick', 'New Brunswick': 'New Brunswick',
+    'NL': 'Newfoundland and Labrador',
+    'Newfoundland': 'Newfoundland and Labrador',
+    'Newfoundland and Labrador': 'Newfoundland and Labrador',
+    'Newfoundland And Labrador': 'Newfoundland and Labrador',
+    'NS': 'Nova Scotia', 'Nova Scotia': 'Nova Scotia',
+    'NT': 'Northwest Territories', 'Northwest Territories': 'Northwest Territories',
+    'NU': 'Nunavut', 'Nunavut': 'Nunavut',
+    'ON': 'Ontario', 'Ontario': 'Ontario',
+    'PE': 'Prince Edward Island', 'PEI': 'Prince Edward Island',
+    'Prince Edward Island': 'Prince Edward Island',
+    'QC': 'Quebec', 'Quebec': 'Quebec', 'Québec': 'Quebec',
+    'SK': 'Saskatchewan', 'Saskatchewan': 'Saskatchewan',
+    'YT': 'Yukon', 'Yukon': 'Yukon',
+};
+
 export async function getProvinces(): Promise<string[]> {
     const { data, error } = await (db as any).rpc('get_provinces');
 
@@ -17,7 +37,13 @@ export async function getProvinces(): Promise<string[]> {
         return [];
     }
 
-    return ((data as Province[]) ?? []).map(p => p.province);
+    const provinces = ((data as Province[]) ?? []).map(p => {
+        const name = p.province.trim();
+        return PROVINCE_NORM[name] || name;
+    });
+
+    // Deduplicate normalized names
+    return Array.from(new Set(provinces)).sort();
 }
 
 export async function getCitiesByProvince(province: string, search: string = ''): Promise<string[]> {
@@ -93,9 +119,10 @@ export async function getCitiesForProvinces(provincesList: string[]): Promise<{ 
                 const distinct: { city: string; province: string }[] = [];
 
                 for (const item of citiesForProv) {
-                    const normalized = item.city.trim(); // keep casing for display, but could normalize for check
-                    if (!uniqueCities.has(normalized)) {
-                        uniqueCities.add(normalized);
+                    const normalized = item.city.trim();
+                    const lower = normalized.toLowerCase();
+                    if (!uniqueCities.has(lower)) {
+                        uniqueCities.add(lower);
                         distinct.push({ city: normalized, province });
                     }
                 }

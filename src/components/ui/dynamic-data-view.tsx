@@ -487,6 +487,9 @@ export function NewDataPanel({
   searchType: 'lmia' | 'hot_leads';
 }) {
   const { isMobile } = useMobile();
+  const router = useRouter();
+  const pathname = usePathname();
+  const sp = useSearchParams();
   const [sortConfig, setSortConfig] = React.useState<import('./job-sort-popover').SortConfig>(null);
   const { data, error, isLoading, setPage } = useData(
     query,
@@ -501,21 +504,35 @@ export function NewDataPanel({
   );
   const [showFilters, setShowFilters] = React.useState(false);
   const [showJobDetails, setShowJobDetails] = React.useState(false);
-  const navigate = useRouter();
 
-  // Set first job as selected by default when data loads or changes
+  // Set first job or job from URL as selected by default when data loads or changes
   React.useEffect(() => {
     if (data?.rows && data.rows.length > 0) {
-      const firstJob = data.rows[0];
-      // Always update to first job when data changes (filters, pagination, etc.)
-      setSelectedJob(firstJob);
-      setSelectedJobId(firstJob.id || 0);
+      const selectedId = sp.get('selected');
+      let jobToSelect = data.rows[0];
+
+      if (selectedId) {
+        const found = data.rows.find(
+          (r: any) => String(r.RecordID || r.id) === selectedId
+        );
+        if (found) jobToSelect = found;
+      }
+
+      setSelectedJob(jobToSelect);
+      setSelectedJobId(jobToSelect.RecordID || jobToSelect.id || 0);
     }
-  }, [data?.rows]);
+  }, [data?.rows, sp]);
 
   const handleJobSelect = (job: any) => {
     setSelectedJob(job);
-    setSelectedJobId(job.id || data?.rows?.indexOf(job));
+    const id = job.RecordID || job.id || data?.rows?.indexOf(job);
+    setSelectedJobId(id);
+
+    // Update URL with selected job ID
+    const nextSp = new URLSearchParams(sp.toString());
+    nextSp.set('selected', String(id));
+    router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
+
     if (isMobile) {
       setShowJobDetails(true);
     }
@@ -538,7 +555,7 @@ export function NewDataPanel({
 
   const handleViewNOC = () => {
     if (selectedJob?.noc_code) {
-      navigate.push(`/search/noc-profile/${selectedJob.noc_code}`);
+      router.push(`/search/noc-profile/${selectedJob.noc_code}`);
     }
   };
 
@@ -547,7 +564,6 @@ export function NewDataPanel({
     : false;
 
   // Pagination logic - use URL parameters like useData hook
-  const sp = useSearchParams();
   const page = toPositiveInt(sp?.get('page') ?? null, 1);
   const pageSize = toPositiveInt(sp?.get('pageSize') ?? null, 60);
   const currentPage = page;

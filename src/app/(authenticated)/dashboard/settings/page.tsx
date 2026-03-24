@@ -14,8 +14,6 @@ import {
   Bell,
   Globe,
   Volume2,
-  Sun,
-  Moon,
   Eye,
   EyeOff,
   AlertCircle,
@@ -51,10 +49,6 @@ export default function Settings() {
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  // System Settings State
-  const [theme, setTheme] = useState(
-    session?.user?.user_metadata?.theme || "light"
-  );
   const [brandColor, setBrandColor] = useState(
     session?.user?.user_metadata?.brandColor || "brand"
   );
@@ -310,51 +304,6 @@ export default function Settings() {
           </div>
 
           <div className="divide-y divide-gray-100">
-            {/* Theme */}
-            <div className="flex items-center justify-between px-6 py-5">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <Sun className="h-4 w-4 text-gray-500" />
-                  <Label className="text-sm font-medium">Theme</Label>
-                </div>
-                <p className="text-sm text-gray-500">
-                  Choose light or dark mode
-                </p>
-              </div>
-              <div className="flex items-center rounded-lg bg-gray-100 p-1">
-                <button
-                  onClick={() => {
-                    setTheme("light");
-                    handleSystemUpdate("theme", "light");
-                  }}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                    theme === "light"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900"
-                  )}
-                >
-                  <Sun className="h-3.5 w-3.5" />
-                  Light
-                </button>
-                <button
-                  onClick={() => {
-                    setTheme("dark");
-                    handleSystemUpdate("theme", "dark");
-                  }}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                    theme === "dark"
-                      ? "bg-gray-800 text-white shadow-sm"
-                      : "text-gray-600 hover:text-gray-900"
-                  )}
-                >
-                  <Moon className="h-3.5 w-3.5" />
-                  Dark
-                </button>
-              </div>
-            </div>
-
             {/* Accent Color */}
             <div className="flex items-center justify-between px-6 py-5">
               <div className="space-y-1">

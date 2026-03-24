@@ -19,7 +19,8 @@ import {
   Save,
   Copy,
   Link,
-  Table
+  Table,
+  Info
 } from 'lucide-react';
 import Footer from '@/sections/homepage/footer';
 import { Button } from '@/components/ui/button';
@@ -102,6 +103,7 @@ export default function ComparisonResults({
   const { isMobile } = useMobile();
   const { data, isLoading } = useComparisonData(type, entity1, entity2, entity3);
   const [saveDialogOpen, setSaveDialogOpen] = React.useState(false);
+  const [infoDialogOpen, setInfoDialogOpen] = React.useState(false);
   const [comparisonName, setComparisonName] = React.useState('');
   const [comparisonNotes, setComparisonNotes] = React.useState('');
   const resultsRef = React.useRef<HTMLDivElement>(null);
@@ -262,6 +264,15 @@ export default function ComparisonResults({
         <div className={cn("flex items-center gap-2", isMobile && "w-full")}>
           <div className="flex bg-gray-100/50 p-1 rounded-xl">
             <Button
+              onClick={() => setInfoDialogOpen(true)}
+              variant="ghost"
+              size="sm"
+              className="h-8 rounded-lg text-gray-400 hover:text-brand-600 hover:bg-white/50 transition-all mr-0.5"
+              title="Metric Logic"
+            >
+              <Info className="w-4 h-4" />
+            </Button>
+            <Button
               onClick={handleCopySummary}
               variant="ghost"
               size="sm"
@@ -366,7 +377,7 @@ export default function ComparisonResults({
                       )}>
                         {data1.growthRate >= 0 ? <TrendingUp className="w-4 h-4 text-green-600 mb-0.5" /> : <TrendingDown className="w-4 h-4 text-red-600 mb-0.5" />}
                         <span className={cn("text-xs font-bold", data1.growthRate >= 0 ? "text-green-700" : "text-red-700")}>
-                          {data1.growthRate}%
+                          {data1.growthRate >= 200 ? `${(data1.growthRate / 100 + 1).toFixed(1)}x` : `${data1.growthRate}%`}
                         </span>
                       </div>
                     )}
@@ -405,7 +416,7 @@ export default function ComparisonResults({
                       )}>
                         {data2.growthRate >= 0 ? <TrendingUp className="w-4 h-4 text-green-600 mb-0.5" /> : <TrendingDown className="w-4 h-4 text-red-600 mb-0.5" />}
                         <span className={cn("text-xs font-bold", data2.growthRate >= 0 ? "text-green-700" : "text-red-700")}>
-                          {data2.growthRate}%
+                          {data2.growthRate >= 200 ? `${(data2.growthRate / 100 + 1).toFixed(1)}x` : `${data2.growthRate}%`}
                         </span>
                       </div>
                     )}
@@ -432,14 +443,12 @@ export default function ComparisonResults({
             const winnerJobs = Math.max(data1.totalJobs, data2.totalJobs);
             const loserJobs = Math.min(data1.totalJobs, data2.totalJobs);
             
-            const ratio = loserJobs > 0 ? winnerJobs / loserJobs : winnerJobs;
+            const ratio = loserJobs > 0 ? winnerJobs / loserJobs : (winnerJobs > 0 ? Infinity : 1);
             let displayDelta = '';
-            if (ratio >= 2) {
-                displayDelta = `${ratio.toFixed(1)}x`;
+            if (ratio >= 3 || ratio === Infinity) {
+                displayDelta = ratio === Infinity ? 'New' : `${ratio.toFixed(1)}x`;
             } else {
-                const deltaPct = loserJobs > 0
-                  ? Math.round(((winnerJobs - loserJobs) / loserJobs) * 100)
-                  : 100;
+                const deltaPct = Math.round(((winnerJobs - loserJobs) / (loserJobs || 1)) * 100);
                 displayDelta = `${deltaPct}%`;
             }
 
@@ -573,11 +582,9 @@ export default function ComparisonResults({
                       </span>
                       than <strong>{entity2}</strong>. This represents a 
                       <strong> {(() => {
-                          const ratio = data2.totalJobs > 0 ? data1.totalJobs / data2.totalJobs : 1;
-                          if (ratio >= 2) return `${ratio.toFixed(1)}x`;
-                          const r2 = data1.totalJobs > 0 ? data2.totalJobs / data1.totalJobs : 1;
-                          if (r2 >= 2) return `${r2.toFixed(1)}x`;
-                          return `${Math.abs(parseInt(jobsDiffPercent))}%`;
+                        const ratio = data2.totalJobs > 0 ? data1.totalJobs / data2.totalJobs : (data1.totalJobs > 0 ? Infinity : 1);
+                        const diffPct = data2.totalJobs > 0 ? ((data1.totalJobs - data2.totalJobs) / data2.totalJobs) * 100 : 100;
+                        return formatComparisonValue(ratio, diffPct);
                       })()}</strong> capacity difference.
                     </p>
                   </div>
@@ -592,17 +599,26 @@ export default function ComparisonResults({
                     <div className="flex-1">
                       <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Momentum Analysis</h4>
                       <p className="text-gray-700 leading-snug font-medium">
-                        {Math.abs(data1.growthRate) > Math.abs(data2.growthRate) ? (
-                          <>
-                            <strong>{entity1}</strong> exhibits <span className="text-green-600 font-bold">{Math.abs(data1.growthRate - data2.growthRate).toFixed(1)}%</span> stronger momentum, 
-                            {data1.growthRate > 0 ? ' surging as an expanding choice.' : ' showing higher resilience.'}
-                          </>
-                        ) : (
-                          <>
-                            <strong>{entity2}</strong> leads growth by <span className="text-green-600 font-bold">{Math.abs(data2.growthRate - data1.growthRate).toFixed(1)}%</span>, 
-                            suggesting an aggressive market uptake.
-                          </>
-                        )}
+                        {(() => {
+                          const growthDiff = Math.abs(data1.growthRate - data2.growthRate);
+                          const formattedDiff = growthDiff >= 200 ? `${(growthDiff / 100).toFixed(1)}x` : `${growthDiff.toFixed(1)}%`;
+                          
+                          if (Math.abs(data1.growthRate) > Math.abs(data2.growthRate)) {
+                            return (
+                              <>
+                                <strong>{entity1}</strong> exhibits <span className="text-green-600 font-bold">{formattedDiff}</span> stronger momentum, 
+                                {data1.growthRate > 0 ? ' surging as an expanding choice.' : ' showing higher resilience.'}
+                              </>
+                            );
+                          } else {
+                            return (
+                              <>
+                                <strong>{entity2}</strong> leads growth by <span className="text-green-600 font-bold">{formattedDiff}</span>, 
+                                suggesting an aggressive market uptake.
+                              </>
+                            );
+                          }
+                        })()}
                       </p>
                     </div>
                   </div>
@@ -619,12 +635,38 @@ export default function ComparisonResults({
                       <p className="text-gray-700 leading-snug font-medium">
                         <strong>{entity1}</strong> sits at 
                         <span className="mx-1 px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded-md font-bold">
-                          {(() => { const r = data1.totalJobs / data.benchmark.avgJobsPerValue; return r >= 100 ? `${Math.round(r)}x` : `${Math.round((r-1)*100)}%`; })()}
-                        </span> 
-                        {data1.totalJobs >= data.benchmark.avgJobsPerValue ? 'above' : 'below'} average, while 
-                        <strong> {entity2}</strong> is 
+                          {(() => {
+                            const ratio = data1.totalJobs / (data.benchmark.avgJobsPerValue || 1);
+                            const diffPct =
+                              ((data1.totalJobs - data.benchmark.avgJobsPerValue) /
+                                (data.benchmark.avgJobsPerValue || 1)) *
+                              100;
+                            return formatComparisonValue(
+                              ratio,
+                              diffPct,
+                              true,
+                              data.benchmark.totalJobs,
+                              data1.totalJobs
+                            );
+                          })()}
+                        </span>
+                        {data1.totalJobs >= data.benchmark.avgJobsPerValue ? 'above' : 'below'} average, while
+                        <strong> {entity2}</strong> is
                         <span className="mx-1 px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md font-bold">
-                           {(() => { const r = data2.totalJobs / data.benchmark.avgJobsPerValue; return r >= 100 ? `${Math.round(r)}x` : `${Math.round((r-1)*100)}%`; })()}
+                          {(() => {
+                            const ratio = data2.totalJobs / (data.benchmark.avgJobsPerValue || 1);
+                            const diffPct =
+                              ((data2.totalJobs - data.benchmark.avgJobsPerValue) /
+                                (data.benchmark.avgJobsPerValue || 1)) *
+                              100;
+                            return formatComparisonValue(
+                              ratio,
+                              diffPct,
+                              true,
+                              data.benchmark.totalJobs,
+                              data2.totalJobs
+                            );
+                          })()}
                         </span>
                         the median.
                       </p>
@@ -743,14 +785,21 @@ export default function ComparisonResults({
                   
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <div className="text-4xl font-extrabold text-white mb-1 group-hover:scale-105 transition-transform origin-left">
                         {(() => {
-                            const ratio = data1.totalJobs / data.benchmark.avgJobsPerValue;
-                            if (ratio >= 10) return `${Math.round(ratio).toLocaleString()}x`;
-                            const pctStr = Math.round((ratio - 1) * 100);
-                            return (pctStr >= 0 ? '+' : '') + pctStr + '%';
+                          const ratio =
+                            data1.totalJobs / (data.benchmark.avgJobsPerValue || 1);
+                          const diffPct =
+                            ((data1.totalJobs - data.benchmark.avgJobsPerValue) /
+                              (data.benchmark.avgJobsPerValue || 1)) *
+                            100;
+                          return formatComparisonValue(
+                            ratio,
+                            diffPct,
+                            true,
+                            data.benchmark.totalJobs,
+                            data1.totalJobs
+                          );
                         })()}
-                      </div>
                       <p className="text-xs text-blue-300/60 font-semibold uppercase tracking-widest">
                         {data1.totalJobs > data.benchmark.avgJobsPerValue ? 'Above' : 'Below'} Average
                       </p>
@@ -773,14 +822,21 @@ export default function ComparisonResults({
                   
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                      <div className="text-4xl font-extrabold text-white mb-1 group-hover:scale-105 transition-transform origin-left">
                         {(() => {
-                            const ratio = data2.totalJobs / data.benchmark.avgJobsPerValue;
-                            if (ratio >= 10) return `${Math.round(ratio).toLocaleString()}x`;
-                            const pctStr = Math.round((ratio - 1) * 100);
-                            return (pctStr >= 0 ? '+' : '') + pctStr + '%';
+                          const ratio =
+                            data2.totalJobs / (data.benchmark.avgJobsPerValue || 1);
+                          const diffPct =
+                            ((data2.totalJobs - data.benchmark.avgJobsPerValue) /
+                              (data.benchmark.avgJobsPerValue || 1)) *
+                            100;
+                          return formatComparisonValue(
+                            ratio,
+                            diffPct,
+                            true,
+                            data.benchmark.totalJobs,
+                            data2.totalJobs
+                          );
                         })()}
-                      </div>
                       <p className="text-xs text-green-300/60 font-semibold uppercase tracking-widest">
                         {data2.totalJobs > data.benchmark.avgJobsPerValue ? 'Above' : 'Below'} Average
                       </p>
@@ -1124,41 +1180,150 @@ export default function ComparisonResults({
 
       <Footer />
 
-      {/* Save Comparison Dialog */}
-      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Save Comparison</DialogTitle>
-            <DialogDescription>
-              Save this comparison for quick access later
+      <Dialog open={infoDialogOpen} onOpenChange={setInfoDialogOpen}>
+        <DialogContent className="max-w-xl rounded-[2rem] p-6 border-gray-100 shadow-2xl overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500/5 rounded-full blur-2xl -z-10" />
+          <DialogHeader className="mb-4">
+            <div className="flex items-center gap-3 mb-1">
+              <div className="p-2 bg-brand-50 border border-brand-100 rounded-lg">
+                <Info className="w-4 h-4 text-brand-600" />
+              </div>
+              <DialogTitle className="text-xl font-black text-gray-900 tracking-tight">Understanding Metrics</DialogTitle>
+            </div>
+            <DialogDescription className="text-xs text-gray-500 font-medium ml-12">
+              Calculation logic and data presentation.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:border-blue-200 transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-md bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-[10px]">%</div>
+                  <h4 className="font-bold text-xs text-gray-900 uppercase tracking-tighter">Normal Differences</h4>
+                </div>
+                <p className="text-[10px] text-gray-600 leading-normal">
+                  For standard differences (under 200%), we show a percentage (like +50%) to help you see modest gaps between jobs.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:border-purple-200 transition-colors">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-md bg-purple-50 flex items-center justify-center text-purple-600 font-bold text-[10px]">x</div>
+                  <h4 className="font-bold text-xs text-gray-900 uppercase tracking-tighter">Large Gaps (Multipliers)</h4>
+                </div>
+                <p className="text-[10px] text-gray-600 leading-normal">
+                  If one job has 3x or 5x more volume than another, we use a multiplier (like 5.0x) to keep the numbers simple and easy to read.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 hover:border-indigo-300 transition-colors">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center">
+                  <BarChart3 className="w-3.5 h-3.5 text-white" />
+                </div>
+                <h4 className="font-bold text-xs text-indigo-900 uppercase tracking-tighter">Market Share (Massive Leaders)</h4>
+                <Badge className="bg-indigo-600 text-white border-none rounded-full text-[9px] px-1.5 py-0 uppercase">Simplified</Badge>
+              </div>
+              <p className="text-[10px] text-indigo-800/80 leading-normal font-medium">
+                When a job is extremely dominant ({'>'} 50x the average), we show its <strong>Market Share</strong> (its percentage of all jobs in Canada) to show you how big it really is.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="p-4 rounded-2xl bg-green-50/50 border border-green-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-md bg-green-100 flex items-center justify-center">
+                    <TrendingUp className="w-3.5 h-3.5 text-green-600" />
+                  </div>
+                  <h4 className="font-bold text-xs text-green-900 uppercase tracking-tighter">Growth Momentum</h4>
+                </div>
+                <p className="text-[10px] text-green-800/80 leading-normal font-medium">
+                  We look at hiring over the last 6 months. We compare the first 3 months to the last 3 months to see if a job is trending up.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-orange-50/50 border border-orange-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-md bg-orange-100 flex items-center justify-center">
+                    <MapPin className="w-3.5 h-3.5 text-orange-600" />
+                  </div>
+                  <h4 className="font-bold text-xs text-orange-900 uppercase tracking-tighter">Regional Focus</h4>
+                </div>
+                <p className="text-[10px] text-orange-800/80 leading-normal font-medium">
+                  We identify "Center of Gravity" by finding the cities and provinces where most of the hiring for that job is happening.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-gray-50 border border-dashed border-gray-200">
+               <h4 className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-1.5">Where is this data from?</h4>
+               <p className="text-[10px] text-gray-500 leading-normal">
+                 All metrics come from **our private database** and verified **LMIA** records. We carefully deduplicate employers and cities to give you the most accurate market picture.
+               </p>
+            </div>
+          </div>
+
+          <DialogFooter className="mt-6">
+            <Button onClick={() => setInfoDialogOpen(false)} className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold py-5 h-auto">
+              Got it, thanks!
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+        <DialogContent className="max-w-md rounded-[2.5rem] p-8 border-gray-100 shadow-2xl">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-3xl -z-10" />
+          <DialogHeader className="mb-6">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="p-2.5 bg-brand-50 border border-brand-100 rounded-xl">
+                <Save className="w-5 h-5 text-brand-600" />
+              </div>
+              <DialogTitle className="text-2xl font-black text-gray-900 tracking-tight">Save Comparison</DialogTitle>
+            </div>
+            <DialogDescription className="text-gray-500 font-medium ml-14">
+              Store this analysis in your dashboard for future reference.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-5 py-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Comparison Name</Label>
+              <Label htmlFor="name" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Comparison Name</Label>
               <Input
                 id="name"
                 placeholder={`${entity1} vs ${entity2}`}
                 value={comparisonName}
                 onChange={(e) => setComparisonName(e.target.value)}
+                className="rounded-xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all h-11"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="notes">Notes (Optional)</Label>
+              <Label htmlFor="notes" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Notes (Optional)</Label>
               <Textarea
                 id="notes"
-                placeholder="Add any notes about this comparison..."
+                placeholder="Add insights or context about this comparison..."
                 value={comparisonNotes}
                 onChange={(e) => setComparisonNotes(e.target.value)}
-                rows={3}
+                rows={4}
+                className="rounded-2xl border-gray-100 bg-gray-50/50 focus:bg-white transition-all resize-none"
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>
+
+          <DialogFooter className="mt-8 gap-3 sm:gap-0">
+            <Button 
+              variant="ghost" 
+              onClick={() => setSaveDialogOpen(false)}
+              className="rounded-xl font-bold text-gray-400 hover:text-gray-600 hover:bg-gray-100 h-12 px-6"
+            >
               Cancel
             </Button>
-            <Button onClick={handleSaveComparison}>
+            <Button 
+              onClick={handleSaveComparison}
+              className="bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold h-12 px-8 shadow-lg shadow-brand-500/20 transition-all active:scale-95"
+            >
+              <Save className="w-4 h-4 mr-2" />
               Save Comparison
             </Button>
           </DialogFooter>
@@ -1167,6 +1332,25 @@ export default function ComparisonResults({
     </motion.div>
   );
 }
+
+const formatComparisonValue = (
+  ratio: number,
+  diffPct: number,
+  forcePlus: boolean = false,
+  totalJobs?: number,
+  entityJobs?: number
+) => {
+  // If extreme outlier (> 50x) and we have total volume, show as market share
+  if (ratio >= 50 && totalJobs && entityJobs) {
+    const marketShare = (entityJobs / totalJobs) * 100;
+    return `${marketShare.toFixed(1)}% of total`;
+  }
+
+  if (ratio >= 3) return `${ratio.toFixed(1)}x`;
+  if (ratio <= 0.33 && ratio > 0) return `${(1 / ratio).toFixed(1)}x`;
+  const sign = forcePlus && diffPct > 0 ? '+' : '';
+  return `${sign}${Math.abs(Math.round(diffPct))}%`;
+};
 
 function MetricCard({
   icon: Icon,
@@ -1255,12 +1439,9 @@ function MetricCard({
             )}>
               {diff > 0 ? <TrendingUp className="w-3.5 h-3.5" /> : diff < 0 ? <TrendingDown className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
               {(() => {
-                  const ratio = value2 > 0 ? value1 / value2 : value1;
-                  const displayRatio = ratio >= 2 ? `${ratio.toFixed(1)}x` : ratio <= 0.5 && ratio > 0 ? `${(1/ratio).toFixed(1)}x` : null;
-                  const diffPct = value2 > 0 ? Math.round(((value1 - value2) / value2) * 100) : 0;
-                  
-                  if (displayRatio) return displayRatio;
-                  return `${Math.abs(diffPct)}%`;
+                const ratio = value2 > 0 ? value1 / value2 : (value1 > 0 ? Infinity : 1);
+                const diffPct = value2 > 0 ? ((value1 - value2) / value2) * 100 : 100;
+                return formatComparisonValue(ratio, diffPct);
               })()}
             </div>
           </div>

@@ -549,7 +549,7 @@ export default function ComparePage() {
                   >
                     <ChevronLeft className="w-4 h-4 text-gray-600" />
                   </Button>
-                  
+
                   <div className="w-px h-4 bg-gray-200 mx-0.5" />
 
                   <Button
@@ -586,7 +586,7 @@ export default function ComparePage() {
               </div>
 
               {/* Center: Data Source Toggle */}
-              <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-xl p-1 shadow-inner">
+              {/* <div className="flex items-center gap-1 bg-gray-50 border border-gray-100 rounded-xl p-1 shadow-inner">
                 <button
                   onClick={() => handleDataSourceChange('trending_job')}
                   className={cn(
@@ -611,7 +611,7 @@ export default function ComparePage() {
                   <Shield className="w-3 h-3" />
                   LMIA
                 </button>
-              </div>
+              </div> */}
 
               {/* Right Section: Action Buttons */}
               <motion.div
@@ -631,14 +631,14 @@ export default function ComparePage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48 p-2 rounded-2xl border-gray-100 shadow-2xl backdrop-blur-xl bg-white/90">
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => window.location.href = '/search'}
                       className="rounded-xl focus:bg-brand-50 focus:text-brand-700"
                     >
                       <Search className="w-4 h-4 mr-2 opacity-70" />
                       Search Jobs
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => window.location.href = '/dashboard'}
                       className="rounded-xl focus:bg-brand-50 focus:text-brand-700"
                     >
@@ -646,7 +646,7 @@ export default function ComparePage() {
                       Dashboard
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-gray-50" />
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => window.location.href = '/pricing'}
                       className="rounded-xl focus:bg-brand-50 focus:text-brand-700"
                     >
@@ -680,7 +680,7 @@ export default function ComparePage() {
             >
               <Card className="relative overflow-hidden border-0 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] group/queue">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50/50 rounded-full blur-[80px] -mr-32 -mt-32 transition-colors group-hover/queue:bg-brand-100/30" />
-                
+
                 <div className={isMobile ? "p-6" : "p-10"}>
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                     <div className="flex items-center gap-5">
@@ -697,7 +697,7 @@ export default function ComparePage() {
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1.5">Your Selected Entity Repository</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -800,9 +800,9 @@ export default function ComparePage() {
                   <Card className="relative overflow-hidden border-0 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] group/banner">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/5 rounded-full blur-[100px] -mr-32 -mt-32 transition-colors duration-1000 group-hover/banner:bg-brand-500/10" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-100/30 rounded-full blur-[80px] -ml-20 -mb-20" />
-                    
+
                     <div className={cn("relative flex flex-col md:flex-row items-center gap-8", isMobile ? "p-6" : "p-10")}>
-                      <motion.div 
+                      <motion.div
                         animate={{ y: [0, -5, 0] }}
                         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                         className="flex-shrink-0 p-5 bg-gradient-to-br from-brand-500 to-brand-600 rounded-[2rem] shadow-xl shadow-brand-500/20"
@@ -939,7 +939,7 @@ export default function ComparePage() {
                 >
                   <Card className="relative overflow-hidden border-0 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] p-8 group">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-gray-50 rounded-full blur-[80px] -mr-32 -mt-32 transition-colors group-hover:bg-brand-50/50" />
-                    
+
                     <div className="relative flex items-center justify-between mb-8">
                       <div className="flex items-center gap-4">
                         <div className="p-3 bg-gray-50 rounded-2xl group-hover:bg-brand-50 transition-colors">
@@ -1094,7 +1094,7 @@ export default function ComparePage() {
                 >
                   <Card className="relative overflow-hidden bg-white border-0 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2.5rem] p-10 group">
                     <div className="absolute top-0 right-0 w-80 h-80 bg-brand-50/50 rounded-full blur-[100px] -mr-32 -mt-32 transition-colors duration-1000 group-hover:bg-brand-100/30" />
-                    
+
                     <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                       <div className="flex items-center gap-5">
                         <div className="p-4 bg-gradient-to-br from-brand-600 to-brand-800 rounded-2xl shadow-xl shadow-brand-500/20">
@@ -1274,14 +1274,14 @@ export default function ComparePage() {
                                         </div>
                                       </div>
                                     </div>
-                                    
+
                                     {/* Select Indicator */}
                                     {isSelected && (
-                                       <div className="absolute top-4 right-4 animate-in fade-in zoom-in duration-300">
-                                         <div className="w-6 h-6 rounded-full bg-white text-brand-600 flex items-center justify-center shadow-lg">
-                                           <Check className="w-3.5 h-3.5 font-black" />
-                                         </div>
-                                       </div>
+                                      <div className="absolute top-4 right-4 animate-in fade-in zoom-in duration-300">
+                                        <div className="w-6 h-6 rounded-full bg-white text-brand-600 flex items-center justify-center shadow-lg">
+                                          <Check className="w-3.5 h-3.5 font-black" />
+                                        </div>
+                                      </div>
                                     )}
                                   </motion.div>
                                 </TooltipTrigger>
@@ -1433,7 +1433,7 @@ export default function ComparePage() {
                   )}
                 >
                   <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-400 via-brand-600 to-brand-400" />
-                  
+
                   {/* Step 2 Header */}
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                     <div className="flex items-center gap-4">
@@ -1481,26 +1481,26 @@ export default function ComparePage() {
                     </div>
                   </div>
 
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="hidden sm:flex border-brand-200 text-brand-600 hover:bg-brand-50">
-                          <Plus className="w-3.5 h-3.5 mr-1" /> Add Company to Queue
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[300px] p-2">
-                        <div className="text-xs font-semibold text-gray-500 mb-2 px-2">Search companies to add to queue</div>
-                        <VirtualizedSearchableSelector
-                          value=""
-                          onValueChange={handleAddToQueue}
-                          options={(employerOptions || [])}
-                          placeholder="Search companies..."
-                          isLoading={employersLoading}
-                          excludeValues={comparedCompanies.map(c => c.name)}
-                        />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="hidden sm:flex border-brand-200 text-brand-600 hover:bg-brand-50">
+                        <Plus className="w-3.5 h-3.5 mr-1" /> Add Company to Queue
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[300px] p-2">
+                      <div className="text-xs font-semibold text-gray-500 mb-2 px-2">Search companies to add to queue</div>
+                      <VirtualizedSearchableSelector
+                        value=""
+                        onValueChange={handleAddToQueue}
+                        options={(employerOptions || [])}
+                        placeholder="Search companies..."
+                        isLoading={employersLoading}
+                        excludeValues={comparedCompanies.map(c => c.name)}
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
 
-                    <div
+                  <div
                     className={cn(
                       'flex items-center justify-center',
                       isMobile ? 'flex-col gap-3' : 'gap-8'
@@ -1544,8 +1544,8 @@ export default function ComparePage() {
                     {/* VS Indicator 1 */}
                     <div className="flex-shrink-0 py-4">
                       <div className="relative group/vs">
-                        <motion.div 
-                          animate={{ 
+                        <motion.div
+                          animate={{
                             scale: [1, 1.1, 1],
                             rotate: [0, 5, -5, 0]
                           }}
@@ -1600,8 +1600,8 @@ export default function ComparePage() {
                         {/* VS Indicator 2 */}
                         <div className="flex-shrink-0 py-4">
                           <div className="relative group/vs">
-                            <motion.div 
-                              animate={{ 
+                            <motion.div
+                              animate={{
                                 scale: [1, 1.1, 1],
                                 rotate: [0, -5, 5, 0]
                               }}

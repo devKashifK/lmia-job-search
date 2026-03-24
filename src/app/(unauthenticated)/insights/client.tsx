@@ -201,9 +201,9 @@ const THEMES: Record<string, Theme> = {
 };
 
 const ATLANTIC_PROVINCES = [
-    'Nova Scotia', 
-    'New Brunswick', 
-    'Prince Edward Island', 
+    'Nova Scotia',
+    'New Brunswick',
+    'Prince Edward Island',
     'Newfoundland and Labrador'
 ];
 
@@ -282,7 +282,7 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search, year, da
                             </th>
 
                             <th className="text-right py-2.5 px-4 text-xs font-semibold text-gray-500 whitespace-nowrap">
-                                No. Jobs ↑
+                                No. Jobs
                             </th>
                             <th className="w-8"></th>
                         </tr>
@@ -312,24 +312,24 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search, year, da
                                         {row.count.toLocaleString()}
                                     </span>
                                 </td>
-                                 <td className="py-2.5 pr-3">
+                                <td className="py-2.5 pr-3">
                                     <Link
                                         href={(() => {
                                             const base = `/search/${isLmia ? 'lmia' : 'hot-leads'}/${encodeURIComponent(row.noc_code)}`;
                                             const params = new URLSearchParams();
                                             params.set('field', 'noc_code');
                                             params.set('t', isLmia ? 'lmia' : 'trending_job');
-                                            
+
                                             if (region.key === 'atlantic') {
                                                 ATLANTIC_PROVINCES.forEach(p => params.append(fieldParam, p));
                                             } else if (region.key !== 'canada' && region.key !== 'all') {
                                                 params.set(fieldParam, region.region);
                                             }
-                                            
+
                                             // Add date parameters
                                             const dateParams = getDateParams(year, dateRange);
                                             dateParams.forEach((v, k) => params.set(k, v));
-                                            
+
                                             return `${base}?${params.toString()}`;
                                         })()}
                                         className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -361,13 +361,13 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search, year, da
                         const base = `/${isLmia ? 'search/lmia' : 'search/hot-leads'}/all`;
                         const params = new URLSearchParams();
                         params.set('field', fieldParam); // searching by state/territory
-                        
+
                         if (region.key === 'atlantic') {
                             ATLANTIC_PROVINCES.forEach(p => params.append(fieldParam, p));
                         } else if (region.key !== 'canada' && region.key !== 'all') {
                             params.set(fieldParam, region.region);
                         }
-                        
+
                         return `${base}?${params.toString()}`;
                     })()}
                     className={`flex items-center gap-1 text-xs font-medium transition-colors ${theme.viewLink} ${theme.viewLinkHover}`}
@@ -422,9 +422,9 @@ function SourceToggle({ value, onChange }: { value: SourceFilter; onChange: (v: 
     );
 }
 
-function YearToggle({ value, onChange, isLmia, dateRange, onDateRangeChange }: { 
-    value: YearFilter; 
-    onChange: (v: YearFilter) => void; 
+function YearToggle({ value, onChange, isLmia, dateRange, onDateRangeChange }: {
+    value: YearFilter;
+    onChange: (v: YearFilter) => void;
     isLmia: boolean;
     dateRange: DateRange | undefined;
     onDateRangeChange: (range: DateRange | undefined) => void;
@@ -471,8 +471,8 @@ function YearToggle({ value, onChange, isLmia, dateRange, onDateRangeChange }: {
                             }}
                             className={cn(
                                 "px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-1.5",
-                                value === 'custom' 
-                                    ? (isLmia ? 'bg-orange-500 text-white shadow-sm' : 'bg-brand-600 text-white shadow-sm') 
+                                value === 'custom'
+                                    ? (isLmia ? 'bg-orange-500 text-white shadow-sm' : 'bg-brand-600 text-white shadow-sm')
                                     : 'text-gray-500 hover:text-gray-700'
                             )}
                         >
@@ -540,8 +540,8 @@ function ShareButton({ year, source, activeTab }: { year: string; source: string
             onClick={handleShare}
             title="Copy shareable link"
             className={`p-2 rounded-lg transition-all text-xs font-medium flex items-center gap-1.5 ${copied
-                    ? 'bg-brand-50 text-brand-600'
-                    : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+                ? 'bg-brand-50 text-brand-600'
+                : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
                 }`}
         >
             {copied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
@@ -574,7 +574,7 @@ export default function InDemandJobsPage() {
         }
         return undefined;
     });
-    
+
     // ─── Scroll logic ─────────────────────────────────────────────────────────
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -724,13 +724,13 @@ export default function InDemandJobsPage() {
                         <div className="flex flex-wrap items-center gap-3 py-2.5 border-b border-gray-100">
                             <SourceToggle value={source} onChange={setSource} />
                             <div className="w-px h-5 bg-gray-200 flex-shrink-0" />
-                             <YearToggle 
-                                value={year} 
-                                onChange={setYear} 
-                                isLmia={isLmia} 
+                            <YearToggle
+                                value={year}
+                                onChange={setYear}
+                                isLmia={isLmia}
                                 dateRange={dateRange}
                                 onDateRangeChange={setDateRange}
-                             />
+                            />
 
                             <div className="ml-auto flex items-center gap-2">
                                 {/* Timestamp */}
@@ -781,7 +781,7 @@ export default function InDemandJobsPage() {
                                     )}
                                 </AnimatePresence>
 
-                                <div 
+                                <div
                                     ref={scrollContainerRef}
                                     className="flex gap-1.5 overflow-x-auto no-scrollbar flex-1 py-1 px-1"
                                 >
@@ -790,8 +790,8 @@ export default function InDemandJobsPage() {
                                             key={tab.key}
                                             onClick={() => setActiveTab(tab.key)}
                                             className={`flex-shrink-0 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap border ${activeTab === tab.key
-                                                    ? `${theme.tabActive} border-transparent scale-[1.02]`
-                                                    : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-200'
+                                                ? `${theme.tabActive} border-transparent scale-[1.02]`
+                                                : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-200'
                                                 }`}
                                         >
                                             <span className="hidden sm:inline">{tab.label}</span>
@@ -879,7 +879,7 @@ export default function InDemandJobsPage() {
                                             <th className="w-10 text-center py-2.5 text-xs font-semibold text-white/50">#</th>
                                             <th className="text-left py-2.5 px-3 text-xs font-semibold text-white/60">NOC Code · Title</th>
 
-                                            <th className="text-right py-2.5 px-5 text-xs font-semibold text-white/60">No. Jobs ↑</th>
+                                            <th className="text-right py-2.5 px-5 text-xs font-semibold text-white/60">No. Jobs </th>
                                             <th className="w-8"></th>
                                         </tr>
                                     </thead>

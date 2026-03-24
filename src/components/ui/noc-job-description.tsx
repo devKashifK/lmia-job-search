@@ -289,7 +289,7 @@ export function NocJobDescription({
   const parsedDesc = parseJobDescription(job?.job_description);
 
   const jobData = {
-    title: nocProfile?.title || job?.job_title,
+    title: job?.job_title,
     company: job?.employer,
     location: `${job?.city}, ${job?.state}`,
     // Prefer salary extracted from JSON, then DB priority_occupation, then generic fallback
@@ -310,13 +310,16 @@ export function NocJobDescription({
       ? parsedDesc.requirements
       : (nocProfile?.employmentRequirements ?? []),
     companyLogoUrl: '/logo.svg',
-    // Additional Info: parsed → NOC additional info
-    additionalInfo: parsedDesc
+    // Additional Info: parsed → NOC additional info (filter out "how to apply")
+    additionalInfo: (parsedDesc
       ? parsedDesc.additionalInfo
-      : (nocProfile?.additionalInfo ?? []),
+      : (nocProfile?.additionalInfo ?? [])).filter(item => !item.toLowerCase().includes('how to apply')),
     // External link to original job posting (Job Bank etc.)
     jobUrl: parsedDesc?.jobUrl ?? null,
-    extraSections: parsedDesc?.extraSections ?? {},
+    // Dynamic Extra Sections (filter out "how to apply")
+    extraSections: Object.fromEntries(
+      Object.entries(parsedDesc?.extraSections ?? {}).filter(([key]) => !key.toLowerCase().includes('how to apply'))
+    ),
   };
 
   const goTo = (path: string) => router.push(path);
@@ -717,12 +720,12 @@ export function NocJobDescription({
                 {Object.entries(jobData.extraSections).map(([title, content], idx) => {
                   // Skip if empty or already handled
                   if (!content || (Array.isArray(content) && content.length === 0)) return null;
-                  
+
                   // Limit the number of dynamic sections to avoid overwhelming
                   if (idx > 10) return null;
 
                   const items = Array.isArray(content) ? content : [content];
-                  
+
                   return (
                     <motion.div
                       key={title}
