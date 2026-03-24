@@ -37,10 +37,12 @@ export async function getProvinces(): Promise<string[]> {
         return [];
     }
 
-    const provinces = ((data as Province[]) ?? []).map(p => {
-        const name = p.province.trim();
-        return PROVINCE_NORM[name] || name;
-    });
+    const provinces = ((data as Province[]) ?? [])
+        .map(p => {
+            const name = p.province.trim();
+            return PROVINCE_NORM[name] || name;
+        })
+        .filter(name => name !== 'Foreign Employers');
 
     // Deduplicate normalized names
     return Array.from(new Set(provinces)).sort();

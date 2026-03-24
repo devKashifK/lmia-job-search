@@ -79,7 +79,7 @@ export default function Footer() {
             <Link href="/terms" className="hover:text-gray-600 transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-gray-600 transition-colors">Privacy</Link>
             <Link href="/security" className="hover:text-gray-600 transition-colors">Security</Link>
-            <Link href="/sitemap" className="hover:text-gray-600 transition-colors">Sitemap</Link>
+            <Link href="/sitemap.xml" className="hover:text-gray-600 transition-colors">Sitemap</Link>
             <Link href="/cookies" className="hover:text-gray-600 transition-colors">Cookies</Link>
           </div>
         </div>

@@ -117,19 +117,6 @@ export function SearchPageHeader({
         router.push(`${pathname}?${newSearchParams.toString()}`);
     };
 
-    const switchSearchType = (type: 'hot_leads' | 'lmia') => {
-        if (type === currentSearchType) return;
-        
-        const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
-        newSearchParams.set('t', type === 'hot_leads' ? 'trending_job' : 'lmia');
-        newSearchParams.set('page', '1');
-        
-        // Re-construct the path
-        const searchTerm = pathname.split('/').pop() || 'all';
-        const newPath = `/search/${type === 'hot_leads' ? 'hot-leads' : 'lmia'}/${searchTerm}`;
-        
-        router.push(`${newPath}?${newSearchParams.toString()}`);
-    };
 
     const clearFilters = () => {
         const newSearchParams = new URLSearchParams();
@@ -213,31 +200,6 @@ export function SearchPageHeader({
 
                             {/* Metadata Row: Source • Field • Count */}
                             <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-500">
-                                <div className="flex items-center bg-gray-100 rounded-full p-0.5 border border-gray-200">
-                                    <button 
-                                        onClick={() => switchSearchType('hot_leads')}
-                                        className={cn(
-                                            "px-2 py-0.5 rounded-full transition-all text-[10px] font-bold uppercase tracking-tight",
-                                            currentSearchType === 'hot_leads' 
-                                                ? "bg-white text-emerald-600 shadow-sm" 
-                                                : "text-gray-400 hover:text-gray-600"
-                                        )}
-                                    >
-                                        Trending
-                                    </button>
-                                    <button 
-                                        onClick={() => switchSearchType('lmia')}
-                                        className={cn(
-                                            "px-2 py-0.5 rounded-full transition-all text-[10px] font-bold uppercase tracking-tight",
-                                            currentSearchType === 'lmia' 
-                                                ? "bg-white text-brand-600 shadow-sm" 
-                                                : "text-gray-400 hover:text-gray-600"
-                                        )}
-                                    >
-                                        LMIA
-                                    </button>
-                                </div>
-                                <span className="text-gray-300 mx-0.5">•</span>
                                 <span>
                                     {count !== undefined ? `${count.toLocaleString()} results found` : 'Results'}
                                 </span>

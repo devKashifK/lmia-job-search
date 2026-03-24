@@ -79,6 +79,7 @@ interface NocJobDescriptionProps {
   isSaved?: boolean;
   className?: string;
   searchType?: string;
+  isSelected?: boolean;
 }
 
 async function fetchNocProfile(code: string): Promise<NocProfile | null> {
@@ -183,6 +184,7 @@ export function NocJobDescription({
   isSaved = false,
   className = '',
   searchType,
+  isSelected = false,
 }: NocJobDescriptionProps) {
   const { session } = useSession();
   const router = useRouter();
@@ -388,7 +390,10 @@ export function NocJobDescription({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <div className="relative rounded-2xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 p-0.5 shadow-xl shadow-brand-500/10">
+              <div className={`relative rounded-2xl p-0.5 shadow-xl transition-all duration-300 ${isSelected
+                ? 'bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 ring-2 ring-brand-500 ring-offset-2'
+                : 'bg-gradient-to-br from-brand-600 via-brand-700 to-brand-900 shadow-brand-500/10'
+                }`}>
                 <div className="relative overflow-hidden rounded-[14px] bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800">
                   <div className="absolute inset-0 opacity-30">
                     <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" />
@@ -445,6 +450,12 @@ export function NocJobDescription({
                                 </TooltipContent>
                               </Tooltip>
                             </div>
+                            {isSelected && (
+                              <Badge className="bg-emerald-500/90 hover:bg-emerald-600 text-white border-0 shadow-lg shadow-emerald-500/20 text-[10px] py-0 px-2 h-5 flex items-center gap-1">
+                                <Check className="w-2.5 h-2.5" />
+                                Selected
+                              </Badge>
+                            )}
                           </div>
                         </div>
 

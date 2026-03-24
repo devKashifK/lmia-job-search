@@ -99,8 +99,8 @@ export function JobListItem({
     return (
         <div
             className={`group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 relative overflow-hidden rounded-xl border mb-3 mx-2 ${isSelected
-                ? 'bg-gradient-to-br from-brand-50 to-white border-brand-500/30 shadow-md ring-1 ring-brand-500/20'
-                : 'bg-white border-transparent hover:border-brand-200/50'
+                ? 'bg-gradient-to-br from-brand-50/80 to-white border-brand-500/40 shadow-md ring-1 ring-brand-500/30 border-l-4 border-l-brand-600'
+                : 'bg-white border-transparent hover:border-brand-200/50 border-l-4 border-l-transparent'
                 }`}
             onClick={() => onSelect(job)}
         >

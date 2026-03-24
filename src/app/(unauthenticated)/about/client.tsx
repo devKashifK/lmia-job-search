@@ -5,7 +5,7 @@ import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { motion } from 'framer-motion';
-import { Users, Target, Globe2, Sparkles, ArrowRight, BookOpen, Briefcase, Award } from 'lucide-react';
+import { Users, Target, Globe2, Sparkles, ArrowRight, BookOpen, Briefcase, Award, Globe, Zap, Shield } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 

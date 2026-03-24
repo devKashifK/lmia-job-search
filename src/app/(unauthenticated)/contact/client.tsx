@@ -123,8 +123,7 @@ export default function ContactPage() {
                   Come say hello at our office.
                 </p>
                 <div className="text-gray-900 font-bold text-sm">
-                  Little Russel St, Kolkata <br />
-                  <span className="text-gray-500 font-normal">West Bengal 700071</span>
+                  2124 Broad Street, Regina, Saskatchewan, S4P 1Y5, Canada <br />
                 </div>
               </motion.div>
             </div>

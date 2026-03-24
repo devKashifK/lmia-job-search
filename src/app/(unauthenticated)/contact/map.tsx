@@ -39,8 +39,7 @@ export default function Map() {
         <div class="text-center">
           <h3 class="font-semibold">Job Maze London Office</h3>
           <p class="text-sm text-gray-600">
-            Kankaria Estate, 6, Little Russel St, Maidan, Midleton Row, Park Street area, <br/>
-            Kolkata, West Bengal 700071
+            2124 Broad Street, Regina, Saskatchewan, S4P 1Y5, Canada
           </p>
         </div>
       `);

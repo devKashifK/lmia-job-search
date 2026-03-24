@@ -762,6 +762,7 @@ export function NewDataPanel({
                     isSaved={isJobSaved}
                     className=""
                     searchType={searchType}
+                    isSelected={true}
                   />
                 </div>
               </DrawerContent>
@@ -800,6 +801,7 @@ export function NewDataPanel({
                 isSaved={isJobSaved}
                 className="h-full"
                 searchType={searchType}
+                isSelected={true}
               />
             </div>
           </>
