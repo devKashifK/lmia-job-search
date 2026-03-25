@@ -90,6 +90,7 @@ import {
   LayoutDashboard,
   CreditCard,
   ArrowUpDown,
+  Info,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
@@ -97,6 +98,17 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
 import { Icon } from '@iconify/react/dist/iconify.js';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { AnalysisDetailDialog } from '@/components/analytics/analysis-detail-dialog';
@@ -928,17 +940,28 @@ function CompanyAnalysisContent({
 }: {
   params: Promise<{ name: string }>;
 }) {
+  const [infoDialog, setInfoDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    concept: string;
+    logic: string;
+  }>({
+    isOpen: false,
+    title: '',
+    concept: '',
+    logic: '',
+  });
   const resolvedParams = use(params);
   const searchParams = useSearchParams();
-  
+
   // 1. Robust company name extraction (matching layout/page metadata logic)
   const companyName = useMemo(() => {
     const exactValue = searchParams?.get('value');
     const rawName = resolvedParams.name;
-    
+
     // First try the 'value' param if provided (usually the cleanest database match)
     const nameToDecode = exactValue || rawName;
-    
+
     try {
       let decoded = decodeURIComponent(nameToDecode);
       // Handle potential double encoding (if it still looks like a URL segment)
@@ -1004,7 +1027,7 @@ function CompanyAnalysisContent({
     const dateFrom = searchParams?.get('date_from') || undefined;
     const dateTo = searchParams?.get('date_to') || undefined;
     const location = searchParams?.getAll('location') || [];
-    
+
     // Support both 'job_title' (standard) and 'jobTitle' (legacy/legacy-external)
     const jobTitleFromUrl = searchParams?.getAll('job_title') || [];
     const jobTitleCamel = searchParams?.getAll('jobTitle') || [];
@@ -1014,7 +1037,7 @@ function CompanyAnalysisContent({
     const nocFromUrl = searchParams?.getAll('noc') || [];
     const nocCodeFromUrl = searchParams?.getAll('noc_code') || [];
     const nocCode = [...nocFromUrl, ...nocCodeFromUrl].filter(Boolean);
-    
+
     const category = searchParams?.getAll('category') || [];
     const program = searchParams?.getAll('program') || [];
     const city = searchParams?.getAll('city') || [];
@@ -1250,8 +1273,8 @@ function CompanyAnalysisContent({
           .sort((a, b) => b.value - a.value)
         : [];
 
-      const categoryData = filters.searchType === 'hot_leads' 
-        ? fullCategoryData.slice(0, 10) 
+      const categoryData = filters.searchType === 'hot_leads'
+        ? fullCategoryData.slice(0, 10)
         : undefined;
 
       const priorityOccupationData =
@@ -1276,7 +1299,7 @@ function CompanyAnalysisContent({
       const recentYears = timeData.slice(-2);
       const prevCount = recentYears[0]?.count || 0;
       const currCount = recentYears[1]?.count || 0;
-      
+
       const growthRate =
         recentYears.length === 2 && prevCount > 0
           ? ((currCount - prevCount) / prevCount) * 100
@@ -2298,8 +2321,8 @@ function CompanyAnalysisContent({
 
                   {/* Quick Stats Cards - Compact */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4 relative z-10">
-                    <Dialog 
-                      open={detailDialog.type !== null} 
+                    <Dialog
+                      open={detailDialog.type !== null}
                       onOpenChange={(open) => {
                         if (!open) {
                           setDetailDialog({ type: null, title: '' });
@@ -2310,7 +2333,7 @@ function CompanyAnalysisContent({
                     >
                       <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white border-0 shadow-2xl rounded-2xl">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-emerald-500 to-purple-500 z-50" />
-                        
+
                         <DialogHeader className="p-6 pb-2 bg-gray-50/50">
                           <div className="flex items-center justify-between mb-1">
                             <DialogTitle className="text-xl font-bold flex items-center gap-3 text-gray-900 tracking-tight">
@@ -2395,7 +2418,7 @@ function CompanyAnalysisContent({
                                     else if (detailDialog.type === 'cities') list = [...(analysisData.fullCityData || [])];
                                     else if (detailDialog.type === 'categories') list = [...(analysisData.fullCategoryData || [])];
                                     else if (detailDialog.type === 'jobTitles') list = [...(analysisData.fullJobTitleData || [])];
-                                    
+
                                     let filtered = list.filter((item: any) => {
                                       const text = (item.job_title || item.name || item.title || item.city || '').toLowerCase();
                                       return text.includes(dialogSearch.toLowerCase());
@@ -2404,7 +2427,7 @@ function CompanyAnalysisContent({
                                     if (sortConfig) {
                                       filtered.sort((a: any, b: any) => {
                                         let aVal: any, bVal: any;
-                                        
+
                                         if (sortConfig.key === 'count') {
                                           aVal = a.value || a.count || 0;
                                           bVal = b.value || b.count || 0;
@@ -2466,7 +2489,7 @@ function CompanyAnalysisContent({
                                             <TableCell className="py-3 px-4 text-right">
                                               <div className="inline-flex items-center gap-3">
                                                 <div className="h-1 w-16 bg-gray-100 rounded-full overflow-hidden hidden sm:block">
-                                                  <div 
+                                                  <div
                                                     className="h-full bg-brand-500 rounded-full"
                                                     style={{ width: `${Math.min(100, ((item.value || item.count || 0) / (analysisData.totalJobs || 100)) * 100)}%` }}
                                                   />
@@ -2486,7 +2509,50 @@ function CompanyAnalysisContent({
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <button 
+
+                    {/* Info Dialog */}
+                    <Dialog 
+                      open={infoDialog.isOpen} 
+                      onOpenChange={(open) => setInfoDialog(prev => ({ ...prev, isOpen: open }))}
+                    >
+                      <DialogContent className="max-w-sm bg-white/95 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-3xl p-0 overflow-hidden outline-none ring-0">
+                        <div className="h-1.5 bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-600 animate-gradient-x" />
+                        <div className="p-5 space-y-4">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-brand-50 rounded-xl ring-1 ring-brand-100">
+                              <Info className="w-4 h-4 text-brand-600" />
+                            </div>
+                            <DialogTitle className="text-base font-bold text-gray-900 tracking-tight">
+                              {infoDialog.title}
+                            </DialogTitle>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <div className="space-y-1">
+                              <p className="text-[10px] font-bold text-brand-600 uppercase tracking-widest opacity-80">Core Concept</p>
+                              <p className="text-xs text-gray-700 leading-relaxed font-medium">
+                                {infoDialog.concept}
+                              </p>
+                            </div>
+                            
+                            <div className="p-3 bg-gray-50/80 rounded-2xl border border-gray-100/50">
+                              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Calculation & Logic</p>
+                              <p className="text-[11px] text-gray-600 leading-relaxed italic">
+                                {infoDialog.logic}
+                              </p>
+                            </div>
+                          </div>
+
+                          <Button 
+                            onClick={() => setInfoDialog(prev => ({ ...prev, isOpen: false }))}
+                            className="w-full bg-gray-900 hover:bg-black text-white text-xs h-9 rounded-xl shadow-sm transition-all active:scale-[0.98]"
+                          >
+                            Close
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    <button
                       className="text-left w-full h-full appearance-none transition-transform active:scale-[0.98] outline-none"
                       onClick={() => {
                         console.log('Total Jobs clicked');
@@ -2507,7 +2573,7 @@ function CompanyAnalysisContent({
                       </Card>
                     </button>
 
-                    <button 
+                    <button
                       className="text-left w-full h-full appearance-none transition-transform active:scale-[0.98] outline-none"
                       onClick={() => setDetailDialog({ type: 'cities', title: 'Cities Analysis' })}
                     >
@@ -2527,7 +2593,7 @@ function CompanyAnalysisContent({
                       </Card>
                     </button>
 
-                    <button 
+                    <button
                       className="text-left w-full h-full appearance-none transition-transform active:scale-[0.98] outline-none"
                       onClick={() => setDetailDialog({ type: 'categories', title: 'Categories Analysis' })}
                     >
@@ -2545,7 +2611,7 @@ function CompanyAnalysisContent({
                       </Card>
                     </button>
 
-                    <button 
+                    <button
                       className="text-left w-full h-full appearance-none transition-transform active:scale-[0.98] outline-none"
                       onClick={() => setDetailDialog({ type: 'jobTitles', title: 'Job Titles Analysis' })}
                     >
@@ -2804,18 +2870,41 @@ function CompanyAnalysisContent({
                   ) : (
                     <>
                       {/* Key Metrics */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                      <motion.div 
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6"
+                      >
+                        <MetricCard
+                          label={'Total Jobs'}
+                          value={analysisData?.totalJobs || 0}
+                          subtitle={'Total unique records'}
+                          icon={'material-symbols:work-outline'}
+                          onInfoClick={() => setInfoDialog({
+                            isOpen: true,
+                            title: 'Total Job Volume',
+                            concept: 'Deduplicated volume of unique hiring opportunities.',
+                            logic: 'This represents unique job postings identified through our multi-source ingestion engine. We apply advanced deduplication logic to ensure that a single job advertisement across multiple boards is counted as one unique opportunity.'
+                          })}
+                        />
                         <MetricCard
                           label={'Growth Rate'}
                           value={
                             analysisData?.trends.growthRate
-                              ? analysisData.trends.growthRate > 999 
-                                ? '>999%' 
+                              ? analysisData.trends.growthRate > 999
+                                ? '>999%'
                                 : `${analysisData.trends.growthRate > 0 ? '+' : ''}${analysisData.trends.growthRate.toFixed(1)}%`
                               : 'N/A'
                           }
                           subtitle={analysisData?.trends.isLowVolume ? 'Limited data points' : 'Year-over-year change'}
                           icon={'material-symbols:trending-up'}
+                          onInfoClick={() => setInfoDialog({
+                            isOpen: true,
+                            title: 'Growth Momentum',
+                            concept: 'Measuring recruiting volume changes between the two most recent periods found in our dataset.',
+                            logic: "Calculated as ((Current - Previous) / Previous) * 100. We apply a smoothed algorithm for low-volume data (base < 5) to prevent extreme mathematical spikes. Growth is displayed up to 999% for clarity."
+                          })}
                         />
                         <MetricCard
                           label={'Top Location'}
@@ -2825,16 +2914,40 @@ function CompanyAnalysisContent({
                             : 'state'
                             }`}
                           icon={'material-symbols:add-location-alt'}
+                          onInfoClick={() => setInfoDialog({
+                            isOpen: true,
+                            title: 'Primary Hiring Hub',
+                            concept: 'Main geographic area for recruitment activity.',
+                            logic: 'Identifies the hub with the highest concentration of active hiring. Data is aggregated across all integrated sources including Job Bank, private boards, and direct data feeds.'
+                          })}
                         />
                         <MetricCard
                           label={'Top NOC Code'}
                           value={analysisData?.trends.topNocCode || 'N/A'}
                           subtitle={'Most frequent NOC code'}
                           icon={'line-md:hash-small'}
+                          onInfoClick={() => setInfoDialog({
+                            isOpen: true,
+                            title: 'Occupational Footprint',
+                            concept: "Canada's National Occupational Classification (NOC) system mapping.",
+                            logic: "Our AI maps each job record to a 5-digit NOC code. This Represents the specialized category where the employer has the deepest recruitment needs and core talent requirements."
+                          })}
+                        />
+                        <MetricCard
+                          label={'Common Role'}
+                          value={analysisData?.trends.commonTitle || 'N/A'}
+                          subtitle={'Most frequent job title'}
+                          icon={'material-symbols:person-outline'}
+                          onInfoClick={() => setInfoDialog({
+                            isOpen: true,
+                            title: 'Role Archetype',
+                            concept: 'Most frequent core role identified from normalized job titles.',
+                            logic: "We normalize hundreds of title variations (e.g., 'Sr. Software Engineer' and 'Software Dev II') into core archetypes to identify the single most frequent role sought by the employer."
+                          })}
                         />
 
                         {filters.searchType === 'lmia' &&
-                          analysisData?.trends.averagePositions ? (
+                          analysisData?.trends.averagePositions && (
                           <MetricCard
                             label={'Avg. Positions'}
                             value={analysisData.trends.averagePositions.toFixed(
@@ -2842,16 +2955,15 @@ function CompanyAnalysisContent({
                             )}
                             subtitle={'Per LMIA application'}
                             icon={'solar:suitcase-line-duotone'}
-                          />
-                        ) : (
-                          <MetricCard
-                            label={'Common Role'}
-                            value={analysisData?.trends.commonTitle || 'N/A'}
-                            subtitle={'Most frequent job title'}
-                            icon={'solar:suitcase-line-duotone'}
+                            onInfoClick={() => setInfoDialog({
+                              isOpen: true,
+                              title: 'Hiring Capacity',
+                              concept: 'Scale of regulatory approval per application.',
+                              logic: "For LMIA-based listings, we calculate the average number of approved positions per application. This reflects the scale of individual recruitment efforts authorized by the government for this employer."
+                            })}
                           />
                         )}
-                      </div>
+                      </motion.div>
 
                       {/* Wage Analysis Section */}
                       {analysisData?.trends.topNocCode && (
@@ -2860,12 +2972,23 @@ function CompanyAnalysisContent({
                             noc={analysisData.trends.topNocCode}
                             province={analysisData.trends.popularLocation}
                             title={analysisData.trends.commonTitle || `Typical Role at ${companyName}`}
+                            onInfoClick={() => setInfoDialog({
+                              isOpen: true,
+                              title: 'Wage Benchmarking',
+                              concept: 'Economic positioning against regional market standards.',
+                              logic: 'We aggregate salary data from Job Bank Canada and specific LMIA employer records for this NOC and region. This provides a comparative baseline (Entry, Median, and Top) to help you understand where this specific job sits within the professional landscape.'
+                            })}
                           />
                         </div>
                       )}
 
                       {/* Two Column Charts - Location & Cities */}
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      <motion.div 
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"
+                      >
                         <div id="chart-location-distribution">
                           <DashboardCard
                             title="Location Distribution"
@@ -2922,10 +3045,15 @@ function CompanyAnalysisContent({
                             />
                           </DashboardCard>
                         </div>
-                      </div>
+                      </motion.div>
 
                       {/* Two Column Charts - NOC Codes & Categories */}
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      <motion.div 
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"
+                      >
                         <div id="chart-noc-codes">
                           <DashboardCard
                             title="NOC Code Distribution"
@@ -2978,10 +3106,14 @@ function CompanyAnalysisContent({
                             />
                           </DashboardCard>
                         </div>
-                      </div>
+                      </motion.div>
 
-                      {/* Full Width Chart - Job Titles */}
-                      <div className="grid grid-cols-1 gap-4">
+                      <motion.div 
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 gap-4"
+                      >
                         <div id="chart-job-titles">
                           <DashboardCard
                             title="Top Job Titles"
@@ -3007,10 +3139,14 @@ function CompanyAnalysisContent({
                             />
                           </DashboardCard>
                         </div>
-                      </div>
+                      </motion.div>
 
-                      {/* Full Width Chart - Hiring Trends */}
-                      <div className="grid grid-cols-1 gap-4">
+                      <motion.div 
+                        variants={staggerContainer}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 gap-4"
+                      >
                         <div id="chart-hiring-trends">
                           <DashboardCard
                             title="Hiring Trends Over Time"
@@ -3024,7 +3160,7 @@ function CompanyAnalysisContent({
                             />
                           </DashboardCard>
                         </div>
-                      </div>
+                      </motion.div>
                     </>
                   )}
                 </div>
@@ -3234,133 +3370,78 @@ const MetricCard = ({
   value,
   subtitle,
   icon: Icon,
+  onInfoClick,
 }: {
   label: string;
   value: string | number;
   subtitle?: string;
   icon?: any;
+  onInfoClick?: () => void;
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -3 }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      className="group"
     >
-      <Card className="group bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 transition-all duration-300 overflow-hidden relative">
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-500/0 via-brand-500/0 to-brand-500/0 group-hover:from-brand-500/5 group-hover:via-brand-500/5 group-hover:to-brand-500/10 transition-all duration-500" />
-
-        {/* Top accent line */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
-
-        <CardContent className="p-4 relative">
-          <div className="flex items-start justify-between mb-3">
+      <Card className="h-full bg-white/70 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(25,118,210,0.12)] ring-1 ring-brand-50/50 transition-all duration-500 rounded-3xl overflow-hidden relative">
+        {/* Modern glowing effect */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        
+        <CardContent className="p-5 relative z-10 flex flex-col h-full">
+          <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+              <div className="flex items-center gap-2 mb-1.5 translate-y-0.5">
+                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">
                   {label}
                 </p>
-                {label === 'Growth Rate' && (
-                  <motion.div
-                    animate={{ rotate: value?.toString().includes('+') ? 0 : 180 }}
-                    transition={{ duration: 0.5 }}
+                {onInfoClick && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onInfoClick();
+                    }}
+                    className="p-1 hover:bg-brand-50 rounded-full transition-colors group/info"
                   >
-                    <TrendingUp
-                      className={`w-3 h-3 ${value?.toString().includes('+') ? 'text-green-500' : 'text-red-500'
-                        }`}
-                    />
-                  </motion.div>
+                    <Info className="w-3 h-3 text-gray-300 group-hover/info:text-brand-600 transition-colors" />
+                  </button>
                 )}
               </div>
-              <motion.p
-                className="text-xl font-bold text-gray-900 group-hover:text-brand-700 transition-colors"
-                initial={{ scale: 0.9 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-              >
-                {value}
-              </motion.p>
+              
+              <div className="flex items-baseline gap-2">
+                <motion.p
+                  className="text-3xl font-black text-gray-900 group-hover:text-brand-600 transition-colors tracking-tight"
+                >
+                  {value}
+                </motion.p>
+                {label === 'Growth Rate' && (
+                  <div className={cn(
+                    "flex items-center gap-0.5 text-xs font-bold px-1.5 py-0.5 rounded-full",
+                    value?.toString().includes('+') ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"
+                  )}>
+                    <motion.div
+                      animate={{ rotate: value?.toString().includes('+') ? 0 : 180 }}
+                    >
+                      <TrendingUp className="w-3 h-3" />
+                    </motion.div>
+                  </div>
+                )}
+              </div>
             </div>
-            <motion.div
-              className="p-2 bg-gradient-to-br from-brand-50 to-brand-100/80 rounded-lg ring-1 ring-brand-200/40 group-hover:ring-brand-400/50 group-hover:shadow-md transition-all"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Icon
-                className="w-4 h-4 text-brand-600 group-hover:text-brand-700"
-              />
-            </motion.div>
+            
+            <div className="p-3 bg-gradient-to-br from-brand-50 to-brand-100/50 rounded-2xl ring-1 ring-brand-200/20 group-hover:ring-brand-500/30 group-hover:shadow-[0_0_20px_rgba(25,118,210,0.1)] transition-all duration-500">
+              <div className="text-brand-600">
+                <Icon width={24} height={24} />
+              </div>
+            </div>
           </div>
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 group-hover:text-gray-600 transition-colors">
+          
+          <div className="mt-auto pt-2 border-t border-gray-50/50">
+            <p className="text-xs font-medium text-gray-400 group-hover:text-gray-600 transition-colors line-clamp-1">
               {subtitle}
             </p>
-            {/* Contextual status indicator */}
-            {label === 'Growth Rate' && (
-              <motion.div
-                className="flex items-center gap-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <div
-                  className={`w-1.5 h-1.5 rounded-full ${value?.toString().includes('+')
-                    ? 'bg-green-500'
-                    : value?.toString().includes('-')
-                      ? 'bg-red-500'
-                      : 'bg-gray-400'
-                    }`}
-                />
-                <span
-                  className={`text-xs font-medium ${value?.toString().includes('+')
-                    ? 'text-green-600'
-                    : value?.toString().includes('-')
-                      ? 'text-red-600'
-                      : 'text-gray-500'
-                    }`}
-                >
-                  {value?.toString().includes('+')
-                    ? 'Growing'
-                    : value?.toString().includes('-')
-                      ? 'Declining'
-                      : 'Stable'}
-                </span>
-              </motion.div>
-            )}
-            {label === 'Top Location' && (
-              <motion.div
-                className="flex items-center gap-1 text-brand-600"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <MapPin className="w-3 h-3" />
-                <span className="text-xs font-medium">Primary</span>
-              </motion.div>
-            )}
-            {label === 'Top NOC Code' && (
-              <motion.div
-                className="flex items-center gap-1 text-brand-600"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Hash className="w-3 h-3" />
-                <span className="text-xs font-medium">Popular</span>
-              </motion.div>
-            )}
-            {(label === 'Avg. Positions' || label === 'Common Role') && (
-              <motion.div
-                className="flex items-center gap-1 text-brand-600"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Briefcase className="w-3 h-3" />
-                <span className="text-xs font-medium">Key Metric</span>
-              </motion.div>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -3383,64 +3464,51 @@ const DashboardCard = ({
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ y: -4 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       <Card
-        className={`group bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 transition-all duration-400 flex flex-col overflow-hidden relative ${className}`}
+        className={cn(
+          "group bg-white/70 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(25,118,210,0.08)] ring-1 ring-brand-50/50 transition-all duration-500 rounded-[2rem] flex flex-col overflow-hidden relative",
+          className
+        )}
       >
-        {/* Animated gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-500/0 via-brand-500/0 to-brand-500/0 group-hover:from-brand-500/3 group-hover:via-brand-500/2 group-hover:to-brand-500/5 transition-all duration-600" />
+        {/* Glow effect */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
-        {/* Top accent line */}
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-500 via-brand-600 to-brand-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-600" />
+        <CardHeader className="flex flex-row items-center gap-4 px-6 py-5 flex-shrink-0 relative z-10">
+          <div className="p-3 bg-gradient-to-br from-brand-50 to-brand-100/50 rounded-2xl ring-1 ring-brand-200/20 group-hover:ring-brand-500/30 transition-all duration-500">
+            <Icon className="w-5 h-5 text-brand-600" />
+          </div>
 
-        <CardHeader className="flex items-start gap-1 px-6 py-2 flex-shrink-0 relative">
-          <motion.div
-            className="p-1.5 bg-gradient-to-br from-brand-50 to-brand-100/60 rounded-lg ring-1 ring-brand-200/30 group-hover:ring-brand-300/50 transition-all duration-300"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.div
-              animate={{
-                rotate: [0, 5, -5, 0],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                repeatType: 'reverse',
-              }}
-            >
-              <Icon className="w-3.5 h-3.5 text-brand-600 group-hover:text-brand-700 transition-colors" />
-            </motion.div>
-          </motion.div>
           <div className="flex-1 min-w-0">
             <motion.h3
-              className="text-xs font-bold text-gray-900 group-hover:text-brand-700 transition-colors"
+              className="text-sm font-bold text-gray-900 group-hover:text-brand-700 transition-colors"
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
             >
               {title}
             </motion.h3>
-            <motion.p
-              className="text-[10px] text-gray-500 group-hover:text-gray-600 transition-colors mt-0.5"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              {subtitle}
-            </motion.p>
+            {subtitle && (
+              <motion.p
+                className="text-[10px] text-gray-500 group-hover:text-gray-600 transition-colors mt-0.5"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                {subtitle}
+              </motion.p>
+            )}
           </div>
 
           {/* Contextual action indicator */}
           <motion.div
             className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
+            animate={{ scale: 1 }}
             transition={{ delay: 0.3 }}
           >
             <div className="flex items-center gap-0.5 text-[10px] text-brand-600">

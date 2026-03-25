@@ -17,6 +17,7 @@ interface WageVisualizationProps {
     province?: string;
     currentWage?: number; // Hourly wage
     title?: string;
+    onInfoClick?: () => void;
 }
 
 interface WageStats {
@@ -29,7 +30,7 @@ interface WageStats {
     noc_code: string;
 }
 
-export function WageVisualization({ noc, province, currentWage, title }: WageVisualizationProps) {
+export function WageVisualization({ noc, province, currentWage, title, onInfoClick }: WageVisualizationProps) {
     const [stats, setStats] = useState<WageStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -115,16 +116,28 @@ export function WageVisualization({ noc, province, currentWage, title }: WageVis
                 <div>
                     <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
                         Wage Analysis
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Info className="h-4 w-4 text-gray-400" />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    Based on {stats.sample_size} approved LMIA applications for NOC {noc} in {province || 'Canada'}.
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                        {onInfoClick ? (
+                            <button 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onInfoClick();
+                                }}
+                                className="p-1 hover:bg-gray-100 rounded-full transition-colors group/info"
+                            >
+                                <Info className="h-4 w-4 text-gray-400 group-hover/info:text-brand-600" />
+                            </button>
+                        ) : (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <Info className="h-4 w-4 text-gray-400" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        Based on {stats.sample_size} approved LMIA applications for NOC {noc} in {province || 'Canada'}.
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        )}
                     </h3>
                     <p className="text-sm text-gray-500 mt-1">
                         Comparing <span className="font-medium text-gray-700">{title || 'this job'}</span> against market rates using {stats.sample_size} records.
