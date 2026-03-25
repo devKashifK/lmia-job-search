@@ -228,7 +228,7 @@ export function NocJobDescription({
         router.push(
           `/analysis/${encodeURIComponent(
             job.employer
-          )}?t=trending_job&jobTitle=${encodeURIComponent(
+          )}?t=trending_job&job_title=${encodeURIComponent(
             job.job_title ?? ''
           )}&location=${encodeURIComponent(
             job.state
@@ -240,7 +240,7 @@ export function NocJobDescription({
         router.push(
           `/analysis/${encodeURIComponent(
             job.employer
-          )}?t=lmia&jobTitle=${encodeURIComponent(
+          )}?t=lmia&job_title=${encodeURIComponent(
             job.job_title ?? ''
           )}&location=${encodeURIComponent(
             job.state

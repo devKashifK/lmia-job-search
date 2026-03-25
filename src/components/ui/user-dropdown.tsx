@@ -20,23 +20,37 @@ export default function UserDropdown({ className }: { className?: string }) {
   const { session } = useSession();
   const { toast } = useToast();
 
+  if (!session?.user) return null;
+
   const handleSignOut = async () => {
     try {
       localStorage.removeItem('brandColor');
       const { error } = await db.auth.signOut();
-      if (error) {
+      
+      // If there's an error, check if it's "Auth session missing!"
+      // and treat it as a success for the purpose of the redirect.
+      if (error && error.message !== 'Auth session missing!') {
         toast({
           title: 'Error',
           description: error.message,
           variant: 'destructive',
         });
-      } else {
-        toast({
-          title: 'Success',
-          description: 'Signed out successfully',
-        });
-        window.location.href = '/';
+        return; // Don't redirect if it's a real error (like network)
       }
+
+      // Force a manual local clear of any remaining Supabase session data
+      // This is a safety measure in case the SDK fails to clear it due to an error.
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      toast({
+        title: 'Success',
+        description: 'Signed out successfully',
+      });
+      window.location.href = '/';
     } catch (err: unknown) {
       toast({
         title: 'Error',
@@ -46,8 +60,8 @@ export default function UserDropdown({ className }: { className?: string }) {
     }
   };
 
-  const userName = session?.user?.user_metadata?.name || session?.user?.email?.split('@')[0] || 'User';
-  const userEmail = session?.user?.email || '';
+  const userName = session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User';
+  const userEmail = session.user.email || '';
   const userInitials = userName
     .split(' ')
     .map((n: string) => n[0])

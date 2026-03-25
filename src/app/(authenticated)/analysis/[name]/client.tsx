@@ -922,7 +922,27 @@ function CompanyAnalysisContent({
 }) {
   const resolvedParams = use(params);
   const searchParams = useSearchParams();
-  const companyName = decodeURIComponent(resolvedParams.name);
+  
+  // 1. Robust company name extraction (matching layout/page metadata logic)
+  const companyName = useMemo(() => {
+    const exactValue = searchParams?.get('value');
+    const rawName = resolvedParams.name;
+    
+    // First try the 'value' param if provided (usually the cleanest database match)
+    const nameToDecode = exactValue || rawName;
+    
+    try {
+      let decoded = decodeURIComponent(nameToDecode);
+      // Handle potential double encoding (if it still looks like a URL segment)
+      if (decoded.includes('%')) {
+        decoded = decodeURIComponent(decoded);
+      }
+      return decoded;
+    } catch (e) {
+      return nameToDecode; // Fallback to raw if decoding fails
+    }
+  }, [resolvedParams.name, searchParams]);
+
   const router = useRouter();
   const { isMobile } = useMobile();
 
@@ -964,11 +984,17 @@ function CompanyAnalysisContent({
     const dateFrom = searchParams?.get('date_from') || undefined;
     const dateTo = searchParams?.get('date_to') || undefined;
     const location = searchParams?.getAll('location') || [];
-    const jobTitle = searchParams?.getAll('job_title') || [];
+    
+    // Support both 'job_title' (standard) and 'jobTitle' (legacy/legacy-external)
+    const jobTitleFromUrl = searchParams?.getAll('job_title') || [];
+    const jobTitleCamel = searchParams?.getAll('jobTitle') || [];
+    const jobTitle = [...jobTitleFromUrl, ...jobTitleCamel].filter(Boolean);
+
     // Support both 'noc' and 'noc_code' parameter names
     const nocFromUrl = searchParams?.getAll('noc') || [];
     const nocCodeFromUrl = searchParams?.getAll('noc_code') || [];
     const nocCode = [...nocFromUrl, ...nocCodeFromUrl].filter(Boolean);
+    
     const category = searchParams?.getAll('category') || [];
     const program = searchParams?.getAll('program') || [];
     const city = searchParams?.getAll('city') || [];

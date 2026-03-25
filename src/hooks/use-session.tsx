@@ -17,7 +17,7 @@ import { useTrial } from '@/context/trail';
 // }
 
 interface SessionContextType {
-  session: any | null;
+  session: any | null; // This will always be the REAL Supabase session
   loading: boolean;
   isTrialActive: boolean;
   setIsTrialActive: (value: boolean) => void;
@@ -82,11 +82,23 @@ export const useSession = () => {
   const { isTrialActive } = useTrial();
   const { session, loading } = context;
 
-  // If trial is active and no Supabase session exists,
-  // simulate a pseudo-session for access control.
-  const effectiveSession = session || (isTrialActive ? { trial: true } : null);
+  // Real user object from Supabase session
+  const user = session?.user ?? null;
+  
+  // Trial is active only if there's no real session
+  const isTrial = isTrialActive && !session;
+  
+  // effectiveSession is for backward compatibility with route protection (AuthenticatedLayout)
+  // It allows trial users to bypass the auth wall for specific routes.
+  const effectiveSession = session || (isTrial ? { trial: true } : null);
 
-  return { session: effectiveSession, loading };
+  return { 
+    session: effectiveSession, // Still return "effective" as default for safety
+    realSession: session,      // Explicit real session
+    user,                      // Explicit real user (null for trial)
+    isTrial,                   // Explicit trial flag
+    loading 
+  };
 };
 
 export const useGetuser = () => {

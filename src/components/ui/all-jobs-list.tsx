@@ -194,7 +194,7 @@ export function AllJobsList({
         {/* Enhanced Compact Job List */}
         <div className="space-y-1 p-2 pb-20">
           {sortedJobs.map((job, index) => {
-            const isSelected = selectedJobId === (job.id || index);
+            const isSelected = String(selectedJobId) === String(job.RecordID || job.id || index);
             const recordId = getJobRecordId(job);
             // Prioritize database state over local state for saved status
             const isSaved = recordId

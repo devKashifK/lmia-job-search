@@ -30,6 +30,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useRouter } from 'next/navigation';
 import useMobile from '@/hooks/use-mobile';
 import { MobileHeader } from '@/components/mobile/mobile-header';
@@ -53,6 +61,7 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -112,13 +121,7 @@ export default function SignUpPage() {
 
       if (error) throw error;
 
-      toast({
-        title: 'Success!',
-        description: 'We have send a confirmation email to your mail.',
-        variant: 'default',
-      });
-
-      router.push('/');
+      setShowConfirmationModal(true);
       return;
     } finally {
       setIsLoading(false);
@@ -406,6 +409,62 @@ export default function SignUpPage() {
           </motion.div>
         </div>
       </BackgroundBeamsWithCollision>
+
+      <Dialog open={showConfirmationModal} onOpenChange={setShowConfirmationModal}>
+        <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-xl border-white/20 shadow-2xl rounded-3xl p-0 overflow-hidden">
+          {/* Top Decorative Banner */}
+          <div className="h-32 bg-gradient-to-br from-brand-600 to-brand-500 flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white_10%,_transparent_10%)] bg-[length:20px_20px]" />
+            <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 animate-float">
+              <Mail className="w-8 h-8 text-white" />
+            </div>
+          </div>
+
+          <div className="px-8 pt-8 pb-4 text-center">
+            <DialogHeader className="space-y-3">
+              <DialogTitle className="text-2xl font-bold text-gray-900 tracking-tight">
+                Check Your Email! 📧
+              </DialogTitle>
+              <DialogDescription className="text-gray-600 text-[15px] leading-relaxed">
+                A confirmation link has been sent to <span className="font-bold text-brand-600 underline underline-offset-4 decoration-brand-200">{email}</span>.
+                Please verify your account to unlock full access to LMIA job insights.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="mt-8 space-y-4">
+              <div className="p-4 bg-brand-50 rounded-2xl border border-brand-100/50 flex items-start gap-4 text-left group">
+                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center flex-shrink-0 shadow-sm border border-brand-100 group-hover:scale-105 transition-transform">
+                  <Shield className="w-5 h-5 text-brand-500" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-brand-700 uppercase tracking-wider mb-0.5">Note</p>
+                  <p className="text-xs text-gray-600 leading-snug">Don't forget to check your <span className="font-semibold italic">Spam</span> or <span className="font-semibold italic">Promotions</span> folder just in case.</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowConfirmationModal(false)}
+                  className="rounded-xl border-gray-200 font-semibold h-11 hover:bg-gray-50 text-gray-600"
+                >
+                  Close
+                </Button>
+                <Button 
+                  onClick={() => router.push('/sign-in')}
+                  className="rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold h-11 shadow-lg shadow-brand-500/20"
+                >
+                  Go to Login
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-[10px] text-center text-gray-400 pb-6 uppercase font-bold tracking-[0.2em]">
+            Job Maze • Verification Required
+          </p>
+        </DialogContent>
+      </Dialog>
     </BackgroundWrapper>
   );
 }

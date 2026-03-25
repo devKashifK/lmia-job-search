@@ -136,7 +136,7 @@ export default function Navbar({ className }: { className?: string }) {
           )}>
             {loading ? (
               <div className="h-9 w-9 bg-gray-100/50 rounded-full animate-pulse" />
-            ) : session ? (
+            ) : session?.user ? (
               <>
                 {scrolled ? (
                   <Tooltip>

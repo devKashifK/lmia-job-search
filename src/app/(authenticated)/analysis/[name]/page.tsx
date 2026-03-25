@@ -12,7 +12,17 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   
   // Try to use the exact database match from 'value', fallback to decoded slug from URL
   const exactValue = Array.isArray(qs.value) ? qs.value[0] : qs.value;
-  const companyName = exactValue || decodeURIComponent(name);
+  const nameToDecode = exactValue || name;
+  
+  let companyName = nameToDecode;
+  try {
+    companyName = decodeURIComponent(nameToDecode);
+    if (companyName.includes('%')) {
+      companyName = decodeURIComponent(companyName);
+    }
+  } catch (e) {
+    companyName = nameToDecode;
+  }
 
   const title = `${companyName} Job Trends & LMIA Analysis | JobMaze`;
   const description = `Explore hiring trends, job locations, and LMIA approvals for ${companyName}. Get detailed data analysis and salary insights on JobMaze.`;

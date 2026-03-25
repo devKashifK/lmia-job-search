@@ -11,7 +11,9 @@ import {
     X,
     Plus,
     Sparkles,
-    Bell
+    Bell,
+    Search,
+    ArrowRight
 } from "lucide-react";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Badge } from "@/components/ui/badge";
@@ -83,6 +85,7 @@ export function JobPreferencesSection() {
     );
     const [showLocationMenu, setShowLocationMenu] = useState(false);
     const [locationStep, setLocationStep] = useState<'province' | 'city'>('province');
+    const [citySearch, setCitySearch] = useState("");
 
     const [recommendedNocs, setRecommendedNocs] = useState<NocSummary[]>([]);
     const [recommendedTeers, setRecommendedTeers] = useState<string[]>([]);
@@ -460,34 +463,64 @@ export function JobPreferencesSection() {
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => setLocationStep('province')}
+                                                onClick={() => {
+                                                    setLocationStep('province');
+                                                    setCitySearch("");
+                                                }}
                                                 className="h-8 px-2 text-gray-500 hover:text-gray-900"
                                             >
-                                                ← Back to Provinces
+                                                <ArrowRight className="h-4 w-4 rotate-180 mr-1" />
+                                                Back
                                             </Button>
                                             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
                                                 Select Cities
                                             </div>
                                         </div>
+
+                                        {/* City search input */}
+                                        <div className="px-3 pt-3 pb-2 sticky top-[53px] bg-white z-10">
+                                            <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg border border-gray-100 focus-within:border-brand-400 focus-within:ring-1 focus-within:ring-brand-200 transition-all">
+                                                <Search className="w-4 h-4 text-gray-400 shrink-0" />
+                                                <input
+                                                    type="text"
+                                                    value={citySearch}
+                                                    onChange={e => setCitySearch(e.target.value)}
+                                                    placeholder="Search cities…"
+                                                    className="flex-1 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
+                                                    autoFocus
+                                                />
+                                                {citySearch && (
+                                                    <button onClick={() => setCitySearch('')} className="text-gray-400 hover:text-gray-600">
+                                                        <X className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+
                                         <div className="max-h-80 overflow-y-auto p-2">
                                             {availableCities && availableCities.length > 0 ? (
                                                 <div className="grid grid-cols-1 gap-1">
-                                                    {availableCities.map((cityData, idx) => (
-                                                        <div
-                                                            key={`${cityData.province} -${cityData.city} -${idx} `}
-                                                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                                                            onClick={() => handleCityToggle(cityData.city)}
-                                                        >
-                                                            <Checkbox
-                                                                checked={selectedCities.includes(cityData.city)}
-                                                                className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
-                                                            />
-                                                            <div className="flex flex-col">
-                                                                <span className="text-sm font-medium text-gray-700">{cityData.city}</span>
-                                                                <span className="text-[10px] text-gray-400">{cityData.province}</span>
+                                                    {availableCities
+                                                        .filter(c => !citySearch || c.city.toLowerCase().includes(citySearch.toLowerCase()))
+                                                        .map((cityData, idx) => (
+                                                            <div
+                                                                key={`${cityData.province}-${cityData.city}-${idx}`}
+                                                                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                                                                onClick={() => handleCityToggle(cityData.city)}
+                                                            >
+                                                                <Checkbox
+                                                                    checked={selectedCities.includes(cityData.city)}
+                                                                    className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
+                                                                />
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-sm font-medium text-gray-700">{cityData.city}</span>
+                                                                    <span className="text-[10px] text-gray-400">{cityData.province}</span>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    ))}
+                                                        ))}
+                                                    {availableCities.filter(c => !citySearch || c.city.toLowerCase().includes(citySearch.toLowerCase())).length === 0 && (
+                                                        <div className="p-8 text-center text-gray-400 text-sm">No cities found matching &ldquo;{citySearch}&rdquo;</div>
+                                                    )}
                                                 </div>
                                             ) : (
                                                 <div className="p-4 text-center text-gray-400 text-sm">
@@ -497,10 +530,10 @@ export function JobPreferencesSection() {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="p-3 border-t border-gray-100">
+                                        <div className="p-3 border-t border-gray-100 bg-gray-50/50">
                                             <Button
                                                 onClick={handleApplyLocation}
-                                                className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-lg h-9 text-sm"
+                                                className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-xl h-10 font-bold shadow-lg shadow-brand-500/20 transition-all active:scale-[0.98]"
                                             >
                                                 Apply ({selectedCities.length} cities selected)
                                             </Button>
@@ -659,7 +692,7 @@ export function JobPreferencesSection() {
                 criteria={{
                     q: preferences?.preferred_job_titles || [],
                     title: preferences?.preferred_job_titles || [],
-                    location: preferences?.preferred_cities?.length > 0 ? preferences.preferred_cities : preferences?.preferred_provinces,
+                    location: (preferences?.preferred_cities?.length || 0) > 0 ? preferences.preferred_cities : (preferences?.preferred_provinces || []),
                     noc: preferences?.preferred_noc_codes?.[0] || '',
                     tier: preferences?.preferred_company_tiers?.[0] || '',
                     // We'll let the user refine these in the dialog

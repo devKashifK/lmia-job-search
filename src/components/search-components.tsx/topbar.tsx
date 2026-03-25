@@ -85,19 +85,33 @@ function UserMenu() {
   const handleSignOut = async () => {
     try {
       const { error } = await db.auth.signOut();
-      if (error) throw error;
+      
+      // If there's an error, check if it's "Auth session missing!"
+      // and treat it as a success for the purpose of the redirect.
+      if (error && error.message !== "Auth session missing!") {
+        throw error;
+      }
+      
       localStorage.removeItem("brandColor");
+
+      // Force a manual local clear of any remaining Supabase session data
+      // This is a safety measure in case the SDK fails to clear it due to an error.
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+          localStorage.removeItem(key);
+        }
+      });
 
       toast({
         title: "Signed out",
         description: "You have been successfully signed out",
       });
       router.push("/");
-    } catch {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to sign out. Please try again.",
+        description: error?.message || "Failed to sign out. Please try again.",
       });
     }
   };

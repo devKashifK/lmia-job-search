@@ -82,6 +82,7 @@ interface JobCardProps {
   approvedPositions?: string;
   territory?: string;
   recordID?: string;
+  isSelected?: boolean;
 }
 
 export default function JobCard({
@@ -103,6 +104,7 @@ export default function JobCard({
   priorityOccupation,
   approvedPositions,
   territory,
+  isSelected,
 }: JobCardProps) {
   // Collect tags based on type
 
@@ -162,7 +164,14 @@ export default function JobCard({
   });
 
   return (
-    <div className="group rounded-3xl w-full max-w-md bg-white p-2 border border-gray-100 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 relative">
+    <div className={`group rounded-3xl w-full max-w-md p-2 border transition-all duration-300 relative ${
+      isSelected 
+        ? 'bg-brand-50/30 border-brand-500 shadow-[0_8px_30px_rgb(var(--brand-500),0.12)] -translate-y-1' 
+        : 'bg-white border-gray-100 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1'
+    }`}>
+      {isSelected && (
+        <div className="absolute -left-[1px] top-1/4 bottom-1/4 w-1 bg-brand-600 rounded-r-full z-10" />
+      )}
 
       {/* Match Score Badge (Absolute Positioned) */}
 
