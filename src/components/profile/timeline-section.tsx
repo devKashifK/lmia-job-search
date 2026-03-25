@@ -25,9 +25,19 @@ const parseItems = (value: string): TimelineItemData[] => {
     const blocks = value.split(/\n\n|\r\n\r\n/).filter(b => b.trim());
 
     return blocks.map((block, idx) => {
-        const lines = block.split('\n');
-        const firstLine = lines[0] || "";
-        const description = lines.slice(1).join('\n').trim();
+        let firstLine = "";
+        let description = "";
+
+        // Check for "): " separator which is more robust for single-line AI outputs
+        if (block.includes("): ")) {
+            const splitIdx = block.indexOf("): ");
+            firstLine = block.substring(0, splitIdx + 2).trim();
+            description = block.substring(splitIdx + 3).trim();
+        } else {
+            const lines = block.split('\n');
+            firstLine = lines[0] || "";
+            description = lines.slice(1).join('\n').trim();
+        }
 
         // Try to parse "Role at Company (Date)" or "Degree, School, Date"
         // Regex for "Something (Date)"

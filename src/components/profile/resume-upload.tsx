@@ -5,8 +5,19 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import db from "@/db";
 import { useSession } from "@/hooks/use-session";
-import { FileText, Upload, X, Loader2, Download, Trash2, Sparkles } from "lucide-react";
+import { FileText, Upload, X, Loader2, Download, Trash2, Sparkles, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { upsertUserPreferences, DEFAULT_PREFERENCES } from "@/lib/api/users";
 
 interface ResumeUploadProps {
     currentResumeUrl?: string;
@@ -20,6 +31,9 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [pendingAction, setPendingAction] = useState<'delete' | 'replace' | null>(null);
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleDragOver = (e: React.DragEvent) => {
@@ -71,14 +85,24 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
             return;
         }
 
+        if (currentResumeUrl) {
+            setPendingFile(file);
+            setPendingAction('replace');
+            setShowConfirmDialog(true);
+        } else {
+            await finalizeUpload(file);
+        }
+    };
+
+    const finalizeUpload = async (file: File) => {
         setIsUploading(true);
 
         try {
             const fileExt = file.name.split('.').pop();
-            const fileName = `${session.user.id}/resume-${Date.now()}.${fileExt}`;
+            const fileName = `${session?.user?.id}/resume-${Date.now()}.${fileExt}`;
 
             // Upload to Supabase Storage
-            const { error: uploadError, data } = await db.storage
+            const { error: uploadError } = await db.storage
                 .from('resumes')
                 .upload(fileName, file, {
                     upsert: true,
@@ -95,7 +119,7 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
             const { error: updateError } = await db.auth.updateUser({
                 data: {
                     resume_url: publicUrl,
-                    resume_name: file.name, // Store original filename for display
+                    resume_name: file.name,
                     resume_updated_at: new Date().toISOString(),
                 }
             });
@@ -120,7 +144,6 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
             });
         } finally {
             setIsUploading(false);
-            // Reset input
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
@@ -168,6 +191,11 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
     };
 
     const handleDelete = async () => {
+        setPendingAction('delete');
+        setShowConfirmDialog(true);
+    };
+
+    const finalizeDelete = async () => {
         setIsUploading(true);
         try {
             const { error } = await db.auth.updateUser({
@@ -196,6 +224,57 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
         } finally {
             setIsUploading(false);
         }
+    };
+
+    const executeAction = async (clearAll: boolean) => {
+        setShowConfirmDialog(false);
+        if (!session?.user) return;
+
+        if (clearAll) {
+            setIsUploading(true);
+            try {
+                // 1. Clear Preferences
+                await upsertUserPreferences(session.user.id, DEFAULT_PREFERENCES);
+
+                // 2. Clear Profile Details
+                await db.auth.updateUser({
+                    data: {
+                        name: null,
+                        phone: null,
+                        address: null,
+                        country: null,
+                        position: null,
+                        company: null,
+                        bio: null,
+                        skills: null,
+                        education: null,
+                        work_history: null,
+                        experience: null,
+                    }
+                });
+
+                toast({
+                    title: "Profile Reset",
+                    description: "Your job preferences and profile details have been cleared.",
+                });
+            } catch (error: any) {
+                console.error("Failed to clear profile:", error);
+                toast({
+                    variant: "destructive",
+                    title: "Error resetting profile",
+                    description: "Resume will still be processed, but preferences were not cleared.",
+                });
+            }
+        }
+
+        if (pendingAction === 'delete') {
+            await finalizeDelete();
+        } else if (pendingFile) {
+            await finalizeUpload(pendingFile);
+        }
+
+        setPendingAction(null);
+        setPendingFile(null);
     };
 
     return (
@@ -313,6 +392,46 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
                 onChange={handleFileSelect}
                 disabled={isUploading}
             />
+            <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                <AlertDialogContent className="max-w-[400px]">
+                    <AlertDialogHeader>
+                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 mb-4">
+                            <AlertTriangle className="h-6 w-6 text-amber-600" />
+                        </div>
+                        <AlertDialogTitle className="text-center">
+                            {pendingAction === 'delete' ? 'Remove Resume' : 'Replace Resume'}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-center">
+                            Do you also want to delete your previously set <b>job preferences</b> and <b>profile details</b>?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="flex-col sm:flex-col gap-2 mt-4">
+                        <Button
+                            variant="destructive"
+                            onClick={() => executeAction(true)}
+                            className="w-full bg-red-600 hover:bg-red-700"
+                        >
+                            Yes, clear everything
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => executeAction(false)}
+                            className="w-full"
+                        >
+                            No, keep details
+                        </Button>
+                        <AlertDialogCancel
+                            className="w-full border-0 text-gray-500 hover:text-gray-900"
+                            onClick={() => {
+                                setPendingAction(null);
+                                setPendingFile(null);
+                            }}
+                        >
+                            Cancel
+                        </AlertDialogCancel>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div >
     );
 }

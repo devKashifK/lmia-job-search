@@ -225,9 +225,9 @@ export default function SignUpPage() {
                           <SelectValue placeholder="Select Role" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="student">
+                          <SelectItem value="Job Seeker">
                             <div className="flex items-center gap-2">
-                              <GraduationCap className="w-3.5 h-3.5" /> Student
+                              <GraduationCap className="w-3.5 h-3.5" /> Job Seeker
                             </div>
                           </SelectItem>
                           <SelectItem value="employer">
@@ -443,14 +443,14 @@ export default function SignUpPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setShowConfirmationModal(false)}
                   className="rounded-xl border-gray-200 font-semibold h-11 hover:bg-gray-50 text-gray-600"
                 >
                   Close
                 </Button>
-                <Button 
+                <Button
                   onClick={() => router.push('/sign-in')}
                   className="rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold h-11 shadow-lg shadow-brand-500/20"
                 >

@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
 
         try {
             const [lmiaResult, trendingResult] = await Promise.all([
-                db.rpc('get_distinct_values_with_count', { table_name: 'lmia', column_name: 'JobTitle' }),
-                db.rpc('get_distinct_values_with_count', { table_name: 'trending_job', column_name: 'job_title' })
+                (db as any).rpc('get_distinct_values_with_count', { table_name: 'lmia', column_name: 'JobTitle' }),
+                (db as any).rpc('get_distinct_values_with_count', { table_name: 'trending_job', column_name: 'job_title' })
             ]);
 
             const lmiaTitles = (lmiaResult.data || []).map((r: any) => r.name);
@@ -87,8 +87,8 @@ export async function POST(req: NextRequest) {
         "company": "Current or most recent Company Name",
         "bio": "A professional summary (write one if not present, max 400 characters, focusing on key skills and experience)",
         "skills": "Comma separated list of top 10 technical and soft skills found in the resume",
-        "education": "Array of strings, each representing a degree/certificate and university (e.g. 'BS Computer Science, University of Toronto, 2018')",
-        "work_experience": "Array of strings, each representing a job role (e.g. 'Frontend Dev at Google (2019-2021): Built search UI')",
+        "education": "Array of strings. Each string MUST include: Degree, Institution, Date Range (Month YYYY - Month YYYY), and Description. Use format: 'Degree at Institution (Date Range): Description'",
+        "work_experience": "Array of strings. Each string MUST include: Job Role, Company, Date Range (Month YYYY - Month YYYY), and detailed Description of tasks/achievements. Use format: 'Role at Company (Date Range): Description'",
         "experience": "Total years of experience (number, e.g. 5)",
         "recommended_job_titles": "Array of 3-5 job titles strictly selected from the 'Valid Titles List'."
       }

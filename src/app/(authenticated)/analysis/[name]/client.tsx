@@ -89,6 +89,7 @@ import {
   Home,
   LayoutDashboard,
   CreditCard,
+  ArrowUpDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
@@ -98,6 +99,7 @@ import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
+import { AnalysisDetailDialog } from '@/components/analytics/analysis-detail-dialog';
 import { useQuery } from '@tanstack/react-query';
 
 import useMobile from '@/hooks/use-mobile';
@@ -131,6 +133,11 @@ interface CompanyAnalysisData {
   categoryData?: Array<{ name: string; value: number }>; // Hot Leads only
   priorityOccupationData?: Array<{ name: string; value: number }>; // LMIA only
   cityData: Array<{ name: string; value: number }>;
+  // Full unsliced data for dialogs
+  fullJobTitleData: Array<{ title: string; count: number }>;
+  fullCityData: Array<{ name: string; value: number }>;
+  fullCategoryData: Array<{ name: string; value: number }>;
+  rawJobs: any[];
   trends: {
     growthRate: number;
     popularLocation: string;
@@ -959,6 +966,18 @@ function CompanyAnalysisContent({
   const [showSavePresetDialog, setShowSavePresetDialog] = useState(false);
   const [presetName, setPresetName] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [detailDialog, setDetailDialog] = useState<{
+    type: 'totalJobs' | 'cities' | 'categories' | 'jobTitles' | null;
+    title: string;
+  }>({ type: null, title: '' });
+  const [dialogSearch, setDialogSearch] = useState('');
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+
+  React.useEffect(() => {
+    if (detailDialog.type) {
+      console.log('detailDialog state updated:', detailDialog);
+    }
+  }, [detailDialog]);
 
   // Load saved filter presets from localStorage
   const [savedPresets, setSavedPresets] = useState<
@@ -1195,10 +1214,11 @@ function CompanyAnalysisContent({
         .map(([period, count]) => ({ period, count }))
         .sort((a, b) => a.period.localeCompare(b.period));
 
-      const jobTitleData = Object.entries(titleCounts)
+      const fullJobTitleData = Object.entries(titleCounts)
         .map(([title, count]) => ({ title, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10);
+        .sort((a, b) => b.count - a.count);
+
+      const jobTitleData = fullJobTitleData.slice(0, 10);
 
       const nocCodeData = Object.entries(nocCodeCounts)
         .map(([code, count]) => ({
@@ -1209,10 +1229,11 @@ function CompanyAnalysisContent({
         .sort((a, b) => b.count - a.count)
         .slice(0, 10);
 
-      const cityData = Object.entries(cityCounts)
+      const fullCityData = Object.entries(cityCounts)
         .map(([name, value]) => ({ name, value }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 10);
+        .sort((a, b) => b.value - a.value);
+
+      const cityData = fullCityData.slice(0, 10);
 
       const programData =
         filters.searchType === 'lmia'
@@ -1222,13 +1243,15 @@ function CompanyAnalysisContent({
             .slice(0, 10)
           : undefined;
 
-      const categoryData =
-        filters.searchType === 'hot_leads'
-          ? Object.entries(categoryCounts)
-            .map(([name, value]) => ({ name, value }))
-            .sort((a, b) => b.value - a.value)
-            .slice(0, 10)
-          : undefined;
+      const fullCategoryData = filters.searchType === 'hot_leads'
+        ? Object.entries(categoryCounts)
+          .map(([name, value]) => ({ name, value }))
+          .sort((a, b) => b.value - a.value)
+        : [];
+
+      const categoryData = filters.searchType === 'hot_leads' 
+        ? fullCategoryData.slice(0, 10) 
+        : undefined;
 
       const priorityOccupationData =
         filters.searchType === 'lmia'
@@ -1269,6 +1292,10 @@ function CompanyAnalysisContent({
         categoryData,
         priorityOccupationData,
         cityData,
+        fullJobTitleData,
+        fullCityData,
+        fullCategoryData,
+        rawJobs: jobs || [],
         trends: {
           growthRate,
           popularLocation: sortedLocations[0]?.[0] || 'N/A',
@@ -2263,64 +2290,271 @@ function CompanyAnalysisContent({
                   </div> */}
 
                   {/* Quick Stats Cards - Compact */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                    {/* Total Jobs Card */}
-                    <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl hover:shadow-md transition-all duration-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="p-2 bg-blue-500 rounded-xl">
-                          <Briefcase className="w-4 h-4 text-white" />
-                        </div>
-                        <TrendingUp className="w-4 h-4 text-green-600" />
-                      </div>
-                      <p className="text-xs text-gray-600 mb-1">Total Jobs</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {analysisData?.totalJobs?.toLocaleString() || 0}
-                      </p>
-                    </Card>
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4 relative z-10">
+                    <Dialog 
+                      open={detailDialog.type !== null} 
+                      onOpenChange={(open) => {
+                        if (!open) {
+                          setDetailDialog({ type: null, title: '' });
+                          setDialogSearch('');
+                          setSortConfig(null);
+                        }
+                      }}
+                    >
+                      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white border-0 shadow-2xl rounded-2xl">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-emerald-500 to-purple-500 z-50" />
+                        
+                        <DialogHeader className="p-6 pb-2 bg-gray-50/50">
+                          <div className="flex items-center justify-between mb-1">
+                            <DialogTitle className="text-xl font-bold flex items-center gap-3 text-gray-900 tracking-tight">
+                              <div className={cn(
+                                "p-2 rounded-xl shadow-sm",
+                                detailDialog.type === 'totalJobs' && "bg-blue-500 text-white",
+                                detailDialog.type === 'cities' && "bg-emerald-500 text-white",
+                                detailDialog.type === 'categories' && "bg-purple-500 text-white",
+                                detailDialog.type === 'jobTitles' && "bg-orange-500 text-white"
+                              )}>
+                                {detailDialog.type === 'totalJobs' && <Briefcase className="w-5 h-5" />}
+                                {detailDialog.type === 'cities' && <MapPin className="w-5 h-5" />}
+                                {detailDialog.type === 'categories' && <BarChart3 className="w-5 h-5" />}
+                                {detailDialog.type === 'jobTitles' && <Users className="w-5 h-5" />}
+                              </div>
+                              <div className="flex flex-col">
+                                <span>{detailDialog.title}</span>
+                                <span className="text-xs font-normal text-gray-500 tracking-normal">Detailed market metrics</span>
+                              </div>
+                            </DialogTitle>
+                          </div>
+                          <div className="relative mt-4">
+                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                            <Input
+                              placeholder={`Search ${detailDialog.title.toLowerCase()}...`}
+                              value={dialogSearch}
+                              onChange={(e) => setDialogSearch(e.target.value)}
+                              className="pl-10 h-10 text-sm border-gray-200 focus-visible:ring-brand-500 bg-white shadow-sm rounded-xl transition-all duration-200 hover:border-brand-300"
+                            />
+                          </div>
+                        </DialogHeader>
 
-                    {/* Locations Card */}
-                    <Card className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl hover:shadow-md transition-all duration-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="p-2 bg-emerald-500 rounded-xl">
-                          <MapPin className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="text-[10px] font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">
-                          {analysisData?.locationData?.length || 0}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-600 mb-1">Cities</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {analysisData?.cityData?.length || 0}
-                      </p>
-                    </Card>
+                        <div className="flex-1 px-6 pb-6 pt-1 overflow-y-auto min-h-[350px] bg-white">
+                          <div className="rounded-xl border border-gray-100 overflow-hidden shadow-sm">
+                            <Table>
+                              <TableHeader className="bg-gray-50/80 sticky top-0 z-10 backdrop-blur-md">
+                                <TableRow className="hover:bg-transparent border-gray-100">
+                                  {detailDialog.type === 'totalJobs' ? (
+                                    <>
+                                      <TableHead className="text-[11px] font-bold text-gray-700 py-3 px-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => {
+                                        setSortConfig(prev => ({ key: 'job_title', direction: prev?.key === 'job_title' && prev.direction === 'desc' ? 'asc' : 'desc' }));
+                                      }}>
+                                        <div className="flex items-center gap-1.5 uppercase tracking-wider">
+                                          Role & Status <ArrowUpDown className="w-3 h-3 text-gray-400" />
+                                        </div>
+                                      </TableHead>
+                                      <TableHead className="text-[11px] font-bold text-gray-700 py-3 px-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => {
+                                        setSortConfig(prev => ({ key: 'city', direction: prev?.key === 'city' && prev.direction === 'desc' ? 'asc' : 'desc' }));
+                                      }}>
+                                        <div className="flex items-center gap-1.5 uppercase tracking-wider">
+                                          Location <ArrowUpDown className="w-3 h-3 text-gray-400" />
+                                        </div>
+                                      </TableHead>
+                                      {filters.searchType === 'lmia' && <TableHead className="text-[11px] font-bold text-gray-700 py-3 px-4 uppercase tracking-wider">Positions</TableHead>}
+                                      <TableHead className="text-[11px] font-bold text-gray-700 py-3 px-4 text-right uppercase tracking-wider">Posted</TableHead>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <TableHead className="text-[11px] font-bold text-gray-700 py-3 px-4 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => {
+                                        setSortConfig(prev => ({ key: 'name', direction: prev?.key === 'name' && prev.direction === 'desc' ? 'asc' : 'desc' }));
+                                      }}>
+                                        <div className="flex items-center gap-1.5 uppercase tracking-wider">
+                                          Metric Segment <ArrowUpDown className="w-3 h-3 text-gray-400" />
+                                        </div>
+                                      </TableHead>
+                                      <TableHead className="text-[11px] font-bold text-gray-700 py-3 px-4 text-right cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => {
+                                        setSortConfig(prev => ({ key: 'count', direction: prev?.key === 'count' && prev.direction === 'desc' ? 'asc' : 'desc' }));
+                                      }}>
+                                        <div className="flex items-center gap-1.5 justify-end uppercase tracking-wider">
+                                          Job Count <ArrowUpDown className="w-3 h-3 text-gray-400" />
+                                        </div>
+                                      </TableHead>
+                                    </>
+                                  )}
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {analysisData && (
+                                  (() => {
+                                    let list: any[] = [];
+                                    if (detailDialog.type === 'totalJobs') list = [...(analysisData.rawJobs || [])];
+                                    else if (detailDialog.type === 'cities') list = [...(analysisData.fullCityData || [])];
+                                    else if (detailDialog.type === 'categories') list = [...(analysisData.fullCategoryData || [])];
+                                    else if (detailDialog.type === 'jobTitles') list = [...(analysisData.fullJobTitleData || [])];
+                                    
+                                    let filtered = list.filter((item: any) => {
+                                      const text = (item.job_title || item.name || item.title || item.city || '').toLowerCase();
+                                      return text.includes(dialogSearch.toLowerCase());
+                                    });
 
-                    {/* Categories Card */}
-                    <Card className="p-4 bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-100 rounded-2xl hover:shadow-md transition-all duration-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="p-2 bg-purple-500 rounded-xl">
-                          <BarChart3 className="w-4 h-4 text-white" />
-                        </div>
-                        <TrendingUp className="w-4 h-4 text-green-600" />
-                      </div>
-                      <p className="text-xs text-gray-600 mb-1">Categories</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {analysisData?.categoryData?.length || 0}
-                      </p>
-                    </Card>
+                                    if (sortConfig) {
+                                      filtered.sort((a: any, b: any) => {
+                                        let aVal: any, bVal: any;
+                                        
+                                        if (sortConfig.key === 'count') {
+                                          aVal = a.value || a.count || 0;
+                                          bVal = b.value || b.count || 0;
+                                        } else if (sortConfig.key === 'job_title') {
+                                          aVal = a.job_title || '';
+                                          bVal = b.job_title || '';
+                                        } else if (sortConfig.key === 'city') {
+                                          aVal = a.city || '';
+                                          bVal = b.city || '';
+                                        } else if (sortConfig.key === 'name') {
+                                          aVal = a.name || a.title || '';
+                                          bVal = b.name || b.title || '';
+                                        }
 
-                    {/* Job Titles Card */}
-                    <Card className="p-4 bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 rounded-2xl hover:shadow-md transition-all duration-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="p-2 bg-orange-500 rounded-xl">
-                          <Users className="w-4 h-4 text-white" />
+                                        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+                                        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+                                        return 0;
+                                      });
+                                    }
+
+                                    if (filtered.length === 0) return (
+                                      <TableRow><TableCell colSpan={5} className="h-40 text-center text-gray-400 font-medium">No results found</TableCell></TableRow>
+                                    );
+
+                                    return filtered.map((item: any, idx: number) => (
+                                      <TableRow key={idx} className="hover:bg-brand-50/20 border-gray-50 group transition-colors duration-150">
+                                        {detailDialog.type === 'totalJobs' ? (
+                                          <>
+                                            <TableCell className="py-3 px-4">
+                                              <div className="flex flex-col">
+                                                <span className="text-sm font-semibold text-gray-900 group-hover:text-brand-600 transition-colors line-clamp-1">{item.job_title || 'N/A'}</span>
+                                                <span className="text-[9px] text-gray-400 uppercase tracking-tighter">ID: {item.id || item.RecordID || 'N/A'}</span>
+                                              </div>
+                                            </TableCell>
+                                            <TableCell className="py-3 px-4">
+                                              <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                                                <MapPin className="w-3 h-3 text-emerald-500 shrink-0" />
+                                                <span className="truncate max-w-[150px]">
+                                                  {item.city || 'N/A'}{item.state || item.territory ? `, ${item.state || item.territory}` : ''}
+                                                </span>
+                                              </div>
+                                            </TableCell>
+                                            {filters.searchType === 'lmia' && (
+                                              <TableCell className="py-3 px-4">
+                                                <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-none rounded-md px-1.5 py-0 text-[10px] font-bold">
+                                                  {item.approved_positions || 0}
+                                                </Badge>
+                                              </TableCell>
+                                            )}
+                                            <TableCell className="py-3 px-4 text-right">
+                                              <span className="text-[10px] text-gray-400 font-medium">
+                                                {filters.searchType === 'lmia' ? item.lmia_year : (item.date_of_job_posting ? new Date(item.date_of_job_posting).toLocaleDateString() : 'N/A')}
+                                              </span>
+                                            </TableCell>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <TableCell className="py-3 px-4 text-sm font-medium text-gray-900">{item.name || item.title || 'N/A'}</TableCell>
+                                            <TableCell className="py-3 px-4 text-right">
+                                              <div className="inline-flex items-center gap-3">
+                                                <div className="h-1 w-16 bg-gray-100 rounded-full overflow-hidden hidden sm:block">
+                                                  <div 
+                                                    className="h-full bg-brand-500 rounded-full"
+                                                    style={{ width: `${Math.min(100, ((item.value || item.count || 0) / (analysisData.totalJobs || 100)) * 100)}%` }}
+                                                  />
+                                                </div>
+                                                <span className="text-sm font-bold text-gray-900">{(item.value || item.count || 0).toLocaleString()}</span>
+                                              </div>
+                                            </TableCell>
+                                          </>
+                                        )}
+                                      </TableRow>
+                                    ));
+                                  })()
+                                )}
+                              </TableBody>
+                            </Table>
+                          </div>
                         </div>
-                        <TrendingUp className="w-4 h-4 text-green-600" />
-                      </div>
-                      <p className="text-xs text-gray-600 mb-1">Job Titles</p>
-                      <p className="text-2xl font-bold text-gray-900">
-                        {analysisData?.jobTitleData?.length || 0}
-                      </p>
-                    </Card>
+                      </DialogContent>
+                    </Dialog>
+                    <button 
+                      className="text-left w-full h-full appearance-none transition-transform active:scale-[0.98] outline-none"
+                      onClick={() => {
+                        console.log('Total Jobs clicked');
+                        setDetailDialog({ type: 'totalJobs', title: 'Total Jobs' });
+                      }}
+                    >
+                      <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl hover:shadow-lg hover:border-blue-300 transition-all duration-200 group h-full">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="p-2 bg-blue-500 rounded-xl group-hover:scale-110 transition-transform">
+                            <Briefcase className="w-4 h-4 text-white" />
+                          </div>
+                          <TrendingUp className="w-4 h-4 text-green-600" />
+                        </div>
+                        <p className="text-xs text-gray-600 mb-1">Total Jobs</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {analysisData?.totalJobs?.toLocaleString() || 0}
+                        </p>
+                      </Card>
+                    </button>
+
+                    <button 
+                      className="text-left w-full h-full appearance-none transition-transform active:scale-[0.98] outline-none"
+                      onClick={() => setDetailDialog({ type: 'cities', title: 'Cities Analysis' })}
+                    >
+                      <Card className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-2xl hover:shadow-lg hover:border-emerald-300 transition-all duration-200 group h-full">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="p-2 bg-emerald-500 rounded-xl group-hover:scale-110 transition-transform">
+                            <MapPin className="w-4 h-4 text-white" />
+                          </div>
+                          <span className="text-[10px] font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">
+                            {analysisData?.fullCityData?.length || 0}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mb-1">Cities</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {analysisData?.fullCityData?.length || 0}
+                        </p>
+                      </Card>
+                    </button>
+
+                    <button 
+                      className="text-left w-full h-full appearance-none transition-transform active:scale-[0.98] outline-none"
+                      onClick={() => setDetailDialog({ type: 'categories', title: 'Categories Analysis' })}
+                    >
+                      <Card className="p-4 bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-100 rounded-2xl hover:shadow-lg hover:border-purple-300 transition-all duration-200 group h-full">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="p-2 bg-purple-500 rounded-xl group-hover:scale-110 transition-transform">
+                            <BarChart3 className="w-4 h-4 text-white" />
+                          </div>
+                          <TrendingUp className="w-4 h-4 text-green-600" />
+                        </div>
+                        <p className="text-xs text-gray-600 mb-1">Categories</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {analysisData?.fullCategoryData?.length || 0}
+                        </p>
+                      </Card>
+                    </button>
+
+                    <button 
+                      className="text-left w-full h-full appearance-none transition-transform active:scale-[0.98] outline-none"
+                      onClick={() => setDetailDialog({ type: 'jobTitles', title: 'Job Titles Analysis' })}
+                    >
+                      <Card className="p-4 bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 rounded-2xl hover:shadow-lg hover:border-orange-300 transition-all duration-200 group h-full">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="p-2 bg-orange-500 rounded-xl group-hover:scale-110 transition-transform">
+                            <Users className="w-4 h-4 text-white" />
+                          </div>
+                          <TrendingUp className="w-4 h-4 text-green-600" />
+                        </div>
+                        <p className="text-xs text-gray-600 mb-1">Job Titles</p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {analysisData?.fullJobTitleData?.length || 0}
+                        </p>
+                      </Card>
+                    </button>
                   </div>
 
                   {/* Quick Filter Chips */}
@@ -2394,7 +2628,7 @@ function CompanyAnalysisContent({
                       <Briefcase className="w-3 h-3 mr-1" />
                       Top Job
                     </Button>
-                    {searchParams?.toString() && (
+                    {Array.from(searchParams?.keys() || []).some(k => !['t', 'selected'].includes(k)) && (
                       <Button
                         variant="outline"
                         size="sm"

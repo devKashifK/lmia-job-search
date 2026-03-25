@@ -304,8 +304,8 @@ export function NocJobDescription({
     // Overview: parsed overview → NOC overview
     aboutCompany: parsedDesc?.overview ?? nocProfile?.overview,
     // Responsibilities: parsed → NOC main duties
-    jobDescription: parsedDesc
-      ? parsedDesc.responsibilities
+    jobDescription: (parsedDesc?.responsibilities?.length ?? 0) > 0
+      ? parsedDesc!.responsibilities
       : formatMainDuties(nocProfile?.mainDuties ?? {}),
     // Requirements: parsed → NOC employment requirements
     requirements: parsedDesc
@@ -315,13 +315,11 @@ export function NocJobDescription({
     // Additional Info: parsed → NOC additional info (filter out "how to apply")
     additionalInfo: (parsedDesc
       ? parsedDesc.additionalInfo
-      : (nocProfile?.additionalInfo ?? [])).filter(item => !item.toLowerCase().includes('how to apply')),
+      : (nocProfile?.additionalInfo ?? [])),
     // External link to original job posting (Job Bank etc.)
     jobUrl: parsedDesc?.jobUrl ?? null,
-    // Dynamic Extra Sections (filter out "how to apply")
-    extraSections: Object.fromEntries(
-      Object.entries(parsedDesc?.extraSections ?? {}).filter(([key]) => !key.toLowerCase().includes('how to apply'))
-    ),
+    // Dynamic Extra Sections
+    extraSections: parsedDesc?.extraSections ?? [],
   };
 
   const goTo = (path: string) => router.push(path);
@@ -728,18 +726,15 @@ export function NocJobDescription({
                 )}
 
                 {/* Dynamic Extra Sections */}
-                {Object.entries(jobData.extraSections).map(([title, content], idx) => {
-                  // Skip if empty or already handled
+                {jobData.extraSections.map(({ title, content }: { title: string; content: string | string[] }, idx: number) => {
+                  // Skip if empty
                   if (!content || (Array.isArray(content) && content.length === 0)) return null;
-
-                  // Limit the number of dynamic sections to avoid overwhelming
-                  if (idx > 10) return null;
 
                   const items = Array.isArray(content) ? content : [content];
 
                   return (
                     <motion.div
-                      key={title}
+                      key={`${title}-${idx}`}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: 0.6 + (idx * 0.1) }}

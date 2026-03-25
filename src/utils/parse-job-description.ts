@@ -39,7 +39,7 @@ export interface ParsedJobDescription {
     /** Salary string extracted from jobDetails (may override DB salary field) */
     salary: string | null;
     /** Combined results of any unknown fields from the JSON */
-    extraSections: Record<string, string | string[]>;
+    extraSections: Array<{ title: string; content: string | string[] }>;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -93,6 +93,27 @@ function extractBullets(text: string): string[] | null {
 }
 
 /**
+ * Attempts to extract a valid JSON block from a string that might have noise
+ * like leading hyphens, bullet points, or triple backticks.
+ */
+function cleanJsonString(raw: string): string {
+    let text = raw.trim();
+    
+    // Remove leading/trailing markdown code blocks
+    text = text.replace(/^```(json)?\n?/i, '').replace(/\n?```$/i, '').trim();
+    
+    // Remove leading bullet points/hyphens if they appear before the first '{'
+    if (text.startsWith('-') || text.startsWith('*')) {
+        const firstBrace = text.indexOf('{');
+        if (firstBrace !== -1) {
+            text = text.slice(firstBrace).trim();
+        }
+    }
+    
+    return text;
+}
+
+/**
  * Parses a combined description blob that may contain embedded tasks.
  *
  * A typical pattern:
@@ -137,13 +158,17 @@ function parseDescriptionBlob(raw: string): { overviewText: string; tasks: strin
     // Note: We avoid leading \b for cases like "profitabilityQualifications" (missing space)
     // but we require a trailing symbol (:, *, or \n) to ensure it's a header
     const sectionMarkers = [
-        { key: 'responsibilities', pattern: /Key Responsibilities[:*]+/i, title: 'Key Responsibilities' },
-        { key: 'qualifications', pattern: /Qualifications (and|&) Education[:*]+/i, title: 'Qualifications' },
-        { key: 'requirements', pattern: /(Employment )?Requirements[:*]+/i, title: 'Requirements' },
-        { key: 'tasks', pattern: /(Skills and Abilities\s+)?Tasks\s*(?:-|:|\*)/i, title: 'Tasks' },
-        { key: 'benefits', pattern: /Benefits[:*]+/i, title: 'Benefits' },
-        { key: 'schedule', pattern: /Schedule[:*]+/i, title: 'Schedule' },
-        { key: 'work_with', pattern: /Work with[:*]+/i, title: 'Work With' },
+        { key: 'responsibilities', pattern: /Key Responsibilities\s*[:*-]*/i, title: 'Key Responsibilities' },
+        { key: 'qualifications', pattern: /Qualifications (and|&) Education\s*[:*-]*/i, title: 'Qualifications' },
+        { key: 'requirements', pattern: /(Employment )?Requirements\s*[:*-]*/i, title: 'Requirements' },
+        { key: 'tasks', pattern: /(Skills and Abilities\s+)?Tasks\s*[:*-]*/i, title: 'Tasks' },
+        { key: 'benefits', pattern: /Benefits\s*[:*-]*/i, title: 'Benefits' },
+        { key: 'schedule', pattern: /Schedule\s*[:*-]*/i, title: 'Schedule' },
+        { key: 'work_with', pattern: /Work with\s*[:*-]*/i, title: 'Work With' },
+        { key: 'suitability', pattern: /Personal suitability\s*[:*-]*/i, title: 'Personal Suitability' },
+        { key: 'safety', pattern: /Security (and|&) safety\s*[:*-]*/i, title: 'Security and Safety' },
+        { key: 'conditions', pattern: /Work conditions (and|&) physical capabilities\s*[:*-]*/i, title: 'Work Conditions' },
+        { key: 'additional', pattern: /Additional information\s*[:*-]*/i, title: 'Additional Information' },
     ];
 
     // Find all occurrences of markers
@@ -186,33 +211,23 @@ function parseDescriptionBlob(raw: string): { overviewText: string; tasks: strin
         const bulletSplit = text.split(/\s*(?:\n|\*|-)\s+/);
         if (bulletSplit.length > 2) {
             overviewText = bulletSplit[0].trim();
-            tasks.push(...bulletSplit.slice(1).map(s => s.trim()).filter(s => s.length > 3));
+            tasks.push(...bulletSplit.slice(1).map(s => s.trim()).filter(s => s.length > 2));
+        } else {
+            // Check for extractBullets specifically
+            const autoBullets = extractBullets(text);
+            if (autoBullets && autoBullets.length > 1) {
+                overviewText = autoBullets[0];
+                tasks.push(...autoBullets.slice(1));
+            }
         }
     }
 
     return { overviewText, tasks, extraSections };
 }
 
-/**
- * Tries to resolve the overview text from several possible sources, in priority order.
- */
-function resolveOverview(ov: Record<string, string>): { text: string | null; extractedTasks: string[]; extraSections: Record<string, string[]> } {
-    // 1. Job Bank "On site" field → strip the redundant "Responsibilities …" suffix
-    if (ov['On site']) {
-        const cleaned = ov['On site'].split('Responsibilities')[0].trim();
-        if (cleaned) return { text: cleaned, extractedTasks: [], extraSections: {} };
-    }
-
-    // 2. Explicit description-style keys (any scraper format) — may contain embedded tasks
-    for (const key of ['description', 'Description', 'Job Description', 'Summary', 'summary']) {
-        if (ov[key]) {
-            const { overviewText, tasks, extraSections } = parseDescriptionBlob(ov[key]);
-            return { text: overviewText || null, extractedTasks: tasks, extraSections };
-        }
-    }
-
-    return { text: null, extractedTasks: [], extraSections: {} };
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// Main parser
+// ─────────────────────────────────────────────────────────────────────────────
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main parser
@@ -227,141 +242,130 @@ export function parseJobDescription(raw: unknown): ParsedJobDescription | null {
     if (typeof raw === 'object' && raw !== null && !Array.isArray(raw)) {
         data = raw as Record<string, unknown>;
     } else if (typeof raw === 'string') {
+        const cleaned = cleanJsonString(raw);
         try {
-            const parsed = JSON.parse(raw);
+            const parsed = JSON.parse(cleaned);
             if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
                 data = parsed as Record<string, unknown>;
             } else {
-                return { overview: raw, responsibilities: [], requirements: [], additionalInfo: [], jobUrl: null, salary: null, extraSections: {} };
+                return { overview: cleaned, responsibilities: [], requirements: [], additionalInfo: [], jobUrl: null, salary: null, extraSections: [] };
             }
         } catch {
-            return { overview: raw, responsibilities: [], requirements: [], additionalInfo: [], jobUrl: null, salary: null, extraSections: {} };
+            return {
+                overview: null,
+                responsibilities: [],
+                requirements: [],
+                additionalInfo: [],
+                jobUrl: null,
+                salary: null,
+                extraSections: []
+            };
         }
     } else {
         return null;
     }
 
-    const extraSections: Record<string, string | string[]> = {};
-
-    // ── Normalise nested objects ──────────────────────────────────────────────
-    const ov = (typeof data.overview === 'object' && data.overview && !Array.isArray(data.overview)
-        ? data.overview : {}) as Record<string, string>;
-
-    const details = (typeof data.jobDetails === 'object' && data.jobDetails && !Array.isArray(data.jobDetails)
-        ? data.jobDetails : {}) as Record<string, string>;
-
-    // ── Overview (+ extract embedded tasks from description blobs) ───────────
-    const { text: overview, extractedTasks, extraSections: blobSections } = resolveOverview(ov);
-
-    // Merge blob sections into extraSections
-    Object.assign(extraSections, blobSections);
-
-    // ── Responsibilities ──────────────────────────────────────────────────────
-    let responsibilities: string[] = [];
-
-    if (Array.isArray(data.responsibilities) && (data.responsibilities as unknown[]).length > 0) {
-        // Format A: explicit array
-        responsibilities = (data.responsibilities as string[]).filter(Boolean);
-    } else if (ov.Tasks) {
-        // Format A fallback: Tasks string → try to split into bullets
-        const bullets = extractBullets(ov.Tasks);
-        responsibilities = bullets ?? [ov.Tasks];
-    } else if (extractedTasks.length > 0) {
-        // Format B: tasks extracted from description blob
-        responsibilities = extractedTasks;
-    }
-
-    // ── Requirements ──────────────────────────────────────────────────────────
+    const extraSections: Array<{ title: string; content: string | string[] }> = [];
+    const responsibilitiesSet = new Set<string>();
     const requirements: string[] = [];
-
-    // Known structured fields inside overview (Format A)
-    if (ov.Education) requirements.push(`Education: ${ov.Education}`);
-    if (ov.Languages) requirements.push(`Languages: ${ov.Languages}`);
-    if (ov.Experience) requirements.push(`Experience: ${ov.Experience}`);
-
-    // Who can apply (Format A)
-    if (Array.isArray(data.whoCanApply)) {
-        const eligible = (data.whoCanApply as unknown[]).filter(v => typeof v === 'string').map(String);
-        if (eligible.length) requirements.push(`Who can apply: ${eligible.join(', ')}`);
-    }
-
-    // Format B: top-level requirement keys (Education, Experience, Languages, etc.)
-    for (const [key, val] of Object.entries(data)) {
-        if (TOP_LEVEL_REQUIREMENT_KEYS.has(key) && typeof val === 'string') {
-            const strVal = val.trim();
-            if (strVal) requirements.push(`${key}: ${strVal}`);
-        }
-    }
-
-    // Catch-all: short unknown overview keys → Requirements
-    for (const [key, val] of Object.entries(ov)) {
-        const strVal = String(val).trim();
-        if (!KNOWN_OVERVIEW.has(key) && strVal && strVal.length < 200) {
-            requirements.push(`${key}: ${strVal}`);
-        }
-    }
-
-    // ── Additional Info ───────────────────────────────────────────────────────
     const additionalInfo: string[] = [];
+    let overviewCandidates: string[] = [];
 
-    // Known jobDetails fields (Format A)
-    if (details.vacancies) additionalInfo.push(details.vacancies);
-    if (details['Terms of employment']) additionalInfo.push(details['Terms of employment']);
-    if ('Starts as soon as possible' in details) {
-        const v = details['Starts as soon as possible'];
-        additionalInfo.push(v ? `Starts: ${v}` : 'Starts as soon as possible');
-    }
-    // Skip Source field
-    // if (details.Source) additionalInfo.push(`Source: ${details.Source}`);
+    // Helper to process any value recursively
+    const processValue = (key: string, val: unknown) => {
+        if (!val) return;
 
-    // Catch-all: unknown jobDetails keys → Additional Info
-    for (const [key, val] of Object.entries(details)) {
-        if (!KNOWN_DETAILS.has(key) && typeof val === 'string' && val.trim()) {
-            additionalInfo.push(`${key}: ${val.trim()}`);
-        }
-    }
-
-    // Catch-all: unknown top-level keys → Additional Info (Format B flat fields)
-    // Skip requirement keys (already handled) and known structured keys
-    for (const [key, val] of Object.entries(data)) {
-        if (KNOWN_TOP_LEVEL.has(key)) continue;
-        if (TOP_LEVEL_REQUIREMENT_KEYS.has(key)) continue; // already in requirements
-        if (TOP_LEVEL_SALARY_KEYS.includes(key)) continue; // extracted separately
-
-        if (Array.isArray(val)) {
-            const items = (val as unknown[]).filter((v) => typeof v === 'string' && (v as string).trim()).map(String);
-            if (items.length) {
-                additionalInfo.push(`${key}: ${items.join(', ')}`);
-                // Also add to extraSections if not a requirement key
-                extraSections[key] = items;
-            }
-        } else if (typeof val === 'string') {
+        if (typeof val === 'string' && val.trim()) {
             const strVal = val.trim();
-            if (strVal) {
-                additionalInfo.push(`${key}: ${strVal}`);
-                // Also add to extraSections if not a requirement key
-                extraSections[key] = strVal;
+            
+            // Try to extract structured content from this string
+            const { overviewText, tasks, extraSections: blobSections } = parseDescriptionBlob(strVal);
+            
+            if (overviewText && overviewText.length > 5) {
+                overviewCandidates.push(overviewText);
+            } else if (strVal.length > 5 && !KNOWN_TOP_LEVEL.has(key) && !KNOWN_OVERVIEW.has(key) && !KNOWN_DETAILS.has(key)) {
+                overviewCandidates.push(strVal);
             }
+
+            tasks.forEach(t => responsibilitiesSet.add(t));
+            Object.entries(blobSections).forEach(([title, content]) => {
+                extraSections.push({ title, content });
+            });
+
+            // Handle metadata capture
+            if (TOP_LEVEL_REQUIREMENT_KEYS.has(key)) {
+                requirements.push(`${key}: ${strVal}`);
+                extraSections.push({ title: key, content: strVal });
+            } else if (!KNOWN_TOP_LEVEL.has(key) && !KNOWN_OVERVIEW.has(key) && !KNOWN_DETAILS.has(key)) {
+                // Unknown meta-data
+                additionalInfo.push(`${key}: ${strVal}`);
+                extraSections.push({ title: key, content: strVal });
+            }
+        } else if (Array.isArray(val)) {
+            const items = val.filter(v => typeof v === 'string').map(String);
+            if (items.length > 0) {
+                if (key === 'responsibilities' || key === 'tasks') {
+                    items.forEach(i => responsibilitiesSet.add(i));
+                } else if (key === 'whoCanApply') {
+                    requirements.push(`Who can Apply: ${items.join(', ')}`);
+                } else {
+                    const combined = items.join(', ');
+                    additionalInfo.push(`${key}: ${combined}`);
+                    extraSections.push({ title: key, content: items });
+                }
+            } else {
+                // Recurse into array of objects if needed
+                val.forEach(v => processValue(key, v));
+            }
+        } else if (typeof val === 'object') {
+            // Recurse into nested objects
+            Object.entries(val).forEach(([k, v]) => processValue(k, v));
+        }
+    };
+
+    // Deep scan top-level
+    for (const [key, val] of Object.entries(data)) {
+        if (key === 'overview' && typeof val === 'object' && val !== null) {
+            for (const [oKey, oVal] of Object.entries(val)) {
+                processValue(oKey, oVal);
+                // Format A explicit handling
+                if (oKey === 'Education') requirements.push(`Education: ${oVal}`);
+                if (oKey === 'Languages') requirements.push(`Languages: ${oVal}`);
+                if (oKey === 'Experience') requirements.push(`Experience: ${oVal}`);
+            }
+        } else if (key === 'jobDetails' && typeof val === 'object' && val !== null) {
+            for (const [dKey, dVal] of Object.entries(val)) {
+                processValue(dKey, dVal);
+                // Format A explicit handling
+                if (dKey === 'vacancies') additionalInfo.push(`Vacancies: ${dVal}`);
+                if (dKey === 'Terms of employment') additionalInfo.push(`Terms: ${dVal}`);
+                if (dKey === 'Salary') { /* handled separately */ }
+            }
+        } else {
+            processValue(key, val);
         }
     }
 
-    // ── Salary ────────────────────────────────────────────────────────────────
-    let salary: string | null = details.Salary ?? null;
+    // Pick best overview
+    overviewCandidates.sort((a, b) => b.length - a.length);
+    const bestOverview = overviewCandidates.find(o => o.split(' ').length > 3) || overviewCandidates[0] || null;
+
+    // Salary extraction
+    let salary: string | null = (data.jobDetails as any)?.Salary ?? null;
     if (!salary) {
         for (const key of TOP_LEVEL_SALARY_KEYS) {
-            if (typeof data[key] === 'string' && (data[key] as string).trim()) {
-                salary = (data[key] as string).trim();
+            if (data[key] && typeof data[key] === 'string') {
+                salary = String(data[key]).trim();
                 break;
             }
         }
     }
 
-    // ── Job URL ───────────────────────────────────────────────────────────────
     const jobUrl = typeof data.jobUrl === 'string' ? data.jobUrl : null;
 
     return {
-        overview,
-        responsibilities,
+        overview: bestOverview,
+        responsibilities: Array.from(responsibilitiesSet),
         requirements: [...new Set(requirements)],
         additionalInfo: [...new Set(additionalInfo)],
         jobUrl,
