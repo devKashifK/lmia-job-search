@@ -21,7 +21,7 @@ export function TypewriterEffect({
         <span
           className="text-3xl font-bold gradient-text"
           style={{
-            background: "linear-gradient(90deg, #4ade80, #22c55e)",
+            background: "linear-gradient(90deg, hsl(var(--brand-400)), hsl(var(--brand-500)))",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}

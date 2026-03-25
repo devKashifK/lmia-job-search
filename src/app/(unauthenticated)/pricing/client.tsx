@@ -308,10 +308,15 @@ const PricingPage = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-widest mb-6"
+                className="flex items-center justify-center gap-4 mb-6"
               >
-                <Zap className="w-3 h-3 fill-current" />
-                Transparent Pricing
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-widest">
+                  <Zap className="w-3 h-3 fill-current" />
+                  Transparent Pricing
+                </div>
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] border-l border-gray-200 pl-4">
+                  Prices in CAD
+                </div>
               </motion.div>
 
               <motion.h1

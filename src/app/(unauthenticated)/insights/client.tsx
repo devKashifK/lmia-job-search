@@ -577,39 +577,8 @@ export default function InDemandJobsPage() {
 
     // ─── Scroll logic ─────────────────────────────────────────────────────────
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(true);
+    const [showAllRegions, setShowAllRegions] = useState(false);
 
-    const checkScrollLimits = useCallback(() => {
-        if (scrollContainerRef.current) {
-            const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-            setCanScrollLeft(scrollLeft > 5);
-            setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
-        }
-    }, []);
-
-    useEffect(() => {
-        const el = scrollContainerRef.current;
-        if (el) {
-            el.addEventListener('scroll', checkScrollLimits);
-            checkScrollLimits();
-            window.addEventListener('resize', checkScrollLimits);
-            return () => {
-                el.removeEventListener('scroll', checkScrollLimits);
-                window.removeEventListener('resize', checkScrollLimits);
-            };
-        }
-    }, [checkScrollLimits, regions]); // Re-check when regions load
-
-    const scroll = (direction: 'left' | 'right') => {
-        if (scrollContainerRef.current) {
-            const amount = 300;
-            scrollContainerRef.current.scrollBy({
-                left: direction === 'left' ? -amount : amount,
-                behavior: 'smooth'
-            });
-        }
-    };
 
     const themeKey = `${source}-${year}` as keyof typeof THEMES;
     const theme = THEMES[themeKey] ?? THEMES['trending-2026'];
@@ -717,7 +686,7 @@ export default function InDemandJobsPage() {
                 </section>
 
                 {/* ── Controls ──────────────────────────────────────────────── */}
-                <section className="bg-white border-b border-gray-100 shadow-sm sticky top-[64px] z-30">
+                <section className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-30">
                     <div className="max-w-6xl mx-auto px-4">
 
                         {/* Row 1: toggles + share + timestamp */}
@@ -754,38 +723,21 @@ export default function InDemandJobsPage() {
                         </div>
 
                         {/* Row 2: region tabs + search */}
-                        <div className="flex items-center gap-3 py-2">
-                            <div className="relative flex-shrink-0">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search NOC or title…"
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                    className="pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 w-40"
-                                />
-                            </div>
+                        <div className="flex flex-col gap-2 py-2">
+                            <div className="flex items-center gap-3">
+                                <div className="relative flex-shrink-0">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search NOC or title…"
+                                        value={search}
+                                        onChange={e => setSearch(e.target.value)}
+                                        className="pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-400 w-40"
+                                    />
+                                </div>
 
-                            <div className="relative flex-1 flex items-center min-w-0">
-                                <AnimatePresence>
-                                    {canScrollLeft && (
-                                        <motion.button
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -10 }}
-                                            onClick={() => scroll('left')}
-                                            className="absolute left-0 z-20 p-1 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full shadow-lg text-gray-600 hover:text-gray-900 transition-all -ml-2"
-                                        >
-                                            <ChevronLeft className="w-4 h-4" />
-                                        </motion.button>
-                                    )}
-                                </AnimatePresence>
-
-                                <div
-                                    ref={scrollContainerRef}
-                                    className="flex gap-1.5 overflow-x-auto no-scrollbar flex-1 py-1 px-1"
-                                >
-                                    {REGION_TABS.map(tab => (
+                                <div className="flex flex-nowrap items-center gap-1.5 flex-1 min-w-0">
+                                    {REGION_TABS.slice(0, 6).map(tab => (
                                         <button
                                             key={tab.key}
                                             onClick={() => setActiveTab(tab.key)}
@@ -798,26 +750,48 @@ export default function InDemandJobsPage() {
                                             <span className="sm:hidden">{tab.short}</span>
                                         </button>
                                     ))}
-                                </div>
-
-                                <AnimatePresence>
-                                    {canScrollRight && (
-                                        <motion.button
-                                            initial={{ opacity: 0, x: 10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: 10 }}
-                                            onClick={() => scroll('right')}
-                                            className="absolute right-0 z-20 p-1 bg-white/90 backdrop-blur-md border border-gray-200 rounded-full shadow-lg text-gray-600 hover:text-gray-900 transition-all -mr-2"
+                                    
+                                    <button
+                                        onClick={() => setShowAllRegions(!showAllRegions)}
+                                        className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-all border border-brand-100/50"
+                                    >
+                                        {showAllRegions ? 'Less' : 'More Regions'} 
+                                        <motion.div
+                                            animate={{ rotate: showAllRegions ? 180 : 0 }}
+                                            transition={{ duration: 0.3 }}
                                         >
-                                            <ChevronRight className="w-4 h-4" />
-                                        </motion.button>
-                                    )}
-                                </AnimatePresence>
-
-                                {/* Gradient Fades */}
-                                <div className={`absolute left-0 top-0 bottom-0 w-8 pointer-events-none bg-gradient-to-r from-white to-transparent z-10 transition-opacity duration-300 ${canScrollLeft ? 'opacity-100' : 'opacity-0'}`} />
-                                <div className={`absolute right-0 top-0 bottom-0 w-8 pointer-events-none bg-gradient-to-l from-white to-transparent z-10 transition-opacity duration-300 ${canScrollRight ? 'opacity-100' : 'opacity-0'}`} />
+                                            <ChevronDown className="w-3.5 h-3.5" />
+                                        </motion.div>
+                                    </button>
+                                </div>
                             </div>
+
+                            <AnimatePresence>
+                                {showAllRegions && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="flex flex-wrap gap-1.5 py-1 pt-1 ml-0 md:ml-[172px]">
+                                            {REGION_TABS.slice(6).map(tab => (
+                                                <button
+                                                    key={tab.key}
+                                                    onClick={() => setActiveTab(tab.key)}
+                                                    className={`flex-shrink-0 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap border ${activeTab === tab.key
+                                                        ? `${theme.tabActive} border-transparent scale-[1.02]`
+                                                        : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-200'
+                                                        }`}
+                                                >
+                                                    <span className="hidden sm:inline">{tab.label}</span>
+                                                    <span className="sm:hidden">{tab.short}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </section>

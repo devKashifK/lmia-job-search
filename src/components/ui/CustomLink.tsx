@@ -2,60 +2,59 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import NProgress from "nprogress";
-import { useEffect } from "react";
+import { useEffect, forwardRef } from "react";
 import "./CustomLink.css";
 
-interface CustomLinkProps {
+interface CustomLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
   children: React.ReactNode;
   className?: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
-const CustomLink: React.FC<CustomLinkProps> = ({
-  href,
-  children,
-  className,
-  onClick,
-}) => {
-  const router = useRouter();
+const CustomLink = forwardRef<HTMLAnchorElement, CustomLinkProps>(
+  ({ href, children, className, onClick, ...props }, ref) => {
+    const router = useRouter();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      NProgress.configure({
-        showSpinner: false,
-        trickleSpeed: 200,
-        minimum: 0.08,
-        template: `
+    useEffect(() => {
+      if (typeof window !== "undefined") {
+        NProgress.configure({
+          showSpinner: false,
+          trickleSpeed: 200,
+          minimum: 0.08,
+          template: `
           <div class="bar" role="bar">
             <div class="peg"></div>
           </div>
         `,
-      });
-    }
-  }, []);
+        });
+      }
+    }, []);
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    NProgress.start();
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+      NProgress.start();
 
-    if (onClick) {
-      onClick();
-    }
+      if (onClick) {
+        onClick(e);
+      }
 
-    router.push(href);
+      router.push(href);
 
-    // Add a small delay before completing the progress bar
-    setTimeout(() => {
-      NProgress.done();
-    }, 500);
-  };
+      // Add a small delay before completing the progress bar
+      setTimeout(() => {
+        NProgress.done();
+      }, 500);
+    };
 
-  return (
-    <Link href={href} className={className} onClick={handleClick}>
-      {children}
-    </Link>
-  );
-};
+    return (
+      <Link href={href} className={className} onClick={handleClick} ref={ref} {...props}>
+        {children}
+      </Link>
+    );
+  }
+);
+
+CustomLink.displayName = "CustomLink";
 
 export default CustomLink;
