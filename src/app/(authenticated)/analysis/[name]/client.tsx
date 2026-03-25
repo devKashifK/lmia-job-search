@@ -2154,8 +2154,8 @@ function CompanyAnalysisContent({
                 <div className="space-y-4">
                   {/* View Toggle and Search */}
                   <div className="flex items-center justify-between gap-4 mb-4">
-                    <div className="flex items-center gap-2 flex-1">
-                      <div className="relative flex-1 max-w-md">
+                    {/* <div className="flex items-center gap-2 flex-1"> */}
+                    {/* <div className="relative flex-1 max-w-md">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <Input
                           placeholder="Search in charts..."
@@ -2163,10 +2163,10 @@ function CompanyAnalysisContent({
                           onChange={(e) => setSearchQuery(e.target.value)}
                           className="pl-10 h-9 text-sm"
                         />
-                      </div>
+                      </div> */}
 
-                      {/* Filter Presets Dropdown */}
-                      <Popover
+                    {/* Filter Presets Dropdown */}
+                    {/* <Popover
                         open={showFilterPresets}
                         onOpenChange={setShowFilterPresets}
                       >
@@ -2306,8 +2306,8 @@ function CompanyAnalysisContent({
                             )}
                           </div>
                         </PopoverContent>
-                      </Popover>
-                    </div>
+                      </Popover> */}
+                    {/* </div> */}
 
                   </div>
 
@@ -2511,8 +2511,8 @@ function CompanyAnalysisContent({
                     </Dialog>
 
                     {/* Info Dialog */}
-                    <Dialog 
-                      open={infoDialog.isOpen} 
+                    <Dialog
+                      open={infoDialog.isOpen}
                       onOpenChange={(open) => setInfoDialog(prev => ({ ...prev, isOpen: open }))}
                     >
                       <DialogContent className="max-w-sm bg-white/95 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-3xl p-0 overflow-hidden outline-none ring-0">
@@ -2526,7 +2526,7 @@ function CompanyAnalysisContent({
                               {infoDialog.title}
                             </DialogTitle>
                           </div>
-                          
+
                           <div className="space-y-3">
                             <div className="space-y-1">
                               <p className="text-[10px] font-bold text-brand-600 uppercase tracking-widest opacity-80">Core Concept</p>
@@ -2534,7 +2534,7 @@ function CompanyAnalysisContent({
                                 {infoDialog.concept}
                               </p>
                             </div>
-                            
+
                             <div className="p-3 bg-gray-50/80 rounded-2xl border border-gray-100/50">
                               <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Calculation & Logic</p>
                               <p className="text-[11px] text-gray-600 leading-relaxed italic">
@@ -2543,7 +2543,7 @@ function CompanyAnalysisContent({
                             </div>
                           </div>
 
-                          <Button 
+                          <Button
                             onClick={() => setInfoDialog(prev => ({ ...prev, isOpen: false }))}
                             className="w-full bg-gray-900 hover:bg-black text-white text-xs h-9 rounded-xl shadow-sm transition-all active:scale-[0.98]"
                           >
@@ -2870,11 +2870,11 @@ function CompanyAnalysisContent({
                   ) : (
                     <>
                       {/* Key Metrics */}
-                      <motion.div 
+                      <motion.div
                         variants={staggerContainer}
                         initial="hidden"
                         animate="show"
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6"
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mb-6 px-1"
                       >
                         <MetricCard
                           label={'Total Jobs'}
@@ -2948,21 +2948,21 @@ function CompanyAnalysisContent({
 
                         {filters.searchType === 'lmia' &&
                           analysisData?.trends.averagePositions && (
-                          <MetricCard
-                            label={'Avg. Positions'}
-                            value={analysisData.trends.averagePositions.toFixed(
-                              1
-                            )}
-                            subtitle={'Per LMIA application'}
-                            icon={'solar:suitcase-line-duotone'}
-                            onInfoClick={() => setInfoDialog({
-                              isOpen: true,
-                              title: 'Hiring Capacity',
-                              concept: 'Scale of regulatory approval per application.',
-                              logic: "For LMIA-based listings, we calculate the average number of approved positions per application. This reflects the scale of individual recruitment efforts authorized by the government for this employer."
-                            })}
-                          />
-                        )}
+                            <MetricCard
+                              label={'Avg. Positions'}
+                              value={analysisData.trends.averagePositions.toFixed(
+                                1
+                              )}
+                              subtitle={'Per LMIA application'}
+                              icon={'solar:suitcase-line-duotone'}
+                              onInfoClick={() => setInfoDialog({
+                                isOpen: true,
+                                title: 'Hiring Capacity',
+                                concept: 'Scale of regulatory approval per application.',
+                                logic: "For LMIA-based listings, we calculate the average number of approved positions per application. This reflects the scale of individual recruitment efforts authorized by the government for this employer."
+                              })}
+                            />
+                          )}
                       </motion.div>
 
                       {/* Wage Analysis Section */}
@@ -2983,7 +2983,7 @@ function CompanyAnalysisContent({
                       )}
 
                       {/* Two Column Charts - Location & Cities */}
-                      <motion.div 
+                      <motion.div
                         variants={staggerContainer}
                         initial="hidden"
                         animate="show"
@@ -3048,7 +3048,7 @@ function CompanyAnalysisContent({
                       </motion.div>
 
                       {/* Two Column Charts - NOC Codes & Categories */}
-                      <motion.div 
+                      <motion.div
                         variants={staggerContainer}
                         initial="hidden"
                         animate="show"
@@ -3108,7 +3108,7 @@ function CompanyAnalysisContent({
                         </div>
                       </motion.div>
 
-                      <motion.div 
+                      <motion.div
                         variants={staggerContainer}
                         initial="hidden"
                         animate="show"
@@ -3141,7 +3141,7 @@ function CompanyAnalysisContent({
                         </div>
                       </motion.div>
 
-                      <motion.div 
+                      <motion.div
                         variants={staggerContainer}
                         initial="hidden"
                         animate="show"
@@ -3386,15 +3386,15 @@ const MetricCard = ({
       transition={{ duration: 0.4, ease: 'easeOut' }}
       className="group"
     >
-      <Card className="h-full bg-white/70 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgba(25,118,210,0.12)] ring-1 ring-brand-50/50 transition-all duration-500 rounded-3xl overflow-hidden relative">
+      <Card className="h-full bg-white/70 backdrop-blur-2xl border border-white/60 shadow-[0_4px_15px_rgb(0,0,0,0.03)] hover:shadow-[0_12px_30px_rgba(25,118,210,0.08)] ring-1 ring-brand-50/50 transition-all duration-500 rounded-2xl overflow-hidden relative">
         {/* Modern glowing effect */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        
-        <CardContent className="p-5 relative z-10 flex flex-col h-full">
-          <div className="flex items-start justify-between mb-4">
+        <div className="absolute -top-16 -right-16 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+        <CardContent className="p-4 relative z-10 flex flex-col h-full">
+          <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1.5 translate-y-0.5">
-                <p className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">
+              <div className="flex items-center gap-2 mb-1 translate-y-0.5">
+                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
                   {label}
                 </p>
                 {onInfoClick && (
@@ -3405,41 +3405,41 @@ const MetricCard = ({
                     }}
                     className="p-1 hover:bg-brand-50 rounded-full transition-colors group/info"
                   >
-                    <Info className="w-3 h-3 text-gray-300 group-hover/info:text-brand-600 transition-colors" />
+                    <Info className="w-3.5 h-3.5 text-gray-300 group-hover/info:text-brand-600 transition-colors" />
                   </button>
                 )}
               </div>
-              
-              <div className="flex items-baseline gap-2">
+
+              <div className="flex items-baseline gap-1.5">
                 <motion.p
-                  className="text-3xl font-black text-gray-900 group-hover:text-brand-600 transition-colors tracking-tight"
+                  className="text-xl font-bold text-gray-900 group-hover:text-brand-600 transition-colors tracking-tight"
                 >
                   {value}
                 </motion.p>
                 {label === 'Growth Rate' && (
                   <div className={cn(
-                    "flex items-center gap-0.5 text-xs font-bold px-1.5 py-0.5 rounded-full",
+                    "flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full",
                     value?.toString().includes('+') ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"
                   )}>
                     <motion.div
                       animate={{ rotate: value?.toString().includes('+') ? 0 : 180 }}
                     >
-                      <TrendingUp className="w-3 h-3" />
+                      <TrendingUp className="w-2.5 h-2.5" />
                     </motion.div>
                   </div>
                 )}
               </div>
             </div>
-            
-            <div className="p-3 bg-gradient-to-br from-brand-50 to-brand-100/50 rounded-2xl ring-1 ring-brand-200/20 group-hover:ring-brand-500/30 group-hover:shadow-[0_0_20px_rgba(25,118,210,0.1)] transition-all duration-500">
+
+            <div className="p-2.5 bg-gradient-to-br from-brand-50 to-brand-100/50 rounded-xl ring-1 ring-brand-200/20 group-hover:ring-brand-500/30 group-hover:shadow-[0_0_15px_rgba(25,118,210,0.08)] transition-all duration-500">
               <div className="text-brand-600">
-                <Icon width={24} height={24} />
+                <Icon width={18} height={18} />
               </div>
             </div>
           </div>
-          
+
           <div className="mt-auto pt-2 border-t border-gray-50/50">
-            <p className="text-xs font-medium text-gray-400 group-hover:text-gray-600 transition-colors line-clamp-1">
+            <p className="text-[11px] font-medium text-gray-400 group-hover:text-gray-600 transition-colors line-clamp-1">
               {subtitle}
             </p>
           </div>
