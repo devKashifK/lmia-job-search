@@ -143,11 +143,7 @@ export function NocRecommendationDialog({ isOpen, onClose, jobTitles }: NocRecom
                                             Matches your experience in software and web development.
                                         </p>
                                     </div>
-                                    {selectedNocs.includes(noc.code) && (
-                                        <div className="absolute right-4 top-4 text-brand-600 animate-in fade-in zoom-in duration-200">
-                                            <Check className="w-5 h-5" />
-                                        </div>
-                                    )}
+                                    {/* Redundant checkmark removed to avoid confusion with the left checkbox */}
                                 </div>
                             ))}
                         </div>

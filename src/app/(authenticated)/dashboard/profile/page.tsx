@@ -208,30 +208,38 @@ export default function UserProfile() {
 
       let finalJobTitles: string[] = preferences?.preferred_job_titles || [];
 
-      // Map API response keys to metadata keys
-      try {
-        if (data.name) await updateUserMetadata("name", data.name);
-        if (data.email) await updateUserMetadata("email", data.email);
-        if (data.phone) await updateUserMetadata("phone", data.phone);
-        if (data.location) await updateUserMetadata("country", data.location);
-        if (data.address) await updateUserMetadata("address", data.address);
-        if (data.dob) await updateUserMetadata("dob", data.dob);
-        if (data.linkedin) await updateUserMetadata("linkedin", data.linkedin);
-        if (data.website) await updateUserMetadata("website", data.website);
-        if (data.position) await updateUserMetadata("position", data.position);
-        if (data.company) await updateUserMetadata("company", data.company);
-        if (data.bio) await updateUserMetadata("bio", data.bio);
-        if (data.skills) await updateUserMetadata("skills", data.skills);
+      // Batch all metadata updates into a single call for reliability
+      const metadataUpdates: any = {
+        name: data.name || session?.user?.user_metadata?.name,
+        email: data.email || session?.user?.user_metadata?.email,
+        phone: data.phone || session?.user?.user_metadata?.phone,
+        country: data.location || session?.user?.user_metadata?.country,
+        address: data.address || session?.user?.user_metadata?.address,
+        dob: data.dob || session?.user?.user_metadata?.dob,
+        linkedin: data.linkedin || session?.user?.user_metadata?.linkedin,
+        website: data.website || session?.user?.user_metadata?.website,
+        position: data.position || session?.user?.user_metadata?.position,
+        company: data.company || session?.user?.user_metadata?.company,
+        bio: data.bio || session?.user?.user_metadata?.bio,
+        skills: data.skills || session?.user?.user_metadata?.skills,
+        experience: data.experience ? String(data.experience) : session?.user?.user_metadata?.experience,
+      };
 
-        // Handle array fields
-        const educationStr = Array.isArray(data.education) ? data.education.join("\n\n") : data.education;
-        if (educationStr) await updateUserMetadata("education", educationStr);
+      // Handle array fields
+      if (data.education) {
+        metadataUpdates.education = Array.isArray(data.education) ? data.education.join("\n\n") : data.education;
+      }
+      if (data.work_experience) {
+        metadataUpdates.work_history = Array.isArray(data.work_experience) ? data.work_experience.join("\n\n") : data.work_experience;
+      }
 
-        const workHistoryStr = Array.isArray(data.work_experience) ? data.work_experience.join("\n\n") : data.work_experience;
-        if (workHistoryStr) await updateUserMetadata("work_history", workHistoryStr);
+      console.log("DEBUG: Batch updating metadata:", metadataUpdates);
+      
+      const { error: metaError } = await db.auth.updateUser({
+        data: metadataUpdates
+      });
 
-        if (data.experience) await updateUserMetadata("experience", String(data.experience));
-      } catch (metaError) {
+      if (metaError) {
         console.error("DEBUG: Metadata update failed", metaError);
         throw metaError;
       }
@@ -311,7 +319,7 @@ export default function UserProfile() {
 
   const preferenceFields = {
     job_titles: preferences?.preferred_job_titles?.length > 0,
-    locations: (preferences?.preferred_provinces?.length > 0) || (preferences?.preferred_cities?.length > 0),
+    locations: (preferences?.preferred_provinces?.length || 0) > 0 || (preferences?.preferred_cities?.length || 0) > 0,
     industries: preferences?.preferred_industries?.length > 0,
     noc_codes: preferences?.preferred_noc_codes?.length > 0,
     tiers: preferences?.preferred_company_tiers?.length > 0,
@@ -404,7 +412,7 @@ export default function UserProfile() {
               <EditableField
                 icon={<Mail className="h-4 w-4" />}
                 title="Email"
-                value={session?.user?.email || ""}
+                value={session?.user?.user_metadata?.email || session?.user?.email || ""}
                 placeholder="your@email.com"
                 onUpdate={(value) => updateUserMetadata("email", value)}
                 type="email"

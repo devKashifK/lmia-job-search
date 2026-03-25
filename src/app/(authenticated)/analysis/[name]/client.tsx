@@ -140,6 +140,7 @@ interface CompanyAnalysisData {
   rawJobs: any[];
   trends: {
     growthRate: number;
+    isLowVolume: boolean;
     popularLocation: string;
     commonTitle: string;
     topNocCode: string;
@@ -1273,12 +1274,17 @@ function CompanyAnalysisContent({
       );
 
       const recentYears = timeData.slice(-2);
+      const prevCount = recentYears[0]?.count || 0;
+      const currCount = recentYears[1]?.count || 0;
+      
       const growthRate =
-        recentYears.length === 2
-          ? ((recentYears[1].count - recentYears[0].count) /
-            recentYears[0].count) *
-          100
-          : 0;
+        recentYears.length === 2 && prevCount > 0
+          ? ((currCount - prevCount) / prevCount) * 100
+          : recentYears.length === 2 && prevCount === 0 && currCount > 0
+            ? 100 // Treat 0 to something as 100% growth for simplicity, or we could say "New"
+            : 0;
+
+      const isLowVolume = prevCount > 0 && prevCount < 5;
 
       return {
         companyName,
@@ -1298,6 +1304,7 @@ function CompanyAnalysisContent({
         rawJobs: jobs || [],
         trends: {
           growthRate,
+          isLowVolume,
           popularLocation: sortedLocations[0]?.[0] || 'N/A',
           commonTitle: sortedTitles[0]?.[0] || 'N/A',
           topNocCode: sortedNocCodes[0]?.[0] || 'N/A',
@@ -2802,11 +2809,12 @@ function CompanyAnalysisContent({
                           label={'Growth Rate'}
                           value={
                             analysisData?.trends.growthRate
-                              ? `${analysisData.trends.growthRate > 0 ? '+' : ''
-                              }${analysisData.trends.growthRate.toFixed(1)}%`
+                              ? analysisData.trends.growthRate > 999 
+                                ? '>999%' 
+                                : `${analysisData.trends.growthRate > 0 ? '+' : ''}${analysisData.trends.growthRate.toFixed(1)}%`
                               : 'N/A'
                           }
-                          subtitle={'Year-over-year change'}
+                          subtitle={analysisData?.trends.isLowVolume ? 'Limited data points' : 'Year-over-year change'}
                           icon={'material-symbols:trending-up'}
                         />
                         <MetricCard
