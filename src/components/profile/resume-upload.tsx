@@ -230,51 +230,62 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
         setShowConfirmDialog(false);
         if (!session?.user) return;
 
-        if (clearAll) {
-            setIsUploading(true);
-            try {
+        try {
+            if (clearAll) {
+                setIsUploading(true);
+                
                 // 1. Clear Preferences
-                await upsertUserPreferences(session.user.id, DEFAULT_PREFERENCES);
+                try {
+                    await upsertUserPreferences(session.user.id, DEFAULT_PREFERENCES);
+                } catch (prefError) {
+                    console.error("Failed to clear preferences:", prefError);
+                    toast({
+                        variant: "destructive",
+                        title: "Preferences Error",
+                        description: "Could not reset job preferences, but continuing with profile.",
+                    });
+                }
 
-                // 2. Clear Profile Details
-                await db.auth.updateUser({
+                // 2. Clear Profile Details (Minimized to stay within header/JWT limits)
+                const { error: metaError } = await db.auth.updateUser({
                     data: {
-                        name: null,
-                        phone: null,
-                        address: null,
-                        country: null,
-                        position: null,
-                        company: null,
+                        name: session.user.user_metadata?.name || null, // Keep name if exists, else null
                         bio: null,
                         skills: null,
                         education: null,
                         work_history: null,
-                        experience: null,
+                        // We no longer nullify every minor field (phone, address, etc.) 
+                        // individually to keep the JWT from bloating. 
+                        // The UI handles missing fields gracefully.
+                        profile_cleared: true,
                     }
                 });
 
+                if (metaError) throw metaError;
+
                 toast({
                     title: "Profile Reset",
-                    description: "Your job preferences and profile details have been cleared.",
-                });
-            } catch (error: any) {
-                console.error("Failed to clear profile:", error);
-                toast({
-                    variant: "destructive",
-                    title: "Error resetting profile",
-                    description: "Resume will still be processed, but preferences were not cleared.",
+                    description: "Your profile details have been cleared.",
                 });
             }
-        }
 
-        if (pendingAction === 'delete') {
-            await finalizeDelete();
-        } else if (pendingFile) {
-            await finalizeUpload(pendingFile);
+            if (pendingAction === 'delete') {
+                await finalizeDelete();
+            } else if (pendingFile) {
+                await finalizeUpload(pendingFile);
+            }
+        } catch (error: any) {
+            console.error("Profile reset error:", error);
+            toast({
+                variant: "destructive",
+                title: "Reset Failed",
+                description: "Failed to clear profile details. Please try again.",
+            });
+        } finally {
+            setIsUploading(false);
+            setPendingAction(null);
+            setPendingFile(null);
         }
-
-        setPendingAction(null);
-        setPendingFile(null);
     };
 
     return (

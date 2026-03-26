@@ -4,19 +4,15 @@ export interface UserPreferences {
     user_id?: string;
     preferred_job_titles: string[];
     preferred_locations: string[];
-    // Legacy aliases (kept for backwards compatibility with existing components)
-    preferred_provinces?: string[];
-    preferred_cities?: string[];
     preferred_industries: string[];
     preferred_noc_codes: string[];
-    preferred_teer_categories?: string[];
     preferred_company_tiers: string[];
-    salary_min?: number;
-    salary_max?: number;
-    work_authorization?: string[];
-    remote_preference?: string;
-    experience_level?: string[];
-    company_size_preference?: string;
+    salary_min?: number | null;
+    salary_max?: number | null;
+    work_authorization?: string | null;
+    remote_preference?: string | null;
+    experience_level?: string | null;
+    company_size_preference?: string[] | null;
     created_at?: string;
     updated_at?: string;
 }
@@ -24,12 +20,15 @@ export interface UserPreferences {
 export const DEFAULT_PREFERENCES: UserPreferences = {
     preferred_job_titles: [],
     preferred_locations: [],
-    preferred_provinces: [],
-    preferred_cities: [],
     preferred_industries: [],
     preferred_noc_codes: [],
-    preferred_teer_categories: [],
     preferred_company_tiers: [],
+    salary_min: null,
+    salary_max: null,
+    work_authorization: null,
+    remote_preference: null,
+    experience_level: null,
+    company_size_preference: [],
 };
 
 /**

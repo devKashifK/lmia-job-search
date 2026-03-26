@@ -36,22 +36,36 @@ export async function isJobSaved(recordId: string, userId: string): Promise<bool
 }
 
 /**
- * Check multiple jobs and return a Set of saved record IDs
+ * Check multiple jobs and return a Set of saved record IDs.
+ * Uses batching or fetches all saved IDs to avoid exceeding URL length limits.
  */
 export async function getSavedJobSet(recordIds: string[], userId: string): Promise<Set<string>> {
     if (!recordIds.length || !userId) return new Set();
 
-    const { data, error } = await (db as any)
-        .from('saved_jobs')
-        .select('record_id')
-        .in('record_id', recordIds)
-        .eq('user_id', userId);
+    // If checking a small number of IDs, use .in() - it's fast.
+    // If checking many IDs, it's safer and more efficient to just fetch all the user's saved IDs
+    // and check against them locally, avoiding massive URL strings.
+    if (recordIds.length < 50) {
+        const { data, error } = await (db as any)
+            .from('saved_jobs')
+            .select('record_id')
+            .in('record_id', recordIds)
+            .eq('user_id', userId);
 
-    if (error) {
-        console.error('Error fetching saved job set:', error);
-        return new Set();
+        if (error) {
+            console.error('Error fetching saved job set:', error);
+            return new Set();
+        }
+        return new Set(((data as any[]) ?? []).map((r) => r.record_id));
     }
-    return new Set(((data as any[]) ?? []).map((r) => r.record_id));
+
+    // fallback for large sets: just get everything this user has saved
+    // This is much safer than building a 10KB URL string.
+    const allSavedIds = await getSavedJobIds(userId);
+    const idSet = new Set(allSavedIds);
+    
+    // Filter to only return the ones requested
+    return new Set(recordIds.filter(id => idSet.has(id)));
 }
 
 /**

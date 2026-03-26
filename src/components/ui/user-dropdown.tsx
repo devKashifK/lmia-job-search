@@ -24,39 +24,44 @@ export default function UserDropdown({ className }: { className?: string }) {
 
   const handleSignOut = async () => {
     try {
+      // 1. Clear local state immediately to avoid being stuck by large headers/cookies
       localStorage.removeItem('brandColor');
-      const { error } = await db.auth.signOut();
       
-      // If there's an error, check if it's "Auth session missing!"
-      // and treat it as a success for the purpose of the redirect.
-      if (error && error.message !== 'Auth session missing!') {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        });
-        return; // Don't redirect if it's a real error (like network)
-      }
-
-      // Force a manual local clear of any remaining Supabase session data
-      // This is a safety measure in case the SDK fails to clear it due to an error.
+      // Clear all Supabase related local storage keys
       Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+        if (key.includes('sb-') && (key.includes('-auth-token') || key.includes('-session'))) {
           localStorage.removeItem(key);
         }
       });
 
+      // Clear common Supabase cookies just in case they are causing the "Header too large" error
+      if (typeof document !== 'undefined') {
+        document.cookie.split(";").forEach((c) => {
+          const name = c.split("=")[0].trim();
+          if (name.includes("sb-") || name.includes("supabase")) {
+            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          }
+        });
+      }
+
+      // 2. Attempt server-side sign out (may fail with 400 if headers are too large)
+      try {
+        await db.auth.signOut();
+      } catch (signOutErr) {
+        console.warn("Server-side sign out failed (likely header size), but local session was cleared:", signOutErr);
+      }
+      
       toast({
         title: 'Success',
         description: 'Signed out successfully',
       });
+      
+      // 3. Force redirect to home
       window.location.href = '/';
     } catch (err: unknown) {
-      toast({
-        title: 'Error',
-        description: err instanceof Error ? err.message : 'An error occurred',
-        variant: 'destructive',
-      });
+      console.error("Sign out error:", err);
+      // Even on error, force redirect to be safe
+      window.location.href = '/';
     }
   };
 

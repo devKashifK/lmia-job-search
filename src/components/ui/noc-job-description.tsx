@@ -225,26 +225,40 @@ export function NocJobDescription({
   const handleViewCompanyJobs = () => {
     if (job?.employer) {
       if (searchType === 'hot_leads') {
+        // router.push(
+        //   `/analysis/${encodeURIComponent(
+        //     job.employer
+        //   )}?t=trending_job&job_title=${encodeURIComponent(
+        //     job.job_title ?? ''
+        //   )}&location=${encodeURIComponent(
+        //     job.state
+        //   )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
+        //     job.noc_code ?? ''
+        //   )}`
+        // );
         router.push(
           `/analysis/${encodeURIComponent(
             job.employer
-          )}?t=trending_job&job_title=${encodeURIComponent(
-            job.job_title ?? ''
-          )}&location=${encodeURIComponent(
-            job.state
-          )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
+          )}?t=trending_job&noc=${encodeURIComponent(
             job.noc_code ?? ''
           )}`
         );
       } else {
+        // router.push(
+        //   `/analysis/${encodeURIComponent(
+        //     job.employer
+        //   )}?t=lmia&job_title=${encodeURIComponent(
+        //     job.job_title ?? ''
+        //   )}&location=${encodeURIComponent(
+        //     job.state
+        //   )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
+        //     job.noc_code ?? ''
+        //   )}`
+        // );
         router.push(
           `/analysis/${encodeURIComponent(
             job.employer
-          )}?t=lmia&job_title=${encodeURIComponent(
-            job.job_title ?? ''
-          )}&location=${encodeURIComponent(
-            job.state
-          )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
+          )}?t=lmia&noc=${encodeURIComponent(
             job.noc_code ?? ''
           )}`
         );
@@ -290,6 +304,29 @@ export function NocJobDescription({
   // Parse structured JSON from DB (falls back gracefully to plain text or NOC profile)
   const parsedDesc = parseJobDescription(job?.job_description);
 
+  // Core content lists
+  const requirements = parsedDesc
+    ? parsedDesc.requirements
+    : (nocProfile?.employmentRequirements ?? []);
+
+  const baseAdditionalInfo = parsedDesc
+    ? parsedDesc.additionalInfo
+    : (nocProfile?.additionalInfo ?? []);
+
+  // Consolidate extra sections into Additional Info, avoiding duplicates
+  const extraInfoItems = (parsedDesc?.extraSections ?? [])
+    .filter(section => {
+      const titleLower = section.title.toLowerCase();
+      // Only include if NOT already in requirements or base additional info
+      const alreadyInReq = requirements.some(r => r.toLowerCase().startsWith(`${titleLower}:`));
+      const alreadyInAdd = baseAdditionalInfo.some(a => a.toLowerCase().startsWith(`${titleLower}:`));
+      return !alreadyInReq && !alreadyInAdd;
+    })
+    .map(section => {
+      const content = Array.isArray(section.content) ? section.content.join(', ') : section.content;
+      return `${section.title}: ${content}`;
+    });
+
   const jobData = {
     title: job?.job_title,
     company: job?.employer,
@@ -307,19 +344,15 @@ export function NocJobDescription({
     jobDescription: (parsedDesc?.responsibilities?.length ?? 0) > 0
       ? parsedDesc!.responsibilities
       : formatMainDuties(nocProfile?.mainDuties ?? {}),
-    // Requirements: parsed → NOC employment requirements
-    requirements: parsedDesc
-      ? parsedDesc.requirements
-      : (nocProfile?.employmentRequirements ?? []),
+    // Requirements: already computed above
+    requirements: requirements,
     companyLogoUrl: '/logo.svg',
-    // Additional Info: parsed → NOC additional info (filter out "how to apply")
-    additionalInfo: (parsedDesc
-      ? parsedDesc.additionalInfo
-      : (nocProfile?.additionalInfo ?? [])),
+    // Additional Info: consolidated
+    additionalInfo: [...baseAdditionalInfo, ...extraInfoItems],
     // External link to original job posting (Job Bank etc.)
     jobUrl: parsedDesc?.jobUrl ?? null,
-    // Dynamic Extra Sections
-    extraSections: parsedDesc?.extraSections ?? [],
+    // Dynamic Extra Sections (REMOVED: consolidated into Additional Info)
+    extraSections: [],
   };
 
   const goTo = (path: string) => router.push(path);
@@ -720,38 +753,10 @@ export function NocJobDescription({
                       cardBgClass="bg-gradient-to-br from-white to-purple-50"
                       dotColorClass="bg-purple-400"
                       items={jobData.additionalInfo}
-                      defaultShowCount={3}
+                      defaultShowCount={5}
                     />
                   </motion.div>
                 )}
-
-                {/* Dynamic Extra Sections */}
-                {jobData.extraSections.map(({ title, content }: { title: string; content: string | string[] }, idx: number) => {
-                  // Skip if empty
-                  if (!content || (Array.isArray(content) && content.length === 0)) return null;
-
-                  const items = Array.isArray(content) ? content : [content];
-
-                  return (
-                    <motion.div
-                      key={`${title}-${idx}`}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.6 + (idx * 0.1) }}
-                    >
-                      <ExpandableListSection
-                        title={title}
-                        icon={Briefcase}
-                        iconColorClass="text-brand-600"
-                        iconBgClass="bg-gradient-to-br from-brand-100 to-brand-200"
-                        cardBgClass="bg-gradient-to-br from-white to-brand-50"
-                        dotColorClass="bg-brand-400"
-                        items={items}
-                        defaultShowCount={3}
-                      />
-                    </motion.div>
-                  );
-                })}
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

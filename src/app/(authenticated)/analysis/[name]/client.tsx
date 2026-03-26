@@ -1556,96 +1556,85 @@ function CompanyAnalysisContent({
         <div
           className={isMobile ? 'mx-auto px-4' : 'max-w-[1600px] mx-auto px-8'}
         >
-          {/* Header */}
+          {/* Modernized Sticky Header */}
           {!isMobile && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="sticky top-4 z-20 flex items-center justify-between gap-4 mb-6 p-4 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/50 shadow-sm"
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="sticky top-4 z-40 flex items-center justify-between gap-4 mb-6 p-2 lg:p-3 rounded-2xl bg-white/70 backdrop-blur-2xl border border-white/60 shadow-[0_8px_32px_rgba(0,0,0,0.04)] ring-1 ring-black/5"
             >
-              {/* Left Section: Home, Filter Toggle, Company Icon & Name */}
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 shrink-0">
+              {/* Left Section: Nav Dock & Company Info */}
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                {/* Navigation & Filter Dock */}
+                <div className="flex items-center gap-1 p-1 bg-gray-50/80 rounded-xl border border-gray-100/50 shadow-inner">
                   <Button
                     variant="ghost"
                     size="sm"
                     title="Back"
-                    className="h-9 w-9 p-0 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-brand-50"
+                    className="h-8 w-8 p-0 rounded-lg text-gray-400 hover:text-brand-600 hover:bg-white transition-all duration-300"
                     onClick={() => router.back()}
                   >
-                    <ArrowLeft className="w-5 h-5" />
+                    <ArrowLeft className="w-4 h-4" />
                   </Button>
-                  {/* Home Icon Button */}
                   <Button
                     variant="ghost"
                     size="sm"
                     title="Home"
-                    className="h-9 w-9 p-0 rounded-lg text-gray-500 hover:text-brand-600 hover:bg-brand-50 shrink-0"
+                    className="h-8 w-8 p-0 rounded-lg text-gray-400 hover:text-brand-600 hover:bg-white transition-all duration-300"
                     onClick={() => router.push('/')}
                   >
-                    <Home className="w-5 h-5" />
+                    <Home className="w-4 h-4" />
+                  </Button>
+                  <div className="w-px h-4 bg-gray-200 mx-0.5" />
+                  <Button
+                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                      'h-8 w-8 p-0 rounded-lg transition-all duration-300',
+                      isFilterOpen
+                        ? 'bg-brand-500 text-white shadow-brand-200/50'
+                        : 'text-gray-400 hover:text-brand-600 hover:bg-white'
+                    )}
+                  >
+                    {isFilterOpen ? (
+                      <X className="w-4 h-4" />
+                    ) : (
+                      <Filter className="w-4 h-4" />
+                    )}
                   </Button>
                 </div>
 
-                {/* Filter Toggle Button */}
-                <Button
-                  onClick={() => setIsFilterOpen(!isFilterOpen)}
-                  variant="outline"
-                  size="sm"
-                  className={cn(
-                    'h-8 w-8 p-0 rounded-lg transition-all',
-                    isFilterOpen
-                      ? 'bg-brand-500 text-white border-brand-500'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-brand-300 hover:bg-brand-50'
-                  )}
-                >
-                  {isFilterOpen ? (
-                    <X className="w-4 h-4" />
-                  ) : (
-                    <Filter className="w-4 h-4" />
-                  )}
-                </Button>
+                {/* Vertical Divider */}
+                <div className="hidden sm:block w-px h-8 bg-gray-100" />
 
-                {/* Company Name with Icon */}
-                <div className="flex items-center gap-3">
+                {/* Company Identity */}
+                <div className="flex items-center gap-3.5 group cursor-default">
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{
-                      duration: 0.3,
-                      type: 'spring',
-                      stiffness: 200,
-                    }}
-                    className="p-2 bg-brand-100 rounded-lg"
+                    whileHover={{ scale: 1.05 }}
+                    className="relative flex items-center justify-center h-10 w-10 bg-brand-50 rounded-full ring-2 ring-brand-100 shadow-sm transition-all"
                   >
+                    <div className="absolute inset-0 bg-brand-500/5 rounded-full animate-pulse opacity-0 group-hover:opacity-100" />
                     <Building2 className="w-5 h-5 text-brand-600" />
                   </motion.div>
 
-                  <div>
-                    <h1 className="text-lg font-semibold text-gray-900">
+                  <div className="flex flex-col">
+                    <h1 className="text-base font-black text-gray-900 tracking-tight leading-none group-hover:text-brand-600 transition-colors">
                       {companyName}
                     </h1>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em] mt-1.5 flex items-center gap-1.5">
                       Company Analysis
-                    </p>
+                      {/* <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded-full bg-brand-50 border border-brand-100/50 text-brand-600 text-[9px] font-black">
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-brand-500"></span>
+                        </span>
+                        {filters.searchType === 'lmia' ? 'LMIA' : 'Trending'}
+                      </div> */}
+                    </span>
                   </div>
                 </div>
-
-                {/* Data Source Badge */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.1 }}
-                >
-                  <Badge
-                    variant="outline"
-                    className="text-xs font-medium border-gray-300 text-gray-700"
-                  >
-                    <TrendingUp className="w-3 h-3 mr-1 inline" />
-                    {filters.searchType === 'lmia' ? 'LMIA' : 'Trending Jobs'}
-                  </Badge>
-                </motion.div>
               </div>
 
               {/* Right Section: Action Buttons */}
@@ -1663,7 +1652,7 @@ function CompanyAnalysisContent({
                     window.location.reload();
                     toast.success('Refreshing data...');
                   }}
-                  className="border-gray-300 hover:border-blue-300 hover:bg-blue-50 transition-all"
+                  className="h-9 w-9 p-0 rounded-xl border-gray-200 hover:border-brand-300 hover:bg-brand-50 transition-all text-gray-500 hover:text-brand-600 shadow-sm"
                   title="Refresh data"
                 >
                   <RefreshCw className="w-4 h-4" />
@@ -1840,7 +1829,7 @@ function CompanyAnalysisContent({
                       toast.error('Failed to copy link');
                     }
                   }}
-                  className="border-gray-300 hover:border-blue-300 hover:bg-blue-50 transition-all"
+                  className="h-9 w-9 p-0 rounded-xl border-gray-200 hover:border-brand-300 hover:bg-brand-50 transition-all text-gray-500 hover:text-brand-600 shadow-sm"
                   title="Share analysis"
                 >
                   <Share2 className="w-4 h-4" />
@@ -1915,25 +1904,27 @@ function CompanyAnalysisContent({
                       toast.error('Failed to add to comparison');
                     }
                   }}
-                  className="border-purple-300 bg-purple-50 hover:bg-purple-100 hover:border-purple-400 transition-all"
-                  title="Add to comparison"
+                  className="h-9 px-4 rounded-xl border-brand-200 bg-brand-50/30 text-brand-700 hover:bg-brand-50 hover:border-brand-300 transition-all shadow-sm font-semibold text-xs"
                 >
-                  <GitCompare className="w-4 h-4 mr-1" />
+                  <GitCompare className="w-4 h-4 mr-2 text-brand-600" />
                   Compare
                 </Button>
 
                 {/* View Jobs Button */}
                 <Button
-                  variant="outline"
                   size="sm"
+                  className="h-9 px-4 rounded-xl bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_12px_rgba(34,197,94,0.2)] border-0 transition-all font-semibold text-xs"
                   onClick={() => {
-                    const type = filters.searchType === 'lmia' ? 'lmia' : 'hot-leads';
-                    router.push(`/search/${type}/${encodeURIComponent(companyName)}?field=employer`);
+                    const params = new URLSearchParams();
+                    params.set('q', companyName);
+                    if (filters.searchType === 'lmia') {
+                      router.push(`/search/lmia/${companyName}`);
+                    } else {
+                      router.push(`/search?${params.toString()}`);
+                    }
                   }}
-                  className="border-brand-300 bg-brand-50 hover:bg-brand-100 hover:border-brand-400 transition-all font-medium"
-                  title="View all jobs"
                 >
-                  <ExternalLink className="w-4 h-4 mr-1.5" />
+                  <ExternalLink className="w-4 h-4 mr-2" />
                   View Jobs
                 </Button>
 

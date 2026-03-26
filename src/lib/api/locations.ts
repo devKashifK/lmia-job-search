@@ -42,7 +42,11 @@ export async function getProvinces(): Promise<string[]> {
             const name = p.province.trim();
             return PROVINCE_NORM[name] || name;
         })
-        .filter(name => name !== 'Foreign Employers');
+        .filter(name => 
+            name !== 'Foreign Employers' && 
+            name.toLowerCase() !== 'various locations' &&
+            name.toLowerCase() !== 'various'
+        );
 
     // Deduplicate normalized names
     return Array.from(new Set(provinces)).sort();
