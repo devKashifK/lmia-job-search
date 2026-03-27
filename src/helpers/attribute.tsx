@@ -2,9 +2,11 @@ import { cn } from "@/lib/utils";
 import { HTMLAttributes } from "react";
 interface AttributeNameProps extends HTMLAttributes<HTMLSpanElement> {
   name: string;
+  table?: string;
 }
 export function AttributeName({
   name,
+  table,
   className = "",
   ...props
 }: AttributeNameProps) {
@@ -15,7 +17,7 @@ export function AttributeName({
       title={name}
       {...props}
     >
-      <AttributeKey name={name} title={name} />
+      <AttributeKey name={name} table={table} title={name} />
     </span>
   );
 }
@@ -23,13 +25,23 @@ export function AttributeName({
 export function AttributeKey({
   className = "",
   name,
+  table,
   ...props
 }: {
   name: string;
+  table?: string;
 } & React.HTMLAttributes<HTMLSpanElement>) {
+  let label = snakeCaseToTitleCase(name);
+  const normalizedTable = table?.toLowerCase() || '';
+  if (
+    normalizedTable === "lmia" &&
+    (name === "state" || name === "territory" || name === "province")
+  ) {
+    label = "Province";
+  }
   return (
     <span {...props} className={className}>
-      {snakeCaseToTitleCase(name)}
+      {label}
     </span>
   );
 }

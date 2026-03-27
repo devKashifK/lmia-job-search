@@ -118,7 +118,7 @@ export default function AppliedFilters() {
             className="inline-flex items-center gap-1.5 py-1 px-3 bg-brand-50 border border-brand-200 rounded-full text-[11px] group hover:bg-brand-100 transition-all shadow-sm"
           >
             <span className="text-brand-600 font-semibold tracking-wide uppercase text-[9px]">
-              <AttributeName name={filter.column} />
+              <AttributeName name={filter.column} table={tableName} />
             </span>
             <span className="text-brand-300">|</span>
             <span className="text-brand-900 font-medium max-w-[120px] truncate">{filter.value}</span>

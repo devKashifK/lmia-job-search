@@ -13,7 +13,8 @@ import {
     Sparkles,
     Bell,
     Search,
-    ArrowRight
+    ArrowRight,
+    CheckCircle2
 } from "lucide-react";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +66,24 @@ function RecommendationBlock<T>({ title, description, items, renderItem, onAdd }
     );
 }
 
+function PreferenceWeight({ weight, isCompleted }: { weight: number, isCompleted?: boolean }) {
+    if (isCompleted) {
+        return (
+            <div className="flex items-center gap-1.5 ml-2">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100">
+                    {weight}%
+                </span>
+                <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+            </div>
+        );
+    }
+    return (
+        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-brand-50 text-brand-600 border border-brand-100 ml-2">
+            +{weight}%
+        </span>
+    );
+}
+
 export function JobPreferencesSection() {
     const { preferences, updatePreferences, isUpdating } = useUserPreferences();
     const [showAlertDialog, setShowAlertDialog] = useState(false);
@@ -77,12 +96,9 @@ export function JobPreferencesSection() {
     const { data: companyTiers, isLoading: loadingTiers } = useCompanyTiers();
 
     // Location selection state
-    const [selectedProvinces, setSelectedProvinces] = useState<string[]>(
-        preferences?.preferred_provinces || []
-    );
-    const [selectedCities, setSelectedCities] = useState<string[]>(
-        preferences?.preferred_cities || []
-    );
+    // We map these from the single 'preferred_locations' field in DB
+    const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
+    const [selectedCities, setSelectedCities] = useState<string[]>([]);
     const [showLocationMenu, setShowLocationMenu] = useState(false);
     const [locationStep, setLocationStep] = useState<'province' | 'city'>('province');
     const [citySearch, setCitySearch] = useState("");
@@ -123,15 +139,19 @@ export function JobPreferencesSection() {
     // Fetch cities when provinces are selected
     const { data: availableCities } = useCitiesForProvinces(selectedProvinces);
 
-    // Sync with preferences
+    // Sync with preferences (Parse preferred_locations into provinces and cities)
     useEffect(() => {
-        if (preferences?.preferred_provinces) {
-            setSelectedProvinces(preferences.preferred_provinces);
+        if (preferences?.preferred_locations && provinces) {
+            const locations = preferences.preferred_locations;
+            // The logic: provinces are items that match our provinces list
+            const provinceNames = provinces; // using the data from hook
+            const foundProvs = locations.filter(loc => provinceNames.includes(loc));
+            const foundCities = locations.filter(loc => !provinceNames.includes(loc));
+            
+            setSelectedProvinces(foundProvs);
+            setSelectedCities(foundCities);
         }
-        if (preferences?.preferred_cities) {
-            setSelectedCities(preferences.preferred_cities);
-        }
-    }, [preferences]);
+    }, [preferences?.preferred_locations, provinces]);
 
     // Convert data to multi-select options
     const jobTitleOptions = (jobTitles || []).map(title => ({
@@ -156,13 +176,16 @@ export function JobPreferencesSection() {
 
     // Location handlers
     const handleProvinceToggle = (province: string) => {
-        const newProvinces = selectedProvinces.includes(province)
-            ? selectedProvinces.filter(p => p !== province)
-            : [...selectedProvinces, province];
-
-        setSelectedProvinces(newProvinces);
-        // Clear cities when provinces change
-        setSelectedCities([]);
+        setSelectedProvinces(prev => {
+            const next = prev.includes(province)
+                ? prev.filter(p => p !== province)
+                : [...prev, province];
+            
+            // Sync with cities: remove cities that belong to removed provinces
+            // This is handled by useCitiesForProvinces providing only available ones,
+            // but we should also clear selectedCities from the local state for those provinces.
+            return next;
+        });
     };
 
     const handleCityToggle = (city: string) => {
@@ -174,9 +197,9 @@ export function JobPreferencesSection() {
     };
 
     const handleApplyLocation = () => {
+        // Merge provinces and cities into a single array for the DB
         updatePreferences({
-            preferred_provinces: selectedProvinces,
-            preferred_cities: selectedCities,
+            preferred_locations: [...selectedProvinces, ...selectedCities],
         });
         setShowLocationMenu(false);
     };
@@ -186,8 +209,7 @@ export function JobPreferencesSection() {
         setSelectedCities([]);
         setLocationStep('province');
         updatePreferences({
-            preferred_provinces: [],
-            preferred_cities: [],
+            preferred_locations: [],
         });
     };
 
@@ -203,7 +225,7 @@ export function JobPreferencesSection() {
 
     // Check if any preferences are set
     const hasJobTitles = (preferences?.preferred_job_titles?.length || 0) > 0;
-    const hasLocations = (preferences?.preferred_provinces?.length || 0) > 0 || (preferences?.preferred_cities?.length || 0) > 0;
+    const hasLocations = (preferences?.preferred_locations?.length || 0) > 0;
     const hasIndustries = (preferences?.preferred_industries?.length || 0) > 0;
     const hasNocCodes = (preferences?.preferred_noc_codes?.length || 0) > 0;
     const hasTiers = (preferences?.preferred_company_tiers?.length || 0) > 0;
@@ -281,19 +303,14 @@ export function JobPreferencesSection() {
                             <div>
                                 <p className="text-xs font-medium text-gray-600 mb-1">Locations:</p>
                                 <div className="flex flex-wrap gap-1.5">
-                                    {preferences?.preferred_provinces?.map((prov, idx) => (
+                                    {preferences?.preferred_locations?.slice(0, 6).map((loc, idx) => (
                                         <Badge key={idx} variant="secondary" className="bg-white text-xs">
-                                            {prov}
+                                            {loc}
                                         </Badge>
                                     ))}
-                                    {preferences?.preferred_cities?.slice(0, 3).map((city, idx) => (
-                                        <Badge key={`city-${idx}`} variant="secondary" className="bg-white text-xs">
-                                            {city}
-                                        </Badge>
-                                    ))}
-                                    {(preferences?.preferred_cities?.length || 0) > 3 && (
+                                    {(preferences?.preferred_locations?.length || 0) > 6 && (
                                         <Badge variant="secondary" className="bg-white text-xs">
-                                            +{(preferences?.preferred_cities?.length || 0) - 3} more cities
+                                            +{(preferences?.preferred_locations?.length || 0) - 6} more
                                         </Badge>
                                     )}
                                 </div>
@@ -358,9 +375,12 @@ export function JobPreferencesSection() {
                     animate={{ opacity: 1, y: 0 }}
                     className="space-y-2"
                 >
-                    <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                        <Briefcase className="h-4 w-4 text-brand-600" />
-                        Preferred Job Titles
+                    <label className="text-sm font-medium text-gray-900 flex items-center">
+                        <span className="flex items-center gap-2">
+                            <Briefcase className="h-4 w-4 text-brand-600" />
+                            Preferred Job Titles
+                        </span>
+                        <PreferenceWeight weight={20} isCompleted={hasJobTitles} />
                     </label>
                     <MultiSelect
                         options={jobTitleOptions}
@@ -383,23 +403,40 @@ export function JobPreferencesSection() {
                     transition={{ delay: 0.05 }}
                     className="space-y-2"
                 >
-                    <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-brand-600" />
-                        Preferred Locations
+                    <label className="text-sm font-medium text-gray-900 flex items-center">
+                        <span className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-brand-600" />
+                            Preferred Locations
+                        </span>
+                        <PreferenceWeight weight={20} isCompleted={hasLocations} />
                     </label>
 
                     {/* Location Selector Button */}
                     <div className="relative">
                         <button
                             onClick={() => setShowLocationMenu(!showLocationMenu)}
-                            className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 rounded-lg hover:border-brand-300 transition-colors"
+                            className="w-full flex items-center justify-between px-3 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-brand-300 transition-colors"
                         >
-                            <div className="flex flex-wrap gap-1.5 flex-1">
-                                {getLocationText() || (
-                                    <span className="text-gray-400">Select provinces and cities...</span>
+                            <div className="flex flex-wrap gap-1.5 flex-1 pr-2">
+                                {getLocationText() ? (
+                                    <div className="flex flex-wrap gap-1">
+                                        {selectedProvinces.slice(0, 2).map((p, i) => (
+                                            <Badge key={i} variant="secondary" className="bg-brand-50 text-brand-700 text-[10px] h-5 px-1.5 border-brand-100">
+                                                {p}
+                                            </Badge>
+                                        ))}
+                                        {selectedProvinces.length > 2 && <span className="text-[10px] text-gray-400">+{selectedProvinces.length - 2}</span>}
+                                        {selectedCities.length > 0 && (
+                                            <Badge variant="secondary" className="bg-gray-50 text-gray-600 text-[10px] h-5 px-1.5">
+                                                {selectedCities.length} Cities
+                                            </Badge>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <span className="text-sm text-gray-400">Select provinces and cities...</span>
                                 )}
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
                                 {getLocationText() && (
                                     <button
                                         onClick={(e) => {
@@ -408,10 +445,10 @@ export function JobPreferencesSection() {
                                         }}
                                         className="p-1 hover:bg-gray-100 rounded-full"
                                     >
-                                        <X className="h-4 w-4 text-gray-400" />
+                                        <X className="h-3.5 w-3.5 text-gray-400" />
                                     </button>
                                 )}
-                                <ChevronDown className={`h - 4 w - 4 text - gray - 400 transition - transform ${showLocationMenu ? 'rotate-180' : ''} `} />
+                                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${showLocationMenu ? 'rotate-180' : ''}`} />
                             </div>
                         </button>
 
@@ -420,37 +457,49 @@ export function JobPreferencesSection() {
                             <div className="absolute z-10 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-hidden">
                                 {locationStep === 'province' ? (
                                     <>
-                                        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                                            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                                Select Provinces
+                                        <div className="px-3 py-2 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                                            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">
+                                                Provinces
                                             </div>
-                                            {selectedProvinces.length > 0 && (
+                                            <div className="flex items-center gap-2">
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    onClick={() => setLocationStep('city')}
-                                                    className="h-7 text-xs text-brand-600 font-semibold hover:text-brand-700 hover:bg-brand-50"
+                                                    onClick={handleApplyLocation}
+                                                    disabled={selectedProvinces.length === 0}
+                                                    className="h-7 text-[11px] text-brand-600 font-bold hover:bg-brand-50"
                                                 >
-                                                    Next: Select Cities →
+                                                    Apply Selected
                                                 </Button>
-                                            )}
+                                                {selectedProvinces.length > 0 && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => setLocationStep('city')}
+                                                        className="h-7 text-[11px] text-gray-600 font-bold hover:bg-gray-100"
+                                                    >
+                                                        Cities <ArrowRight className="h-3 w-3 ml-1" />
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="max-h-80 overflow-y-auto p-2">
+                                        <div className="max-h-64 overflow-y-auto p-1.5">
                                             {loadingProvinces ? (
-                                                <div className="p-4 text-center text-gray-400 text-sm">Loading provinces...</div>
+                                                <div className="p-4 text-center text-gray-400 text-xs">Loading provinces...</div>
                                             ) : (
-                                                <div className="grid grid-cols-1 gap-1">
+                                                <div className="grid grid-cols-1 gap-0.5">
                                                     {provinces?.map((province, idx) => (
                                                         <div
                                                             key={idx}
-                                                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                                                            className="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                                                             onClick={() => handleProvinceToggle(province)}
                                                         >
                                                             <Checkbox
+                                                                 id={`prov-${idx}`}
                                                                 checked={selectedProvinces.includes(province)}
-                                                                className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
+                                                                className="h-3.5 w-3.5 border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
                                                             />
-                                                            <span className="text-sm font-medium text-gray-700">{province}</span>
+                                                            <span className="text-xs font-medium text-gray-700">{province}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -497,45 +546,45 @@ export function JobPreferencesSection() {
                                             </div>
                                         </div>
 
-                                        <div className="max-h-80 overflow-y-auto p-2">
+                                         <div className="max-h-64 overflow-y-auto p-1.5">
                                             {availableCities && availableCities.length > 0 ? (
-                                                <div className="grid grid-cols-1 gap-1">
+                                                <div className="grid grid-cols-1 gap-0.5">
                                                     {availableCities
                                                         .filter(c => !citySearch || c.city.toLowerCase().includes(citySearch.toLowerCase()))
                                                         .map((cityData, idx) => (
                                                             <div
                                                                 key={`${cityData.province}-${cityData.city}-${idx}`}
-                                                                className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                                                                className="flex items-center space-x-2.5 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                                                                 onClick={() => handleCityToggle(cityData.city)}
                                                             >
                                                                 <Checkbox
                                                                     checked={selectedCities.includes(cityData.city)}
-                                                                    className="border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
+                                                                    className="h-3.5 w-3.5 border-gray-300 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
                                                                 />
-                                                                <div className="flex flex-col">
-                                                                    <span className="text-sm font-medium text-gray-700">{cityData.city}</span>
-                                                                    <span className="text-[10px] text-gray-400">{cityData.province}</span>
+                                                                <div className="flex flex-col gap-0">
+                                                                    <span className="text-xs font-medium text-gray-700">{cityData.city}</span>
+                                                                    <span className="text-[9px] leading-tight text-gray-400">{cityData.province}</span>
                                                                 </div>
                                                             </div>
                                                         ))}
                                                     {availableCities.filter(c => !citySearch || c.city.toLowerCase().includes(citySearch.toLowerCase())).length === 0 && (
-                                                        <div className="p-8 text-center text-gray-400 text-sm">No cities found matching &ldquo;{citySearch}&rdquo;</div>
+                                                        <div className="p-6 text-center text-gray-400 text-xs">No cities found matching &ldquo;{citySearch}&rdquo;</div>
                                                     )}
                                                 </div>
                                             ) : (
-                                                <div className="p-4 text-center text-gray-400 text-sm">
+                                                <div className="p-4 text-center text-gray-400 text-xs">
                                                     {selectedProvinces.length === 0
                                                         ? 'Please select provinces first'
                                                         : 'No cities found for selected provinces'}
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="p-3 border-t border-gray-100 bg-gray-50/50">
+                                        <div className="p-2 border-t border-gray-100 bg-gray-50/50">
                                             <Button
                                                 onClick={handleApplyLocation}
-                                                className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-xl h-10 font-bold shadow-lg shadow-brand-500/20 transition-all active:scale-[0.98]"
+                                                className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-lg h-9 text-xs font-bold shadow-md shadow-brand-500/10 transition-all active:scale-[0.98]"
                                             >
-                                                Apply ({selectedCities.length} cities selected)
+                                                Apply Selection
                                             </Button>
                                         </div>
                                     </>
@@ -555,9 +604,12 @@ export function JobPreferencesSection() {
                     transition={{ delay: 0.1 }}
                     className="space-y-2"
                 >
-                    <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                        <Building className="h-4 w-4 text-brand-600" />
-                        Preferred Industries
+                    <label className="text-sm font-medium text-gray-900 flex items-center">
+                        <span className="flex items-center gap-2">
+                            <Building className="h-4 w-4 text-brand-600" />
+                            Preferred Industries
+                        </span>
+                        <PreferenceWeight weight={20} isCompleted={hasIndustries} />
                     </label>
                     <MultiSelect
                         options={categoryOptions}
@@ -579,9 +631,12 @@ export function JobPreferencesSection() {
                     transition={{ delay: 0.15 }}
                     className="space-y-2"
                 >
-                    <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                        <Briefcase className="h-4 w-4 text-brand-600" />
-                        Preferred NOC Codes
+                    <label className="text-sm font-medium text-gray-900 flex items-center">
+                        <span className="flex items-center gap-2">
+                            <Briefcase className="h-4 w-4 text-brand-600" />
+                            Preferred NOC Codes
+                        </span>
+                        <PreferenceWeight weight={20} isCompleted={hasNocCodes} />
                     </label>
                     <MultiSelect
                         options={nocCodeOptions}
@@ -604,9 +659,12 @@ export function JobPreferencesSection() {
                     transition={{ delay: 0.2 }}
                     className="space-y-2"
                 >
-                    <label className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                        <Building className="h-4 w-4 text-brand-600" />
-                        Preferred Company Tiers
+                    <label className="text-sm font-medium text-gray-900 flex items-center">
+                        <span className="flex items-center gap-2">
+                            <Building className="h-4 w-4 text-brand-600" />
+                            Preferred Company Tiers
+                        </span>
+                        <PreferenceWeight weight={20} isCompleted={hasTiers} />
                     </label>
                     <MultiSelect
                         options={tierOptions}

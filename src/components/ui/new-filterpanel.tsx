@@ -114,7 +114,9 @@ export function useFilterColumnAttributes(
       if (key === column) return;
       const values = sp?.getAll(key) ?? [];
       if (values.length > 0) {
-        filters[key] = values;
+        // Map 'state' or 'province' to 'territory' for LMIA
+        const effectiveKey = (table === 'lmia' && (key === 'state' || key === 'province')) ? 'territory' : key;
+        filters[effectiveKey] = values;
       }
     });
 
@@ -153,7 +155,8 @@ export function useFilterColumnAttributes(
 
       // Add stateFilter for city column
       if (column === 'city' && stateFilter) {
-        filters.state = stateFilter;
+        const key = table === 'lmia' ? 'territory' : 'state';
+        filters[key] = stateFilter;
       }
 
       // Add all other active filters
@@ -181,7 +184,8 @@ export function useFilterColumnAttributes(
       }
 
       // Use centralized API
-      const facets = await getFacetCounts(table, column, filters, searchTerm, field);
+      const facetColumn = (table === 'lmia' && column === 'state') ? 'territory' : column;
+      const facets = await getFacetCounts(table, facetColumn, filters, searchTerm, field);
 
       console.log(`FILTER DEBUG [${column}]:`, facets);
 
@@ -283,7 +287,7 @@ export default function NewFilterPanel() {
                         <FilterIcon className="w-2.5 h-2.5" />
                       </div>
                       <span className="text-xs font-medium text-gray-900">
-                        <AttributeName name={column.accessorKey} />
+                        <AttributeName name={column.accessorKey} table={tableName} />
                       </span>
                     </div>
                     <ChevronDown
@@ -381,9 +385,11 @@ function FilterAttributes({ column }: { column: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
+  const tableName = (sp?.get('t') ?? 'trending_job').trim();
 
   // Get state filter if column is city
-  const stateFilter = column === 'city' ? sp?.getAll('state') : undefined;
+  const stateFilterKey = tableName === 'lmia' ? 'territory' : 'state';
+  const stateFilter = column === 'city' ? (sp?.getAll(stateFilterKey).length > 0 ? sp.getAll(stateFilterKey) : sp.getAll('state')) : undefined;
   const stateFilterValue =
     stateFilter && stateFilter.length > 0 ? stateFilter[0] : undefined;
 
@@ -393,12 +399,19 @@ function FilterAttributes({ column }: { column: string }) {
     stateFilterValue
   );
 
-  // initialize selected values from URL (?column=A&column=B)
   const [localFilters, setLocalFilters] = React.useState(new Set<string>());
+
   React.useEffect(() => {
     if (!sp) return;
-    setLocalFilters(new Set(sp.getAll(column)));
-  }, [column, sp]);
+    const filterKey = (tableName === 'lmia' && column === 'state') ? 'territory' : column;
+    const values = sp.getAll(filterKey);
+    // Also check for 'state' if table is lmia and territory is empty (fallback)
+    if (tableName === 'lmia' && column === 'state' && values.length === 0) {
+      setLocalFilters(new Set(sp.getAll('state')));
+    } else {
+      setLocalFilters(new Set(values));
+    }
+  }, [column, sp, tableName]);
 
   const [searchQuery, setSearchQuery] = React.useState('');
   const filteredData = React.useMemo(() => {
@@ -415,14 +428,16 @@ function FilterAttributes({ column }: { column: string }) {
 
   const handleFilterUpdate = (accessorKey: string, value: string) => {
     if (!sp) return;
+    
+    const filterKey = (tableName === 'lmia' && accessorKey === 'state') ? 'territory' : accessorKey;
     // derive from URL (single source of truth)
-    const current = new Set(sp.getAll(accessorKey));
+    const current = new Set(sp.getAll(filterKey));
     current.has(value) ? current.delete(value) : current.add(value);
 
     // write to URL
     const nextSp = new URLSearchParams(sp.toString());
-    nextSp.delete(accessorKey);
-    for (const v of current) nextSp.append(accessorKey, v);
+    nextSp.delete(filterKey);
+    for (const v of current) nextSp.append(filterKey, v);
     nextSp.set('page', '1');
     router.push(`${pathname}?${nextSp.toString()}`, { scroll: false });
 
@@ -578,7 +593,7 @@ function DateRangeFilter() {
             <Calendar
               mode="range"
               selected={range as any}
-              onSelect={(r) =>
+              onSelect={(r: { from?: Date; to?: Date } | undefined) =>
                 setRange(r || { from: undefined, to: undefined })
               }
               numberOfMonths={1}

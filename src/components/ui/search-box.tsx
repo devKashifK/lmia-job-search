@@ -338,30 +338,26 @@ export function SearchBox() {
 
     setIsSearching(true);
     try {
+      const stateKey = searchType === 'lmia' ? 'territory' : 'state';
       const isCanada = locationText.toLowerCase() === 'canada';
-
       if (isCanada || (selectedProvinces.length === 0 && selectedCities.length === 0)) {
         sp.delete('state');
+        sp.delete('territory');
         sp.delete('city');
       } else {
         // Multi-select URL params: append multiple 'state' or 'city' keys
         sp.delete('state');
+        sp.delete('territory');
         sp.delete('city');
 
         if (selectedCities.length > 0) {
           // If cities are selected, we filter by them. 
-          // Do we ALSO need the province? Usually city implies province/state context or distinct names.
-          // Search result logic likely handles `city` OR `state`? 
-          // If I select "Toronto", I expect "Toronto, ON". 
-          // Let's pass both if possible or just cities if they are granular enough.
-          // Pass state context if query requires it. 
-          // For now, let's pass all selected provinces AND all selected cities. 
           selectedCities.forEach(c => sp.append('city', c));
           // Also pass provinces? 
-          selectedProvinces.forEach(p => sp.append('state', p));
+          selectedProvinces.forEach(p => sp.append(stateKey, p));
         } else {
           // Only provinces selected
-          selectedProvinces.forEach(p => sp.append('state', p));
+          selectedProvinces.forEach(p => sp.append(stateKey, p));
         }
       }
 

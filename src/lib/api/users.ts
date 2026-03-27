@@ -3,16 +3,10 @@ import db from '@/db';
 export interface UserPreferences {
     user_id?: string;
     preferred_job_titles: string[];
-    preferred_locations: string[];
+    preferred_locations: string[]; // Actual column in DB
     preferred_industries: string[];
     preferred_noc_codes: string[];
     preferred_company_tiers: string[];
-    salary_min?: number | null;
-    salary_max?: number | null;
-    work_authorization?: string | null;
-    remote_preference?: string | null;
-    experience_level?: string | null;
-    company_size_preference?: string[] | null;
     created_at?: string;
     updated_at?: string;
 }
@@ -23,12 +17,6 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     preferred_industries: [],
     preferred_noc_codes: [],
     preferred_company_tiers: [],
-    salary_min: null,
-    salary_max: null,
-    work_authorization: null,
-    remote_preference: null,
-    experience_level: null,
-    company_size_preference: [],
 };
 
 /**

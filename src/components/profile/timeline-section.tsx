@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Briefcase, GraduationCap, Plus, Pencil, Trash2, X, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Calendar, Briefcase, GraduationCap, Plus, Pencil, Trash2, X, Check, ChevronDown, ChevronUp, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
@@ -164,9 +164,10 @@ interface TimelineSectionProps {
     onUpdate: (newValue: string) => Promise<void>;
     placeholder: string;
     type: "work" | "education";
+    weight?: number;
 }
 
-export function TimelineSection({ title, value, onUpdate, placeholder, type }: TimelineSectionProps) {
+export function TimelineSection({ title, value, onUpdate, placeholder, type, weight }: TimelineSectionProps) {
     const items = useMemo(() => parseItems(value), [value]);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -230,6 +231,14 @@ export function TimelineSection({ title, value, onUpdate, placeholder, type }: T
                 <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                     {type === "work" ? <Briefcase className="h-5 w-5 text-brand-600" /> : <GraduationCap className="h-5 w-5 text-blue-600" />}
                     {title}
+                    {weight && items.length > 0 && (
+                        <div className="ml-auto flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100">
+                                {weight}%
+                            </span>
+                            <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                        </div>
+                    )}
                 </h2>
                 {!isEditing && (
                     <Button variant="ghost" size="sm" onClick={handleStartEdit} className="text-gray-500 hover:text-brand-600 hover:bg-brand-50 h-8 text-xs font-medium">
@@ -363,7 +372,14 @@ export function TimelineSection({ title, value, onUpdate, placeholder, type }: T
                                 <div className={cn("mx-auto h-12 w-12 rounded-full flex items-center justify-center mb-3", type === "work" ? "bg-brand-50 text-brand-500" : "bg-blue-50 text-blue-500")}>
                                     {type === "work" ? <Briefcase className="h-6 w-6" /> : <GraduationCap className="h-6 w-6" />}
                                 </div>
-                                <h3 className="text-sm font-semibold text-gray-900">No {title.toLowerCase()} added</h3>
+                                <div className="flex items-center justify-center gap-2">
+                                    <h3 className="text-sm font-semibold text-gray-900">No {title.toLowerCase()} added</h3>
+                                    {weight && (
+                                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-brand-50 text-brand-600 border border-brand-100">
+                                            +{weight}%
+                                        </span>
+                                    )}
+                                </div>
                                 <p className="text-xs text-gray-500 max-w-[200px] mx-auto mt-1 mb-4">Add your experience to improve job recommendations.</p>
                                 <Button variant="outline" size="sm" onClick={handleStartEdit} className="text-xs h-8">
                                     <Plus className="h-3.5 w-3.5 mr-1.5" /> Add {title}

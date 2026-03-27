@@ -205,7 +205,7 @@ export function SearchPageHeader({
                                 </span>
                                 <span className="text-gray-300">•</span>
                                 <span className="bg-gray-100 px-1.5 py-0.5 rounded text-[10px] text-gray-700 font-medium border border-gray-200">
-                                    in <AttributeName name={field || 'all'} />
+                                    in <AttributeName name={field || 'all'} table={currentSearchType} />
                                 </span>
                             </div>
                         </div>
@@ -274,7 +274,7 @@ export function SearchPageHeader({
                             variant="secondary"
                             className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 h-7 px-2.5 text-xs flex items-center gap-1.5 transition-colors"
                         >
-                            <span className="font-medium text-gray-500"><AttributeName name={filter.key} />:</span>
+                            <span className="font-medium text-gray-500"><AttributeName name={filter.key} table={currentSearchType} />:</span>
                             <span className="font-semibold text-gray-900">{filter.value}</span>
                             <button
                                 onClick={() => removeFilter(filter.key, filter.value)}

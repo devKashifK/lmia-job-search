@@ -21,8 +21,10 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const value = capitalize(rawValue);
   
   const city = capitalize((Array.isArray(qs.city) ? qs.city[0] : qs.city) || 'Canada');
-  const stateRaw = (Array.isArray(qs.state) ? qs.state[0] : qs.state) || (Array.isArray(qs.territory) ? qs.territory[0] : qs.territory);
-  const state = stateRaw ? capitalize(stateRaw) : 'Canada';
+  const stateRaw = (Array.isArray(qs.state) ? qs.state[0] : qs.state) || 
+                   (Array.isArray(qs.territory) ? qs.territory[0] : qs.territory) ||
+                   (Array.isArray(qs.province) ? qs.province[0] : qs.province);
+  const state = stateRaw ? capitalize(stateRaw as string) : 'Canada';
 
   let title = 'Search LMIA Approved Jobs | JobMaze';
   let description = 'Find the latest LMIA approved jobs and opportunities across Canada on JobMaze.';

@@ -115,7 +115,7 @@ export const hotLeadsColumns: ColumnWithIcon[] = [
 
 export const lmiaColumns: ColumnWithIcon[] = [
   {
-    accessorKey: 'territory',
+    accessorKey: 'state',
     meta: { icon: <PersonStanding className="h-3 w-3 text-black/50" /> },
     header: () => (
       <div className="flex items-center gap-1">

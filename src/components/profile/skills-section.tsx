@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Code, Pencil, Check, X } from "lucide-react";
+import { Code, Pencil, Check, X, CheckCircle2 } from "lucide-react";
 
 interface SkillBadgeProps {
     name: string;
@@ -51,9 +51,10 @@ interface SkillsSectionProps {
     value: string;
     onUpdate: (newValue: string) => Promise<void>;
     placeholder: string;
+    weight?: number;
 }
 
-export function SkillsSection({ value, onUpdate, placeholder }: SkillsSectionProps) {
+export function SkillsSection({ value, onUpdate, placeholder, weight }: SkillsSectionProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(value);
     const [isLoading, setIsLoading] = useState(false);
@@ -82,6 +83,14 @@ export function SkillsSection({ value, onUpdate, placeholder }: SkillsSectionPro
                 <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                     <Code className="h-5 w-5 text-brand-600" />
                     Skills & Technologies
+                    {weight && skillsList.length > 0 && (
+                        <div className="ml-auto flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100">
+                                {weight}%
+                            </span>
+                            <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                        </div>
+                    )}
                 </h2>
                 {!isEditing && (
                     <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="text-gray-500 hover:text-brand-600">
@@ -115,7 +124,14 @@ export function SkillsSection({ value, onUpdate, placeholder }: SkillsSectionPro
                             <SkillBadge key={i} name={skill} />
                         ))
                     ) : (
-                        <p className="text-sm text-gray-400 italic">No skills listed yet.</p>
+                        <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-400 italic">No skills listed yet.</p>
+                  {weight && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-brand-50 text-brand-600 border border-brand-100">
+                      +{weight}%
+                    </span>
+                  )}
+                </div>
                     )}
                 </div>
             )}

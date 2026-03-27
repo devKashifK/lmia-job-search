@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Check, ArrowRight, Zap, Users, Building2, HelpCircle } from 'lucide-react';
+import { Check, ArrowRight, Zap, Users, Building2, HelpCircle, Clock, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
@@ -14,7 +14,14 @@ import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';
 import PaymentButton from '@/components/ui/payment-button';
 import Link from 'next/link';
-import { X, Sparkles, User, Shield } from 'lucide-react'; // Added new lucide icons
+import { X, Sparkles, User, Shield } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 
 
@@ -176,9 +183,11 @@ function Price({ plan }: { plan: Plan }) {
 function PlanCard({
   plan,
   index,
+  onContactSales,
 }: {
   plan: Plan;
   index: number;
+  onContactSales?: () => void;
 }) {
   return (
     <motion.div
@@ -248,6 +257,7 @@ function PlanCard({
           <div className="mt-auto">
             {plan.name.includes('Enterprise') ? (
               <Button
+                onClick={onContactSales}
                 className={cn(
                   'w-full h-12 rounded-xl font-semibold transition-all',
                   'bg-gray-900 hover:bg-gray-800 text-white shadow-md hover:shadow-lg'
@@ -285,8 +295,70 @@ function PlanCard({
   );
 }
 
+function ContactSalesDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[450px] p-0 overflow-hidden border-none shadow-2xl bg-white">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-400 to-brand-600" />
+        
+        <DialogHeader className="px-8 pt-10 pb-6 text-center">
+          <div className="mx-auto w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mb-4 text-brand-600">
+            <Users className="w-8 h-8" />
+          </div>
+          <DialogTitle className="text-2xl font-bold text-gray-900 tracking-tight">Contact Our Sales Team</DialogTitle>
+          <DialogDescription className="text-gray-500 mt-2">
+            Looking for a custom solution or enterprise-grade features? We're here to help you scale.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="px-8 pb-10 space-y-6">
+          <div className="grid grid-cols-1 gap-4">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 group hover:border-brand-200 hover:bg-brand-50/30 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-brand-600">
+                <Mail className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-[10px] font-bold uppercase text-gray-400 tracking-widest leading-none mb-1">Sales Inquiry</p>
+                <a href="mailto:info@jobmaze.ca" className="text-sm font-semibold text-gray-900 hover:text-brand-600 transition-colors">info@jobmaze.ca</a>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 group hover:border-brand-200 hover:bg-brand-50/30 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-brand-600">
+                <HelpCircle className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-[10px] font-bold uppercase text-gray-400 tracking-widest leading-none mb-1">General Support</p>
+                <a href="mailto:support@jobmaze.ca" className="text-sm font-semibold text-gray-900 hover:text-brand-600 transition-colors">support@jobmaze.ca</a>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 group hover:border-brand-200 hover:bg-brand-50/30 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-brand-600">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-[10px] font-bold uppercase text-gray-400 tracking-widest leading-none mb-1">Business Hours</p>
+                <p className="text-sm font-semibold text-gray-900">Mon - Fri, 9:00AM - 6:00PM EST</p>
+              </div>
+            </div>
+          </div>
+
+          <Button 
+            onClick={() => onOpenChange(false)}
+            className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white rounded-xl font-bold shadow-lg shadow-gray-200 transition-all"
+          >
+            Close
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 const PricingPage = () => {
   const { isMobile } = useMobile();
+  const [showContactSales, setShowContactSales] = useState(false);
 
   return (
     <BackgroundWrapper>
@@ -377,6 +449,7 @@ const PricingPage = () => {
                   <PlanCard
                     key={plan.name}
                     plan={plan}
+                    onContactSales={() => setShowContactSales(true)}
                     index={idx + individualPlans.length}
                   />
                 ))}
@@ -390,6 +463,8 @@ const PricingPage = () => {
                 Have questions about our plans? <a href="/contact" className="text-brand-600 hover:underline font-semibold">Contact our support team</a>
               </p>
             </div>
+            
+            <ContactSalesDialog open={showContactSales} onOpenChange={setShowContactSales} />
           </div>
         </main>
 

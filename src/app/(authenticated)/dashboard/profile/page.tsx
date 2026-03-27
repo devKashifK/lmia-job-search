@@ -46,6 +46,7 @@ interface EditableFieldProps {
   type?: string;
   isTextArea?: boolean;
   last?: boolean;
+  weight?: number;
 }
 
 function EditableField({
@@ -57,6 +58,7 @@ function EditableField({
   type = "text",
   isTextArea = false,
   last = false,
+  weight,
 }: EditableFieldProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
@@ -108,9 +110,27 @@ function EditableField({
           <div className="flex-1 space-y-0.5">
             <p className="text-[11px] font-semibold text-gray-500 tracking-wide">{title}</p>
             {!isEditing ? (
-              <p className={cn("text-sm font-medium", !value ? "text-gray-400 italic" : "text-gray-900")}>
-                {value || "Not set"}
-              </p>
+                <div className="flex items-center gap-2">
+                  <p className={cn("text-sm font-medium", !value ? "text-gray-400 italic" : "text-gray-900")}>
+                    {value || "Not set"}
+                  </p>
+                  {!value ? (
+                    weight && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-brand-50 text-brand-600 border border-brand-100">
+                        +{weight}%
+                      </span>
+                    )
+                  ) : (
+                    weight && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100">
+                          {weight}%
+                        </span>
+                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                      </div>
+                    )
+                  )}
+                </div>
             ) : (
               <div className="space-y-3 mt-2 max-w-lg">
                 {isTextArea ? (
@@ -312,6 +332,9 @@ export default function UserProfile() {
     bio: session?.user?.user_metadata?.bio,
     skills: session?.user?.user_metadata?.skills,
     education: session?.user?.user_metadata?.education,
+    work_history: session?.user?.user_metadata?.work_history,
+    experience: session?.user?.user_metadata?.experience,
+    linkedin: session?.user?.user_metadata?.linkedin,
   };
   const filledProfileFields = Object.values(profileFields).filter(Boolean).length;
   const totalProfileFields = Object.keys(profileFields).length;
@@ -319,7 +342,7 @@ export default function UserProfile() {
 
   const preferenceFields = {
     job_titles: preferences?.preferred_job_titles?.length > 0,
-    locations: (preferences?.preferred_provinces?.length || 0) > 0 || (preferences?.preferred_cities?.length || 0) > 0,
+    locations: (preferences?.preferred_locations?.length || 0) > 0,
     industries: preferences?.preferred_industries?.length > 0,
     noc_codes: preferences?.preferred_noc_codes?.length > 0,
     tiers: preferences?.preferred_company_tiers?.length > 0,
@@ -408,6 +431,7 @@ export default function UserProfile() {
                 value={session?.user?.user_metadata?.name || ""}
                 placeholder="Ex. John Doe"
                 onUpdate={(value) => updateUserMetadata("name", value)}
+                weight={9}
               />
               <EditableField
                 icon={<Mail className="h-4 w-4" />}
@@ -416,6 +440,7 @@ export default function UserProfile() {
                 placeholder="your@email.com"
                 onUpdate={(value) => updateUserMetadata("email", value)}
                 type="email"
+                weight={9}
               />
               <EditableField
                 icon={<Phone className="h-4 w-4" />}
@@ -424,6 +449,7 @@ export default function UserProfile() {
                 placeholder="+1 (555) 000-0000"
                 onUpdate={(value) => updateUserMetadata("phone", value)}
                 type="tel"
+                weight={9}
               />
               <EditableField
                 icon={<MapPin className="h-4 w-4" />}
@@ -431,6 +457,7 @@ export default function UserProfile() {
                 value={session?.user?.user_metadata?.country || ""}
                 placeholder="Toronto, Canada"
                 onUpdate={(value) => updateUserMetadata("country", value)}
+                weight={9}
               />
               <EditableField
                 icon={<Globe className="h-4 w-4" />}
@@ -438,7 +465,16 @@ export default function UserProfile() {
                 value={session?.user?.user_metadata?.website || ""}
                 placeholder="https://..."
                 onUpdate={(value) => updateUserMetadata("website", value)}
+                weight={9}
+              />
+              <EditableField
+                icon={<Shield className="h-4 w-4" />}
+                title="LinkedIn"
+                value={session?.user?.user_metadata?.linkedin || ""}
+                placeholder="https://linkedin.com/in/..."
+                onUpdate={(value) => updateUserMetadata("linkedin", value)}
                 last
+                weight={9}
               />
             </div>
           </div>
@@ -471,6 +507,15 @@ export default function UserProfile() {
                 value={session?.user?.user_metadata?.position || ""}
                 placeholder="Ex. Software Engineer"
                 onUpdate={(value) => updateUserMetadata("position", value)}
+                weight={9}
+              />
+              <EditableField
+                icon={<Building className="h-4 w-4" />}
+                title="Current Company"
+                value={session?.user?.user_metadata?.company || ""}
+                placeholder="Ex. Google"
+                onUpdate={(value) => updateUserMetadata("company", value)}
+                weight={9}
               />
               <EditableField
                 icon={<FileText className="h-4 w-4" />}
@@ -479,6 +524,7 @@ export default function UserProfile() {
                 placeholder="Summary of your experience..."
                 onUpdate={(value) => updateUserMetadata("bio", value)}
                 isTextArea
+                weight={9}
               />
               <EditableField
                 icon={<Clock className="h-4 w-4" />}
@@ -488,6 +534,7 @@ export default function UserProfile() {
                 onUpdate={(value) => updateUserMetadata("experience", value)}
                 type="number"
                 last
+                weight={9}
               />
             </div>
           </div>
@@ -497,6 +544,7 @@ export default function UserProfile() {
             value={session?.user?.user_metadata?.skills || ""}
             onUpdate={(value) => updateUserMetadata("skills", value)}
             placeholder="React, Next.js, Node.js..."
+            weight={9}
           />
         </div>
       </div>
@@ -510,6 +558,7 @@ export default function UserProfile() {
           value={session?.user?.user_metadata?.work_history || ""}
           onUpdate={(value) => updateUserMetadata("work_history", value)}
           placeholder="List your past roles..."
+          weight={9}
         />
 
         {/* Education */}
@@ -519,6 +568,7 @@ export default function UserProfile() {
           value={session?.user?.user_metadata?.education || ""}
           onUpdate={(value) => updateUserMetadata("education", value)}
           placeholder="List your education..."
+          weight={9}
         />
 
         {/* Job Preferences */}

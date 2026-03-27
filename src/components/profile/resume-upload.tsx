@@ -249,14 +249,20 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
                 // 2. Clear Profile Details (Minimized to stay within header/JWT limits)
                 const { error: metaError } = await db.auth.updateUser({
                     data: {
-                        name: session.user.user_metadata?.name || null, // Keep name if exists, else null
+                        name: null,
                         bio: null,
                         skills: null,
                         education: null,
                         work_history: null,
-                        // We no longer nullify every minor field (phone, address, etc.) 
-                        // individually to keep the JWT from bloating. 
-                        // The UI handles missing fields gracefully.
+                        phone: null,
+                        country: null,
+                        position: null,
+                        company: null,
+                        address: null,
+                        website: null,
+                        linkedin: null,
+                        email: null,
+                        experience: null,
                         profile_cleared: true,
                     }
                 });

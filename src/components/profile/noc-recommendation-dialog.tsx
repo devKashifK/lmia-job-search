@@ -124,7 +124,8 @@ export function NocRecommendationDialog({ isOpen, onClose, jobTitles }: NocRecom
                                     <div className="pt-1">
                                         <Checkbox
                                             checked={selectedNocs.includes(noc.code)}
-                                            className={`pointer-events-none transition-colors ${selectedNocs.includes(noc.code) ? 'border-brand-600 bg-brand-600 text-white' : 'border-gray-300'}`}
+                                            onCheckedChange={() => toggleNoc(noc.code)}
+                                            className="h-5 w-5 data-[state=checked]:bg-brand-600 data-[state=checked]:border-brand-600"
                                         />
                                     </div>
                                     <div className="flex-1 space-y-1">

@@ -129,25 +129,39 @@ export async function queryJobs({
     }
 
     let builder = db.from(tableName).select(selectCols, { count: 'exact' });
+    let activeField = field;
 
-    // 1. Free-text Search
+    // Mapping 'state' to 'territory' for LMIA
+    if (tableName === 'lmia') {
+        if (activeField === 'state' || activeField === 'province') {
+            activeField = 'territory';
+        }
+        if (filters.state) {
+            filters.territory = [...(filters.territory || []), ...filters.state];
+            delete filters.state;
+        }
+        if (filters.province) {
+            filters.territory = [...(filters.territory || []), ...filters.province];
+            delete filters.province;
+        }
+    }
     const q = query.trim();
     if (q !== '') {
-        if (field === 'all') {
+        if (activeField === 'all') {
             // OR across text-searchable columns
             const orExpr = textSearchFields
                 .map((c) => `${c}.ilike.%${q}%`)
                 .join(',');
             if (orExpr) builder = builder.or(orExpr);
-        } else if (allowedFields.includes(field)) {
+        } else if (allowedFields.includes(activeField) || activeField === 'territory') {
             // Field specific
-            if (tableName === 'lmia' && field === 'lmia_year') {
+            if (tableName === 'lmia' && activeField === 'lmia_year') {
                 const num = Number(q);
                 if (Number.isFinite(num)) {
                     builder = builder.eq('lmia_year', Math.floor(num));
                 }
             } else {
-                builder = builder.ilike(field, `%${q}%`);
+                builder = builder.ilike(activeField, `%${q}%`);
             }
         }
     }
