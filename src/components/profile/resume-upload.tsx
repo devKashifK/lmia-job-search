@@ -17,7 +17,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { upsertUserPreferences, DEFAULT_PREFERENCES } from "@/lib/api/users";
+import { upsertUserPreferences, DEFAULT_PREFERENCES, upsertUserProfile, DEFAULT_PROFILE } from "@/lib/api/users";
 
 interface ResumeUploadProps {
     currentResumeUrl?: string;
@@ -213,7 +213,10 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
                 description: "Your resume has been removed from your profile.",
             });
 
-            if (onUploadComplete) onUploadComplete("");
+            // Add a small delay for Supabase to propagate the metadata change
+            setTimeout(() => {
+                if (onUploadComplete) onUploadComplete("");
+            }, 500);
 
         } catch (error: any) {
             toast({
@@ -246,23 +249,29 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
                     });
                 }
 
-                // 2. Clear Profile Details (Minimized to stay within header/JWT limits)
-                const { error: metaError } = await db.auth.updateUser({
-                    data: {
-                        name: null,
+                // 2. Clear Professional Profile Table
+                try {
+                    await upsertUserProfile(session.user.id, {
+                        phone: null,
+                        location: null,
+                        website: null,
+                        linkedin: null,
+                        position: null,
+                        company: null,
                         bio: null,
+                        experience: null,
                         skills: null,
                         education: null,
                         work_history: null,
-                        phone: null,
-                        country: null,
-                        position: null,
-                        company: null,
-                        address: null,
-                        website: null,
-                        linkedin: null,
-                        email: null,
-                        experience: null,
+                    });
+                } catch (profError) {
+                    console.error("Failed to clear profile table:", profError);
+                }
+
+                // 3. Clear minimal Identity Metadata
+                const { error: metaError } = await db.auth.updateUser({
+                    data: {
+                        name: null,
                         profile_cleared: true,
                     }
                 });

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPlanCredits } from '@/lib/phonepe';
+import { getPlanDetails } from '@/lib/phonepe';
 import { createClient } from '@supabase/supabase-js';
 
 export async function POST(request: NextRequest) {
@@ -68,22 +68,54 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to update transaction' }, { status: 500 });
     }
 
-    // Add credits if successful
+    // Process plan if successful
     if (state === 'PAYMENT_SUCCESS' || state === 'SUCCESS') {
-      const creditsToAdd = getPlanCredits(transaction.plan_name);
+      const planDetails = getPlanDetails(transaction.plan_name);
+      
+      // Calculate expiration date if duration is provided
+      const expiresAt = planDetails.durationDays 
+        ? new Date(Date.now() + planDetails.durationDays * 24 * 60 * 60 * 1000).toISOString()
+        : null;
 
-      const { data: currentCredits } = await supabaseAdmin
+      const { data: currentCredits, error: creditFetchError } = await supabaseAdmin
         .from('credits')
         .select('*')
         .eq('id', transaction.user_id)
         .single();
 
+      if (creditFetchError && creditFetchError.code !== 'PGRST116') {
+        console.error('Error fetching credits:', creditFetchError);
+        // Continue anyway or return error? Let's try to upsert.
+      }
+
       if (currentCredits) {
-        const newTotalCredits = (currentCredits.total_credit || 0) + creditsToAdd;
-        await supabaseAdmin
+        const newTotalCredits = (currentCredits.total_credit || 0) + planDetails.credits;
+        const { error: finalUpdateError } = await supabaseAdmin
           .from('credits')
-          .update({ total_credit: newTotalCredits })
+          .update({ 
+            total_credit: newTotalCredits,
+            plan_type: planDetails.planType,
+            expires_at: expiresAt,
+            updated_at: new Date().toISOString()
+          })
           .eq('id', transaction.user_id);
+          
+        if (finalUpdateError) console.error('Error updating credits row:', finalUpdateError);
+      } else {
+        // Create initial credit record if not exists
+        const { error: insertError } = await supabaseAdmin
+          .from('credits')
+          .insert({
+            id: transaction.user_id,
+            total_credit: planDetails.credits,
+            used_credit: 0,
+            plan_type: planDetails.planType,
+            expires_at: expiresAt,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          
+        if (insertError) console.error('Error inserting credits row:', insertError);
       }
     }
 

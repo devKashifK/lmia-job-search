@@ -12,8 +12,10 @@ import {
 } from 'lucide-react';
 import { Badge } from './badge';
 import { Button } from './button';
+import { usePlanFeatures } from '@/hooks/use-plan-features';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Separator } from './separator';
+import { Mail, Phone, Contact } from 'lucide-react';
 
 interface Job {
   id?: number;
@@ -33,6 +35,8 @@ interface Job {
   priority_occupation?: string;
   approved_positions?: number;
   territory?: string;
+  email?: string;
+  phone?: string;
 }
 
 interface JobDetailsProps {
@@ -50,6 +54,7 @@ export function JobDetails({
   isSaved = false,
   className = '',
 }: JobDetailsProps) {
+  const { canViewEmployerContacts } = usePlanFeatures();
   if (!job) {
     return (
       <div className={`flex items-center justify-center h-full ${className}`}>
@@ -271,9 +276,66 @@ export function JobDetails({
                 Record ID:
               </span>
               <span className="text-sm font-semibold font-mono text-gray-800 bg-gray-100 px-3 py-1 rounded">
-                {job.RecordID || 'N/A'}
+                {(job as any).RecordID || 'N/A'}
               </span>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Contact Information (Gated) */}
+        <Card className="mt-8 border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+          <CardHeader className={`pb-4 ${canViewEmployerContacts ? 'bg-emerald-50' : 'bg-gray-50'}`}>
+            <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
+              <Contact className={`w-5 h-5 ${canViewEmployerContacts ? 'text-emerald-600' : 'text-brand-600'}`} />
+              Employer Contact Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            {!canViewEmployerContacts ? (
+              <div className="text-center py-4">
+                <div className="bg-brand-50 rounded-xl p-4 border border-brand-100 mb-4">
+                  <p className="text-sm text-brand-900 font-medium mb-2">Contact Details Locked</p>
+                  <p className="text-xs text-gray-600 mb-4">Upgrade to a premium plan to reveal employer email and phone number.</p>
+                  <Button 
+                    size="sm" 
+                    className="bg-brand-600 hover:bg-brand-700"
+                    onClick={() => window.location.href = '/pricing'}
+                  >
+                    View Pricing
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {job.email ? (
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-5 h-5 text-emerald-500" />
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">Email</p>
+                      <a href={`mailto:${job.email}`} className="text-sm font-semibold text-gray-900 hover:text-brand-600">
+                        {job.email}
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">No email provided</p>
+                )}
+                <Separator />
+                {job.phone ? (
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-5 h-5 text-emerald-500" />
+                    <div>
+                      <p className="text-xs text-gray-500 uppercase tracking-wider">Phone</p>
+                      <a href={`tel:${job.phone}`} className="text-sm font-semibold text-gray-900 hover:text-brand-600">
+                        {job.phone}
+                      </a>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">No phone provided</p>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

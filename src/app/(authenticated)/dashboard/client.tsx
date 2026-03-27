@@ -23,11 +23,13 @@ import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { RecentActivityFeed } from '@/components/dashboard/recent-activity-feed';
 import { RecommendationsWidget } from '@/components/dashboard/recommendations-widget';
 import { useRouter } from 'next/navigation';
+import { useCreditData } from '@/hooks/use-credits';
 
 export default function DashboardPage() {
   const { session } = useSession();
   const router = useRouter();
   const { isMobile, isMounted } = useMobile();
+  const { isUnlimited } = useCreditData();
 
   // Get time-based greeting
   const getGreeting = () => {
@@ -186,23 +188,37 @@ export default function DashboardPage() {
               </motion.div>
             )}
 
-            {/* Helper Card */}
+            {/* Upgrade CTA / Plan Status Card */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="bg-brand-900 rounded-xl p-5 relative overflow-hidden text-white shadow-lg shadow-brand-900/10"
+              className={cn(
+                "rounded-xl p-5 relative overflow-hidden text-white shadow-lg shadow-brand-900/10",
+                isUnlimited ? "bg-gradient-to-r from-brand-900 to-indigo-950" : "bg-brand-900"
+              )}
             >
               <div className="relative z-10 flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold mb-1">Need help finding a job?</h3>
+                  <h3 className="text-lg font-bold mb-1">
+                    {isUnlimited ? "Premium Access Active" : "Need help finding a job?"}
+                  </h3>
                   <p className="text-brand-100 text-sm max-w-sm">
-                    Our AI search helper can guide you to the best LMIA opportunities.
+                    {isUnlimited 
+                      ? "You have full access to employer contacts and unlimited searches. Happy job hunting!" 
+                      : "Our AI search helper can guide you to the best LMIA opportunities. Upgrade for full details."}
                   </p>
                 </div>
-                <Button onClick={() => router.push('/contact')} variant="secondary" size="sm" className="text-brand-900 bg-white hover:bg-brand-50 border-0 h-9 text-xs font-semibold px-4 shadow-sm">
-                  Contact Support
-                </Button>
+                {!isUnlimited ? (
+                  <Button onClick={() => router.push('/pricing')} variant="secondary" size="sm" className="text-brand-900 bg-white hover:bg-brand-50 border-0 h-9 text-xs font-semibold px-4 shadow-sm">
+                    View Plans
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20">
+                    <Sparkles className="w-3.5 h-3.5 text-brand-300 fill-current" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Active Member</span>
+                  </div>
+                )}
               </div>
 
               {/* Decorative circles */}

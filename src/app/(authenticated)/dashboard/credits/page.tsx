@@ -10,7 +10,7 @@ const ReactECharts = dynamic(() => import("@/components/charts/lazy-echarts"), {
   loading: () => <div className="h-[300px] w-full bg-gray-100 animate-pulse rounded-lg" />,
 });
 import { motion } from "framer-motion";
-import { CreditCard, TrendingUp, Activity, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Zap } from "lucide-react";
+import { CreditCard, TrendingUp, Activity, Calendar, Sparkles, ArrowUpRight, ArrowDownRight, Zap, Clock } from "lucide-react";
 import { useCreditData } from "@/hooks/use-credits";
 import { getUsageHistoryList } from "@/lib/api/searches";
 import { subDays, format, startOfDay, eachDayOfInterval, isSameDay } from "date-fns";
@@ -18,7 +18,7 @@ import LoadingScreen from "@/components/ui/loading-screen";
 
 export default function CreditsPage() {
   const { session } = useSession();
-  const { creditData, creditRemaining, isLoading: isCreditsLoading } = useCreditData();
+  const { creditData, creditRemaining, isUnlimited, isLoading: isCreditsLoading } = useCreditData();
   const [usageHistory, setUsageHistory] = useState<{ date: string; count: number }[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
@@ -36,7 +36,7 @@ export default function CreditsPage() {
         // Process data for chart
         const days = eachDayOfInterval({ start: startDate, end: endDate });
         const history = days.map((day) => {
-          const count = data.filter((item) =>
+          const count = data.filter((item: any) =>
             isSameDay(new Date(item.created_at), day)
           ).length;
           return {
@@ -190,10 +190,26 @@ export default function CreditsPage() {
               <CreditCard className="h-4 w-4 text-brand-100" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{creditRemaining}</div>
-              <p className="text-xs text-brand-100 mt-1">
-                Total: {creditData?.total_credit}
-              </p>
+              <div className="text-3xl font-bold">
+                {isUnlimited ? "Unlimited" : (creditRemaining || 0)}
+              </div>
+              <div className="flex flex-col mt-2 gap-1">
+                <p className="text-xs text-brand-100 flex items-center gap-1.5 font-medium uppercase tracking-wider capitalize">
+                  <Zap className="h-3 w-3 fill-current" />
+                  Current Plan: {(creditData as any)?.plan_type ? `${(creditData as any).plan_type.replace(/_/g, ' ')} Plan` : 'Free Plan'}
+                </p>
+                {(creditData as any)?.expires_at && (
+                  <p className="text-[10px] text-brand-200 flex items-center gap-1.5 opacity-90">
+                    <Clock className="h-3 w-3" />
+                    Expires: {format(new Date((creditData as any).expires_at), "MMM d, yyyy")}
+                  </p>
+                )}
+                {!isUnlimited && (
+                  <p className="text-[10px] text-brand-200 opacity-80">
+                    Total Search Limit: {(creditData as any)?.total_credit || 0}
+                  </p>
+                )}
+              </div>
             </CardContent>
           </Card>
         </motion.div>

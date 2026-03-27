@@ -36,6 +36,7 @@ import { AnalysisConfirmationDialog } from "@/components/profile/analysis-confir
 import { TimelineSection } from "@/components/profile/timeline-section";
 import { SkillsSection } from "@/components/profile/skills-section";
 import { NocRecommendationDialog } from "@/components/profile/noc-recommendation-dialog";
+import { useUserProfile } from "@/hooks/use-user-profile";
 
 interface EditableFieldProps {
   icon: React.ReactNode;
@@ -190,6 +191,7 @@ function EditableField({
 export default function UserProfile() {
   const { session } = useSession();
   const { preferences, updatePreferences } = useUserPreferences();
+  const { profile, updateProfile, isLoading: isProfileLoading } = useUserProfile();
   const { toast } = useToast();
 
   const [analysisData, setAnalysisData] = useState<any>(null);
@@ -203,13 +205,17 @@ export default function UserProfile() {
   if (!session) return null;
 
   const updateUserMetadata = async (key: string, value: string) => {
-    const { error } = await db.auth.updateUser({
-      data: {
-        [key]: value,
-      },
-    });
-
-    if (error) throw error;
+    // Only name and email stay in Auth metadata to keep JWT small
+    if (key === "name" || key === "email") {
+      const { error } = await db.auth.updateUser({
+        data: { [key]: value },
+      });
+      if (error) throw error;
+    } else {
+      // Map legacy country key to location in profiles table
+      const profileKey = key === "country" ? "location" : key;
+      await updateProfile({ [profileKey]: value });
+    }
   };
 
   const handleAnalysisComplete = async (data: any) => {
@@ -228,41 +234,32 @@ export default function UserProfile() {
 
       let finalJobTitles: string[] = preferences?.preferred_job_titles || [];
 
-      // Batch all metadata updates into a single call for reliability
-      const metadataUpdates: any = {
-        name: data.name || session?.user?.user_metadata?.name,
-        email: data.email || session?.user?.user_metadata?.email,
-        phone: data.phone || session?.user?.user_metadata?.phone,
-        country: data.location || session?.user?.user_metadata?.country,
-        address: data.address || session?.user?.user_metadata?.address,
-        dob: data.dob || session?.user?.user_metadata?.dob,
-        linkedin: data.linkedin || session?.user?.user_metadata?.linkedin,
-        website: data.website || session?.user?.user_metadata?.website,
-        position: data.position || session?.user?.user_metadata?.position,
-        company: data.company || session?.user?.user_metadata?.company,
-        bio: data.bio || session?.user?.user_metadata?.bio,
-        skills: data.skills || session?.user?.user_metadata?.skills,
-        experience: data.experience ? String(data.experience) : session?.user?.user_metadata?.experience,
-      };
-
-      // Handle array fields
-      if (data.education) {
-        metadataUpdates.education = Array.isArray(data.education) ? data.education.join("\n\n") : data.education;
-      }
-      if (data.work_experience) {
-        metadataUpdates.work_history = Array.isArray(data.work_experience) ? data.work_experience.join("\n\n") : data.work_experience;
-      }
-
-      console.log("DEBUG: Batch updating metadata:", metadataUpdates);
-      
+      // 1. Update Identity Metadata (Keep minimal)
       const { error: metaError } = await db.auth.updateUser({
-        data: metadataUpdates
+        data: {
+          name: data.name || session?.user?.user_metadata?.name,
+          email: data.email || session?.user?.user_metadata?.email,
+        }
       });
 
-      if (metaError) {
-        console.error("DEBUG: Metadata update failed", metaError);
-        throw metaError;
-      }
+      if (metaError) throw metaError;
+
+      // 2. Update Professional Profile Table (Large data)
+      const profileUpdates: any = {
+        phone: data.phone || profile?.phone,
+        location: data.location || profile?.location,
+        linkedin: data.linkedin || profile?.linkedin,
+        website: data.website || profile?.website,
+        position: data.position || profile?.position,
+        company: data.company || profile?.company,
+        bio: data.bio || profile?.bio,
+        skills: data.skills || profile?.skills,
+        experience: data.experience ? String(data.experience) : profile?.experience,
+        education: Array.isArray(data.education) ? data.education.join("\n\n") : data.education || profile?.education,
+        work_history: Array.isArray(data.work_experience) ? data.work_experience.join("\n\n") : data.work_experience || profile?.work_history,
+      };
+
+      await updateProfile(profileUpdates);
 
       // Update Job Preferences with Recommended Titles
       if (data.recommended_job_titles && Array.isArray(data.recommended_job_titles)) {
@@ -325,16 +322,16 @@ export default function UserProfile() {
 
   const profileFields = {
     name: session?.user?.user_metadata?.name,
-    phone: session?.user?.user_metadata?.phone,
-    country: session?.user?.user_metadata?.country,
-    position: session?.user?.user_metadata?.position,
-    company: session?.user?.user_metadata?.company,
-    bio: session?.user?.user_metadata?.bio,
-    skills: session?.user?.user_metadata?.skills,
-    education: session?.user?.user_metadata?.education,
-    work_history: session?.user?.user_metadata?.work_history,
-    experience: session?.user?.user_metadata?.experience,
-    linkedin: session?.user?.user_metadata?.linkedin,
+    phone: profile?.phone,
+    country: profile?.location,
+    position: profile?.position,
+    company: profile?.company,
+    bio: profile?.bio,
+    skills: profile?.skills,
+    education: profile?.education,
+    work_history: profile?.work_history,
+    experience: profile?.experience,
+    linkedin: profile?.linkedin,
   };
   const filledProfileFields = Object.values(profileFields).filter(Boolean).length;
   const totalProfileFields = Object.keys(profileFields).length;
@@ -436,7 +433,7 @@ export default function UserProfile() {
               <EditableField
                 icon={<Mail className="h-4 w-4" />}
                 title="Email"
-                value={session?.user?.user_metadata?.email || session?.user?.email || ""}
+                value={profile?.email || session?.user?.user_metadata?.email || session?.user?.email || ""}
                 placeholder="your@email.com"
                 onUpdate={(value) => updateUserMetadata("email", value)}
                 type="email"
@@ -541,7 +538,7 @@ export default function UserProfile() {
 
           {/* Skills */}
           <SkillsSection
-            value={session?.user?.user_metadata?.skills || ""}
+            value={profile?.skills || ""}
             onUpdate={(value) => updateUserMetadata("skills", value)}
             placeholder="React, Next.js, Node.js..."
             weight={9}
@@ -555,7 +552,7 @@ export default function UserProfile() {
         <TimelineSection
           title="Work History"
           type="work"
-          value={session?.user?.user_metadata?.work_history || ""}
+          value={profile?.work_history || ""}
           onUpdate={(value) => updateUserMetadata("work_history", value)}
           placeholder="List your past roles..."
           weight={9}
@@ -565,7 +562,7 @@ export default function UserProfile() {
         <TimelineSection
           title="Education"
           type="education"
-          value={session?.user?.user_metadata?.education || ""}
+          value={profile?.education || ""}
           onUpdate={(value) => updateUserMetadata("education", value)}
           placeholder="List your education..."
           weight={9}

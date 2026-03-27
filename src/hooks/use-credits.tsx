@@ -1,14 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSession } from './use-session';
-import { getUserCredits, incrementUsedCredit } from '@/lib/api/credits';
+import { getUserCredits, incrementUsedCredit, isUnlimitedPlan } from '@/lib/api/credits';
 import { insertSearch } from '@/lib/api/searches';
 
-interface SearchRecord {
-  id: string;
-  keyword: string;
-  saved: boolean;
-  created_at: string;
-}
+// ... (SearchRecord interface remains same)
 
 export const useCreditData = () => {
   const { session } = useSession();
@@ -16,14 +11,16 @@ export const useCreditData = () => {
     queryKey: ['credits', session.trial, session?.user?.id],
     queryFn: async () => {
       if (session?.trial) return null;
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Removed artificial delay
       return getUserCredits(session?.user?.id!);
     },
+    enabled: !!session?.user?.id && !session.trial,
   });
 
-  const creditRemaining = creditData?.total_credit - creditData?.used_credit;
+  const isUnlimited = isUnlimitedPlan(creditData);
+  const creditRemaining = isUnlimited ? Infinity : (creditData?.total_credit ?? 0) - (creditData?.used_credit ?? 0);
 
-  return { creditData, creditError, creditRemaining, isLoading };
+  return { creditData, creditError, creditRemaining, isUnlimited, isLoading };
 };
 
 export const useUpdateCredits = () => {

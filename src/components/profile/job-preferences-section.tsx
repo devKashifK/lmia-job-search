@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
     Target,
@@ -102,6 +102,7 @@ export function JobPreferencesSection() {
     const [showLocationMenu, setShowLocationMenu] = useState(false);
     const [locationStep, setLocationStep] = useState<'province' | 'city'>('province');
     const [citySearch, setCitySearch] = useState("");
+    const locationMenuRef = useRef<HTMLDivElement>(null);
 
     const [recommendedNocs, setRecommendedNocs] = useState<NocSummary[]>([]);
     const [recommendedTeers, setRecommendedTeers] = useState<string[]>([]);
@@ -141,9 +142,10 @@ export function JobPreferencesSection() {
 
     // Sync with preferences (Parse preferred_locations into provinces and cities)
     useEffect(() => {
-        if (preferences?.preferred_locations && provinces) {
+        // Only sync if not updating AND not currently in the selection menu
+        // and only if preferences and provinces data are available
+        if (!isUpdating && !showLocationMenu && preferences?.preferred_locations && provinces) {
             const locations = preferences.preferred_locations;
-            // The logic: provinces are items that match our provinces list
             const provinceNames = provinces; // using the data from hook
             const foundProvs = locations.filter(loc => provinceNames.includes(loc));
             const foundCities = locations.filter(loc => !provinceNames.includes(loc));
@@ -151,7 +153,26 @@ export function JobPreferencesSection() {
             setSelectedProvinces(foundProvs);
             setSelectedCities(foundCities);
         }
-    }, [preferences?.preferred_locations, provinces]);
+    }, [preferences?.preferred_locations, provinces, isUpdating, showLocationMenu]);
+ 
+    // Handle click outside to close the location menu
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (locationMenuRef.current && !locationMenuRef.current.contains(event.target as Node)) {
+                setShowLocationMenu(false);
+            }
+        }
+
+        if (showLocationMenu) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showLocationMenu]);
 
     // Convert data to multi-select options
     const jobTitleOptions = (jobTitles || []).map(title => ({
@@ -412,7 +433,7 @@ export function JobPreferencesSection() {
                     </label>
 
                     {/* Location Selector Button */}
-                    <div className="relative">
+                    <div className="relative" ref={locationMenuRef}>
                         <button
                             onClick={() => setShowLocationMenu(!showLocationMenu)}
                             className="w-full flex items-center justify-between px-3 py-2.5 bg-white border border-gray-200 rounded-lg hover:border-brand-300 transition-colors"
@@ -508,21 +529,32 @@ export function JobPreferencesSection() {
                                     </>
                                 ) : (
                                     <>
-                                        <div className="px-3 py-3 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => {
-                                                    setLocationStep('province');
-                                                    setCitySearch("");
-                                                }}
-                                                className="h-8 px-2 text-gray-500 hover:text-gray-900"
-                                            >
-                                                <ArrowRight className="h-4 w-4 rotate-180 mr-1" />
-                                                Back
-                                            </Button>
-                                            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                                                Select Cities
+                                        <div className="px-3 py-2 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                                            <div className="flex items-center gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        setLocationStep('province');
+                                                        setCitySearch("");
+                                                    }}
+                                                    className="h-7 px-1.5 text-gray-400 hover:text-brand-600"
+                                                >
+                                                    <ArrowRight className="h-3.5 w-3.5 rotate-180" />
+                                                </Button>
+                                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                    Cities
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={handleApplyLocation}
+                                                    className="h-7 text-[11px] text-brand-600 font-bold hover:bg-brand-50"
+                                                >
+                                                    Apply Selected
+                                                </Button>
                                             </div>
                                         </div>
 

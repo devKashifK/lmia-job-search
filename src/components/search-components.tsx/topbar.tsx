@@ -78,7 +78,7 @@ function NavLink({
 // User Menu Component
 function UserMenu() {
   const { session } = useSession();
-  const { creditRemaining } = useCreditData();
+  const { creditRemaining, creditData } = useCreditData();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -166,7 +166,7 @@ function UserMenu() {
               className="flex items-center gap-2 px-4 py-2 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
             >
               <CreditCard className="w-4 h-4" />
-              Credits ({creditRemaining || 0})
+              {(creditData as any)?.plan_type ? `${(creditData as any).plan_type.replace(/_/g, ' ')} Plan` : 'Credits'} ({creditRemaining === Infinity ? 'Unlimited' : (creditRemaining || 0)})
             </Link>
             <div className="h-px bg-zinc-200 my-1" />
             <button

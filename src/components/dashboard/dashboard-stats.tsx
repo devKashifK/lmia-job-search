@@ -12,22 +12,22 @@ import useMobile from '@/hooks/use-mobile';
 
 export function DashboardStats() {
     const { isMobile } = useMobile();
-    const { creditData, creditRemaining, isLoading: creditsLoading } = useCreditData();
+    const { creditData, creditRemaining, isUnlimited, isLoading: creditsLoading } = useCreditData();
     const { data: savedJobs, isLoading: savedJobsLoading } = useSavedJobs();
 
     const savedJobsCount = savedJobs?.length || 0;
 
     const stats = [
         {
-            label: 'Credits',
-            value: creditsLoading ? '...' : creditRemaining?.toLocaleString() || '0',
-            subtext: 'Available',
+            label: (creditData as any)?.plan_type ? `${(creditData as any).plan_type.replace(/_/g, ' ')} Plan` : 'Credits',
+            value: creditsLoading ? '...' : (isUnlimited ? 'Unlimited' : creditRemaining?.toLocaleString() || '0'),
+            subtext: isUnlimited ? 'Premium Access' : 'Available',
             icon: CreditCard,
             color: 'text-brand-600',
             bg: 'bg-brand-50/50',
             border: 'hover:border-brand-200',
             href: '/dashboard/credits',
-            trend: '+5', // Mock trend for premium feel
+            trend: isUnlimited ? 'Premium' : '+5', 
         },
         {
             label: 'Saved',
@@ -42,7 +42,7 @@ export function DashboardStats() {
         },
         {
             label: 'Searches',
-            value: creditsLoading ? '...' : creditData?.used_credit?.toLocaleString() || '0',
+            value: creditsLoading ? '...' : (creditData as any)?.used_credit?.toLocaleString() || '0',
             subtext: 'Lifetime',
             icon: TrendingUp,
             color: 'text-purple-600',

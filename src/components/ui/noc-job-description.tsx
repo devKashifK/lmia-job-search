@@ -13,6 +13,7 @@ import {
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from '@/hooks/use-session';
+import { usePlanFeatures } from '@/hooks/use-plan-features';
 import { getJobRecordId } from '@/utils/saved-jobs';
 import { NocJobDescriptionSkeleton } from './skeletons';
 import { ShareButton } from './share-button';
@@ -70,6 +71,8 @@ interface Job {
   approved_positions?: number;
   territory?: string;
   job_description?: unknown;
+  email?: string;
+  phone?: string;
 }
 
 interface NocJobDescriptionProps {
@@ -187,6 +190,7 @@ export function NocJobDescription({
   isSelected = false,
 }: NocJobDescriptionProps) {
   const { session } = useSession();
+  const { canViewEmployerContacts, isLoading: planLoading } = usePlanFeatures();
   const router = useRouter();
   const recordId = job ? getJobRecordId(job) : undefined;
   const {
@@ -768,15 +772,58 @@ export function NocJobDescription({
                     onClick={() => {
                       if (!session) {
                         router.push('/sign-in');
-                      } else {
+                      } else if (!canViewEmployerContacts) {
                         setOpenPremium(true);
                       }
                     }}
                   >
                     <Contact className="w-4 h-4 mr-2" />
-                    Contact Employer
+                    {canViewEmployerContacts ? 'Contact Details Unlocked' : 'Contact Employer'}
                   </Button>
                 </motion.div>
+
+                {canViewEmployerContacts && (session) && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.8 }}
+                    className="space-y-3"
+                  >
+                    <Card className="border-0 bg-emerald-50 shadow-sm ring-1 ring-emerald-100 rounded-xl overflow-hidden">
+                      <CardContent className="p-4 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-emerald-100 rounded-lg">
+                            <Contact className="w-3.5 h-3.5 text-emerald-600" />
+                          </div>
+                          <h3 className="font-semibold text-emerald-900 text-sm">
+                            Direct Employer Contacts
+                          </h3>
+                        </div>
+                        <div className="grid grid-cols-1 gap-2">
+                          {job?.email && (
+                            <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-emerald-100">
+                              <Mail className="w-4 h-4 text-emerald-500" />
+                              <a href={`mailto:${job.email}`} className="text-sm font-medium text-gray-900 hover:text-brand-600 transition-colors">
+                                {job.email}
+                              </a>
+                            </div>
+                          )}
+                          {job?.phone && (
+                            <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-emerald-100">
+                              <Phone className="w-4 h-4 text-emerald-500" />
+                              <a href={`tel:${job.phone}`} className="text-sm font-medium text-gray-900 hover:text-brand-600 transition-colors">
+                                {job.phone}
+                              </a>
+                            </div>
+                          )}
+                          {!job?.email && !job?.phone && (
+                            <p className="text-xs text-emerald-700 italic">No direct contact info available for this record.</p>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
               </div>
             </div>
 
