@@ -57,7 +57,7 @@ export async function getUserPreferences(userId: string): Promise<UserPreference
 export async function upsertUserPreferences(userId: string, preferences: Partial<UserPreferences>) {
     const { data, error } = await db
         .from('user_preferences')
-        .upsert({ user_id: userId, ...preferences }, { onConflict: 'user_id' })
+        .upsert({ user_id: userId, ...preferences } as any, { onConflict: 'user_id' })
         .select()
         .single();
 
