@@ -22,7 +22,9 @@ export const metadata: Metadata = {
   description: 'Discover jobs across Canada with JobMaze. Search real-time vacancies, LMIA opportunities, and immigration-friendly jobs with powerful AI search tools.',
   keywords: ['canada jobs', 'lmia jobs canada', 'job search canada', 'noc job search', 'jobmaze'],
   icons: {
-    icon: '/logo.svg',
+    icon: '/job_maze_favicon_.svg',
+    shortcut: '/job_maze_favicon_.svg',
+    apple: '/job_maze_favicon_.svg',
   },
   openGraph: {
     type: 'website',
@@ -32,7 +34,7 @@ export const metadata: Metadata = {
     description: 'Discover jobs across Canada with JobMaze. Search real-time vacancies, LMIA opportunities, and immigration-friendly jobs with powerful AI search tools.',
     siteName: 'JobMaze',
     images: [{
-      url: '/og-image.png',
+      url: '/feature_image_jobmaze.svg',
       width: 1200,
       height: 630,
       alt: 'JobMaze – AI Job Search Platform for Canada Jobs',
@@ -42,7 +44,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'JobMaze – AI Job Search Platform for Canada Jobs',
     description: 'Discover jobs across Canada with JobMaze. Search real-time vacancies, LMIA opportunities, and immigration-friendly jobs with powerful AI search tools.',
-    images: ['/og-image.png'],
+    images: ['/feature_image_jobmaze.svg'],
   },
 };
 
