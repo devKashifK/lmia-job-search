@@ -30,7 +30,7 @@ export const useUpdateCredits = () => {
   const { session } = useSession();
   const queryClient = useQueryClient();
 
-  const updateCreditsAndSearch = async (keyword: string) => {
+  const updateCreditsAndSearch = async (keyword: string, filters?: Record<string, any>) => {
     if (session?.trial) return null;
     if (!session?.user?.id) throw new Error('User not authenticated');
 
@@ -40,6 +40,7 @@ export const useUpdateCredits = () => {
       const { search_id: currentSearchId } = await insertSearch({
         id: session.user.id,
         keyword,
+        filters,
         save: false,
       });
 

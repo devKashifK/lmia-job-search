@@ -360,10 +360,11 @@ export function SearchBox() {
   };
 
   const startSearch = async () => {
-    // ... validation ...
-    if (!input.trim() && !dateRange?.from && selectedProvinces.length === 0 && selectedCities.length === 0 && locationText !== 'Canada') {
-      // Allow if specifically "Canada" selected or manual text? 
-      // For this UI, "Canada" means NO location filter.
+    // Credit Check for non-unlimited plans
+    const isReady = await checkCredits();
+    if (!isReady) {
+      setIsSearching(false);
+      return;
     }
 
     setIsSearching(true);
@@ -414,7 +415,7 @@ export function SearchBox() {
 
       router.push(sp.toString() ? `${base}?${sp.toString()}` : base);
 
-      // Track the search
+      // Track the search and update credits
       if (session?.user?.id) {
         const filters: Record<string, any> = {};
         if (selectedCities.length > 0) filters.cities = selectedCities;
@@ -426,11 +427,8 @@ export function SearchBox() {
         filters.search_type = searchType;
         filters.search_by = searchBy;
 
-        void trackSearch({
-          id: session.user.id,
-          keyword: searchTerm,
-          filters: Object.keys(filters).length > 0 ? filters : undefined,
-        });
+        // updateCreditsAndSearch handles both credit deduction and search audit
+        void updateCreditsAndSearch(searchTerm, Object.keys(filters).length > 0 ? filters : undefined);
       }
 
     } catch (error) {

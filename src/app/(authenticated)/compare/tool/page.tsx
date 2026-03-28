@@ -65,6 +65,7 @@ import useMobile from '@/hooks/use-mobile';
 import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';
 import Footer from '@/sections/homepage/footer';
+import { usePlanFeatures } from '@/hooks/use-plan-features';
 
 type ComparisonType = 'job_title' | 'state' | 'city' | 'employer';
 
@@ -223,7 +224,9 @@ export default function ComparePage() {
   const { data: employerOptions, isLoading: employersLoading } = useCompareData('employer');
   const { data: savedJobs, isLoading: savedJobsLoading } = useSavedJobs();
   const { session } = useSession();
+  const { planType, isLoading: isPlanLoading } = usePlanFeatures();
   const queryClient = useQueryClient();
+  const isPremium = planType !== 'free';
 
   const hasSavedJobs = savedJobs && savedJobs.length > 0;
 
@@ -399,6 +402,13 @@ export default function ComparePage() {
 
   const handleCompare = () => {
     if (entity1 && entity2) {
+      if (enable3Way && !isPremium) {
+        toast.error('Premium Feature', {
+          description: '3-Way Comparison is available on premium plans.',
+          action: { label: 'Upgrade', onClick: () => router.push('/pricing') }
+        });
+        return;
+      }
       saveToRecentComparisons(entity1, entity2, comparisonType);
       setShowResults(true);
     }
@@ -1453,6 +1463,13 @@ export default function ComparePage() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => {
+                          if (!isPremium) {
+                            toast.error('Premium Feature', {
+                              description: '3-Way Comparison is only available on premium plans.',
+                              action: { label: 'Upgrade', onClick: () => router.push('/pricing') }
+                            });
+                            return;
+                          }
                           const next = !enable3Way;
                           setEnable3Way(next);
                           if (!next) setEntity3('');
