@@ -9,6 +9,8 @@ import db from "@/db";
 const apiKey = (process.env.GEMINI_API_KEY || "").trim();
 const genAI = new GoogleGenerativeAI(apiKey);
 
+export const maxDuration = 60; // 60 seconds timeout specifically for AI analysis
+
 export async function POST(req: NextRequest) {
     try {
         const authHeader = req.headers.get("authorization");

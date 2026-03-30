@@ -816,14 +816,13 @@ export function NocJobDescription({
                   <Button
                     size="sm"
                     onClick={() => setOpenApplyDialog(true)}
-                    className={`w-full font-black text-xs uppercase tracking-widest h-11 rounded-xl shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-none ${
-                      isFresh 
-                      ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-brand-500/20' 
+                    className={`w-full font-black text-xs uppercase tracking-widest h-11 rounded-xl shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-none ${isFresh
+                      ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-brand-500/20'
                       : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/10'
-                    }`}
+                      }`}
                   >
                     {isFresh ? (
-                      <><CheckCircle2 className="w-5 h-5 mr-2" /> Apply Now (LMIA Ready)</>
+                      <><CheckCircle2 className="w-5 h-5 mr-2" /> Apply Now</>
                     ) : (
                       <><Mail className="w-5 h-5 mr-2" /> Notify Me for New Jobs</>
                     )}
