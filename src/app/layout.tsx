@@ -22,9 +22,9 @@ export const metadata: Metadata = {
   description: 'Discover jobs across Canada with JobMaze. Search real-time vacancies, LMIA opportunities, and immigration-friendly jobs with powerful AI search tools.',
   keywords: ['canada jobs', 'lmia jobs canada', 'job search canada', 'noc job search', 'jobmaze'],
   icons: {
-    icon: '/job_maze_favicon_.svg',
-    shortcut: '/job_maze_favicon_.svg',
-    apple: '/job_maze_favicon_.svg',
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
   },
   openGraph: {
     type: 'website',
