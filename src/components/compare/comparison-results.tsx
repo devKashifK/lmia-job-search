@@ -23,6 +23,8 @@ import {
   Info
 } from 'lucide-react';
 import Footer from '@/sections/homepage/footer';
+import { usePlanFeatures } from '@/hooks/use-plan-features';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -100,7 +102,10 @@ export default function ComparisonResults({
   onReset,
   onModify,
 }: ComparisonResultsProps) {
+  const router = useRouter();
   const { isMobile } = useMobile();
+  const { planType, isLoading: isPlanLoading } = usePlanFeatures();
+  const isPremium = planType !== 'free';
   const { data, isLoading } = useComparisonData(type, entity1, entity2, entity3);
   const [saveDialogOpen, setSaveDialogOpen] = React.useState(false);
   const [infoDialogOpen, setInfoDialogOpen] = React.useState(false);
@@ -332,7 +337,7 @@ export default function ComparisonResults({
             {/* Glowing Orbs */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] -z-10 animate-pulse" />
             <div className="absolute bottom-0 left-0 w-80 h-80 bg-green-500/10 rounded-full blur-[100px] -z-10 animate-pulse" />
-            
+
             <div className="flex flex-col items-center">
               {/* Badge Centered */}
               <div className="mb-8 z-10">
@@ -386,7 +391,7 @@ export default function ComparisonResults({
 
                 {/* VS Circle */}
                 <div className="px-8 flex items-center justify-center">
-                  <motion.div 
+                  <motion.div
                     whileHover={{ scale: 1.1, rotate: 0 }}
                     className="relative w-20 h-20 rounded-[1.75rem] bg-gray-900 border-[6px] border-white flex items-center justify-center shadow-2xl rotate-[12deg] transition-all group cursor-default"
                   >
@@ -430,26 +435,33 @@ export default function ComparisonResults({
             </div>
           </div>
         </motion.div>
+
         {/* Premium Market Leader Card */}
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-8"
+          className="mb-8 relative"
         >
+          <PremiumOverlay
+            isVisible={!isPremium}
+            title="Market Leadership Analysis"
+            description="Identify which entity dominates the current market landscape."
+            onUpgrade={() => router.push('/pricing')}
+          />
           {(() => {
             const winner = data1.totalJobs >= data2.totalJobs ? entity1 : entity2;
             const loser = data1.totalJobs >= data2.totalJobs ? entity2 : entity1;
             const winnerJobs = Math.max(data1.totalJobs, data2.totalJobs);
             const loserJobs = Math.min(data1.totalJobs, data2.totalJobs);
-            
+
             const ratio = loserJobs > 0 ? winnerJobs / loserJobs : (winnerJobs > 0 ? Infinity : 1);
             let displayDelta = '';
             if (ratio >= 3 || ratio === Infinity) {
-                displayDelta = ratio === Infinity ? 'New' : `${ratio.toFixed(1)}x`;
+              displayDelta = ratio === Infinity ? 'New' : `${ratio.toFixed(1)}x`;
             } else {
-                const deltaPct = Math.round(((winnerJobs - loserJobs) / (loserJobs || 1)) * 100);
-                displayDelta = `${deltaPct}%`;
+              const deltaPct = Math.round(((winnerJobs - loserJobs) / (loserJobs || 1)) * 100);
+              displayDelta = `${deltaPct}%`;
             }
 
             const winnerGrowth = data1.totalJobs >= data2.totalJobs ? data1.growthRate : data2.growthRate;
@@ -462,25 +474,25 @@ export default function ComparisonResults({
                   : 'border-yellow-200 bg-gradient-to-r from-amber-500/5 via-yellow-50 to-amber-500/5 shadow-lg shadow-amber-500/5'
               )}>
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                   <Sparkles className="w-20 h-20 text-amber-500 rotate-12" />
+                  <Sparkles className="w-20 h-20 text-amber-500 rotate-12" />
                 </div>
 
                 <div className={cn(
                   'relative w-14 h-14 flex items-center justify-center rounded-2xl shadow-inner border',
                   tied ? 'bg-gray-100 border-gray-200' : 'bg-gradient-to-br from-amber-400 to-yellow-500 border-amber-300 ring-8 ring-amber-500/10'
                 )}>
-                   {tied ? (
-                     <span className="text-3xl">🤝</span>
-                   ) : (
-                     <div className="relative">
-                       <span className="text-3xl drop-shadow-md">🏆</span>
-                       <motion.div 
-                         animate={{ opacity: [0, 1, 0] }}
-                         transition={{ duration: 2, repeat: Infinity }}
-                         className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white]"
-                       />
-                     </div>
-                   )}
+                  {tied ? (
+                    <span className="text-3xl">🤝</span>
+                  ) : (
+                    <div className="relative">
+                      <span className="text-3xl drop-shadow-md">🏆</span>
+                      <motion.div
+                        animate={{ opacity: [0, 1, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white]"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex-1 min-w-0 z-10">
@@ -498,16 +510,16 @@ export default function ComparisonResults({
                   </h3>
                   <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-1">
                     <p className="text-sm font-semibold text-gray-600">
-                       {tied ? 'Volume is identical across markets' : (
-                         <><span className="text-amber-700 font-bold">{displayDelta}</span> more listings than {loser}</>
-                       )}
+                      {tied ? 'Volume is identical across markets' : (
+                        <><span className="text-amber-700 font-bold">{displayDelta}</span> more listings than {loser}</>
+                      )}
                     </p>
                     {!tied && winnerGrowth !== undefined && (
                       <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500">
-                         <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                         <span className="font-semibold">{(winnerJobs - loserJobs).toLocaleString()} unit lead</span>
-                         <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                         <span className="font-semibold">{winnerGrowth > 0 ? 'Expanding' : 'Consolidating'} Market</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                        <span className="font-semibold">{(winnerJobs - loserJobs).toLocaleString()} unit lead</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                        <span className="font-semibold">{winnerGrowth > 0 ? 'Expanding' : 'Consolidating'} Market</span>
                       </div>
                     )}
                   </div>
@@ -528,13 +540,19 @@ export default function ComparisonResults({
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="mb-8"
+          className="mb-8 relative"
         >
+          <PremiumOverlay
+            isVisible={!isPremium}
+            title="Intelligence Insights"
+            description="NLP-driven automated market synthesis and momentum analysis."
+            onUpgrade={() => router.push('/pricing')}
+          />
           <div className="relative overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white shadow-xl hover:shadow-2xl transition-all duration-500 group/winner">
             {/* Background Effects */}
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-brand-500/5 rounded-full blur-[100px] group-hover:bg-brand-500/10 transition-colors" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/5 rounded-full blur-[100px]" />
-            
+
             <div className="relative p-8">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
@@ -551,8 +569,8 @@ export default function ComparisonResults({
                   <div>
                     <h3 className="text-xl font-extrabold text-gray-900 tracking-tight leading-none mb-1.5 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-brand-800 to-gray-900">Intelligence Insights</h3>
                     <div className="flex items-center gap-2">
-                       <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                       <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest leading-none">Automated Market Synthesis</p>
+                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest leading-none">Automated Market Synthesis</p>
                     </div>
                   </div>
                 </div>
@@ -568,23 +586,23 @@ export default function ComparisonResults({
                 {/* Volume & Lead */}
                 <div className="flex gap-4 p-5 rounded-[2rem] bg-gray-50/50 hover:bg-gray-50 transition-colors group/item">
                   <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center border border-gray-100 group-hover/item:border-brand-200 transition-colors">
-                     <Hash className="w-5 h-5 text-brand-500" />
+                    <Hash className="w-5 h-5 text-brand-500" />
                   </div>
                   <div className="flex-1">
                     <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Volume Variance</h4>
                     <p className="text-gray-700 leading-snug font-medium">
-                      <strong>{entity1}</strong> holds 
+                      <strong>{entity1}</strong> holds
                       <span className={cn(
                         "mx-1 px-1.5 py-0.5 rounded-md font-bold",
                         jobsDiff > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                       )}>
                         {Math.abs(jobsDiff).toLocaleString()} {jobsDiff > 0 ? 'jobs more' : 'jobs fewer'}
                       </span>
-                      than <strong>{entity2}</strong>. This represents a 
+                      than <strong>{entity2}</strong>. This represents a
                       <strong> {(() => {
-                        const ratio = data2.totalJobs > 0 ? data1.totalJobs / data2.totalJobs : (data1.totalJobs > 0 ? Infinity : 1);
-                        const diffPct = data2.totalJobs > 0 ? ((data1.totalJobs - data2.totalJobs) / data2.totalJobs) * 100 : 100;
-                        return formatComparisonValue(ratio, diffPct);
+                      const ratio = data2.totalJobs > 0 ? data1.totalJobs / data2.totalJobs : (data1.totalJobs > 0 ? Infinity : 1);
+                      const diffPct = data2.totalJobs > 0 ? ((data1.totalJobs - data2.totalJobs) / data2.totalJobs) * 100 : 100;
+                      return formatComparisonValue(ratio, diffPct);
                       })()}</strong> capacity difference.
                     </p>
                   </div>
@@ -594,7 +612,7 @@ export default function ComparisonResults({
                 {(data1.growthRate !== undefined && data2.growthRate !== undefined) && (
                   <div className="flex gap-4 p-5 rounded-[2rem] bg-gray-50/50 hover:bg-gray-50 transition-colors group/item">
                     <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center border border-gray-100 group-hover/item:border-green-200 transition-colors">
-                       <TrendingUp className="w-5 h-5 text-green-500" />
+                      <TrendingUp className="w-5 h-5 text-green-500" />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Momentum Analysis</h4>
@@ -602,18 +620,18 @@ export default function ComparisonResults({
                         {(() => {
                           const growthDiff = Math.abs(data1.growthRate - data2.growthRate);
                           const formattedDiff = growthDiff >= 200 ? `${(growthDiff / 100).toFixed(1)}x` : `${growthDiff.toFixed(1)}%`;
-                          
+
                           if (Math.abs(data1.growthRate) > Math.abs(data2.growthRate)) {
                             return (
                               <>
-                                <strong>{entity1}</strong> exhibits <span className="text-green-600 font-bold">{formattedDiff}</span> stronger momentum, 
+                                <strong>{entity1}</strong> exhibits <span className="text-green-600 font-bold">{formattedDiff}</span> stronger momentum,
                                 {data1.growthRate > 0 ? ' surging as an expanding choice.' : ' showing higher resilience.'}
                               </>
                             );
                           } else {
                             return (
                               <>
-                                <strong>{entity2}</strong> leads growth by <span className="text-green-600 font-bold">{formattedDiff}</span>, 
+                                <strong>{entity2}</strong> leads growth by <span className="text-green-600 font-bold">{formattedDiff}</span>,
                                 suggesting an aggressive market uptake.
                               </>
                             );
@@ -626,28 +644,19 @@ export default function ComparisonResults({
 
                 {/* Benchmark Mapping */}
                 {data.benchmark && (
-                <div className="flex gap-4 p-5 rounded-[2rem] bg-gray-50/50 hover:bg-gray-50 transition-colors group/item">
+                  <div className="flex gap-4 p-5 rounded-[2rem] bg-gray-50/50 hover:bg-gray-50 transition-colors group/item">
                     <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center border border-gray-100 group-hover/item:border-blue-200 transition-colors">
-                       <BarChart3 className="w-5 h-5 text-blue-500" />
+                      <BarChart3 className="w-5 h-5 text-blue-500" />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Market Benchmark</h4>
                       <p className="text-gray-700 leading-snug font-medium">
-                        <strong>{entity1}</strong> sits at 
+                        <strong>{entity1}</strong> sits at
                         <span className="mx-1 px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded-md font-bold">
                           {(() => {
                             const ratio = data1.totalJobs / (data.benchmark.avgJobsPerValue || 1);
-                            const diffPct =
-                              ((data1.totalJobs - data.benchmark.avgJobsPerValue) /
-                                (data.benchmark.avgJobsPerValue || 1)) *
-                              100;
-                            return formatComparisonValue(
-                              ratio,
-                              diffPct,
-                              true,
-                              data.benchmark.totalJobs,
-                              data1.totalJobs
-                            );
+                            const diffPct = ((data1.totalJobs - data.benchmark.avgJobsPerValue) / (data.benchmark.avgJobsPerValue || 1)) * 100;
+                            return formatComparisonValue(ratio, diffPct, true, data.benchmark.totalJobs, data1.totalJobs);
                           })()}
                         </span>
                         {data1.totalJobs >= data.benchmark.avgJobsPerValue ? 'above' : 'below'} average, while
@@ -655,17 +664,8 @@ export default function ComparisonResults({
                         <span className="mx-1 px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md font-bold">
                           {(() => {
                             const ratio = data2.totalJobs / (data.benchmark.avgJobsPerValue || 1);
-                            const diffPct =
-                              ((data2.totalJobs - data.benchmark.avgJobsPerValue) /
-                                (data.benchmark.avgJobsPerValue || 1)) *
-                              100;
-                            return formatComparisonValue(
-                              ratio,
-                              diffPct,
-                              true,
-                              data.benchmark.totalJobs,
-                              data2.totalJobs
-                            );
+                            const diffPct = ((data2.totalJobs - data.benchmark.avgJobsPerValue) / (data.benchmark.avgJobsPerValue || 1)) * 100;
+                            return formatComparisonValue(ratio, diffPct, true, data.benchmark.totalJobs, data2.totalJobs);
                           })()}
                         </span>
                         the median.
@@ -676,16 +676,16 @@ export default function ComparisonResults({
 
                 {/* Regional Strategy */}
                 {data1.topCities[0] && data2.topCities[0] && (
-                <div className="flex gap-4 p-5 rounded-[2rem] bg-gray-50/50 hover:bg-gray-50 transition-colors group/item">
+                  <div className="flex gap-4 p-5 rounded-[2rem] bg-gray-50/50 hover:bg-gray-50 transition-colors group/item">
                     <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center border border-gray-100 group-hover/item:border-orange-200 transition-colors">
-                       <MapPin className="w-5 h-5 text-orange-500" />
+                      <MapPin className="w-5 h-5 text-orange-500" />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Strategic Hubs</h4>
                       <p className="text-gray-700 leading-snug font-medium">
-                        The center of gravity for <strong>{entity1}</strong> lies in 
-                        <strong className="text-brand-700 border-b border-brand-200 ml-1">{data1.topCities[0].name}</strong>, 
-                        whereas <strong>{entity2}</strong> dominates in 
+                        The center of gravity for <strong>{entity1}</strong> lies in
+                        <strong className="text-brand-700 border-b border-brand-200 ml-1">{data1.topCities[0].name}</strong>,
+                        whereas <strong>{entity2}</strong> dominates in
                         <strong className="text-brand-700 border-b border-brand-200 ml-1">{data2.topCities[0].name}</strong>.
                       </p>
                     </div>
@@ -735,8 +735,14 @@ export default function ComparisonResults({
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.25 }}
-            className="mb-8"
+            className="mb-8 relative"
           >
+            <PremiumOverlay
+              isVisible={!isPremium}
+              title="National Benchmarking"
+              description="Compare your selection against national averages and global market context."
+              onUpgrade={() => router.push('/pricing')}
+            />
             <Card className={cn(
               "relative overflow-hidden border border-slate-700/50 shadow-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white rounded-[2.5rem]",
               isMobile ? "p-6" : "p-10"
@@ -744,7 +750,7 @@ export default function ComparisonResults({
               {/* Decorative glows */}
               <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-brand-500/20 rounded-full blur-[100px] -z-10 animate-pulse" />
               <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-blue-500/20 rounded-full blur-[100px] -z-10 animate-pulse" />
-              
+
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-[inset_0_0_20px_rgba(255,255,255,0.1)] flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -755,7 +761,7 @@ export default function ComparisonResults({
                     <p className="text-slate-400 text-xs font-semibold uppercase tracking-widest mt-1">Global Market Context</p>
                   </div>
                 </div>
-                
+
                 <div className="px-5 py-3 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 flex items-center gap-4">
                   <div>
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-1">Market Average</p>
@@ -765,7 +771,7 @@ export default function ComparisonResults({
                     </div>
                   </div>
                   <div className="w-px h-8 bg-white/10" />
-                  <p className="text-[10px] text-slate-400 font-medium leading-tight">National mean per<br/>{type.replace('_', ' ')}</p>
+                  <p className="text-[10px] text-slate-400 font-medium leading-tight">National mean per<br />{type.replace('_', ' ')}</p>
                 </div>
               </div>
 
@@ -777,35 +783,35 @@ export default function ComparisonResults({
                 <div className="relative group overflow-hidden bg-blue-500/5 backdrop-blur-xl rounded-[2.5rem] border border-blue-500/20 p-6 transition-all hover:bg-blue-500/10 hover:border-blue-500/40">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2">
-                       <div className="w-2 h-2 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(96,165,250,0.5)]" />
-                       <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">{entity1}</span>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(96,165,250,0.5)]" />
+                      <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">{entity1}</span>
                     </div>
                     <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px] font-bold">Relative Delta</Badge>
                   </div>
-                  
+
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                        {(() => {
-                          const ratio =
-                            data1.totalJobs / (data.benchmark.avgJobsPerValue || 1);
-                          const diffPct =
-                            ((data1.totalJobs - data.benchmark.avgJobsPerValue) /
-                              (data.benchmark.avgJobsPerValue || 1)) *
-                            100;
-                          return formatComparisonValue(
-                            ratio,
-                            diffPct,
-                            true,
-                            data.benchmark.totalJobs,
-                            data1.totalJobs
-                          );
-                        })()}
+                      {(() => {
+                        const ratio =
+                          data1.totalJobs / (data.benchmark.avgJobsPerValue || 1);
+                        const diffPct =
+                          ((data1.totalJobs - data.benchmark.avgJobsPerValue) /
+                            (data.benchmark.avgJobsPerValue || 1)) *
+                          100;
+                        return formatComparisonValue(
+                          ratio,
+                          diffPct,
+                          true,
+                          data.benchmark.totalJobs,
+                          data1.totalJobs
+                        );
+                      })()}
                       <p className="text-xs text-blue-300/60 font-semibold uppercase tracking-widest">
                         {data1.totalJobs > data.benchmark.avgJobsPerValue ? 'Above' : 'Below'} Average
                       </p>
                     </div>
                     <div className="w-16 h-16 rounded-full border-4 border-blue-500/20 flex items-center justify-center">
-                       {data1.totalJobs > data.benchmark.avgJobsPerValue ? <TrendingUp className="w-6 h-6 text-blue-400" /> : <TrendingDown className="w-6 h-6 text-blue-400" />}
+                      {data1.totalJobs > data.benchmark.avgJobsPerValue ? <TrendingUp className="w-6 h-6 text-blue-400" /> : <TrendingDown className="w-6 h-6 text-blue-400" />}
                     </div>
                   </div>
                 </div>
@@ -814,35 +820,35 @@ export default function ComparisonResults({
                 <div className="relative group overflow-hidden bg-green-500/5 backdrop-blur-xl rounded-[2.5rem] border border-green-500/20 p-6 transition-all hover:bg-green-500/10 hover:border-green-400/40">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2">
-                       <div className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_10px_rgba(74,222,128,0.5)]" />
-                       <span className="text-xs font-bold text-green-300 uppercase tracking-widest">{entity2}</span>
+                      <div className="w-2 h-2 bg-green-400 rounded-full shadow-[0_0_10px_rgba(74,222,128,0.5)]" />
+                      <span className="text-xs font-bold text-green-300 uppercase tracking-widest">{entity2}</span>
                     </div>
                     <Badge className="bg-green-500/20 text-green-300 border-green-500/30 text-[10px] font-bold">Relative Delta</Badge>
                   </div>
-                  
+
                   <div className="flex items-end justify-between gap-4">
                     <div>
-                        {(() => {
-                          const ratio =
-                            data2.totalJobs / (data.benchmark.avgJobsPerValue || 1);
-                          const diffPct =
-                            ((data2.totalJobs - data.benchmark.avgJobsPerValue) /
-                              (data.benchmark.avgJobsPerValue || 1)) *
-                            100;
-                          return formatComparisonValue(
-                            ratio,
-                            diffPct,
-                            true,
-                            data.benchmark.totalJobs,
-                            data2.totalJobs
-                          );
-                        })()}
+                      {(() => {
+                        const ratio =
+                          data2.totalJobs / (data.benchmark.avgJobsPerValue || 1);
+                        const diffPct =
+                          ((data2.totalJobs - data.benchmark.avgJobsPerValue) /
+                            (data.benchmark.avgJobsPerValue || 1)) *
+                          100;
+                        return formatComparisonValue(
+                          ratio,
+                          diffPct,
+                          true,
+                          data.benchmark.totalJobs,
+                          data2.totalJobs
+                        );
+                      })()}
                       <p className="text-xs text-green-300/60 font-semibold uppercase tracking-widest">
                         {data2.totalJobs > data.benchmark.avgJobsPerValue ? 'Above' : 'Below'} Average
                       </p>
                     </div>
                     <div className="w-16 h-16 rounded-full border-4 border-green-500/20 flex items-center justify-center">
-                       {data2.totalJobs > data.benchmark.avgJobsPerValue ? <TrendingUp className="w-6 h-6 text-green-400" /> : <TrendingDown className="w-6 h-6 text-green-400" />}
+                      {data2.totalJobs > data.benchmark.avgJobsPerValue ? <TrendingUp className="w-6 h-6 text-green-400" /> : <TrendingDown className="w-6 h-6 text-green-400" />}
                     </div>
                   </div>
                 </div>
@@ -1120,7 +1126,7 @@ export default function ComparisonResults({
         >
           <Card className="p-8 bg-gradient-to-br from-brand-900 via-brand-950 to-slate-950 border-brand-800 shadow-2xl rounded-[2.5rem] relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-brand-500/10 rounded-full blur-[100px] group-hover:bg-brand-500/20 transition-all duration-1000" />
-            
+
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl shadow-lg ring-4 ring-orange-500/10">
@@ -1141,8 +1147,8 @@ export default function ComparisonResults({
                 </div>
                 <h4 className="text-white font-bold text-sm mb-2">Market Volume</h4>
                 <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                  <strong>{data1.totalJobs > data2.totalJobs ? entity1 : entity2}</strong> presents a 
-                  <span className="text-blue-400 font-extrabold mx-1">{Math.abs(jobsDiff).toLocaleString()} unit lead</span>, 
+                  <strong>{data1.totalJobs > data2.totalJobs ? entity1 : entity2}</strong> presents a
+                  <span className="text-blue-400 font-extrabold mx-1">{Math.abs(jobsDiff).toLocaleString()} unit lead</span>,
                   offering higher absolute opportunity volume.
                 </p>
               </div>
@@ -1154,8 +1160,8 @@ export default function ComparisonResults({
                   </div>
                   <h4 className="text-white font-bold text-sm mb-2">Geographic Footprint</h4>
                   <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                    {entity1} span <strong className="text-purple-400">{data1.uniqueCities} cities</strong> vs 
-                    {' '}{entity2} in <strong className="text-purple-400">{data2.uniqueCities}</strong>, indicating a 
+                    {entity1} span <strong className="text-purple-400">{data1.uniqueCities} cities</strong> vs
+                    {' '}{entity2} in <strong className="text-purple-400">{data2.uniqueCities}</strong>, indicating a
                     {data1.uniqueCities > data2.uniqueCities ? ' more widespread' : ' more targeted'} presence.
                   </p>
                 </div>
@@ -1168,7 +1174,7 @@ export default function ComparisonResults({
                   </div>
                   <h4 className="text-white font-bold text-sm mb-2">Dominant Hubs</h4>
                   <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                    Hot spots vary significantly: <strong className="text-orange-400">{data1.topCities[0].name}</strong> for {entity1} vs 
+                    Hot spots vary significantly: <strong className="text-orange-400">{data1.topCities[0].name}</strong> for {entity1} vs
                     {' '}<strong className="text-orange-400">{data2.topCities[0].name}</strong> for {entity2}.
                   </p>
                 </div>
@@ -1258,10 +1264,10 @@ export default function ComparisonResults({
             </div>
 
             <div className="p-4 rounded-xl bg-gray-50 border border-dashed border-gray-200">
-               <h4 className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-1.5">Where is this data from?</h4>
-               <p className="text-[10px] text-gray-500 leading-normal">
-                 All metrics come from **our private database** and verified **LMIA** records. We carefully deduplicate employers and cities to give you the most accurate market picture.
-               </p>
+              <h4 className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-1.5">Where is this data from?</h4>
+              <p className="text-[10px] text-gray-500 leading-normal">
+                All metrics come from **our private database** and verified **LMIA** records. We carefully deduplicate employers and cities to give you the most accurate market picture.
+              </p>
             </div>
           </div>
 
@@ -1312,14 +1318,14 @@ export default function ComparisonResults({
           </div>
 
           <DialogFooter className="mt-8 gap-3 sm:gap-0">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => setSaveDialogOpen(false)}
               className="rounded-xl font-bold text-gray-400 hover:text-gray-600 hover:bg-gray-100 h-12 px-6"
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleSaveComparison}
               className="bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold h-12 px-8 shadow-lg shadow-brand-500/20 transition-all active:scale-95"
             >
@@ -1376,10 +1382,10 @@ function MetricCard({
     <Card className="relative overflow-hidden group border border-gray-100 shadow-md hover:shadow-2xl transition-all duration-500 bg-white/80 backdrop-blur-md rounded-[2rem]">
       {/* Dynamic border glow */}
       <div className="absolute inset-0 border-2 border-transparent group-hover:border-brand-500/10 rounded-[2rem] transition-colors -z-10" />
-      
+
       {/* Decorative background element */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-3xl group-hover:bg-brand-500/10 transition-all duration-700 -z-10" />
-      
+
       <div className="p-6 relative">
         <div className="flex items-center gap-4 mb-8">
           <div className="p-3 bg-brand-50 border border-brand-100 rounded-2xl shadow-sm text-brand-600 transition-transform group-hover:scale-110 duration-300">
@@ -1388,8 +1394,8 @@ function MetricCard({
           <div>
             <h4 className="font-extrabold text-gray-900 tracking-tight leading-none mb-1">{label}</h4>
             <div className="flex items-center gap-1.5">
-               <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
-               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Market Metric</p>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
+              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Market Metric</p>
             </div>
           </div>
         </div>
@@ -1402,7 +1408,7 @@ function MetricCard({
               <span className="text-blue-700 bg-blue-50/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-extrabold shadow-sm border border-blue-100">{value1?.toLocaleString() ?? 0}</span>
             </div>
             <div className="h-3 w-full bg-gray-50 rounded-full overflow-hidden border border-gray-100">
-              <motion.div 
+              <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${pct1}%` }}
                 transition={{ duration: 1, ease: "circOut" }}
@@ -1418,7 +1424,7 @@ function MetricCard({
               <span className="text-green-700 bg-green-50/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-extrabold shadow-sm border border-green-100">{value2?.toLocaleString() ?? 0}</span>
             </div>
             <div className="h-3 w-full bg-gray-50 rounded-full overflow-hidden border border-gray-100">
-              <motion.div 
+              <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${pct2}%` }}
                 transition={{ duration: 1, ease: "circOut" }}
@@ -1487,8 +1493,8 @@ function DataList({
       </div>
       <div className="space-y-2">
         {data.map((item, index) => (
-          <motion.div 
-            key={index} 
+          <motion.div
+            key={index}
             whileHover={{ x: 6, backgroundColor: 'rgba(0,0,0,0.02)' }}
             className="group/item flex items-center justify-between p-3 rounded-2xl border border-transparent hover:border-gray-100 transition-all duration-300"
           >
@@ -1536,4 +1542,46 @@ function prepareTimeSeriesData(
       [entity2]: data2.find((d) => d.month === month)?.count || 0,
     }));
   return result;
+}
+
+function PremiumOverlay({
+  isVisible,
+  title,
+  description,
+  onUpgrade
+}: {
+  isVisible: boolean;
+  title: string;
+  description: string;
+  onUpgrade: () => void
+}) {
+  if (!isVisible) return null;
+
+  return (
+    <div className="absolute inset-x-0 inset-y-0 z-30 flex flex-col items-center justify-center p-4 bg-white/60 backdrop-blur-md rounded-[2rem] border-2 border-dashed border-brand-200 shadow-xl overflow-hidden">
+      <div className="absolute -top-12 -right-12 w-48 h-48 bg-brand-500/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+
+      <div className="relative z-10 flex flex-col items-center text-center max-w-[280px] space-y-3">
+        <div className="p-2.5 bg-brand-500 rounded-xl shadow-lg shadow-brand-500/20">
+          <Sparkles className="w-6 h-6 text-white" />
+        </div>
+        <div className="space-y-1">
+          <h4 className="text-lg font-black text-gray-900 tracking-tight leading-tight">{title}</h4>
+          <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Premium Only</p>
+        </div>
+        <p className="text-[11px] text-gray-600 font-medium leading-relaxed">
+          {description}
+        </p>
+        <Button
+          onClick={onUpgrade}
+          size="sm"
+          className="h-9 px-5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-bold shadow-md shadow-brand-500/20 transition-all hover:scale-105"
+        >
+          Unlock
+          <ArrowRight className="w-3.5 h-3.5 ml-2" />
+        </Button>
+      </div>
+    </div>
+  );
 }

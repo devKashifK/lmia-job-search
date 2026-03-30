@@ -1,9 +1,19 @@
 import db from '@/db';
 
+export interface CreditRecord {
+    id: string;
+    total_credit: number;
+    used_credit: number;
+    plan_type: string;
+    expires_at: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
 /**
  * Get credit record for a user
  */
-export async function getUserCredits(userId: string) {
+export async function getUserCredits(userId: string): Promise<CreditRecord | null> {
     const { data, error } = await db
         .from('credits')
         .select('*')
@@ -27,7 +37,7 @@ export function isUnlimitedPlan(credits: any): boolean {
     if (!credits) return false;
     
     // Check if plan type is unlimited
-    const unlimitedPlans = ['weekly', 'monthly', 'enterprise'];
+    const unlimitedPlans = ['weekly', 'monthly', 'enterprise', 'admin'];
     if (!unlimitedPlans.includes(credits.plan_type)) return false;
 
     // Check expiration if set
@@ -67,7 +77,7 @@ export async function incrementUsedCredit(userId: string) {
         return current;
     }
 
-    const { data, error } = await db
+    const { data, error } = await (db as any)
         .from('credits')
         .update({ used_credit: (current.used_credit ?? 0) + 1 })
         .eq('id', userId)

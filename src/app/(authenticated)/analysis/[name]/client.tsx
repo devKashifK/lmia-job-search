@@ -113,6 +113,7 @@ import { Icon } from '@iconify/react/dist/iconify.js';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { AnalysisDetailDialog } from '@/components/analytics/analysis-detail-dialog';
 import { useQuery } from '@tanstack/react-query';
+import { usePlanFeatures } from '@/hooks/use-plan-features';
 
 import useMobile from '@/hooks/use-mobile';
 import { MobileHeader } from '@/components/mobile/mobile-header';
@@ -976,6 +977,7 @@ function CompanyAnalysisContent({
 
   const router = useRouter();
   const { isMobile } = useMobile();
+  const { canUseAIAnalysis, isLoading: isPlanLoading } = usePlanFeatures();
 
   const pathname = usePathname();
   const goBack = () => {
@@ -1542,6 +1544,89 @@ function CompanyAnalysisContent({
       setIsExporting(false);
     }
   };
+  // Loading State
+  if (isLoading || isPlanLoading) {
+    return (
+      <BackgroundWrapper>
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
+            <p className="text-gray-500 font-medium animate-pulse">
+              Analyzing Market Data...
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </BackgroundWrapper>
+    );
+  }
+
+  // Premium Gating
+  if (!canUseAIAnalysis) {
+    return (
+      <BackgroundWrapper>
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="w-full max-w-2xl px-4">
+            <Card className="relative my-28 overflow-hidden border-0 shadow-2xl rounded-[2rem] bg-white text-center p-8">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-brand-50 rounded-full blur-[60px] -mr-24 -mt-24 opacity-50" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-50 rounded-full blur-[40px] -ml-16 -mb-16 opacity-50" />
+
+              <CardContent className="relative z-10 space-y-6">
+                <div className="inline-flex p-4 bg-gradient-to-br from-brand-500 to-brand-600 rounded-2xl shadow-lg shadow-brand-500/20 transform rotate-3">
+                  <Sparkles className="w-10 h-10 text-white" />
+                </div>
+
+                <div className="space-y-2 max-w-xl mx-auto">
+                  <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                    Premium Market Intelligence
+                  </h2>
+                  <p className="text-base text-gray-500 leading-relaxed">
+                    Unlock deep-dive analytics and AI-powered recommendations for <span className="font-bold text-brand-600">{companyName}</span>.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-2xl mx-auto pt-2">
+                  {[
+                    { icon: TrendingUp, title: "Trends", desc: "Growth patterns" },
+                    { icon: Target, title: "NOC Mapping", desc: "Classifications" },
+                    { icon: GitCompare, title: "Benchmark", desc: "Competitors" }
+                  ].map((feat, i) => (
+                    <div key={i} className="flex flex-col items-center text-center gap-1.5 p-4 bg-gray-50/50 rounded-xl border border-gray-100 transition-colors">
+                      <feat.icon className="w-5 h-5 text-brand-600" />
+                      <p className="font-extrabold text-gray-900 text-xs tracking-tight">{feat.title}</p>
+                      <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{feat.desc}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+                  <Button
+                    size="lg"
+                    className="h-12 px-8 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-base shadow-lg shadow-brand-500/25 transition-all transform hover:-translate-y-1"
+                    onClick={() => router.push('/pricing')}
+                  >
+                    Upgrade Now
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="h-12 px-8 border-gray-200 hover:bg-gray-50 rounded-xl font-bold text-gray-600 transition-all text-base"
+                    onClick={goBack}
+                  >
+                    Go Back
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+        <Footer />
+      </BackgroundWrapper>
+    );
+  }
 
   return (
     <BackgroundWrapper>

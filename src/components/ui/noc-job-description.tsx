@@ -39,9 +39,12 @@ import {
   Copy,
   TrendingUp,
   Contact,
+  CheckCircle2,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { parseJobDescription } from '@/utils/parse-job-description';
+import { ApplyJobDialog } from './apply-job-dialog';
+import { differenceInDays, parseISO } from 'date-fns';
 
 interface NocProfile {
   code: string;
@@ -205,6 +208,11 @@ export function NocJobDescription({
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [openPremium, setOpenPremium] = useState(false);
+  const [openApplyDialog, setOpenApplyDialog] = useState(false);
+
+  const isFresh = job?.date_of_job_posting
+    ? differenceInDays(new Date(), new Date(job.date_of_job_posting)) <= 30
+    : false;
 
   useEffect(() => {
     checkSavedStatus();
@@ -229,17 +237,6 @@ export function NocJobDescription({
   const handleViewCompanyJobs = () => {
     if (job?.employer) {
       if (searchType === 'hot_leads') {
-        // router.push(
-        //   `/analysis/${encodeURIComponent(
-        //     job.employer
-        //   )}?t=trending_job&job_title=${encodeURIComponent(
-        //     job.job_title ?? ''
-        //   )}&location=${encodeURIComponent(
-        //     job.state
-        //   )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
-        //     job.noc_code ?? ''
-        //   )}`
-        // );
         router.push(
           `/analysis/${encodeURIComponent(
             job.employer
@@ -248,17 +245,6 @@ export function NocJobDescription({
           )}`
         );
       } else {
-        // router.push(
-        //   `/analysis/${encodeURIComponent(
-        //     job.employer
-        //   )}?t=lmia&job_title=${encodeURIComponent(
-        //     job.job_title ?? ''
-        //   )}&location=${encodeURIComponent(
-        //     job.state
-        //   )}&city=${encodeURIComponent(job.city)}&noc=${encodeURIComponent(
-        //     job.noc_code ?? ''
-        //   )}`
-        // );
         router.push(
           `/analysis/${encodeURIComponent(
             job.employer
@@ -500,7 +486,7 @@ export function NocJobDescription({
 
                         <div className="flex flex-wrap items-center gap-3 text-white/90 text-sm">
                           <div
-                            className="flex items-center gap-1"
+                            className="flex items-center gap-1 cursor-pointer"
                             onClick={() =>
                               goTo(
                                 `/analysis/${encodeURIComponent(
@@ -571,43 +557,102 @@ export function NocJobDescription({
                         </div>
                       </div>
 
-                      <div className="flex flex-col gap-1.5 flex-shrink-0">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              size="sm"
-                              onClick={handleSaveJob}
-                              disabled={savingJob}
-                              className={`transition-all duration-300 px-2.5 py-1.5 text-xs hover:scale-105 ${savingJob
-                                ? 'opacity-50 cursor-not-allowed bg-white/20'
-                                : dbSaved || isSaved
-                                  ? 'bg-yellow-500 hover:bg-yellow-400 text-yellow-900 shadow-lg shadow-yellow-500/25'
-                                  : 'bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm'
-                                }`}
-                            >
-                              <motion.div
-                                animate={{
-                                  scale: dbSaved || isSaved ? [1, 1.2, 1] : 1,
-                                }}
-                                transition={{ duration: 0.3 }}
+                      <div className="flex flex-col gap-2 flex-shrink-0">
+                        <Button
+                          size="sm"
+                          onClick={() => setOpenApplyDialog(true)}
+                          className={`w-full font-black text-xs uppercase tracking-widest h-9 rounded-xl shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-none ${isFresh
+                            ? 'bg-white text-brand-900 hover:bg-gray-100 shadow-white/10'
+                            : 'bg-brand-500 text-white shadow-brand-500/20 hover:bg-brand-400'
+                            }`}
+                        >
+                          {isFresh ? (
+                            <><CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> Apply Now</>
+                          ) : (
+                            <><Mail className="w-3.5 h-3.5 mr-1.5" /> Notify Me</>
+                          )}
+                        </Button>
+
+                        <div className="flex gap-1.5">
+                          <ShareButton
+                            jobTitle={nocProfile?.title}
+                            employer={job?.employer}
+                            city={job?.city}
+                            state={job?.state}
+                            className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2.5 py-1.5 text-xs transition-all duration-200 hover:scale-105"
+                          />
+
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="sm"
+                                onClick={handleSaveJob}
+                                disabled={savingJob}
+                                className={`transition-all duration-300 px-2.5 py-1.5 text-xs hover:scale-105 ${savingJob
+                                  ? 'opacity-50 cursor-not-allowed bg-white/20'
+                                  : dbSaved || isSaved
+                                    ? 'bg-yellow-500 hover:bg-yellow-400 text-yellow-900 shadow-lg shadow-yellow-500/25'
+                                    : 'bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm'
+                                  }`}
                               >
-                                <Star
-                                  className={`w-3.5 h-3.5 ${dbSaved || isSaved ? 'fill-current' : ''
-                                    }`}
-                                />
-                              </motion.div>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">
-                              {savingJob
-                                ? 'Saving...'
-                                : dbSaved || isSaved
-                                  ? 'Remove from saved'
-                                  : 'Save this job'}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
+                                <motion.div
+                                  animate={{
+                                    scale: dbSaved || isSaved ? [1, 1.2, 1] : 1,
+                                  }}
+                                  transition={{ duration: 0.3 }}
+                                >
+                                  <Star
+                                    className={`w-3.5 h-3.5 ${dbSaved || isSaved ? 'fill-current' : ''
+                                      }`}
+                                  />
+                                </motion.div>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">
+                                {savingJob
+                                  ? 'Saving...'
+                                  : dbSaved || isSaved
+                                    ? 'Remove from saved'
+                                    : 'Save this job'}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+
+                          <div className="flex gap-1">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setOpenPremium(true)}
+                                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
+                                >
+                                  <Phone className="w-3.5 h-3.5" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">Upgrade to unlock Phone</p>
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setOpenPremium(true)}
+                                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
+                                >
+                                  <Mail className="w-3.5 h-3.5" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">Upgrade to unlock Email</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -766,9 +811,26 @@ export function NocJobDescription({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
+                  className="space-y-3"
                 >
                   <Button
-                    className="bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white w-full shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl py-3"
+                    size="sm"
+                    onClick={() => setOpenApplyDialog(true)}
+                    className={`w-full font-black text-xs uppercase tracking-widest h-11 rounded-xl shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-none ${
+                      isFresh 
+                      ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-brand-500/20' 
+                      : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/10'
+                    }`}
+                  >
+                    {isFresh ? (
+                      <><CheckCircle2 className="w-5 h-5 mr-2" /> Apply Now (LMIA Ready)</>
+                    ) : (
+                      <><Mail className="w-5 h-5 mr-2" /> Notify Me for New Jobs</>
+                    )}
+                  </Button>
+
+                  <Button
+                    className="bg-white text-gray-500 hover:bg-gray-50 w-full shadow-sm border border-gray-100 transition-all duration-300 rounded-xl py-2 h-10 text-[10px] font-black uppercase tracking-widest"
                     onClick={() => {
                       if (!session) {
                         router.push('/sign-in');
@@ -778,7 +840,7 @@ export function NocJobDescription({
                     }}
                   >
                     <Contact className="w-4 h-4 mr-2" />
-                    {canViewEmployerContacts ? 'Contact Details Unlocked' : 'Contact Employer'}
+                    {canViewEmployerContacts ? 'Contact Details Unlocked' : 'Unlock Contact Details'}
                   </Button>
                 </motion.div>
 
@@ -854,6 +916,21 @@ export function NocJobDescription({
             </Dialog>
           </div>
         </ScrollArea>
+
+        <ApplyJobDialog
+          isOpen={openApplyDialog}
+          onOpenChange={setOpenApplyDialog}
+          job={{
+            RecordID: job.RecordID || job.id || 0,
+            job_title: jobData.title || '',
+            noc_code: (job!.noc_code || job!['2021_noc'] || '').toString(),
+            employer: jobData.company || '',
+            city: job.city || '',
+            state: job.state || '',
+            tableName: searchType === 'lmia' ? 'lmia' : 'trending_job'
+          }}
+          type={isFresh ? 'apply' : 'notify'}
+        />
       </motion.div>
       <LoginAlertComponent />
     </TooltipProvider>
