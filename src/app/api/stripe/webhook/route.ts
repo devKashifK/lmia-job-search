@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe, getPlanCredits } from '@/lib/stripe';
+import { stripe, getPlanDetails } from '@/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
@@ -68,7 +68,10 @@ export async function POST(request: NextRequest) {
             }
 
             // 2. Grant Credits
-            const creditsToAdd = getPlanCredits(planName);
+            const planDetails = getPlanDetails(planName);
+            const expiresAt = planDetails.durationDays 
+                ? new Date(Date.now() + planDetails.durationDays * 24 * 60 * 60 * 1000).toISOString()
+                : null;
 
             const { data: currentCredits } = await supabaseAdmin
                 .from('credits')
@@ -77,17 +80,33 @@ export async function POST(request: NextRequest) {
                 .single();
 
             if (currentCredits) {
-                const newTotalCredits = (currentCredits.total_credit || 0) + creditsToAdd;
+                const newTotalCredits = (currentCredits.total_credit || 0) + planDetails.credits;
                 await supabaseAdmin
                     .from('credits')
-                    .update({ total_credit: newTotalCredits })
+                    .update({ 
+                        total_credit: newTotalCredits,
+                        plan_type: planDetails.planType,
+                        expires_at: expiresAt,
+                        updated_at: new Date().toISOString()
+                    })
                     .eq('id', userId);
 
-                console.log(`Granted ${creditsToAdd} credits to user ${userId}`);
+                console.log(`Granted ${planDetails.credits} credits to user ${userId} and updated plan to ${planDetails.planType}`);
             } else {
-                // Fallback: If no credit record exists (shouldn't happen for reg user, but safe to handle)
-                // You might want to insert a new row or log an error
-                console.error(`User ${userId} not found in credits table`);
+                // Fallback: Create initial credit record
+                await supabaseAdmin
+                    .from('credits')
+                    .insert({
+                        id: userId,
+                        total_credit: planDetails.credits,
+                        used_credit: 0,
+                        plan_type: planDetails.planType,
+                        expires_at: expiresAt,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    });
+                
+                console.log(`Created new credits record for user ${userId} with plan ${planDetails.planType}`);
             }
 
         } catch (err) {

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from '@/hooks/use-session';
 import { getUserCredits, isUnlimitedPlan } from '@/lib/api/credits';
 
-export type PlanType = 'free' | 'pay_as_you_go' | 'weekly' | 'monthly' | 'enterprise' | 'admin';
+export type PlanType = 'free' | 'pay_as_you_go' | 'weekly' | 'monthly' | 'starter' | 'pro' | 'advanced' | 'enterprise' | 'admin';
 
 export interface PlanFeatures {
     planType: PlanType;
@@ -43,8 +43,8 @@ export function usePlanFeatures(): PlanFeatures {
     const isUnlimited = isUnlimitedPlan(credits);
     
     // Feature gating logic
-    const canViewEmployerContacts = planType !== 'free'; // Only non-free plans see contacts
-    const canUseAIAnalysis = ['monthly', 'enterprise', 'admin'].includes(planType);
+    const canViewEmployerContacts = ['pay_as_you_go', 'weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'].includes(planType);
+    const canUseAIAnalysis = ['monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'].includes(planType);
 
     return {
         planType,

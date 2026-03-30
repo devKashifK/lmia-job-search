@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createClient } from "@/utils/supabase/server";
+import { verifyPremiumAccess } from "@/lib/api/credits";
 import mammoth from "mammoth";
 import db from "@/db";
 
@@ -9,6 +11,21 @@ const genAI = new GoogleGenerativeAI(apiKey);
 
 export async function POST(req: NextRequest) {
     try {
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const isPremium = await verifyPremiumAccess(user.id);
+        if (!isPremium) {
+            return NextResponse.json(
+                { error: 'Premium Plan Required' },
+                { status: 403 }
+            );
+        }
+
         console.log("DEBUG: API Key present:", !!apiKey, "Length:", apiKey.length);
 
         if (!apiKey) {

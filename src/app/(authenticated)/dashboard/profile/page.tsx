@@ -442,34 +442,34 @@ export default function UserProfile() {
               <EditableField
                 icon={<Phone className="h-4 w-4" />}
                 title="Phone"
-                value={session?.user?.user_metadata?.phone || ""}
+                value={profile?.phone || ""}
                 placeholder="+1 (555) 000-0000"
-                onUpdate={(value) => updateUserMetadata("phone", value)}
+                onUpdate={(value) => updateProfile({ phone: value })}
                 type="tel"
                 weight={9}
               />
               <EditableField
                 icon={<MapPin className="h-4 w-4" />}
                 title="Location"
-                value={session?.user?.user_metadata?.country || ""}
+                value={profile?.location || ""}
                 placeholder="Toronto, Canada"
-                onUpdate={(value) => updateUserMetadata("country", value)}
+                onUpdate={(value) => updateProfile({ location: value })}
                 weight={9}
               />
               <EditableField
                 icon={<Globe className="h-4 w-4" />}
                 title="Website"
-                value={session?.user?.user_metadata?.website || ""}
+                value={profile?.website || ""}
                 placeholder="https://..."
-                onUpdate={(value) => updateUserMetadata("website", value)}
+                onUpdate={(value) => updateProfile({ website: value })}
                 weight={9}
               />
               <EditableField
                 icon={<Shield className="h-4 w-4" />}
                 title="LinkedIn"
-                value={session?.user?.user_metadata?.linkedin || ""}
+                value={profile?.linkedin || ""}
                 placeholder="https://linkedin.com/in/..."
-                onUpdate={(value) => updateUserMetadata("linkedin", value)}
+                onUpdate={(value) => updateProfile({ linkedin: value })}
                 last
                 weight={9}
               />
@@ -501,34 +501,34 @@ export default function UserProfile() {
               <EditableField
                 icon={<Briefcase className="h-4 w-4" />}
                 title="Current Role"
-                value={session?.user?.user_metadata?.position || ""}
+                value={profile?.position || ""}
                 placeholder="Ex. Software Engineer"
-                onUpdate={(value) => updateUserMetadata("position", value)}
+                onUpdate={(value) => updateProfile({ position: value })}
                 weight={9}
               />
               <EditableField
                 icon={<Building className="h-4 w-4" />}
                 title="Current Company"
-                value={session?.user?.user_metadata?.company || ""}
+                value={profile?.company || ""}
                 placeholder="Ex. Google"
-                onUpdate={(value) => updateUserMetadata("company", value)}
+                onUpdate={(value) => updateProfile({ company: value })}
                 weight={9}
               />
               <EditableField
                 icon={<FileText className="h-4 w-4" />}
                 title="Professional Bio"
-                value={session?.user?.user_metadata?.bio || ""}
+                value={profile?.bio || ""}
                 placeholder="Summary of your experience..."
-                onUpdate={(value) => updateUserMetadata("bio", value)}
+                onUpdate={(value) => updateProfile({ bio: value })}
                 isTextArea
                 weight={9}
               />
               <EditableField
                 icon={<Clock className="h-4 w-4" />}
                 title="Years of Experience"
-                value={session?.user?.user_metadata?.experience || ""}
+                value={profile?.experience || ""}
                 placeholder="Ex. 5"
-                onUpdate={(value) => updateUserMetadata("experience", value)}
+                onUpdate={(value) => updateProfile({ experience: value })}
                 type="number"
                 last
                 weight={9}

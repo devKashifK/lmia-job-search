@@ -37,7 +37,7 @@ export function isUnlimitedPlan(credits: any): boolean {
     if (!credits) return false;
     
     // Check if plan type is unlimited
-    const unlimitedPlans = ['weekly', 'monthly', 'enterprise', 'admin'];
+    const unlimitedPlans = ['weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'];
     if (!unlimitedPlans.includes(credits.plan_type)) return false;
 
     // Check expiration if set
@@ -86,4 +86,24 @@ export async function incrementUsedCredit(userId: string) {
 
     if (error) throw error;
     return data;
+}
+
+/**
+ * Server-side verification for premium features
+ */
+export async function verifyPremiumAccess(userId: string): Promise<boolean> {
+    const credits = await getUserCredits(userId);
+    if (!credits) return false;
+
+    // Check if plan type is premium
+    const premiumPlans = ['monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'];
+    if (!premiumPlans.includes(credits.plan_type)) return false;
+
+    // Check expiration
+    if (credits.expires_at) {
+        const expiryDate = new Date(credits.expires_at);
+        if (expiryDate < new Date()) return false;
+    }
+
+    return true;
 }

@@ -39,6 +39,7 @@ type Plan = {
   badge?: string | null;
   tone?: 'primary' | 'ghost';
   icon?: React.ReactNode;
+  bestFor?: string;
 };
 
 const individualPlans: Plan[] = [
@@ -119,13 +120,19 @@ const individualPlans: Plan[] = [
   },
 ];
 
-const employerPlans: Plan[] = [
+const agencyPlans: Plan[] = [
   {
     name: 'Starter Plan',
-    cadPrice: '$49',
+    cadPrice: '$59',
     period: '/month',
-    description: 'Essentials for small teams',
-    features: ['Employer analytics dashboard', '100 employer contacts / month'],
+    description: 'Essentials for small agencies',
+    features: [
+      'Job database access',
+      '150 employer contacts / month',
+      'Basic analytics',
+      'NOC-based search'
+    ],
+    bestFor: 'Small agencies',
     highlighted: false,
     badge: null,
     tone: 'ghost',
@@ -133,29 +140,51 @@ const employerPlans: Plan[] = [
   },
   {
     name: 'Pro Plan',
-    cadPrice: '$99',
+    cadPrice: '$119',
     period: '/month',
-    description: 'Advanced tools for growing teams',
+    description: 'Advanced tools for growing agencies',
     features: [
-      'Unlimited employer contacts',
-      'Full analytics (5-year trends, hiring insights)',
-      'Advanced dashboards',
+      'Unlimited contacts',
+      '5-year employer analytics',
+      'Hiring trends (seasonal + location)',
+      'NOC-based hiring insights',
+      'Export employer lists'
     ],
+    bestFor: 'Growing agencies',
     highlighted: true,
     badge: 'Most Popular',
     tone: 'primary',
     icon: <Building2 className="w-5 h-5" />,
   },
   {
+    name: 'Advanced Intelligence',
+    cadPrice: '$199',
+    period: '/month',
+    description: 'Precision data for top performance',
+    features: [
+      'Everything in Pro',
+      'Top hiring employers by NOC',
+      'LMIA trend tracking',
+      'Market demand insights',
+      'Priority data updates'
+    ],
+    bestFor: 'Performance-driven agencies',
+    highlighted: false,
+    badge: null,
+    tone: 'ghost',
+    icon: <Zap className="w-5 h-5" />,
+  },
+  {
     name: 'Enterprise',
     cadPrice: 'Custom',
     description: 'Scale with confidence',
     features: [
-      'API access',
-      'Team dashboard',
-      'Unlimited analytics',
+      'Multi-user dashboard',
+      'API + CRM integration',
+      'White-label reports',
       'Dedicated support',
     ],
+    bestFor: 'Large consultancies',
     highlighted: false,
     badge: 'Custom Solution',
     tone: 'ghost',
@@ -231,6 +260,12 @@ function PlanCard({
             <p className="text-sm text-gray-500 min-h-[40px]">
               {plan.description}
             </p>
+            {plan.bestFor && (
+              <div className="mt-3 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-50 text-[10px] font-bold text-gray-500 uppercase tracking-tight border border-gray-100">
+                <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                Best For: {plan.bestFor}
+              </div>
+            )}
           </div>
 
           <Price plan={plan} />
@@ -439,13 +474,13 @@ const PricingPage = () => {
                 <div className="h-px flex-1 bg-gray-200" />
                 <div className="flex items-center gap-2 text-gray-400 font-medium uppercase tracking-widest text-sm">
                   <Building2 className="w-4 h-4" />
-                  For Employers
+                  For Agencies
                 </div>
                 <div className="h-px flex-1 bg-gray-200" />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                {employerPlans.map((plan, idx) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                {agencyPlans.map((plan, idx) => (
                   <PlanCard
                     key={plan.name}
                     plan={plan}

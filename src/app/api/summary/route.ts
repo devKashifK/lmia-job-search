@@ -1,6 +1,8 @@
 // File: pages/api/summarize.js
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createClient } from "@/utils/supabase/server";
+import { verifyPremiumAccess } from "@/lib/api/credits";
 
 interface RequestBody {
   prompt: string; // Now this is required, not optional
@@ -21,8 +23,23 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 export async function POST(request: Request) {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const isPremium = await verifyPremiumAccess(user.id);
+    if (!isPremium) {
+        return NextResponse.json(
+            { error: 'Premium Plan Required' },
+            { status: 403 }
+        );
+    }
+
     if (!process.env.GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not configured");
+        throw new Error("GEMINI_API_KEY is not configured");
     }
 
     const body = (await request.json()) as RequestBody;

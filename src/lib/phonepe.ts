@@ -191,8 +191,10 @@ export const getPlanDetails = (planName: string) => {
     'Pay-as-you-go Bundle': { credits: 10, planType: 'pay_as_you_go' },
     'Weekly Plan': { credits: 0, planType: 'weekly', durationDays: 7 },
     'Monthly Plan': { credits: 0, planType: 'monthly', durationDays: 30 },
-    'Starter Plan': { credits: 100, planType: 'starter', durationDays: 30 },
+    'Starter Plan': { credits: 150, planType: 'starter', durationDays: 30 },
     'Pro Plan': { credits: 0, planType: 'pro', durationDays: 30 },
+    'Advanced Intelligence': { credits: 0, planType: 'advanced', durationDays: 30 },
+    'Enterprise': { credits: 0, planType: 'enterprise', durationDays: 30 },
   };
   
   return plans[planName] || { credits: 0, planType: 'free' };

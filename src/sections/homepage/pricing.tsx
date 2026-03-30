@@ -21,6 +21,7 @@ type Plan = {
   cta?: string;
   href?: string;
   tone?: 'primary' | 'dark';
+  bestFor?: string;
 };
 
 const individualPlans: Plan[] = [
@@ -86,44 +87,71 @@ const individualPlans: Plan[] = [
   },
 ];
 
-const employerPlans: Plan[] = [
+const agencyPlans: Plan[] = [
   {
     name: 'Starter Plan',
-    cadPrice: '$49',
-    inrPrice: '₹3,105',
+    cadPrice: '$59',
+    inrPrice: '₹3,799',
     period: '/month',
-    description: 'Essentials for small teams',
-    features: ['Employer analytics dashboard', '100 employer contacts / month'],
+    description: 'Essentials for small agencies',
+    features: [
+      'Job database access',
+      '150 employer contacts / month',
+      'Basic analytics',
+      'NOC-based search'
+    ],
+    bestFor: 'Small agencies',
     cta: 'Choose Starter',
     tone: 'dark',
   },
   {
     name: 'Pro Plan',
-    cadPrice: '$99',
-    inrPrice: '₹6,275',
+    cadPrice: '$119',
+    inrPrice: '₹7,599',
     period: '/month',
-    description: 'Advanced tools for growing teams',
+    description: 'Advanced tools for growing agencies',
     features: [
-      'Unlimited employer contacts',
-      'Full analytics (5-year trends, seasonal hiring, NOC insights)',
-      'Advanced dashboards',
+      'Unlimited contacts',
+      '5-year employer analytics',
+      'Hiring trends (seasonal + location)',
+      'NOC-based hiring insights',
+      'Export employer lists'
     ],
+    bestFor: 'Growing agencies',
     popular: true,
     cta: 'Choose Pro',
     tone: 'primary',
   },
   {
-    name: 'Enterprise Plan',
+    name: 'Advanced Intelligence',
+    cadPrice: '$199',
+    inrPrice: '₹12,799',
+    period: '/month',
+    description: 'Precision data for top performance',
+    features: [
+      'Everything in Pro',
+      'Top hiring employers by NOC',
+      'LMIA trend tracking',
+      'Market demand insights',
+      'Priority data updates'
+    ],
+    bestFor: 'Performance-driven agencies',
+    cta: 'Choose Advanced',
+    tone: 'dark',
+  },
+  {
+    name: 'Enterprise',
     cadPrice: 'Custom',
     inrPrice: 'Custom',
     period: '',
     description: 'Scale with confidence',
     features: [
-      'API access',
-      'Team dashboard',
-      'Unlimited analytics',
+      'Multi-user dashboard',
+      'API + CRM integration',
+      'White-label reports',
       'Dedicated support',
     ],
+    bestFor: 'Large consultancies',
     badge: 'Contact Sales',
     cta: 'Talk to Sales',
     tone: 'dark',
@@ -177,6 +205,12 @@ export default function Pricing() {
                 {plan.period && <span className="ml-1 text-sm font-medium text-gray-500">{plan.period}</span>}
               </div>
               <p className="mt-4 text-sm text-gray-500 line-clamp-2">{plan.description}</p>
+              {plan.bestFor && (
+                <div className="mt-3 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-100 text-[10px] font-bold text-gray-600 uppercase tracking-tight">
+                  <span className="w-1 h-1 bg-gray-400 rounded-full" />
+                  Best For: {plan.bestFor}
+                </div>
+              )}
             </div>
 
             <ul className="space-y-3 mb-6 flex-1">
@@ -214,7 +248,7 @@ export default function Pricing() {
         />
 
         {/* Currency Toggle */}
-        <div className="flex items-center justify-center gap-2 mt-6 mb-10">
+        {/* <div className="flex items-center justify-center gap-2 mt-6 mb-10">
           <span className={cn('text-sm font-medium', currency === 'CAD' ? 'text-gray-900' : 'text-gray-500')}>CAD</span>
           <button
             aria-label="Toggle currency"
@@ -229,7 +263,7 @@ export default function Pricing() {
             />
           </button>
           <span className={cn('text-sm font-medium', currency === 'INR' ? 'text-gray-900' : 'text-gray-500')}>INR</span>
-        </div>
+        </div> */}
 
         {/* Individual Plans */}
         <div className="mb-8">
@@ -240,13 +274,13 @@ export default function Pricing() {
           {renderPlans(individualPlans)}
         </div>
 
-        {/* Employer Plans */}
+        {/* Agency Plans */}
         <div>
           <div className="flex items-center gap-3 mb-6 ml-2 justify-center md:justify-start">
             <Building2 className="w-5 h-5 text-brand-600" />
-            <h4 className="text-xl font-bold text-gray-900">For Enterprise</h4>
+            <h4 className="text-xl font-bold text-gray-900">For Agencies</h4>
           </div>
-          {renderPlans(employerPlans)}
+          {renderPlans(agencyPlans)}
         </div>
 
 
