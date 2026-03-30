@@ -6,6 +6,7 @@ import { Check, Info, Users, Building2, CheckCircle2, AlertCircle } from "lucide
 import SectionTitle from "@/components/ui/section-title";
 import { cn } from "@/lib/utils";
 import useMobile from "@/hooks/use-mobile";
+import { useRouter } from "next/navigation";
 
 type Currency = 'CAD' | 'INR';
 
@@ -159,6 +160,7 @@ const agencyPlans: Plan[] = [
 ];
 
 export default function Pricing() {
+  const router = useRouter();
   const [currency, setCurrency] = useState<Currency>('CAD');
   const { isMobile, isMounted } = useMobile();
 
@@ -222,7 +224,9 @@ export default function Pricing() {
               ))}
             </ul>
 
-            <button className={cn(
+            <button 
+              onClick={() => router.push(plan.href || '/pricing')}
+              className={cn(
               "w-full py-4 px-6 rounded-xl font-bold text-sm transition-colors",
               plan.tone === 'primary'
                 ? "bg-brand-600 text-white hover:bg-brand-700 shadow-lg shadow-brand-500/30"

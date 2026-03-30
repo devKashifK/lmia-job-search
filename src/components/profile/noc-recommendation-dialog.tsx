@@ -113,7 +113,11 @@ export function NocRecommendationDialog({ isOpen, onClose, jobTitles }: NocRecom
                             {recommendations.map((noc) => (
                                 <div
                                     key={noc.code}
-                                    onClick={() => toggleNoc(noc.code)}
+                                    onClick={(e) => {
+                                        // Prevent double toggling if the checkbox itself was clicked
+                                        if ((e.target as HTMLElement).closest('[role="checkbox"]')) return;
+                                        toggleNoc(noc.code);
+                                    }}
                                     className={`
                                         group relative flex items-start gap-4 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer select-none
                                         ${selectedNocs.includes(noc.code)

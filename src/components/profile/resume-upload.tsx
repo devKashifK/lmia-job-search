@@ -157,7 +157,10 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
         try {
             const response = await fetch("/api/analyze-resume", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": session?.access_token ? `Bearer ${session.access_token}` : ""
+                },
                 body: JSON.stringify({ resumeUrl: currentResumeUrl }),
             });
 
