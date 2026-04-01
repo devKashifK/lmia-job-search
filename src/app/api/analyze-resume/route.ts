@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@/utils/supabase/server";
-import { verifyPremiumAccess } from "@/lib/api/credits";
 import mammoth from "mammoth";
 import db from "@/db";
 
@@ -31,13 +30,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const isPremium = await verifyPremiumAccess(user.id);
-        if (!isPremium) {
-            return NextResponse.json(
-                { error: 'Premium Plan Required' },
-                { status: 403 }
-            );
-        }
+        // Premium access check removed as per requirement: all users can analyze resumes
 
         console.log("DEBUG: API Key present:", !!apiKey, "Length:", apiKey.length);
 
