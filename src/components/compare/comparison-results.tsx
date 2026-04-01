@@ -20,7 +20,8 @@ import {
   Copy,
   Link,
   Table,
-  Info
+  Info,
+  ArrowRight
 } from 'lucide-react';
 import Footer from '@/sections/homepage/footer';
 import { usePlanFeatures } from '@/hooks/use-plan-features';
@@ -600,9 +601,9 @@ export default function ComparisonResults({
                       </span>
                       than <strong>{entity2}</strong>. This represents a
                       <strong> {(() => {
-                      const ratio = data2.totalJobs > 0 ? data1.totalJobs / data2.totalJobs : (data1.totalJobs > 0 ? Infinity : 1);
-                      const diffPct = data2.totalJobs > 0 ? ((data1.totalJobs - data2.totalJobs) / data2.totalJobs) * 100 : 100;
-                      return formatComparisonValue(ratio, diffPct);
+                        const ratio = data2.totalJobs > 0 ? data1.totalJobs / data2.totalJobs : (data1.totalJobs > 0 ? Infinity : 1);
+                        const diffPct = data2.totalJobs > 0 ? ((data1.totalJobs - data2.totalJobs) / data2.totalJobs) * 100 : 100;
+                        return formatComparisonValue(ratio, diffPct);
                       })()}</strong> capacity difference.
                     </p>
                   </div>
