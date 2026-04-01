@@ -107,7 +107,7 @@ export function JobRecommendationCard({
                                     <DollarSign className="h-3 w-3 text-gray-400" />
                                     <span className="truncate">
                                         {typeof salary === 'number'
-                                            ? `$${salary.toLocaleString()}/yr`
+                                            ? `${salary.toLocaleString()}/yr`
                                             : salary}
                                     </span>
                                 </div>

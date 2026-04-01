@@ -92,6 +92,8 @@ import {
   ArrowUpDown,
   Info,
   Sparkles,
+  Target,
+  ArrowRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
