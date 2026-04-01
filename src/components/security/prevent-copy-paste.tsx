@@ -4,10 +4,8 @@ import { useEffect } from 'react';
 
 export function PreventCopyPaste() {
     useEffect(() => {
-        // Only run in production
-        if (process.env.NODE_ENV !== 'production') {
-            return;
-        }
+        // Temporarily disabled so you can use DevTools in production
+        return;
 
         // Disable Right Click
         const handleContextMenu = (e: MouseEvent) => {

@@ -6,6 +6,5 @@ services:
     restart: unless-stopped
     ports:
       - "5300:3000"
-
-
-      
+    env_file:
+      - .env

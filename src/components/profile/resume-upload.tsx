@@ -164,13 +164,14 @@ export function ResumeUpload({ currentResumeUrl, onUploadComplete, onAnalysisCom
                 body: JSON.stringify({ resumeUrl: currentResumeUrl }),
             });
 
+            const responseData = await response.json();
+            
             if (!response.ok) {
-                throw new Error("Analysis failed");
+                throw new Error(responseData.error || "Analysis failed");
             }
 
-            const { data, error } = await response.json();
-
-            if (error) throw new Error(error);
+            if (responseData.error) throw new Error(responseData.error);
+            const data = responseData.data;
 
             toast({
                 title: "Analysis Complete",
