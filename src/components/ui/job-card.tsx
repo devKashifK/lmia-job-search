@@ -164,11 +164,10 @@ export default function JobCard({
   });
 
   return (
-    <div className={`group rounded-3xl w-full max-w-md p-2 border transition-all duration-300 relative ${
-      isSelected 
-        ? 'bg-brand-50/30 border-brand-500 shadow-[0_8px_30px_rgb(var(--brand-500),0.12)] -translate-y-1' 
+    <div className={`group rounded-3xl w-full max-w-md p-2 border transition-all duration-300 relative ${isSelected
+        ? 'bg-brand-50/30 border-brand-500 shadow-[0_8px_30px_rgb(var(--brand-500),0.12)] -translate-y-1'
         : 'bg-white border-gray-100 shadow-sm hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-1'
-    }`}>
+      }`}>
       {isSelected && (
         <div className="absolute -left-[1px] top-1/4 bottom-1/4 w-1 bg-brand-600 rounded-r-full z-10" />
       )}
@@ -326,10 +325,10 @@ export default function JobCard({
       <LoginAlertComponent />
 
       {/* Match Score Badge (Moved to end for stacking) */}
-      <div className="absolute top-2 right-2 z-50 pointer-events-none">
+      {/* <div className="absolute top-2 right-2 z-50 pointer-events-none">
         <div className="bg-red-500 text-white text-[10px] px-1">DEBUG: {score}%</div>
         <MatchScoreBadge score={score || 0} size="sm" showLabel={false} />
-      </div>
+      </div> */}
 
       {/* JSON-LD Structured Data for Google Jobs */}
       {jobTitle && employerName && (

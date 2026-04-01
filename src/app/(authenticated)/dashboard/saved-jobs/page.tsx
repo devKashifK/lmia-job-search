@@ -7,6 +7,7 @@ import { Building2, Bookmark, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingScreen from "@/components/ui/loading-screen";
 
@@ -62,6 +63,7 @@ interface SavedJob {
 }
 
 export default function SavedJobs() {
+  const router = useRouter();
   const { session } = useSession();
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -183,7 +185,8 @@ export default function SavedJobs() {
                       datePosted={job.date_of_job_posting}
                       recordID={savedJob.record_id}
                       onKnowMore={() => {
-                        /* Implement know more functionality */
+                        const routeType = job.type === "lmia" ? "lmia" : "hot-leads";
+                        router.push(`/search/${routeType}/all?selected=${savedJob.record_id}`);
                       }}
                       type={job.type}
                       // category={job.category} // Removed duplicate

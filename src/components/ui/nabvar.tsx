@@ -64,7 +64,7 @@ export default function Navbar({ className }: { className?: string }) {
       <div className={cn(
         "fixed z-50 transition-all duration-500 ease-in-out",
         scrolled
-          ? "top-1/2 right-6 -translate-y-1/2 h-auto w-auto"
+          ? "top-1/2 right-2 -translate-y-1/2 h-auto w-auto"
           : "top-0 left-0 right-0 flex justify-center py-6 px-4 pointer-events-none",
         className
       )}>
@@ -152,7 +152,7 @@ export default function Navbar({ className }: { className?: string }) {
                     Dashboard
                   </CustomLink>
                 )}
-                
+
                 <div className="relative">
                   <NotificationsPopover />
                 </div>
