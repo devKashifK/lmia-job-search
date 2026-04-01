@@ -91,6 +91,7 @@ import {
   CreditCard,
   ArrowUpDown,
   Info,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
