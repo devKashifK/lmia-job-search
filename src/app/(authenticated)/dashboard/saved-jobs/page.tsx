@@ -185,8 +185,9 @@ export default function SavedJobs() {
                       datePosted={job.date_of_job_posting}
                       recordID={savedJob.record_id}
                       onKnowMore={() => {
+                        console.log(job.type, "jobType")
                         const routeType = job.type === "lmia" ? "lmia" : "hot-leads";
-                        router.push(`/search/${routeType}/all?selected=${savedJob.record_id}`);
+                        router.push(`/search/${routeType}/${job.job_title}?field=job_title&selected=${savedJob.record_id}`);
                       }}
                       type={job.type}
                       // category={job.category} // Removed duplicate

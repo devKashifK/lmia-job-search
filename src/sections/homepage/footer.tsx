@@ -39,9 +39,9 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-gray-900 mb-4 text-sm">Resources</h4>
             <ul className="space-y-3 text-sm text-gray-500">
-              <li><FooterLink href="/blog">Blog</FooterLink></li>
               <li><FooterLink href="/resources/documentation">Documentation</FooterLink></li>
               <li><FooterLink href="/resources/noc-codes">NOC Codes Guide</FooterLink></li>
+              <li><FooterLink href="/faq">FAQ</FooterLink></li>
             </ul>
           </div>
 
