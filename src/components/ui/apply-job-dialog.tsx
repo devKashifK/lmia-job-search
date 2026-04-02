@@ -142,7 +142,7 @@ export function ApplyJobDialog({ isOpen, onOpenChange, job, type }: ApplyJobDial
         state: job.state,
         table_name: job.tableName,
         status: type === 'apply' ? 'applied' : 'notified',
-        posted_link: job.posted_link || ''
+        posted_link: typeof window !== 'undefined' ? window.location.href : (job.posted_link || '')
       });
 
       setIsSuccess(true);
