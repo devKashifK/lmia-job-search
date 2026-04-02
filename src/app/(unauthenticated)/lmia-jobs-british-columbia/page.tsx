@@ -14,7 +14,7 @@ export default function BritishColumbiaLMIAJobs() {
       
       <main className="flex-1">
         {/* HERO SECTION */}
-        <section className="bg-[#0D1B3E] pt-24 pb-16 px-6 relative overflow-hidden">
+        <section className="bg-brand-900 pt-24 pb-16 px-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(15,123,94,0.18)_0%,transparent_60%)] pointer-events-none" />
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
@@ -24,13 +24,13 @@ export default function BritishColumbiaLMIAJobs() {
                 <span className="text-white">British Columbia</span>
               </div>
               
-              <div className="inline-flex items-center gap-2 bg-[#0F7B5E]/15 border border-[#0F7B5E]/40 text-[#0F7B5E] rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
+              <div className="inline-flex items-center gap-2 bg-emerald-100/50 border border-emerald-700/40 text-emerald-700 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <MapPin className="w-3.5 h-3.5" />
                 British Columbia · BC
               </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-[52px] font-black text-white leading-[1.1] tracking-tight mb-6">
-                LMIA Jobs in <span className="text-[#F5A623]">British Columbia</span>
+                LMIA Jobs in <span className="text-amber-400">British Columbia</span>
               </h1>
               
               <p className="text-blue-100/70 text-lg leading-relaxed mb-10 font-light max-w-xl">
@@ -55,10 +55,10 @@ export default function BritishColumbiaLMIAJobs() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link 
                   href="/search?province=british columbia"
-                  className="bg-[#F5A623] hover:bg-[#F5A623]/90 text-[#0D1B3E] font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5"
+                  className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5"
                 >
                   Search All BC LMIA Jobs
-                  <ArrowRight className="w-4 h-4 text-[#0D1B3E]" />
+                  <ArrowRight className="w-4 h-4 text-brand-900" />
                 </Link>
                 <Link 
                   href="/faq"
@@ -72,13 +72,13 @@ export default function BritishColumbiaLMIAJobs() {
             {/* LIVE PREVIEW COMPONENT */}
             <div className="relative">
               <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl">
-                <div className="text-xs font-bold tracking-widest uppercase text-[#78B4E8] mb-4 flex items-center gap-2">
+                <div className="text-xs font-bold tracking-widest uppercase text-brand-400 mb-4 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                   Live Listings — British Columbia
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <Badge className="bg-[#D0EFE6] hover:bg-[#D0EFE6] text-[#0F7B5E] border-[#0F7B5E]/30 uppercase text-[10px] tracking-wider py-1.5 px-3">British Columbia</Badge>
+                  <Badge className="bg-emerald-50 hover:bg-emerald-50 text-emerald-700 border-emerald-200 uppercase text-[10px] tracking-wider py-1.5 px-3">British Columbia</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">All Industries</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">TEER 0–4</Badge>
                 </div>
@@ -92,7 +92,7 @@ export default function BritishColumbiaLMIAJobs() {
                       <div className="font-medium text-white text-sm truncate">Software Developer — Electronic Arts Canada</div>
                       <div className="text-xs text-blue-200/60 mt-0.5 truncate">Vancouver, BC · $90–115k/yr · NOC 21232</div>
                     </div>
-                    <Badge className="bg-[#1D6FBF]/20 text-[#78B4E8] border border-[#78B4E8]/30 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
+                    <Badge className="bg-brand-100 text-brand-400 border border-brand-300 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
                   </div>
                   <div className="bg-white/[0.06] hover:bg-white/10 border border-white/10 rounded-xl p-3 flex gap-4 items-center transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -122,15 +122,15 @@ export default function BritishColumbiaLMIAJobs() {
                       <div className="font-medium text-white text-sm truncate">Hotel Front Desk Supervisor — Fairmont Hotels</div>
                       <div className="text-xs text-blue-200/60 mt-0.5 truncate">Victoria, BC · $22–26/hr · NOC 62022</div>
                     </div>
-                    <Badge className="bg-[#1D6FBF]/20 text-[#78B4E8] border border-[#78B4E8]/30 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
+                    <Badge className="bg-brand-100 text-brand-400 border border-brand-300 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
                   </div>
 
-                  <div className="absolute -bottom-2 -left-2 -right-2 h-24 bg-gradient-to-t from-[#0D1B3E] via-[#0D1B3E]/80 to-transparent pointer-events-none rounded-b-2xl" />
+                  <div className="absolute -bottom-2 -left-2 -right-2 h-24 bg-gradient-to-t from-brand-900 via-brand-900/80 to-transparent pointer-events-none rounded-b-2xl" />
                 </div>
 
-                <div className="mt-4 bg-[#F5A623]/10 border border-[#F5A623]/30 border-dashed rounded-xl p-4 text-center">
-                  <p className="text-sm text-[#F5A623]">
-                    🔒 Showing 4 of 2,400+ listings. <Link href="/sign-up" className="font-bold underline hover:text-[#F5A623]/80">Sign up free</Link> to view all — including employer contacts & wages.
+                <div className="mt-4 bg-amber-50 border border-amber-200 border-dashed rounded-xl p-4 text-center">
+                  <p className="text-sm text-amber-400">
+                    🔒 Showing 4 of 2,400+ listings. <Link href="/sign-up" className="font-bold underline hover:text-amber-400/80">Sign up free</Link> to view all — including employer contacts & wages.
                   </p>
                 </div>
               </div>
@@ -139,11 +139,11 @@ export default function BritishColumbiaLMIAJobs() {
         </section>
 
         {/* TOP INDUSTRIES */}
-        <section className="py-20 px-6 bg-[#F5F7FA] border-b border-gray-100">
+        <section className="py-20 px-6 bg-gray-50 border-b border-gray-100">
           <div className="max-w-5xl mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <div className="text-xs font-bold text-[#0F7B5E] uppercase tracking-widest mb-3">Top Industries</div>
-              <h2 className="text-3xl md:text-4xl font-black text-[#0D1B3E] tracking-tight mb-4">
+              <div className="text-xs font-bold text-emerald-700 uppercase tracking-widest mb-3">Top Industries</div>
+              <h2 className="text-3xl md:text-4xl font-black text-brand-900 tracking-tight mb-4">
                 Where LMIA hiring is most active in British Columbia
               </h2>
               <p className="text-gray-500 text-lg">
@@ -159,9 +159,9 @@ export default function BritishColumbiaLMIAJobs() {
                 { icon: '🏨', title: 'Hospitality', desc: 'Active LMIA hiring in British Columbia — filter by this sector on JobMaze' },
                 { icon: '🌲', title: 'Forestry', desc: 'Active LMIA hiring in British Columbia — filter by this sector on JobMaze' },
               ].map((ind, i) => (
-                <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 hover:-translate-y-1 hover:border-[#0F7B5E]/40 transition-all duration-300 shadow-sm">
+                <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 hover:-translate-y-1 hover:border-emerald-700/40 transition-all duration-300 shadow-sm">
                   <div className="text-3xl mb-3">{ind.icon}</div>
-                  <h3 className="text-sm font-bold text-[#0D1B3E] mb-2">{ind.title}</h3>
+                  <h3 className="text-sm font-bold text-brand-900 mb-2">{ind.title}</h3>
                   <p className="text-[11px] text-gray-500 leading-relaxed">{ind.desc}</p>
                 </div>
               ))}
@@ -174,18 +174,18 @@ export default function BritishColumbiaLMIAJobs() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* PNP column */}
             <div>
-              <div className="text-xs font-bold text-[#0F7B5E] uppercase tracking-widest mb-3">Provincial Nominee Program</div>
-              <h3 className="text-3xl font-black text-[#0D1B3E] tracking-tight mb-6">British Columbia Provincial Nominee Program (BC PNP)</h3>
+              <div className="text-xs font-bold text-emerald-700 uppercase tracking-widest mb-3">Provincial Nominee Program</div>
+              <h3 className="text-3xl font-black text-brand-900 tracking-tight mb-6">British Columbia Provincial Nominee Program (BC PNP)</h3>
               <p className="text-gray-600 mb-8 text-lg">
                 An LMIA job offer is a key component for several British Columbia PNP streams. Finding the right employer through JobMaze is the first step to a successful nomination for your client across active pathways.
               </p>
 
-              <div className="bg-[#0F7B5E]/5 border border-[#0F7B5E]/20 rounded-2xl p-8">
-                <div className="text-xs font-bold text-[#0F7B5E] uppercase tracking-widest mb-6">Active BC PNP Streams</div>
+              <div className="bg-emerald-700/5 border border-emerald-100 rounded-2xl p-8">
+                <div className="text-xs font-bold text-emerald-700 uppercase tracking-widest mb-6">Active BC PNP Streams</div>
                 <div className="space-y-4">
                   {['Skilled Worker', 'International Graduate', 'Tech Pilot', 'Health Authority'].map((stream, idx) => (
-                    <div key={idx} className="flex items-center gap-3 border-b border-[#0F7B5E]/10 pb-4 last:border-0 last:pb-0 font-medium text-gray-800">
-                      <ChevronRight className="w-5 h-5 text-[#0F7B5E]" />
+                    <div key={idx} className="flex items-center gap-3 border-b border-emerald-50 pb-4 last:border-0 last:pb-0 font-medium text-gray-800">
+                      <ChevronRight className="w-5 h-5 text-emerald-700" />
                       {stream}
                     </div>
                   ))}
@@ -195,8 +195,8 @@ export default function BritishColumbiaLMIAJobs() {
 
             {/* CITIES & STATS column */}
             <div>
-              <div className="text-xs font-bold text-[#0F7B5E] uppercase tracking-widest mb-3">Cities Covered</div>
-              <h3 className="text-3xl font-black text-[#0D1B3E] tracking-tight mb-6">Job searches by BC city</h3>
+              <div className="text-xs font-bold text-emerald-700 uppercase tracking-widest mb-3">Cities Covered</div>
+              <h3 className="text-3xl font-black text-brand-900 tracking-tight mb-6">Job searches by BC city</h3>
               <p className="text-gray-600 mb-8 text-lg">
                 JobMaze covers LMIA jobs in every BC city and rural municipality. Use the city filter to narrow results for your client's preferred location.
               </p>
@@ -206,7 +206,7 @@ export default function BritishColumbiaLMIAJobs() {
                   <Link 
                     key={idx}
                     href={`/search?province=british columbia&city=${city.toLowerCase()}`}
-                    className="bg-white border border-[#1D6FBF]/20 hover:border-[#1D6FBF]/50 hover:text-[#1D6FBF] text-[#0D1B3E] px-5 py-2.5 rounded-full text-sm font-semibold transition-all shadow-sm"
+                    className="bg-white border border-brand-100 hover:border-brand-50/500 hover:text-brand-600 text-brand-900 px-5 py-2.5 rounded-full text-sm font-semibold transition-all shadow-sm"
                   >
                     {city}
                   </Link>
@@ -244,7 +244,7 @@ export default function BritishColumbiaLMIAJobs() {
         </section>
 
         {/* BOTTOM CTA */}
-        <section className="bg-[#0D1B3E] py-24 px-6 text-center border-t-4 border-[#F5A623]">
+        <section className="bg-brand-900 py-24 px-6 text-center border-t-4 border-amber-400">
           <div className="max-w-2xl mx-auto">
              <div className="text-xs font-bold text-blue-200/60 uppercase tracking-widest mb-4">Start Searching</div>
              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
@@ -255,10 +255,10 @@ export default function BritishColumbiaLMIAJobs() {
              </p>
              <Link 
                 href="/sign-up"
-                className="bg-[#F5A623] hover:bg-[#F5A623]/90 text-[#0D1B3E] font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-[#F5A623]/20"
+                className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
               >
                 Search British Columbia LMIA Jobs Free
-                <ArrowRight className="w-5 h-5 text-[#0D1B3E]" />
+                <ArrowRight className="w-5 h-5 text-brand-900" />
               </Link>
               <div className="mt-8 text-sm text-blue-200/50 flex items-center justify-center gap-4">
                 <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> No credit card required</span>

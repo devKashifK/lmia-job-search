@@ -15,7 +15,7 @@ export default function AlbertaLMIAJobs() {
       
       <main className="flex-1">
         {/* HERO SECTION */}
-        <section className="bg-[#0D1B3E] pt-24 pb-16 px-6 relative overflow-hidden">
+        <section className="bg-brand-900 pt-24 pb-16 px-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(196,123,18,0.18)_0%,transparent_60%)] pointer-events-none" />
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
@@ -25,13 +25,13 @@ export default function AlbertaLMIAJobs() {
                 <span className="text-white">Alberta</span>
               </div>
               
-              <div className="inline-flex items-center gap-2 bg-[#F5A623]/15 border border-[#F5A623]/40 text-[#F5A623] rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
+              <div className="inline-flex items-center gap-2 bg-amber-100/50 border border-amber-400/40 text-amber-400 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <MapPin className="w-3.5 h-3.5" />
                 Alberta · AB
               </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-[52px] font-black text-white leading-[1.1] tracking-tight mb-6">
-                LMIA Jobs in <span className="text-[#F5A623]">Alberta</span>
+                LMIA Jobs in <span className="text-amber-400">Alberta</span>
               </h1>
               
               <p className="text-blue-100/70 text-lg leading-relaxed mb-10 font-light max-w-xl">
@@ -56,10 +56,10 @@ export default function AlbertaLMIAJobs() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link 
                   href="/search?province=alberta"
-                  className="bg-[#F5A623] hover:bg-[#F5A623]/90 text-[#0D1B3E] font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5"
+                  className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5"
                 >
                   Search All Alberta LMIA Jobs
-                  <ArrowRight className="w-4 h-4 text-[#0D1B3E]" />
+                  <ArrowRight className="w-4 h-4 text-brand-900" />
                 </Link>
                 <Link 
                   href="/faq"
@@ -73,13 +73,13 @@ export default function AlbertaLMIAJobs() {
             {/* LIVE PREVIEW COMPONENT */}
             <div className="relative">
               <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl">
-                <div className="text-xs font-bold tracking-widest uppercase text-[#78B4E8] mb-4 flex items-center gap-2">
+                <div className="text-xs font-bold tracking-widest uppercase text-brand-400 mb-4 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                   Live Listings — Alberta
                 </div>
                 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <Badge className="bg-[#FEF0D7] hover:bg-[#FEF0D7] text-[#C47B12] border-[#C47B12]/30 uppercase text-[10px] tracking-wider py-1.5 px-3">Alberta</Badge>
+                  <Badge className="bg-amber-50 hover:bg-amber-50 text-amber-600 border-amber-600/30 uppercase text-[10px] tracking-wider py-1.5 px-3">Alberta</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">All Industries</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">TEER 0–4</Badge>
                 </div>
@@ -116,15 +116,15 @@ export default function AlbertaLMIAJobs() {
                       <div className="font-medium text-white text-sm truncate">Petroleum Engineer — Suncor Energy</div>
                       <div className="text-xs text-blue-200/60 mt-0.5 truncate">Calgary, AB · $110–140k/yr · NOC 21330</div>
                     </div>
-                    <Badge className="bg-[#1D6FBF]/20 text-[#78B4E8] border border-[#78B4E8]/30 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
+                    <Badge className="bg-brand-100 text-brand-400 border border-brand-300 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
                   </div>
 
-                  <div className="absolute -bottom-2 -left-2 -right-2 h-24 bg-gradient-to-t from-[#0D1B3E] to-transparent pointer-events-none rounded-b-2xl" />
+                  <div className="absolute -bottom-2 -left-2 -right-2 h-24 bg-gradient-to-t from-brand-900 to-transparent pointer-events-none rounded-b-2xl" />
                 </div>
 
-                <div className="mt-4 bg-[#F5A623]/10 border border-[#F5A623]/30 border-dashed rounded-xl p-4 text-center">
-                  <p className="text-sm text-[#F5A623]">
-                    🔒 Showing 3 of 1,900+ listings. <Link href="/sign-up" className="font-bold underline hover:text-[#F5A623]/80">Sign up free</Link> to view all — including employer contacts & wages.
+                <div className="mt-4 bg-amber-50 border border-amber-200 border-dashed rounded-xl p-4 text-center">
+                  <p className="text-sm text-amber-400">
+                    🔒 Showing 3 of 1,900+ listings. <Link href="/sign-up" className="font-bold underline hover:text-amber-400/80">Sign up free</Link> to view all — including employer contacts & wages.
                   </p>
                 </div>
               </div>
@@ -133,11 +133,11 @@ export default function AlbertaLMIAJobs() {
         </section>
 
         {/* TOP INDUSTRIES */}
-        <section className="py-20 px-6 bg-[#F5F7FA] border-b border-gray-100">
+        <section className="py-20 px-6 bg-gray-50 border-b border-gray-100">
           <div className="max-w-5xl mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <div className="text-xs font-bold text-[#C47B12] uppercase tracking-widest mb-3">Top Industries</div>
-              <h2 className="text-3xl md:text-4xl font-black text-[#0D1B3E] tracking-tight mb-4">
+              <div className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-3">Top Industries</div>
+              <h2 className="text-3xl md:text-4xl font-black text-brand-900 tracking-tight mb-4">
                 Where LMIA hiring is most active in Alberta
               </h2>
               <p className="text-gray-500 text-lg">
@@ -153,9 +153,9 @@ export default function AlbertaLMIAJobs() {
                 { icon: '🏥', title: 'Healthcare', desc: 'Active LMIA hiring in Alberta — filter by this sector on JobMaze' },
                 { icon: '🚛', title: 'Trucking', desc: 'Active LMIA hiring in Alberta — filter by this sector on JobMaze' },
               ].map((ind, i) => (
-                <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 hover:-translate-y-1 hover:border-[#F5A623]/40 transition-all duration-300 shadow-sm">
+                <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 hover:-translate-y-1 hover:border-amber-400/40 transition-all duration-300 shadow-sm">
                   <div className="text-3xl mb-3">{ind.icon}</div>
-                  <h3 className="text-sm font-bold text-[#0D1B3E] mb-2">{ind.title}</h3>
+                  <h3 className="text-sm font-bold text-brand-900 mb-2">{ind.title}</h3>
                   <p className="text-[11px] text-gray-500 leading-relaxed">{ind.desc}</p>
                 </div>
               ))}
@@ -168,18 +168,18 @@ export default function AlbertaLMIAJobs() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* PNP column */}
             <div>
-              <div className="text-xs font-bold text-[#1D6FBF] uppercase tracking-widest mb-3">Provincial Nominee Program</div>
-              <h3 className="text-3xl font-black text-[#0D1B3E] tracking-tight mb-6">Alberta Advantage Immigration Program (AAIP)</h3>
+              <div className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3">Provincial Nominee Program</div>
+              <h3 className="text-3xl font-black text-brand-900 tracking-tight mb-6">Alberta Advantage Immigration Program (AAIP)</h3>
               <p className="text-gray-600 mb-8 text-lg">
                 An LMIA job offer is a key component for several Alberta PNP streams. Finding the right employer through JobMaze is the first step to a successful nomination for your client across active pathways.
               </p>
 
-              <div className="bg-[#FEF0D7] border border-[#C47B12]/20 rounded-2xl p-6">
-                <div className="text-[13px] font-bold text-[#C47B12] uppercase tracking-widest mb-4">Active Streams</div>
+              <div className="bg-amber-50 border border-amber-600/20 rounded-2xl p-6">
+                <div className="text-[13px] font-bold text-amber-600 uppercase tracking-widest mb-4">Active Streams</div>
                 <div className="space-y-4">
                   {['Alberta Opportunity Stream', 'Alberta Express Entry Stream', 'Rural Renewal Stream'].map((stream, idx) => (
-                    <div key={idx} className="flex items-start gap-3 border-b border-[#C47B12]/10 pb-3 last:border-0 last:pb-0 text-sm text-gray-800 font-medium">
-                      <ChevronRight className="w-4 h-4 text-[#C47B12] mt-0.5" />
+                    <div key={idx} className="flex items-start gap-3 border-b border-amber-600/10 pb-3 last:border-0 last:pb-0 text-sm text-gray-800 font-medium">
+                      <ChevronRight className="w-4 h-4 text-amber-600 mt-0.5" />
                       {stream}
                     </div>
                   ))}
@@ -189,8 +189,8 @@ export default function AlbertaLMIAJobs() {
 
             {/* CITIES & STATS column */}
             <div>
-              <div className="text-xs font-bold text-[#1D6FBF] uppercase tracking-widest mb-3">Cities Covered</div>
-              <h3 className="text-3xl font-black text-[#0D1B3E] tracking-tight mb-6">Job searches by Alberta city</h3>
+              <div className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3">Cities Covered</div>
+              <h3 className="text-3xl font-black text-brand-900 tracking-tight mb-6">Job searches by Alberta city</h3>
               <p className="text-gray-600 mb-8 text-lg">
                 JobMaze covers LMIA jobs in every Alberta city and rural municipality. Use the city filter to narrow results for your client's preferred location.
               </p>
@@ -238,7 +238,7 @@ export default function AlbertaLMIAJobs() {
         </section>
 
         {/* BOTTOM CTA */}
-        <section className="bg-[#0D1B3E] py-24 px-6 text-center border-t-4 border-[#F5A623]">
+        <section className="bg-brand-900 py-24 px-6 text-center border-t-4 border-amber-400">
           <div className="max-w-2xl mx-auto">
              <div className="text-xs font-bold text-blue-200/60 uppercase tracking-widest mb-4">Start Searching</div>
              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
@@ -249,10 +249,10 @@ export default function AlbertaLMIAJobs() {
              </p>
              <Link 
                 href="/sign-up"
-                className="bg-[#F5A623] hover:bg-[#F5A623]/90 text-[#0D1B3E] font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-[#F5A623]/20"
+                className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
               >
                 Search Alberta LMIA Jobs Free
-                <ArrowRight className="w-5 h-5 text-[#0D1B3E]" />
+                <ArrowRight className="w-5 h-5 text-brand-900" />
               </Link>
               <div className="mt-8 text-sm text-blue-200/50 flex items-center justify-center gap-4">
                 <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> No credit card required</span>
