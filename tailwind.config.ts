@@ -77,6 +77,14 @@ const config = {
           800: "hsl(var(--brand-800))",
           900: "hsl(var(--brand-900))",
         },
+        mkt: {
+          navy: "hsl(var(--mkt-navy))",
+          blue: "hsl(var(--mkt-blue))",
+          amber: "hsl(var(--mkt-amber))",
+          green: "hsl(var(--mkt-green))",
+          pink: "hsl(var(--mkt-pink))",
+          off: "hsl(var(--mkt-off-white))",
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -86,7 +94,8 @@ const config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", ...fontFamily.sans],
+        sans: ["var(--font-sans)", ...fontFamily.sans],
+        inter: ["var(--font-sans)", ...fontFamily.sans],
       },
       keyframes: {
         float: {

@@ -13,12 +13,17 @@ const faqs = [
   {
     question: "How does the credit system work?",
     answer:
-      "You receive 5 free credits upon signup. Each premium data access costs 1 credit. You can purchase additional credits as needed through our secure payment system.",
+      "You receive 500 free credits upon signup. Each premium data access costs 1 credit. You can purchase additional credits as needed through our secure payment system.",
   },
   {
     question: "What kind of data can I access?",
     answer:
       "Our platform provides access to NOC codes, employer information, city data, contact details, and comprehensive statistical analysis of search results.",
+  },
+  {
+    question: "Is there a free trial available?",
+    answer:
+      "Yes. JobMaze offers a free trial so you can explore the platform before committing to a paid plan. During the trial, you get 500 free credits to access live job listings, search and filter features, and a preview of employer contact information.",
   },
   {
     question: "Is my payment information secure?",

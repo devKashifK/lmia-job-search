@@ -8,13 +8,17 @@ import ReactQueryProvider from './react-query-provider';
 import { SheetProvider } from '@/context/sheet-context';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import ClientLayout from './client-layout';
-import Script from 'next/script'; // 👈 add this
+import Script from 'next/script';
 import { ControlContextProvider } from '@/context/control';
 import { TrialProvider } from '@/context/trail';
 import { PreventCopyPaste } from '@/components/security/prevent-copy-paste';
 import Honeypot from '@/components/security/honeypot';
 
-const inter = Inter({ subsets: ['latin'] });
+const baseFont = Inter({ 
+  subsets: ['latin'], 
+  variable: '--font-sans',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://jobmaze.ca'),
@@ -54,9 +58,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        {/* Microsoft Clarity */}
+    <html lang="en" suppressHydrationWarning className={baseFont.variable}>
+      <body className={baseFont.className} suppressHydrationWarning>
         <Script
           id="ms-clarity"
           strategy="afterInteractive"
@@ -70,7 +73,6 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* Google tag (gtag.js) */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-ZYBB5TFE36"
           strategy="afterInteractive"

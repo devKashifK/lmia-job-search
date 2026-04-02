@@ -11,6 +11,7 @@ export interface JobApplication {
   state: string;
   table_name: string;
   status: 'applied' | 'notified';
+  posted_link: string;
   created_at?: string;
 }
 
@@ -30,7 +31,8 @@ export async function submitApplication(application: JobApplication) {
         city: application.city,
         state: application.state,
         table_name: application.table_name,
-        status: application.status
+        status: application.status,
+        posted_link: application.posted_link
       }
     ])
     .select()

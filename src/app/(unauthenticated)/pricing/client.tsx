@@ -48,7 +48,7 @@ const individualPlans: Plan[] = [
     cadPrice: '$0',
     description: 'Try the basics before upgrading',
     features: [
-      '5 job searches',
+      '500 job searches',
       'Free NOC Code Finder',
       'No employer contacts',
     ],
@@ -231,8 +231,8 @@ function PlanCard({
           className={cn(
             'relative rounded-3xl p-8 h-full flex flex-col transition-all duration-300 group',
             plan.highlighted
-              ? 'bg-white shadow-xl shadow-brand-500/10 border-2 border-brand-500 scale-105 z-10'
-              : 'bg-white/60 backdrop-blur-sm border border-gray-100 hover:border-brand-200 hover:shadow-lg hover:-translate-y-1'
+              ? 'bg-white shadow-xl shadow-[#1D6FBF]/10 border-2 border-[#1D6FBF] scale-105 z-10'
+              : 'bg-white/60 backdrop-blur-sm border border-gray-100 hover:border-[#1D6FBF]/20 hover:shadow-lg hover:-translate-y-1'
           )}
         >
           {plan.badge && (
@@ -251,7 +251,7 @@ function PlanCard({
           )}
 
           <div className="mb-6">
-            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-colors", plan.highlighted ? "bg-brand-100 text-brand-600" : "bg-gray-100 text-gray-500 group-hover:bg-brand-50 group-hover:text-brand-500")}>
+            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-colors", plan.highlighted ? "bg-[#D6E6F7] text-[#1D6FBF]" : "bg-gray-100 text-gray-500 group-hover:bg-[#1D6FBF]/10 group-hover:text-[#1D6FBF]")}>
               {plan.icon}
             </div>
             <h2 className="text-xl font-bold text-gray-900 mb-2">
@@ -281,7 +281,7 @@ function PlanCard({
                 <Check
                   className={cn(
                     'h-5 w-5 mr-3 flex-shrink-0',
-                    plan.highlighted ? 'text-brand-500' : 'text-gray-400'
+                    plan.highlighted ? 'text-[#1D6FBF]' : 'text-gray-400'
                   )}
                 />
                 <span className="leading-tight">{feature}</span>
@@ -315,8 +315,8 @@ function PlanCard({
                 className={cn(
                   'w-full h-12 rounded-xl font-bold shadow-md hover:shadow-xl transition-all',
                   plan.tone === 'primary'
-                    ? 'bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white'
-                    : 'bg-white border-2 border-brand-100 text-brand-700 hover:border-brand-200 hover:bg-brand-50'
+                    ? 'bg-gradient-to-r from-[#1D6FBF] to-[#257FD3] hover:from-[#1A64B0] hover:to-[#1D6FBF] text-white'
+                    : 'bg-white border-2 border-[#D6E6F7] text-[#1D6FBF] hover:border-[#AFCEF1] hover:bg-[#F0F7FF]'
                 )}
               >
                 Get Started
@@ -337,7 +337,7 @@ function ContactSalesDialog({ open, onOpenChange }: { open: boolean; onOpenChang
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-400 to-brand-600" />
         
         <DialogHeader className="px-8 pt-10 pb-6 text-center">
-          <div className="mx-auto w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mb-4 text-brand-600">
+          <div className="mx-auto w-16 h-16 bg-[#D6E6F7] rounded-2xl flex items-center justify-center mb-4 text-[#1D6FBF]">
             <Users className="w-8 h-8" />
           </div>
           <DialogTitle className="text-2xl font-bold text-gray-900 tracking-tight">Contact Our Sales Team</DialogTitle>
@@ -348,8 +348,8 @@ function ContactSalesDialog({ open, onOpenChange }: { open: boolean; onOpenChang
 
         <div className="px-8 pb-10 space-y-6">
           <div className="grid grid-cols-1 gap-4">
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 group hover:border-brand-200 hover:bg-brand-50/30 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-brand-600">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 group hover:border-[#1D6FBF]/30 hover:bg-[#D6E6F7]/20 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-[#1D6FBF]">
                 <Mail className="w-5 h-5" />
               </div>
               <div className="flex flex-col">
@@ -397,7 +397,7 @@ const PricingPage = () => {
 
   return (
     <BackgroundWrapper>
-      <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
+      <div className="min-h-screen flex flex-col bg-white font-inter">
         {/* Using a very light gray background for contrast against white cards */}
         {isMobile ? (
           <MobileHeader title="Pricing Plans" showBack={true} />
@@ -407,7 +407,7 @@ const PricingPage = () => {
 
         <main className="flex-grow pt-32 pb-24">
           {/* Decorative Background Elements */}
-          <div className="absolute top-0 left-0 right-0 h-[600px] bg-gradient-to-b from-brand-50/50 to-transparent pointer-events-none" />
+          <div className="absolute top-0 left-0 right-0 h-[600px] bg-gradient-to-b from-[#1D6FBF]/5 to-transparent pointer-events-none" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Header */}
@@ -417,7 +417,7 @@ const PricingPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center justify-center gap-4 mb-6"
               >
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D6E6F7] text-[#1D6FBF] text-xs font-bold uppercase tracking-widest">
                   <Zap className="w-3 h-3 fill-current" />
                   Transparent Pricing
                 </div>
@@ -430,10 +430,10 @@ const PricingPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight"
+                className="text-4xl md:text-6xl font-extrabold text-[#0D1B3E] mb-6 tracking-tight"
               >
                 Simple plans for <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-purple-600">every ambition.</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1D6FBF] to-[#0D1B3E]">every ambition.</span>
               </motion.h1>
 
               <motion.p
@@ -495,7 +495,7 @@ const PricingPage = () => {
             <div className="mt-24 text-center">
               <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
                 <HelpCircle className="w-4 h-4" />
-                Have questions about our plans? <a href="/contact" className="text-brand-600 hover:underline font-semibold">Contact our support team</a>
+                Have questions about our plans? <a href="/contact" className="text-[#1D6FBF] hover:underline font-semibold">Contact our support team</a>
               </p>
             </div>
             

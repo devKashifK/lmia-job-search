@@ -27,7 +27,7 @@ export default function AboutPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-brand-100 selection:text-brand-900">
+        <div className="min-h-screen bg-white flex flex-col font-inter selection:bg-brand-100 selection:text-brand-900">
             {isMobile ? (
                 <MobileHeader title="About Us" showBack={true} />
             ) : (

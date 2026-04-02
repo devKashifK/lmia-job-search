@@ -18,7 +18,7 @@ export default function ContactPage() {
   const { isMobile } = useMobile();
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-brand-100 selection:text-brand-900">
+    <div className="min-h-screen bg-white flex flex-col font-inter selection:bg-brand-100 selection:text-brand-900">
       {isMobile ? (
         <MobileHeader title="Contact Us" showBack={true} />
       ) : (

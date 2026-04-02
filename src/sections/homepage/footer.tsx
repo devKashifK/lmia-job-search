@@ -32,42 +32,43 @@ export default function Footer() {
               <li><FooterLink href="/search">Job Search</FooterLink></li>
               <li><FooterLink href="/dashboard">Data Dashboard</FooterLink></li>
               <li><FooterLink href="/pricing">Pricing Plans</FooterLink></li>
-            </ul>
-          </div>
-
-          {/* Resources Column */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4 text-sm">Resources</h4>
-            <ul className="space-y-3 text-sm text-gray-500">
-              <li><FooterLink href="/resources/documentation">Documentation</FooterLink></li>
-              <li><FooterLink href="/resources/noc-codes">NOC Codes Guide</FooterLink></li>
               <li><FooterLink href="/faq">FAQ</FooterLink></li>
             </ul>
           </div>
 
-          {/* Company Column */}
+          {/* Professional Solutions */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-4 text-sm">Solutions</h4>
+            <ul className="space-y-3 text-sm text-gray-500">
+              <li><FooterLink href="/for-immigration-consultants">For RCICs</FooterLink></li>
+              <li><FooterLink href="/for-recruiters">For Recruiters</FooterLink></li>
+              <li><FooterLink href="/what-is-lmia">What is LMIA?</FooterLink></li>
+              <li><FooterLink href="/lmia-employers-list">Employers List</FooterLink></li>
+              <li><FooterLink href="/lmia-processing-time">Processing Times</FooterLink></li>
+            </ul>
+          </div>
+
+          {/* SEO Hubs */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-4 text-sm">SEO Hubs</h4>
+            <ul className="space-y-3 text-sm text-gray-500">
+              <li><FooterLink href="/lmia-jobs-ontario">Ontario Jobs</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs-british-columbia">BC Jobs</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs-alberta">Alberta Jobs</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs-saskatchewan">Saskatchewan</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs-healthcare">Healthcare Hub</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs-trucking">Trucking Hub</FooterLink></li>
+            </ul>
+          </div>
+
+          {/* Company & Support */}
           <div>
             <h4 className="font-semibold text-gray-900 mb-4 text-sm">Company</h4>
             <ul className="space-y-3 text-sm text-gray-500">
               <li><FooterLink href="/about">About Us</FooterLink></li>
-              <li><FooterLink href="/careers">Careers</FooterLink></li>
-              <li><FooterLink href="/contact">Contact</FooterLink></li>
-            </ul>
-          </div>
-
-          {/* Contact Column */}
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4 text-sm">Contact</h4>
-            <ul className="space-y-3 text-sm text-gray-500">
-              <li className="flex items-start gap-2">
-                <span className="font-medium text-gray-700">Email:</span>
-                <a href="mailto:info@jobmaze.ca" className="hover:text-brand-600 transition-colors">info@jobmaze.ca</a>
-              </li>
-              <li className="space-y-1">
-                <div className="font-medium text-gray-700">Office Hours:</div>
-                <div>Monday - Friday</div>
-                <div>9:00AM - 6:00PM EST</div>
-              </li>
+              <li><FooterLink href="/resources/documentation">Documentation</FooterLink></li>
+              <li><FooterLink href="/resources/noc-codes">NOC Guide</FooterLink></li>
+              <li><FooterLink href="/contact">Contact Support</FooterLink></li>
             </ul>
           </div>
         </div>

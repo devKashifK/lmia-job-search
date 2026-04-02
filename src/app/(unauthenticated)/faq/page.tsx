@@ -25,7 +25,7 @@ const FAQ_DATA = {
     { q: "How is JobMaze different from general job boards like Indeed or LinkedIn?", a: "General job boards list all types of jobs regardless of immigration status. JobMaze specifically focuses on LMIA-related opportunities — meaning the jobs listed are relevant to employers who are open to hiring through the LMIA process. This saves immigration professionals hours of manual filtering every week." },
     { q: "How do I get started with JobMaze?", a: "Getting started is simple: (1) Visit JobMaze.ca, (2) Create a free account, (3) Start your free trial — no credit card required, (4) Browse LMIA jobs, filter by province, industry, employer, and more. Most new users find what they need within their first session." },
     { q: "Do I need to be a licensed RCIC to use JobMaze?", a: "No. While RCICs are a primary audience, JobMaze is also used by licensed recruiters, HR managers at staffing agencies, immigration paralegal firms, and anyone who works with employers on the LMIA process. You do not need an RCIC license to create an account." },
-    { q: "Is there a free trial available?", a: "Yes. JobMaze offers a free trial so you can explore the platform before committing to a paid plan. During the trial, you get access to live job listings, search and filter features, and a preview of employer contact information." },
+    { q: "Is there a free trial available?", a: "Yes. JobMaze offers a free trial so you can explore the platform before committing to a paid plan. During the trial, you get 500 free credits to access live job listings, search and filter features, and a preview of employer contact information." },
     { q: "What provinces and territories does JobMaze cover?", a: "JobMaze covers all Canadian provinces and territories including Ontario, British Columbia, Alberta, Saskatchewan, Manitoba, Quebec, Nova Scotia, New Brunswick, PEI, Newfoundland & Labrador, Yukon, Northwest Territories, and Nunavut." },
     { q: "Does JobMaze cover jobs in all industries?", a: "Yes. JobMaze covers all major LMIA-eligible industries including healthcare, trucking & transportation, construction, hospitality & food service, agriculture, manufacturing, information technology, retail, and more." },
     { q: "How often is the JobMaze database updated?", a: "The JobMaze database is updated daily. New LMIA-eligible job listings are added every 24 hours, and existing listings are reviewed regularly to ensure accuracy. You will always be working with current, live data." },
@@ -214,15 +214,15 @@ const FAQ_DATA = {
 };
 
 const CATEGORIES = [
-  { id: 'general', title: 'Getting Started', icon: Info, count: FAQ_DATA.general.length, color: 'bg-blue-100 text-blue-600' },
-  { id: 'account', title: 'Account & Billing', icon: UserCircle, count: FAQ_DATA.account.length, color: 'bg-pink-100 text-pink-600' },
-  { id: 'search', title: 'LMIA Job Search', icon: SearchIcon, count: FAQ_DATA.search.length, color: 'bg-indigo-100 text-indigo-600' },
-  { id: 'rcic', title: 'For RCICs', icon: Scale, count: FAQ_DATA.rcic.length, color: 'bg-teal-100 text-teal-600' },
-  { id: 'recruiter', title: 'For Recruiters & Agencies', icon: Building2, count: FAQ_DATA.recruiter.length, color: 'bg-orange-100 text-orange-600' },
-  { id: 'lmia', title: 'About LMIA', icon: FileText, count: FAQ_DATA.lmia.length, color: 'bg-blue-100 text-blue-600' },
-  { id: 'data', title: 'Data & Listings', icon: Database, count: FAQ_DATA.data.length, color: 'bg-indigo-100 text-indigo-600' },
-  { id: 'plans', title: 'Plans & Pricing', icon: CreditCard, count: FAQ_DATA.plans.length, color: 'bg-pink-100 text-pink-600' },
-  { id: 'tech', title: 'Technical & Support', icon: Settings, count: FAQ_DATA.tech.length, color: 'bg-teal-100 text-teal-600' },
+  { id: 'general', title: 'Getting Started', icon: Info, count: FAQ_DATA.general.length, color: 'bg-blue-50 text-blue-600' },
+  { id: 'account', title: 'Account & Billing', icon: UserCircle, count: FAQ_DATA.account.length, color: 'bg-blue-50 text-blue-600' },
+  { id: 'search', title: 'LMIA Job Search', icon: SearchIcon, count: FAQ_DATA.search.length, color: 'bg-[#1D6FBF]/10 text-[#1D6FBF]' },
+  { id: 'rcic', title: 'For RCICs', icon: Scale, count: FAQ_DATA.rcic.length, color: 'bg-[#1D6FBF]/10 text-[#1D6FBF]' },
+  { id: 'recruiter', title: 'For Recruiters & Agencies', icon: Building2, count: FAQ_DATA.recruiter.length, color: 'bg-[#0F7B5E]/10 text-[#0F7B5E]' },
+  { id: 'lmia', title: 'About LMIA', icon: FileText, count: FAQ_DATA.lmia.length, color: 'bg-[#0F7B5E]/10 text-[#0F7B5E]' },
+  { id: 'data', title: 'Data & Listings', icon: Database, count: FAQ_DATA.data.length, color: 'bg-blue-50 text-[#1D6FBF]' },
+  { id: 'plans', title: 'Plans & Pricing', icon: CreditCard, count: FAQ_DATA.plans.length, color: 'bg-blue-50 text-blue-600' },
+  { id: 'tech', title: 'Technical & Support', icon: Settings, count: FAQ_DATA.tech.length, color: 'bg-gray-100 text-gray-600' },
 ];
 
 export default function FAQPage() {
@@ -398,16 +398,15 @@ export default function FAQPage() {
               </div>
             )}
 
-            {/* Contact CTA */}
-            <div className="mt-20 bg-brand-900 rounded-[32px] p-10 text-center relative overflow-hidden">
+            <div className="mt-20 bg-[#0d1b3e] rounded-[32px] p-10 text-center relative overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,166,35,0.1),transparent_50%)]" />
               <h3 className="text-2xl font-black text-white mb-3 relative z-10">Still have questions?</h3>
-              <p className="text-blue-100/70 mb-8 max-w-md mx-auto relative z-10">
+              <p className="text-blue-100/70 mb-8 max-w-md mx-auto relative z-10 font-light">
                 Our support team is available Monday to Friday, 9am–6pm ET. We usually respond within a few hours.
               </p>
               <Link
                 href="mailto:support@jobmaze.ca"
-                className="inline-flex items-center gap-2 bg-brand-400 hover:bg-brand-500 text-brand-950 font-bold px-8 py-4 rounded-xl transition-all relative z-10"
+                className="inline-flex items-center gap-2 bg-[#F5A623] hover:bg-[#F5A623]/90 text-[#0d1b3e] font-bold px-8 py-4 rounded-xl transition-all relative z-10 shadow-lg shadow-[#F5A623]/10"
               >
                 Contact Support
                 <ChevronRight className="w-4 h-4" />

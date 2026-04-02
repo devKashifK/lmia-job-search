@@ -41,6 +41,7 @@ interface ApplyJobDialogProps {
     city: string;
     state: string;
     tableName: string;
+    posted_link?: string;
   };
   type: 'apply' | 'notify';
 }
@@ -140,7 +141,8 @@ export function ApplyJobDialog({ isOpen, onOpenChange, job, type }: ApplyJobDial
         city: job.city,
         state: job.state,
         table_name: job.tableName,
-        status: type === 'apply' ? 'applied' : 'notified'
+        status: type === 'apply' ? 'applied' : 'notified',
+        posted_link: job.posted_link || ''
       });
 
       setIsSuccess(true);
