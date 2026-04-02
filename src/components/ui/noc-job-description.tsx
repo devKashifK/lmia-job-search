@@ -927,7 +927,7 @@ export function NocJobDescription({
             city: job.city || '',
             state: job.state || '',
             tableName: searchType === 'lmia' ? 'lmia' : 'trending_job',
-            posted_link: jobData.jobUrl || ''
+            posted_link: typeof window !== 'undefined' ? window.location.href : ''
           }}
           type={isFresh ? 'apply' : 'notify'}
         />
