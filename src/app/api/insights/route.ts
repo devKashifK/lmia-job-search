@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import db from '@/db';
+import { getAllPrograms, ProgramDefinition } from '@/lib/api/programs';
 
 export const dynamic = 'force-dynamic';
 
@@ -82,15 +83,32 @@ function toRows(map: ProvMap, limit = 15, hotSet?: Set<string>): NocRow[] {
 
 const PAGE_SIZE = 100_000;
 
-async function fetchTrendingRows(year: string, dateFrom?: string | null, dateTo?: string | null) {
+async function fetchTrendingRows(year: string, dateFrom?: string | null, dateTo?: string | null, program?: ProgramDefinition) {
     const all: any[] = [];
     let from = 0;
     while (true) {
         let q = db
             .from('trending_job')
-            .select('noc_code, job_title, tier, state, salary')
+            .select('noc_code, job_title, tier, state, city, salary')
             .not('noc_code', 'is', null)
             .not('state', 'is', null);
+
+        // Apply program filters (State/City pairs)
+        if (program) {
+            const orConditions = program.locations.map(loc => {
+                const stateFilter = `state.eq."${loc.state}"`;
+                if (loc.cities && loc.cities.length > 0) {
+                    // Properly escape cities for PostgREST in() filter
+                    const escapedCities = loc.cities.map(c => `"${c}"`).join(',');
+                    return `and(${stateFilter},city.in.(${escapedCities}))`;
+                }
+                return stateFilter;
+            });
+            if (orConditions.length > 0) {
+                q = q.or(orConditions.join(','));
+            }
+        }
+
         if (year === 'custom' && (dateFrom || dateTo)) {
             if (dateFrom) q = q.gte('date_of_job_posting', dateFrom);
             if (dateTo) q = q.lte('date_of_job_posting', dateTo);
@@ -98,7 +116,10 @@ async function fetchTrendingRows(year: string, dateFrom?: string | null, dateTo?
             q = q.gte('date_of_job_posting', `${year}-01-01`).lte('date_of_job_posting', `${year}-12-31`);
         }
         const { data, error } = await q.range(from, from + PAGE_SIZE - 1);
-        if (error) throw error;
+        if (error) {
+            console.error('Error fetching trending rows:', error);
+            throw error;
+        }
         if (!data?.length) break;
         all.push(...data);
         if (data.length < PAGE_SIZE) break;
@@ -174,12 +195,31 @@ export async function GET(request: Request) {
         const source = searchParams.get('source') ?? 'trending';
         const dateFrom = searchParams.get('date_from');
         const dateTo = searchParams.get('date_to');
-        const isLmia = source === 'lmia';
+        
+        const allPrograms = await getAllPrograms();
+        const program = allPrograms.find(p => p.id === source);
+        const isLmia = source === 'lmia' && !program;
+        const isProgram = !!program;
 
-        // ── 1. True count ─────────────────────────────────────────────────────
+        // ── 1. Count Total (Approximate for UI stats) ─────────────────────────
         let countQuery = db
             .from(isLmia ? 'lmia' : 'trending_job')
             .select('*', { count: 'exact', head: true });
+            
+        if (isProgram && program) {
+            const orConditions = program.locations.map(loc => {
+                const stateFilter = `state.eq."${loc.state}"`;
+                if (loc.cities && loc.cities.length > 0) {
+                    const escapedCities = loc.cities.map(c => `"${c}"`).join(',');
+                    return `and(${stateFilter},city.in.(${escapedCities}))`;
+                }
+                return stateFilter;
+            });
+            if (orConditions.length > 0) {
+                countQuery = (countQuery as any).or(orConditions.join(','));
+            }
+        }
+
         if (year === 'custom' && (dateFrom || dateTo)) {
             if (isLmia) {
                 const years: number[] = [];
@@ -205,13 +245,14 @@ export async function GET(request: Request) {
                     .lte('date_of_job_posting', `${year}-12-31`);
             }
         }
+        
         const { count: totalCount, error: countError } = await countQuery;
         if (countError) throw countError;
 
         // ── 2. Fetch rows ─────────────────────────────────────────────────────
         const rawRows = isLmia 
             ? await fetchLmiaRows(year, dateFrom, dateTo) 
-            : await fetchTrendingRows(year, dateFrom, dateTo);
+            : await fetchTrendingRows(year, dateFrom, dateTo, program);
 
         // ── 3. Aggregate ──────────────────────────────────────────────────────
         const provinceMaps: Record<string, ProvMap> = {};
@@ -254,15 +295,21 @@ export async function GET(request: Request) {
         // ── 5. Build response ─────────────────────────────────────────────────
         const regions: RegionData[] = [
             { key: 'canada', region: 'Canada', rows: toRows(canadaMap, 22, hotSet) },
-            { key: 'atlantic', region: 'Atlantic', rows: toRows(atlanticMap, 15, hotSet) },
-            ...PROVINCE_ORDER
-                .filter(p => provinceMaps[p] && Object.keys(provinceMaps[p]).length > 0)
-                .map(p => ({
-                    key: p.toLowerCase().replace(/\s+/g, '-'),
-                    region: p,
-                    rows: toRows(provinceMaps[p], 15, hotSet),
-                })),
         ];
+
+        // Only add Atlantic if it has data (which happens if the program includes Atlantic provinces)
+        if (Object.keys(atlanticMap).length > 0) {
+            regions.push({ key: 'atlantic', region: 'Atlantic', rows: toRows(atlanticMap, 15, hotSet) });
+        }
+
+        regions.push(...PROVINCE_ORDER
+            .filter(p => provinceMaps[p] && Object.keys(provinceMaps[p]).length > 0)
+            .map(p => ({
+                key: p.toLowerCase().replace(/\s+/g, '-'),
+                region: p,
+                rows: toRows(provinceMaps[p], 15, hotSet),
+            }))
+        );
 
         const response: InDemandResponse = {
             totalCount: totalCount ?? 0,

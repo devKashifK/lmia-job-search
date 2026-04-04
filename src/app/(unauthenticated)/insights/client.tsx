@@ -11,8 +11,10 @@ import {
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ProgramDefinition } from '@/lib/api/programs';
 import { Calendar as CalendarUI } from '@/components/ui/calendar';
 import { format, parseISO, isValid } from 'date-fns';
 import { DateRange } from 'react-day-picker';
@@ -48,7 +50,7 @@ interface ApiResponse {
 }
 
 type YearFilter = '2026' | '2025' | '2024' | '2023' | '2022' | 'all' | 'custom';
-type SourceFilter = 'trending' | 'lmia';
+type SourceFilter = 'trending' | 'lmia' | 'rcip' | 'fcip' | 'alberta-rural' | 'ontario-redi' | 'manitoba-rural';
 
 function getDateParams(year: YearFilter, dateRange: DateRange | undefined) {
     const params = new URLSearchParams();
@@ -198,6 +200,57 @@ const THEMES: Record<string, Theme> = {
         viewLinkHover: 'hover:text-slate-700',
         loaderColor: 'text-slate-500',
     },
+    // Program themes
+    'rcip': {
+        heroGradient: 'from-emerald-700 via-emerald-600 to-emerald-700',
+        tabActive: 'bg-emerald-600 text-white shadow-sm shadow-emerald-200',
+        panelHeader: 'from-emerald-600 to-emerald-700',
+        nocBadge: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+        rowHover: 'hover:bg-emerald-50/50',
+        viewLink: 'text-emerald-600',
+        viewLinkHover: 'hover:text-emerald-700',
+        loaderColor: 'text-emerald-500',
+    },
+    'fcip': {
+        heroGradient: 'from-blue-700 via-blue-600 to-blue-700',
+        tabActive: 'bg-blue-600 text-white shadow-sm shadow-blue-200',
+        panelHeader: 'from-blue-600 to-blue-700',
+        nocBadge: 'bg-blue-50 text-blue-700 border-blue-100',
+        rowHover: 'hover:bg-blue-50/50',
+        viewLink: 'text-blue-600',
+        viewLinkHover: 'hover:text-blue-700',
+        loaderColor: 'text-blue-500',
+    },
+    'alberta-rural': {
+        heroGradient: 'from-amber-600 via-amber-500 to-amber-600',
+        tabActive: 'bg-amber-600 text-white shadow-sm shadow-amber-200',
+        panelHeader: 'from-amber-600 to-amber-700',
+        nocBadge: 'bg-amber-50 text-amber-700 border-amber-100',
+        rowHover: 'hover:bg-amber-50/50',
+        viewLink: 'text-amber-600',
+        viewLinkHover: 'hover:text-amber-700',
+        loaderColor: 'text-amber-500',
+    },
+    'ontario-redi': {
+        heroGradient: 'from-rose-600 via-rose-500 to-rose-600',
+        tabActive: 'bg-rose-600 text-white shadow-sm shadow-rose-200',
+        panelHeader: 'from-rose-600 to-rose-700',
+        nocBadge: 'bg-rose-50 text-rose-700 border-rose-100',
+        rowHover: 'hover:bg-rose-50/50',
+        viewLink: 'text-rose-600',
+        viewLinkHover: 'hover:text-rose-700',
+        loaderColor: 'text-rose-500',
+    },
+    'manitoba-rural': {
+        heroGradient: 'from-purple-600 via-purple-500 to-purple-600',
+        tabActive: 'bg-purple-600 text-white shadow-sm shadow-purple-200',
+        panelHeader: 'from-purple-600 to-purple-700',
+        nocBadge: 'bg-purple-50 text-purple-700 border-purple-100',
+        rowHover: 'hover:bg-purple-50/50',
+        viewLink: 'text-purple-600',
+        viewLinkHover: 'hover:text-purple-700',
+        loaderColor: 'text-purple-500',
+    },
 };
 
 const ATLANTIC_PROVINCES = [
@@ -230,7 +283,7 @@ const REGION_TABS = [
 
 // ─── Region Panel ─────────────────────────────────────────────────────────────
 
-function RegionPanel({ region, index, theme, isLmia, fullWidth, search, year, dateRange }: {
+function RegionPanel({ region, index, theme, isLmia, fullWidth, search, year, dateRange, source, programs }: {
     region: RegionData;
     index: number;
     theme: Theme;
@@ -239,6 +292,8 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search, year, da
     search: string;
     year: YearFilter;
     dateRange: DateRange | undefined;
+    source: string;
+    programs: ProgramDefinition[];
 }) {
     const q = search.trim().toLowerCase();
     const filteredRows = q
@@ -263,7 +318,9 @@ function RegionPanel({ region, index, theme, isLmia, fullWidth, search, year, da
                 <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-white/80" />
                     <h2 className="text-white font-bold text-sm tracking-wide">
-                        In-demand Jobs — {region.region.toUpperCase()}
+                        {index === 0 && (['rcip', 'fcip', 'alberta-rural', 'ontario-redi', 'manitoba-rural'].includes(source) || programs.some(p => p.id === source)) 
+                            ? `In-demand Jobs — ${region.region.toUpperCase()} OVERVIEW`
+                            : `In-demand Jobs — ${region.region.toUpperCase()}${index === 0 ? ' (National)' : ''}`}
                     </h2>
                 </div>
                 <span className="text-white/70 text-xs font-medium tabular-nums">
@@ -403,7 +460,10 @@ function StatCard({ icon, label, value, sub, delay }: {
 
 // ─── Toggle Components ────────────────────────────────────────────────────────
 
-function SourceToggle({ value, onChange }: { value: SourceFilter; onChange: (v: SourceFilter) => void }) {
+function SourceToggle({ value, onChange, programs }: { value: string; onChange: (v: string) => void, programs: ProgramDefinition[] }) {
+    const isProgram = programs.some(p => p.id === value);
+    const currentProgram = programs.find(p => p.id === value);
+
     return (
         <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 text-gray-500">
@@ -417,6 +477,32 @@ function SourceToggle({ value, onChange }: { value: SourceFilter; onChange: (v: 
                 <button onClick={() => onChange('lmia')} className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap ${value === 'lmia' ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
                     🏢 LMIA
                 </button>
+                
+                <div className="w-px h-4 bg-gray-300 my-auto mx-0.5" />
+
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <button className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-1.5 ${isProgram ? 'bg-emerald-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                            <Globe className="w-3.5 h-3.5" />
+                            {isProgram ? currentProgram?.label : 'Programs'}
+                            <ChevronDown className="w-3 h-3 opacity-50" />
+                        </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-56 p-1.5" align="start">
+                        <div className="space-y-0.5">
+                            {programs.map((program) => (
+                                <button
+                                    key={program.id}
+                                    onClick={() => onChange(program.id)}
+                                    className={`w-full text-left px-3 py-2 rounded-md text-xs font-medium transition-colors flex items-center justify-between group ${value === program.id ? 'bg-emerald-50 text-emerald-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                                >
+                                    {program.label}
+                                    {value === program.id && <Check className="w-3.5 h-3.5" />}
+                                </button>
+                            ))}
+                        </div>
+                    </PopoverContent>
+                </Popover>
             </div>
         </div>
     );
@@ -552,49 +638,50 @@ function ShareButton({ year, source, activeTab }: { year: string; source: string
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function InDemandJobsPage() {
+export default function InsightsClient({ initialPrograms = [] }: { initialPrograms?: ProgramDefinition[] }) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // Init from URL
+    const sourceParam = searchParams.get('source') as string || 'trending';
+    const yearParam = searchParams.get('year') as YearFilter || '2026';
+    const activeTabParam = searchParams.get('tab') || 'canada';
+
+    const [year, setYear] = useState<YearFilter>(yearParam);
+    const [source, setSource] = useState<string>(sourceParam);
+    const [activeTab, setActiveTab] = useState(activeTabParam);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [showAllRegions, setShowAllRegions] = useState(false);
+
     const [regions, setRegions] = useState<RegionData[]>([]);
     const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
-    const [activeTab, setActiveTab] = useState('all');
     const [search, setSearch] = useState('');
-    const [year, setYear] = useState<YearFilter>('2026');
-    const [source, setSource] = useState<SourceFilter>('trending');
 
     // --- Date Range State ---
     const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
-        const sp = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-        const from = sp.get('date_from');
-        const to = sp.get('date_to');
-        if (from && to) {
-            return { from: parseISO(from), to: parseISO(to) };
+        const df = searchParams.get('date_from');
+        const dt = searchParams.get('date_to');
+        if (df) {
+            const f = parseISO(df);
+            const t = dt ? parseISO(dt) : undefined;
+            if (isValid(f)) return { from: f, to: t && isValid(t) ? t : undefined };
         }
         return undefined;
     });
 
     // ─── Scroll logic ─────────────────────────────────────────────────────────
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const [showAllRegions, setShowAllRegions] = useState(false);
 
 
-    const themeKey = `${source}-${year}` as keyof typeof THEMES;
+    const themeKey = source && initialPrograms.some(p => p.id === source) 
+        ? (source as keyof typeof THEMES)
+        : `${source}-${year}` as keyof typeof THEMES;
     const theme = THEMES[themeKey] ?? THEMES['trending-2026'];
     const isLmia = source === 'lmia';
-
-    // Read filters from URL on mount
-    useEffect(() => {
-        const sp = new URLSearchParams(window.location.search);
-        const urlYear = sp.get('year');
-        const urlSource = sp.get('source');
-        const urlRegion = sp.get('region');
-        const validYears = ['2026', '2025', '2024', '2023', '2022', 'all'];
-        if (urlYear && validYears.includes(urlYear)) setYear(urlYear as YearFilter);
-        if (urlSource === 'trending' || urlSource === 'lmia') setSource(urlSource);
-        if (urlRegion) setActiveTab(urlRegion);
-    }, []);
 
     const fetchData = useCallback(async () => {
         setLoading(true);
@@ -691,7 +778,11 @@ export default function InDemandJobsPage() {
 
                         {/* Row 1: toggles + share + timestamp */}
                         <div className="flex flex-wrap items-center gap-3 py-2.5 border-b border-gray-100">
-                            <SourceToggle value={source} onChange={setSource} />
+                            <SourceToggle
+                                value={source}
+                                onChange={setSource}
+                                programs={initialPrograms}
+                            />
                             <div className="w-px h-5 bg-gray-200 flex-shrink-0" />
                             <YearToggle
                                 value={year}
@@ -737,32 +828,56 @@ export default function InDemandJobsPage() {
                                 </div>
 
                                 <div className="flex flex-nowrap items-center gap-1.5 flex-1 min-w-0">
-                                    {REGION_TABS.slice(0, 6).map(tab => (
-                                        <button
-                                            key={tab.key}
-                                            onClick={() => setActiveTab(tab.key)}
-                                            className={`flex-shrink-0 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap border ${activeTab === tab.key
-                                                ? `${theme.tabActive} border-transparent scale-[1.02]`
-                                                : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-200'
-                                                }`}
-                                        >
-                                            <span className="hidden sm:inline">{tab.label}</span>
-                                            <span className="sm:hidden">{tab.short}</span>
-                                        </button>
-                                    ))}
-                                    
-                                    <button
-                                        onClick={() => setShowAllRegions(!showAllRegions)}
-                                        className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-all border border-brand-100/50"
-                                    >
-                                        {showAllRegions ? 'Less' : 'More Regions'} 
-                                        <motion.div
-                                            animate={{ rotate: showAllRegions ? 180 : 0 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <ChevronDown className="w-3.5 h-3.5" />
-                                        </motion.div>
-                                    </button>
+                                    {(() => {
+                                        const program = initialPrograms.find(p => p.id === source);
+                                        const allowedStates = program ? new Set(program.locations.map(l => l.state)) : null;
+                                        
+                                        const filteredTabs = REGION_TABS.filter(tab => {
+                                            if (tab.key === 'all' || tab.key === 'canada') return true;
+                                            if (!allowedStates) return true;
+                                            if (tab.key === 'atlantic') {
+                                                const ATLANTIC_PROVINCES = ['Nova Scotia', 'New Brunswick', 'Prince Edward Island', 'Newfoundland and Labrador'];
+                                                return ATLANTIC_PROVINCES.some(p => allowedStates.has(p));
+                                            }
+                                            return allowedStates.has(tab.label);
+                                        });
+
+                                        const mainTabs = filteredTabs.slice(0, 6);
+                                        const moreTabs = filteredTabs.slice(6);
+
+                                        return (
+                                        <>
+                                            {mainTabs.map(tab => (
+                                                <button
+                                                    key={tab.key}
+                                                    onClick={() => setActiveTab(tab.key)}
+                                                    className={`flex-shrink-0 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap border ${activeTab === tab.key
+                                                        ? `${theme.tabActive} border-transparent scale-[1.02]`
+                                                        : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-200'
+                                                        }`}
+                                                >
+                                                    <span className="hidden sm:inline">{tab.key === 'canada' && program ? `${program.label} Overview` : tab.label}</span>
+                                                    <span className="sm:hidden">{tab.key === 'canada' && program ? 'Overview' : tab.short}</span>
+                                                </button>
+                                            ))}
+                                            
+                                            {moreTabs.length > 0 && (
+                                                <button
+                                                    onClick={() => setShowAllRegions(!showAllRegions)}
+                                                    className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-brand-600 bg-brand-50 hover:bg-brand-100 transition-all border border-brand-100/50"
+                                                >
+                                                    {showAllRegions ? 'Less' : 'More Regions'} 
+                                                    <motion.div
+                                                        animate={{ rotate: showAllRegions ? 180 : 0 }}
+                                                        transition={{ duration: 0.3 }}
+                                                    >
+                                                        <ChevronDown className="w-3.5 h-3.5" />
+                                                    </motion.div>
+                                                </button>
+                                            )}
+                                        </>
+                                        );
+                                    })()}
                                 </div>
                             </div>
 
@@ -775,19 +890,34 @@ export default function InDemandJobsPage() {
                                         className="overflow-hidden"
                                     >
                                         <div className="flex flex-wrap gap-1.5 py-1 pt-1 ml-0 md:ml-[172px]">
-                                            {REGION_TABS.slice(6).map(tab => (
-                                                <button
-                                                    key={tab.key}
-                                                    onClick={() => setActiveTab(tab.key)}
-                                                    className={`flex-shrink-0 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap border ${activeTab === tab.key
-                                                        ? `${theme.tabActive} border-transparent scale-[1.02]`
-                                                        : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-200'
-                                                        }`}
-                                                >
-                                                    <span className="hidden sm:inline">{tab.label}</span>
-                                                    <span className="sm:hidden">{tab.short}</span>
-                                                </button>
-                                            ))}
+                                            {(() => {
+                                                const program = initialPrograms.find(p => p.id === source);
+                                                const allowedStates = program ? new Set(program.locations.map(l => l.state)) : null;
+                                                
+                                                const filteredTabs = REGION_TABS.filter(tab => {
+                                                    if (tab.key === 'all' || tab.key === 'canada') return true;
+                                                    if (!allowedStates) return true;
+                                                    if (tab.key === 'atlantic') {
+                                                        const ATLANTIC_PROVINCES = ['Nova Scotia', 'New Brunswick', 'Prince Edward Island', 'Newfoundland and Labrador'];
+                                                        return ATLANTIC_PROVINCES.some(p => allowedStates.has(p));
+                                                    }
+                                                    return allowedStates.has(tab.label);
+                                                });
+
+                                                return filteredTabs.slice(6).map(tab => (
+                                                    <button
+                                                        key={tab.key}
+                                                        onClick={() => setActiveTab(tab.key)}
+                                                        className={`flex-shrink-0 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap border ${activeTab === tab.key
+                                                            ? `${theme.tabActive} border-transparent scale-[1.02]`
+                                                            : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-200'
+                                                            }`}
+                                                    >
+                                                        <span className="hidden sm:inline">{tab.label}</span>
+                                                        <span className="sm:hidden">{tab.short}</span>
+                                                    </button>
+                                                ));
+                                            })()}
                                         </div>
                                     </motion.div>
                                 )}
@@ -928,6 +1058,8 @@ export default function InDemandJobsPage() {
                                         search={search}
                                         year={year}
                                         dateRange={dateRange}
+                                        source={source}
+                                        programs={initialPrograms}
                                     />
                                 ))}
                             </div>
