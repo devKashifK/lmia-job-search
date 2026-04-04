@@ -139,98 +139,103 @@ export function JobRecommendationCard({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
+            className="h-full"
         >
-            <Card className="group hover:shadow-lg transition-all duration-300 border-gray-200 hover:border-brand-300">
-                <CardContent className="p-6">
-                    {/* Header */}
-                    <div className="flex items-start justify-between gap-4 mb-4">
-                        <div className="flex-1">
-                            <Link href={detailUrl} className="block">
-                                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-brand-600 transition-colors line-clamp-2">
-                                    {jobTitle}
-                                </h3>
-                            </Link>
-                            <p className="text-gray-600 mt-1 flex items-center gap-2">
-                                <Building2 className="h-4 w-4" />
-                                {employer}
-                            </p>
+            <Card className="group h-full flex flex-col hover:shadow-xl transition-all duration-300 border-gray-200 hover:border-emerald-300 rounded-2xl overflow-hidden bg-white">
+                <CardContent className="p-6 flex flex-col h-full">
+                    {/* Header Section (Pinned to top) */}
+                    <div className="flex-1">
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                            <div className="flex-1 min-w-0">
+                                <Link href={detailUrl} className="block group/title">
+                                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-emerald-600 transition-colors line-clamp-2 leading-tight">
+                                        {jobTitle}
+                                    </h3>
+                                </Link>
+                                <p className="text-gray-500 mt-1.5 flex items-center gap-2 text-sm font-medium">
+                                    <Building2 className="h-4 w-4 text-gray-400 shrink-0" />
+                                    <span className="truncate">{employer}</span>
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col items-end gap-2 shrink-0">
+                                <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-lg font-bold text-[11px] shadow-none">
+                                    <Sparkles className="h-3 w-3 mr-1" />
+                                    {matchPercentage}% Match
+                                </Badge>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={handleSave}
+                                    disabled={isLoading}
+                                    className={cn(
+                                        "h-9 w-9 rounded-xl transition-all",
+                                        isJobSaved ? "text-emerald-600 bg-emerald-50" : "text-gray-400 hover:text-emerald-600 hover:bg-emerald-50"
+                                    )}
+                                >
+                                    {isJobSaved ? <BookmarkCheck className="h-5 w-5" /> : <Bookmark className="h-5 w-5" />}
+                                </Button>
+                            </div>
                         </div>
 
-                        {/* Match Score */}
-                        <div className="flex flex-col items-end gap-2">
-                            <Badge className="bg-gradient-to-r from-brand-500 to-brand-600 text-white border-0 px-3 py-1">
-                                <Sparkles className="h-3 w-3 mr-1" />
-                                {matchPercentage}% Match
-                            </Badge>
-
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleSave}
-                                disabled={isLoading}
-                                className={isJobSaved ? "text-brand-600" : "text-gray-400 hover:text-brand-600"}
-                            >
-                                {isJobSaved ? (
-                                    <BookmarkCheck className="h-5 w-5" />
-                                ) : (
-                                    <Bookmark className="h-5 w-5" />
-                                )}
-                            </Button>
+                        {/* Location & Meta */}
+                        <div className="flex flex-wrap gap-x-4 gap-y-2 mb-6 text-[13px] text-gray-600 font-medium">
+                            <div className="flex items-center gap-1.5">
+                                <MapPin className="h-4 w-4 text-gray-400" />
+                                <span className="truncate">{location}</span>
+                            </div>
+                            {salary && (
+                                <div className="flex items-center gap-1.5">
+                                    <DollarSign className="h-4 w-4 text-gray-400" />
+                                    <span className="truncate">
+                                        {typeof salary === 'number'
+                                            ? `$${salary.toLocaleString()}/yr`
+                                            : salary}
+                                    </span>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-1.5 text-gray-400">
+                                <Clock className="h-4 w-4" />
+                                <span>{recommendation.job_source === 'lmia' ? 'LMIA' : 'Hot Lead'}</span>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Location & Salary */}
-                    <div className="flex flex-wrap gap-4 mb-4 text-sm text-gray-600 items-center">
-                        <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            {location}
-                        </div>
-                        {salary && (
-                            <div className="flex items-center gap-1">
-                                <DollarSign className="h-4 w-4" />
-                                {typeof salary === 'number'
-                                    ? `$${salary.toLocaleString()}/year`
-                                    : salary}
+                        {/* Wage Comparison (Optional info block) */}
+                        {typeof salary === 'number' && job.NOC && (
+                            <div className="mb-6">
+                                <WageComparisonDisplay
+                                    noc={job.NOC}
+                                    province={job.Province || job.province}
+                                    currentWage={salary / 2080}
+                                />
                             </div>
                         )}
 
-                        {/* Wage Comparison Tag */}
-                        {typeof salary === 'number' && job.NOC && (
-                            <WageComparisonDisplay
-                                noc={job.NOC}
-                                province={job.Province || job.province}
-                                currentWage={salary / 2080} // Approx hourly from annual
-                            />
-                        )}
-
-                        <div className="flex items-center gap-1 ml-auto">
-                            <Clock className="h-4 w-4" />
-                            {recommendation.job_source === 'lmia' ? 'LMIA' : 'Hot Lead'}
+                        {/* Recommendation Reasons */}
+                        <div className="relative border border-emerald-100 bg-emerald-50/30 rounded-xl p-4 mb-6">
+                            <div className="absolute -top-2.5 left-3 px-2 bg-white text-[10px] font-bold text-emerald-600 uppercase tracking-wider border border-emerald-100 rounded-md">
+                                Expert Insight
+                            </div>
+                            <ul className="space-y-2">
+                                {topReasons.map((reason, idx) => (
+                                    <li key={idx} className="text-xs text-gray-700 flex items-start gap-2 leading-relaxed">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1 shrink-0" />
+                                        {reason}
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                     </div>
 
-                    {/* Why This Job? */}
-                    <div className="bg-brand-50 rounded-lg p-3 mb-4">
-                        <p className="text-xs font-medium text-brand-700 mb-2">
-                            Why we recommend this:
-                        </p>
-                        <ul className="space-y-1">
-                            {topReasons.map((reason, idx) => (
-                                <li key={idx} className="text-sm text-gray-700 flex items-start gap-2">
-                                    <span className="text-brand-600 mt-0.5">•</span>
-                                    {reason}
-                                </li>
-                            ))}
-                        </ul>
+                    {/* Footer Section (Pinned to bottom) */}
+                    <div className="mt-auto pt-4 border-t border-gray-50">
+                        <Link href={detailUrl}>
+                            <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-12 rounded-xl shadow-lg shadow-emerald-500/10 group-hover:scale-[1.02] transition-transform">
+                                View Details
+                                <ExternalLink className="h-4 w-4 ml-2" />
+                            </Button>
+                        </Link>
                     </div>
-
-                    {/* Action Button */}
-                    <Link href={detailUrl}>
-                        <Button className="w-full bg-brand-600 hover:bg-brand-700 text-white">
-                            View Details
-                            <ExternalLink className="h-4 w-4 ml-2" />
-                        </Button>
-                    </Link>
                 </CardContent>
             </Card>
         </motion.div>

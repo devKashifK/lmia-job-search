@@ -50,7 +50,7 @@ export default function Footer() {
 
           {/* SEO Hubs */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-4 text-sm">SEO Hubs</h4>
+            <h4 className="font-semibold text-gray-900 mb-4 text-sm">Resources</h4>
             <ul className="space-y-3 text-sm text-gray-500">
               <li><FooterLink href="/lmia-jobs-ontario">Ontario Jobs</FooterLink></li>
               <li><FooterLink href="/lmia-jobs-british-columbia">BC Jobs</FooterLink></li>

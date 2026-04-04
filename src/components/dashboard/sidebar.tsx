@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Search,
   Bell,
+  Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter, usePathname } from "next/navigation";
@@ -37,6 +38,11 @@ const navigation = [
     name: "Profile",
     href: "/dashboard/profile",
     icon: User,
+  },
+  {
+    name: "Applications",
+    href: "/dashboard/applications",
+    icon: Briefcase,
   },
   {
     name: "Settings",

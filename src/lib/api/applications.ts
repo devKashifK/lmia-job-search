@@ -11,6 +11,7 @@ export interface JobApplication {
   state: string;
   table_name: string;
   status: 'applied' | 'notified';
+  review_status?: string;
   posted_link: string;
   created_at?: string;
 }
@@ -32,6 +33,7 @@ export async function submitApplication(application: JobApplication) {
         state: application.state,
         table_name: application.table_name,
         status: application.status,
+        review_status: application.review_status,
         posted_link: application.posted_link
       }
     ])
@@ -55,4 +57,18 @@ export async function checkApplicationStatus(userId: string, jobId: string | num
 
   if (error) throw error;
   return data;
+}
+
+/**
+ * Get all job applications for a user
+ */
+export async function getUserApplications(userId: string) {
+  const { data, error } = await (db as any)
+    .from('job_applications')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return (data || []) as JobApplication[];
 }

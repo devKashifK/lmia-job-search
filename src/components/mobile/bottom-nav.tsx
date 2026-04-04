@@ -8,6 +8,7 @@ import {
   BarChart3,
   User,
   GitCompare,
+  Briefcase,
   LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -40,6 +41,11 @@ const navItems: NavItem[] = [
     name: 'Analysis',
     icon: BarChart3,
     href: '/analysis',
+  },
+  {
+    name: 'Apps',
+    icon: Briefcase,
+    href: '/dashboard/applications',
   },
   {
     name: 'Profile',

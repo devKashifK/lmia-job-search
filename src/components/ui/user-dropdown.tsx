@@ -10,14 +10,16 @@ import {
   DropdownMenuTrigger,
 } from './dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
-import { User, LogOut, LayoutDashboard, Settings, ChevronRight } from 'lucide-react';
+import { User, LogOut, LayoutDashboard, Settings, ChevronRight, Shield } from 'lucide-react';
 import db from '@/db';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import CustomLink from './CustomLink';
+import { useCreditData } from '@/hooks/use-credits';
 
 export default function UserDropdown({ className }: { className?: string }) {
   const { session } = useSession();
+  const { creditData } = useCreditData();
   const { toast } = useToast();
 
   if (!session?.user) return null;
@@ -149,6 +151,23 @@ export default function UserDropdown({ className }: { className?: string }) {
               <ChevronRight className="h-4 w-4 text-gray-400" />
             </CustomLink>
           </DropdownMenuItem>
+
+          {(creditData?.plan_type === 'admin' || creditData?.plan_type === 'hr') && (
+            <DropdownMenuItem className="cursor-pointer px-4 py-2 focus:bg-brand-50">
+              <a 
+                href="https://admin.jobmaze.ca" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-between w-full"
+              >
+                <div className="flex items-center gap-3">
+                  <Shield className="h-4 w-4 text-brand-600" />
+                  <span className="text-sm font-semibold text-brand-700">Admin Console</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-brand-400" />
+              </a>
+            </DropdownMenuItem>
+          )}
         </div>
 
         <DropdownMenuSeparator className="bg-gray-100" />
