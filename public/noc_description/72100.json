@@ -1,0 +1,87 @@
+{
+  "noc": "72100",
+  "title": "NOC 72100 – Machinists and machining and tooling inspectors | GTR Immigration",
+  "slug": "noc-72100-machinists-and-machining-and-tooling-inspectors-gtr-immigration",
+  "description": "In 2026, Machinists and Tooling Inspectors (NOC 72100) are the precision-engineering experts at the heart of Canada’s \"Advanced Manufacturing\" push. As the country expands its aerospace, EV battery, and medical device sectors, these professionals are responsible for crafting high-tolerance components using cutting-edge 5-axis CNC machines and robotic machining cells. Classified as TEER 2, this role has evolved from traditional manual lathing to a high-tech discipline requiring advanced digital literacy, 3D spatial reasoning, and the ability to work with exotic new composite materials and \"Smart Alloys.\"",
+  "classification": {
+    "category": "N/A",
+    "teer": "FeatureDetailsBroad Occupational Category7 – Trades, transport and equipment operators and related occupationsTEER Category2 (Requires college, apprenticeship, or significant experience)Major Group72 – Technical trades and transportation officersSub-Major Group721 – Machining, metal forming, shaping and erecting trades",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Computer Numerical Control (CNC) Machinist",
+    "Automotive Machinist",
+    "Precision Machinist",
+    "Machining and Tooling Inspector",
+    "Electrical Machinist",
+    "Apprentice Machinist"
+  ],
+  "duties": [
+    "Plan & Sequence: Reading and interpreting complex engineering drawings and blueprints to determine the best sequence of machining operations.",
+    "Precision Operation: Setting up and operating a variety of machine tools (CNC and manual) to perform precision sawing, turning, milling, and grinding.",
+    "Verification: Using precision measuring instruments like micrometers, verniers, and Coordinate Measuring Machines (CMM) to verify tolerances to the micron level.",
+    "Quality Control (Inspectors): Reporting deviations from specifications, maintaining calibration of measuring tools, and completing detailed inspection reports.",
+    "2026 Update: Programming machine tools using advanced CAM (Computer-Aided Manufacturing) software and monitoring real-time sensor data for tool wear."
+  ],
+  "employment_requirements": [
+    "Education: Completion of secondary school is the standard requirement.",
+    "Apprenticeship: Completion of a four-year apprenticeship program OR a combination of over four years of work experience and some college/industry courses is usually required for trade certification.",
+    "Certification: Trade certification for machinists is available but voluntary in all provinces except Quebec. Red Seal endorsement is highly recommended for mobility and higher pay.",
+    "Inspector Requirements: Machining and tooling inspectors require several years of experience as a skilled machinist."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Alberta",
+      "low": "30.00",
+      "median": "45.00",
+      "high": "80.00"
+    },
+    {
+      "region": "Ontario (GTA)",
+      "low": "22.00",
+      "median": "32.50",
+      "high": "50.35"
+    },
+    {
+      "region": "British Columbia",
+      "low": "26.00",
+      "median": "42.00",
+      "high": "57.90"
+    },
+    {
+      "region": "Quebec",
+      "low": "21.15",
+      "median": "36.00",
+      "high": "54.31"
+    },
+    {
+      "region": "Canada (National)",
+      "low": "21.15",
+      "median": "34.00",
+      "high": "67.50"
+    }
+  ],
+  "job_outlook": [],
+  "labour_market_demand": [
+    "The 2026 outlook is Balanced to Strong, with a critical shortage of \"Master Machinists\" capable of programming complex CNC workflows:",
+    "Ontario: Very Good prospects. In February and March 2026, Ontario issued targeted OINP invitations for NOC 72100 under the Employer Job Offer: Foreign Worker stream. Minimum scores for these trades draws started as low as 50, reflecting the province's urgent need for machinists in the automotive and industrial heartlands.",
+    "Alberta: Strong demand. Machinists here earn some of the highest wages in Canada, with top-tier industrial roles in Fort McMurray and Edmonton reaching $65.00–$80.00/hr to support heavy mining and energy infrastructure.",
+    "British Columbia: Good prospects. Focused in Metro Vancouver and the Kootenays for specialized marine and mining equipment repair. BC projects over 1,500 openings through 2035 due to a massive retirement wave.",
+    "National Trend: Over 97% of workers in this NOC receive comprehensive non-wage benefits. The 2026 market highly favors candidates with Red Seal certification or specialized experience in CNC Programming.",
+    "Why Work in Canada as a Machinist?",
+    "Technological Innovation: Gain hands-on experience with 2026-grade technologies, including Augmented Reality (AR) maintenance overlays and AI-driven predictive tooling sensors.",
+    "Excellent Stability: 81% of machinists work all year round—much higher than the national average—providing long-term financial security.",
+    "High-Tier Compensation: As a TEER 2 trade, your earning potential is high, with a national median wage of $34.00/hr and specialized seniors earning over $120,000 annually.",
+    "Priority for PR: NOC 72100 is a core occupation in the 2026 Express Entry \"Trade Occupations\" category and is frequently targeted by Ontario's provincial nomination draws."
+  ],
+  "benefits": [],
+  "pathways": [
+    "OINP Employer Job Offer: In February 2026, OINP issued invitations to candidates in NOC 72100 with a score of 50+ under the Foreign Worker stream. This is a prime route for those with an Ontario job offer.",
+    "2026 Express Entry (Trade Occupations Category): IRCC has renewed the \"Trade Occupations\" category for 2026. Note that the minimum work experience requirement has been increased to 12 months (up from 6 months in 2025).",
+    "2026 TR to PR Pathway: A newly confirmed initiative targeting up to 33,000 temporary residents. Machinists are classified as \"High-Priority Essential Manufacturing Workers.\"",
+    "BC PNP Skilled Worker: A reliable route for machinists with a high-wage offer in BC's industrial hubs, particularly those with Red Seal certification."
+  ],
+  "additional_information": []
+}

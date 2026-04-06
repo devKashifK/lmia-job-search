@@ -1,0 +1,88 @@
+{
+  "noc": "65100",
+  "title": "NOC 65100 – Cashiers | GTR Immigration",
+  "slug": "noc-65100-cashiers-gtr-immigration",
+  "description": "Cashiers under NOC 65100 are the essential facilitators of Canada’s massive retail and service sectors. As a TEER 5 occupation, it represents one of the largest and most accessible employment pools in the country. From processing transactions in high-volume grocery chains to managing point-of-sale systems in luxury boutiques and entertainment venues, these professionals ensure the smooth flow of the Canadian consumer economy. For immigration, this role is a strategic entry point, particularly through the Atlantic Immigration Program (AIP) and other semi-skilled provincial pathways designed to support the Canadian labor market.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category6 – Sales and service occupationsTEER Level5Major Group65 – Sales and service support occupationsSub-Major Group651 – Sales and service support occupationsMinor Group6510 – Sales and service support occupationsNOC Code65100",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Cashier",
+    "Grocery Clerk - Cashier",
+    "Service Station Attendant",
+    "Cafeteria Cashier",
+    "Office Cashier",
+    "Theatre Box Office Clerk"
+  ],
+  "duties": [
+    "Operate cash registers, optical price scanners, computers, or other equipment to record and accept payment for goods and services.",
+    "Receive payment by cash, check, credit card, or automatic debit.",
+    "Wrap or place merchandise in bags and provide information to customers.",
+    "Calculate total payments received at the end of a work shift and reconcile with total sales.",
+    "Process returns and exchanges and resolve customer complaints regarding payments.",
+    "Stock shelves and clean check-out areas as required.",
+    "May help with digital order processing and \"buy online, pick up in-store\" (BOPIS) requests."
+  ],
+  "employment_requirements": [
+    "Some secondary school education is usually required.",
+    "On-the-job training is provided for all new employees.",
+    "Basic mathematical and literacy skills are mandatory.",
+    "High proficiency in English or French (or both) is essential for customer service roles.",
+    "Reliability and a strong sense of customer service are highly valued by Canadian employers."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "16.55",
+      "median": "17.50",
+      "high": "22.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "17.20",
+      "median": "17.65",
+      "high": "23.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "17.40",
+      "median": "18.25",
+      "high": "24.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "16.50",
+      "median": "17.50",
+      "high": "21.50"
+    },
+    {
+      "region": "Quebec",
+      "low": "16.00",
+      "median": "17.00",
+      "high": "20.00"
+    }
+  ],
+  "job_outlook": [
+    "The outlook for cashiers is Favourable. While self-checkout technology is prevalent, the need for human cashiers to manage exceptions, provide customer service, and handle complex transactions remains high. According to the Canadian Occupational Projection System (COPS), the sector will continue to see a high volume of openings due to both industry expansion and the natural movement of workers into supervisory roles."
+  ],
+  "labour_market_demand": [
+    "The demand for cashiers is Very Good and consistent across all provinces and territories. As Canada’s population continues to grow, particularly in suburban and urban hubs like Brampton (Ontario), Surrey (BC), and Airdrie (Alberta), the need for retail-facing staff remains at an all-time high. In 2026, the sector is seeing a shift toward \"hybrid\" roles where cashiers also assist with digital order fulfillment and click-and-collect services.",
+    "Why Work in Canada",
+    "High Accessibility: Minimal formal education requirements allow you to start working and earning shortly after arriving in Canada.",
+    "Work-Life Balance: Many retail roles offer flexible part-time or full-time shifts, accommodating various lifestyles.",
+    "Path to Promotion: Gain foundational experience to move into Retail Sales (NOC 64100) or Retail Supervision (NOC 62010).",
+    "Stable Employment: Retail is an essential sector that provides consistent work throughout the year."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Atlantic Immigration Program (AIP): A primary route for TEER 5 workers with a job offer from a designated employer in Nova Scotia, New Brunswick, PEI, or Newfoundland and Labrador.",
+    "BC PNP Entry-Level and Semi-Skilled (ELSS): A dedicated stream for those working in tourism, hospitality, or retail for at least 9 months in British Columbia.",
+    "Alberta Opportunity Stream: A pathway for those currently working in Alberta on a valid work permit in eligible sectors.",
+    "Rural and Northern Immigration Pilot (RNIP): Addressing labor needs in participating smaller communities across Canada."
+  ],
+  "additional_information": []
+}

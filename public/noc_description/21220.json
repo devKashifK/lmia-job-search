@@ -1,0 +1,142 @@
+{
+  "noc": "21220",
+  "title": "NOC 21220 – Cybersecurity Specialists | GTR Immigration",
+  "slug": "noc-21220-cybersecurity-specialists-gtr-immigration",
+  "description": "Cybersecurity Specialists are among the most in-demand IT professionals across Canada, protecting government systems, banks, healthcare networks, and enterprise infrastructure from cyber-threats. Classified under NOC 21220 (TEER 1), this occupation qualifies for Express-Entry-aligned programs, Provincial Nominee Programs (PNPs), LMIA-supported work permits, and long-term Permanent Residence (PR) pathways.",
+  "classification": {
+    "category": "2 – Natural and applied sciences and related occupations",
+    "teer": "1 – Occupations usually require a university degree",
+    "major_group": "212 – Professional occupations in applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2122 – Computer and information systems professionals"
+  },
+  "common_job_titles": [
+    "Cybersecurity analyst",
+    "Informatics security analyst",
+    "Informatics security consultant",
+    "IT security specialist",
+    "Systems-security analyst"
+  ],
+  "duties": [
+    "Cybersecurity Specialists typically:",
+    "Assess physical and technical risks to systems and data",
+    "Implement encryption and key-management protocols",
+    "Monitor system access and credentials",
+    "Install and operate threat-detection tools",
+    "Detect and respond to cyber-attacks",
+    "Execute incident-response plans",
+    "Document security policies and emergency procedures"
+  ],
+  "employment_requirements": [
+    "Applicants generally require:",
+    "Bachelor’s degree in computer science, cybersecurity, information systems, or engineering",
+    "College diploma in IT or network administration (in some cases)",
+    "Vendor-specific security certifications or training (often preferred)",
+    "Hands-on experience with monitoring tools, encryption, and incident response"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "25.00",
+      "median": "42.16",
+      "high": "61.54"
+    },
+    {
+      "region": "Alberta",
+      "low": "27.88",
+      "median": "47.96",
+      "high": "67.31"
+    },
+    {
+      "region": "British Columbia",
+      "low": "24.00",
+      "median": "40.87",
+      "high": "62.50"
+    },
+    {
+      "region": "Manitoba",
+      "low": "28.46",
+      "median": "41.03",
+      "high": "55.29"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "25.64",
+      "median": "36.06",
+      "high": "53.33"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "24.52",
+      "median": "38.46",
+      "high": "56.41"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "21.63",
+      "median": "38.46",
+      "high": "56.41"
+    },
+    {
+      "region": "Ontario",
+      "low": "24.04",
+      "median": "41.03",
+      "high": "61.54"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "16.50",
+      "median": "33.04",
+      "high": "47.69"
+    },
+    {
+      "region": "Quebec",
+      "low": "27.18",
+      "median": "43.96",
+      "high": "60.25"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "28.31",
+      "median": "41.21",
+      "high": "60.00"
+    },
+    {
+      "region": "Yukon",
+      "low": "28.00",
+      "median": "48.06",
+      "high": "62.48"
+    },
+    {
+      "region": "Nunavut",
+      "low": "36.20",
+      "median": "53.38",
+      "high": "65.50"
+    }
+  ],
+  "job_outlook": [
+    "Between 2022–2031, Canada projects:",
+    "143,700 new positions",
+    "157,800 job seekers",
+    "This indicates a large-scale, immigration-relevant labour market, especially favourable for applicants with:",
+    "Cloud-security expertise",
+    "SOC experience",
+    "Government-compliance backgrounds",
+    "CISSP / CEH-type certifications",
+    "Provincial job offers"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [],
+  "additional_information": [
+    "Labour-Market Outlook in Canada",
+    "Demand continues to rise rapidly due to:",
+    "National digital-security strategiesFinancial-sector compliance rulesCloud-infrastructure growthAI-driven cyber-threatsGovernment modernization programs",
+    "Top hiring sectors include:",
+    "IT consulting firmsPublic-sector agenciesFinancial institutionsHealthcare networksEnterprise technology departmentsCloud-service providers",
+    "Annual salaries generally range between $48,100–$118,500 CAD, depending on province, experience, and security specialization.",
+    "Why Choose Canada as a Cybersecurity Specialist?",
+    "Professionals benefit from:",
+    "Strong federal & provincial tech hiringPR-linked skilled-worker immigration routesProvincial nomination opportunitiesCompetitive compensationUniversal healthcareFamily sponsorship programsMulticultural work environments"
+  ]
+}

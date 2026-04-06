@@ -1,0 +1,93 @@
+{
+  "noc": "72205",
+  "title": "NOC 72205 – Telecommunications equipment installation and cable television service technicians | GTR Immigration",
+  "slug": "noc-72205-telecommunications-equipment-installation-and-cable-television-service-technicians-gtr-immigration",
+  "description": "NOC 72205 professionals are the essential \"Last Mile\" technicians who bring digital connectivity into Canadian homes and businesses. As a TEER 2 occupation, these technicians install, test, and repair a wide range of telecommunications equipment, including residential Wi-Fi systems, business VoIP networks, and cable television services. In 2026, as Canada rolls out Wi-Fi 7 and integrates Smart Home Hubs as a standard utility, these technicians are classified as High-Priority Service Talent. For immigration, this role is a strong candidate for the Federal Skilled Trades Program (FSTP) and the OINP Employer Job Offer stream.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category7 – Trades, transport and equipment operators and related occupationsTEER Level2Major Group72 – Technical trades and transportation officers and controllersSub-Major Group722 – Electrical trades and electrical power line and cable workersMinor Group7220 – Electricians (except industrial and power system)NOC Code72205",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Telecommunications Equipment Technician",
+    "Cable Television Technician",
+    "Installer-Repairer - Telecommunications",
+    "Satellite Dish Installer",
+    "Switchboard Installer",
+    "PABX (Private Automatic Branch Exchange) Installer",
+    "Mobile Radio Installer",
+    "Broadband Technician"
+  ],
+  "duties": [
+    "Installation: Install, arrange, remove, and maintain various types of telecommunications equipment and systems in residential and commercial settings.",
+    "Cabling: Pull and terminate internal wiring (Ethernet, Coaxial, Fiber) through walls and ceilings; install outlets and connection points.",
+    "Configuration: Configure and test equipment settings for high-speed internet, digital television, and phone services.",
+    "Troubleshooting: Use signal meters, voltmeters, and specialized diagnostic software to locate and repair faults in equipment or internal wiring.",
+    "Customer Education: Explain the operation of newly installed systems and devices to customers and provide basic technical support.",
+    "Reporting: Document installation details, signal strength readings, and materials used in company work orders and inventory systems."
+  ],
+  "employment_requirements": [
+    "Completion of secondary school is mandatory.",
+    "Education & Training:Completion of a three-to-four-year apprenticeship program OR a two-year college program in electronics or telecommunications.Alternatively, a combination of over three years of work experience and industry-related specialized courses may be accepted.",
+    "Completion of a three-to-four-year apprenticeship program OR a two-year college program in electronics or telecommunications.",
+    "Alternatively, a combination of over three years of work experience and industry-related specialized courses may be accepted.",
+    "Certifications:A valid driver’s license is almost always a mandatory requirement for field roles.Many employers require background checks and bondability for home entry.",
+    "A valid driver’s license is almost always a mandatory requirement for field roles.",
+    "Many employers require background checks and bondability for home entry.",
+    "Physical ability to use ladders and work in tight spaces (crawls/attics), along with good manual dexterity, is essential."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "22.00",
+      "median": "32.40",
+      "high": "44.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "23.00",
+      "median": "34.00",
+      "high": "46.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "24.50",
+      "median": "33.50",
+      "high": "45.50"
+    },
+    {
+      "region": "Alberta",
+      "low": "25.00",
+      "median": "35.00",
+      "high": "48.00"
+    },
+    {
+      "region": "Quebec",
+      "low": "20.00",
+      "median": "30.00",
+      "high": "41.00"
+    },
+    "Note: In 2026, experienced Service Technicians and Team Leads in urban centers often earn annual salaries between $75,000 and $90,000 inclusive of performance bonuses and overtime."
+  ],
+  "job_outlook": [
+    "The outlook is Stable. While some basic installations are becoming \"Self-Serve,\" the increasing complexity of home automation, security integration, and multi-gigabit fiber networks ensures a constant need for professional field technicians. Projections indicate a steady demand for technicians capable of maintaining the aging copper-to-fiber transition infrastructure through the end of the decade."
+  ],
+  "labour_market_demand": [
+    "The demand for telecommunications equipment technicians in 2026 is Good to Very Good. In Ontario (GTA), British Columbia (Vancouver), and Alberta (Calgary/Edmonton), a surge in residential housing completions has created a high volume of \"First-Time Installation\" contracts. According to 2026 Job Bank data, while the market is balanced, there is a specific shortage of technicians who are cross-trained in 5G fixed wireless access (FWA) and integrated security system installations.",
+    "Why Work in Canada",
+    "The Smart Home Frontier: Lead the installation of the next generation of IoT (Internet of Things) devices and high-capacity home networks.",
+    "Excellent Full-Time Prospects: Over 91.2% of workers in this NOC are employed in permanent, full-time positions with major national providers (Rogers, Bell, TELUS, Shaw).",
+    "Dynamic Work Environment: Enjoy a role that balances technical troubleshooting with high levels of customer interaction and field mobility.",
+    "Strategic PR Pathways: This NOC is frequently included in provincial \"In-Demand\" lists, making it a reliable route for a provincial nomination which adds 600 points to your Express Entry profile."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Federal Skilled Trades Program (FSTP): The primary route for technicians with at least 2 years of work experience and a valid job offer or certificate of qualification.",
+    "OINP Employer Job Offer (Foreign Worker Stream): Ideal for those with a job offer from a major Canadian telecommunications firm or authorized contractor.",
+    "BC PNP Skilled Worker: Priority for technicians supporting the province’s digital infrastructure in high-growth urban corridors.",
+    "New 2026 TR to PR Pathway: A temporary measure for 33,000 skilled workers already in Canada, targeting \"Essential Service and Infrastructure\" roles."
+  ],
+  "additional_information": []
+}

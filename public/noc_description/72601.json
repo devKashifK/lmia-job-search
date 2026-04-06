@@ -1,0 +1,83 @@
+{
+  "noc": "72601",
+  "title": "NOC 72601 – Air traffic controllers and related occupations | GTR Immigration",
+  "slug": "noc-72601-air-traffic-controllers-and-related-occupations-gtr-immigration",
+  "description": "In 2026, Air Traffic Controllers (NOC 72601) are the high-stakes orchestrators of Canada’s 18 million square kilometers of airspace. As Canada integrates NextGen satellite-based navigation and manages a record-breaking volume of post-pandemic air traffic, these professionals are more critical than ever. Operating at the TEER 2 level, they are responsible for the safe, orderly, and efficient flow of aircraft from take-off to landing. In 2026, the sector is defined by a \"Recruitment Surge\" as NAV CANADA—the country’s private sector air navigation service provider—actively hires and pays trainees to learn, offering one of the most unique and lucrative career entry points in Canada.",
+  "classification": {
+    "category": "N/A",
+    "teer": "FeatureDetailsBroad Occupational Category7 – Trades, transport and equipment operators and related occupationsTEER Category2 (Occupations usually requiring college, apprenticeship, or supervisory experience)Major Group72 – Technical trades and transportation officers and controllersSub-Major Group726 – Transportation officers and controllers",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Air Traffic Controller (ATC) - Terminal or En Route",
+    "Flight Service Specialist (FSS)",
+    "Flight Dispatcher",
+    "Area Controller (Instrument Flight Rules - IFR)",
+    "Tower Controller (Visual Flight Rules - VFR)",
+    "Instrument Flight Rules Air Traffic Controller"
+  ],
+  "duties": [
+    "Traffic Coordination: Controlling the flow of air traffic within assigned airspace using radar, radio, and visual references to maintain safe separation.",
+    "Flight Clearances: Issuing takeoff and landing instructions and relaying meteorological and navigational information to pilots.",
+    "Emergency Management: Alerting airport emergency services when aircraft experience difficulties and reporting missing aircraft to search and rescue.",
+    "Flight Planning (Dispatchers): Analyzing weather and fuel capacity to determine optimal flight routes and co-signing flight authorizations with captains.",
+    "Information Services (FSS): Providing pilots with pre-flight weather briefings and respond to radio calls to assist with safe departures and arrivals."
+  ],
+  "employment_requirements": [
+    "Education: Completion of secondary school is the absolute minimum requirement.",
+    "Training: Successful completion of the NAV CANADA Training Program (ranging from 12 to 27 months) is mandatory for civilians.",
+    "Licensing: An Air Traffic Controller's Licence issued by Transport Canada is required for controllers. A basic radio telephone operator’s licence is also mandatory.",
+    "Selection Process: The recruitment process is highly competitive, involving cognitive testing, assessment centers, and rigorous medical/language evaluations (Category 2 Medical).",
+    "Language: Proficiency in English is required nationally; bilingualism (English/French) is required for the Montreal FIR and certain Ottawa-based positions."
+  ],
+  "salary_prospects": [
+    {
+      "region": "New Brunswick",
+      "median": "75.19",
+      "high": "103.00"
+    },
+    {
+      "region": "Manitoba (Winnipeg)",
+      "median": "64.29",
+      "high": "105.26"
+    },
+    {
+      "region": "Alberta (Edmonton)",
+      "median": "56.72",
+      "high": "98.93"
+    },
+    {
+      "region": "British Columbia",
+      "median": "54.95",
+      "high": "97.61"
+    },
+    {
+      "region": "Canada (National)",
+      "median": "54.88",
+      "high": "106.19"
+    }
+  ],
+  "job_outlook": [],
+  "labour_market_demand": [
+    "The 2026 outlook is Moderate to Good, with \"High Hiring Difficulty\" reported due to the rigorous training requirements and high responsibility:",
+    "Ontario (Toronto/GTA): Very Good prospects. Home to the Toronto Area Control Centre (ACC), the busiest in Canada. In March 2026, Ontario issued targeted OINP invitations for aviation-related roles, specifically seeking candidates to support the \"Regional Economic Development\" (REDI) initiative in regional airport hubs.",
+    "British Columbia: Strong demand. Focused in the Lower Mainland (Vancouver ACC). BC projects over 240 job openings in this NOC through 2035. Experienced tower controllers are currently being recruited for hubs like Kelowna with salaries up to $155,979.",
+    "Alberta (Edmonton/Calgary): Warm Forecast. Alberta remains a key hub for both domestic and international traffic. The province is seeing a steady need for both Area Controllers (IFR) and Tower Controllers (VFR) to manage the expansion of low-cost carriers.",
+    "National Trend: Over 98% of workers in this NOC receive a full suite of non-wage benefits (pension, health, dental). The 2026 market is extremely stable, as the employer (NAV CANADA) provides a near-monopoly on employment with industry-leading job security.",
+    "Why Work in Canada as an Air Traffic Controller?",
+    "Paid to Train: Unlike almost any other high-tier profession, NAV CANADA provides a training salary ($56,899–$59,550) while you complete your certification.",
+    "Top-Tier Earning Potential: Once qualified, salaries for IFR Area Controllers in 2026 range from $139,333 to $201,407, plus specialized premiums ranging up to $51,000 annually.",
+    "Command High-Tech Systems: Work with 2026-grade technologies, including NAVCANatm integrated air traffic management and advanced radar/satellite monitoring.",
+    "Priority for PR: While not in the specific 2026 Express Entry \"Transport\" category (which focuses on pilots and mechanics), this NOC is a staple in Provincial Nominee Program (PNP) draws and the Federal Skilled Worker program due to its high skill level."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Ontario Immigrant Nominee Program (OINP): In March 2026, OINP issued invitations to candidates in aviation-related fields. This is a prime route if you have an offer of employment for a regional airport or dispatch center in Ontario.",
+    "BC PNP Skills Immigration: Controllers are prioritized as high-wage, high-impact talent. Candidates with a job offer paying $70+/hr often qualify for specialized provincial draws with lower point thresholds.",
+    "Express Entry (Federal Skilled Worker): As a TEER 2 occupation, NOC 72601 is eligible for all general Express Entry draws. High language scores and age points are critical given the competitive nature of the pool.",
+    "2026 TR to PR Pathway: A confirmed initiative targeting up to 33,000 temporary residents. Air traffic professionals currently working in Canada are classified as \"High-Priority Infrastructure Workers.\""
+  ],
+  "additional_information": []
+}

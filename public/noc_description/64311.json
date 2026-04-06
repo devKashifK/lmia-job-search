@@ -1,0 +1,81 @@
+{
+  "noc": "64311",
+  "title": "Introduction",
+  "slug": "introduction",
+  "description": "NOC 64311 – Pursers and flight attendants | GTR Immigration Pursers and flight attendants under NOC 64311 are the primary safety and service ambassadors for Canada's aviation and maritime sectors. Tasked with ensuring passenger comfort and enforcing strict Transport Canada safety protocols, these TEER 4 professionals are critical to the operational success of major airlines and cruise lines. For immigration, this role offers a dynamic entry point into the Canadian workforce, with significant demand in major travel hubs like Toronto, Vancouver, and Montreal.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category6 – Sales and service occupationsTEER Level4Major Group64 – Sales and service representativesSub-Major Group643 – Occupations in food, accommodation and tourismMinor Group6431 – Occupations in travel and accommodationNOC Code64311",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Flight Attendant",
+    "Flight Purser",
+    "Cabin Safety Director",
+    "In-flight Service Manager",
+    "Ship Purser"
+  ],
+  "duties": [
+    "Greet passengers and explain/demonstrate safety procedures (emergency exits, life jackets, oxygen masks).",
+    "Ensure that all necessary supplies are on board and that the cabin is in proper condition.",
+    "Attend to the safety of passengers during take-offs, landings, and emergencies.",
+    "Serve food and beverages and make flight/safety announcements.",
+    "Supervise and coordinate the activities of flight/ship attendants (Pursers)."
+  ],
+  "employment_requirements": [
+    "Completion of secondary school is required.",
+    "Completion of a training program approved by Transport Canada is mandatory for flight attendants.",
+    "Experience in customer service or working with the public is usually required."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "18.00",
+      "median": "26.00",
+      "high": "45.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "19.00",
+      "median": "27.50",
+      "high": "48.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "20.00",
+      "median": "28.00",
+      "high": "50.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "18.50",
+      "median": "26.50",
+      "high": "46.00"
+    },
+    {
+      "region": "Quebec",
+      "low": "17.50",
+      "median": "24.00",
+      "high": "42.00"
+    }
+  ],
+  "job_outlook": [
+    "The outlook is Stable to Favourable. The expansion of low-cost carriers and the recovery of the international cruise industry are expected to create over 10,000 new openings by 2031."
+  ],
+  "labour_market_demand": [
+    "With the 2026 travel season seeing record-breaking numbers, the demand for flight attendants and pursers is Favourable. Major carriers like Air Canada and WestJet, along with seasonal cruise operators in British Columbia and the Maritimes, are actively recruiting. Bilingualism (English/French) and additional languages are major competitive advantages in this sector.",
+    "Why Work in Canada",
+    "Global Mobility: Travel across Canada and international destinations while working.",
+    "Safety Excellence: Train under some of the world's most rigorous aviation safety standards.",
+    "Comprehensive Benefits: Major Canadian airlines offer extensive travel perks and health benefits for employees and their families."
+  ],
+  "benefits": [],
+  "pathways": [
+    "CEC (Canadian Experience Class): The fastest route for attendants with 1 year of Canadian flight experience.",
+    "BC PNP Skills Immigration: Targeted draws for the tourism and transportation sectors.",
+    "Atlantic Immigration Program (AIP): For pursers working with cruise lines in the Atlantic region."
+  ],
+  "additional_information": []
+}

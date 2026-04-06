@@ -1,0 +1,81 @@
+{
+  "noc": "00011",
+  "title": "Introduction",
+  "slug": "introduction",
+  "description": "NOC 00011 – Senior government managers and officials | GTR Immigration Senior government managers and officials under NOC 00011 occupy the highest non-elected positions within Canada’s federal, provincial, and municipal administrations. These TEER 0 professionals—including Deputy Ministers and Chief Administrative Officers—are responsible for the executive direction of entire government departments. For high-level international civil servants, this classification is a vital benchmark for evaluating leadership experience that translates into senior policy and administrative roles within the Canadian public service or specialized NGOs.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category0 – Management occupationsTEER Level0Major Group00 – Legislative and senior management occupationsSub-Major Group000 – Legislative and senior management occupationsMinor Group0001 – Senior management occupationsNOC Code00011",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Deputy Minister",
+    "Assistant Deputy Minister",
+    "Chief Administrative Officer (CAO) - Municipality",
+    "City Manager",
+    "Executive Director - Government Agency",
+    "High Commissioner (Diplomatic Service)"
+  ],
+  "duties": [
+    "Plan, organize, direct, control, and evaluate the major activities of a government department or agency.",
+    "Advise elected officials (Legislators) on policy development and administrative matters.",
+    "Establish objectives for the organization and develop or approve government policies and programs.",
+    "Represent the government department or agency in high-level negotiations, at public hearings, or before legislative committees.",
+    "Oversee the allocation of financial and human resources to achieve departmental mandates."
+  ],
+  "employment_requirements": [
+    "A university degree in public administration, political science, law, or business administration is required.",
+    "Extensive experience in a related professional field, including several years of experience as a senior manager in the public or private sector, is mandatory."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "48.00",
+      "median": "76.92",
+      "high": "145.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "50.00",
+      "median": "82.00",
+      "high": "150.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "47.00",
+      "median": "78.00",
+      "high": "140.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "52.00",
+      "median": "88.00",
+      "high": "160.00"
+    },
+    {
+      "region": "Quebec",
+      "low": "45.00",
+      "median": "72.00",
+      "high": "130.00"
+    }
+  ],
+  "job_outlook": [
+    "The outlook is Stable to Favourable. As the complexity of governance increases, the public service is actively seeking executives with specialized experience in digital infrastructure and crisis management to lead departments through the next decade."
+  ],
+  "labour_market_demand": [
+    "The demand for senior government officials is driven by the modernization of public services and the implementation of large-scale national strategies (e.g., Housing, Climate Change, Digital ID). In Ottawa (the National Capital Region) and provincial capitals like Toronto, Edmonton, and Victoria, there is a consistent requirement for executive leaders who can manage multi-billion dollar budgets and diverse public-sector teams.",
+    "Why Work in Canada",
+    "Institutional Integrity: Lead within a public service consistently ranked as one of the most effective and transparent in the world.",
+    "National Impact: Directly influence the administrative machinery that delivers essential services to millions of Canadians.",
+    "Stable Executive Environment: High-level job security combined with some of the most comprehensive pension and benefit plans in the country."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Express Entry (Federal Skilled Worker): High CRS points for TEER 0 leadership experience.",
+    "OINP Human Capital Priorities: For executives with high language scores and advanced degrees.",
+    "Public Service Recruitment: Specialized pathways for international experts to join federal and provincial agencies."
+  ],
+  "additional_information": []
+}

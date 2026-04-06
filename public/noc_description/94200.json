@@ -1,0 +1,83 @@
+{
+  "noc": "94200",
+  "title": "NOC 94200 – Motor vehicle assemblers, inspectors and testers | GTR Immigration",
+  "slug": "noc-94200-motor-vehicle-assemblers-inspectors-and-testers-gtr-immigration",
+  "description": "In 2026, Canada’s automotive landscape is undergoing its most significant shift in decades as the industry pivots toward Electric Vehicle (EV) production. Motor Vehicle Assemblers, Inspectors, and Testers (NOC 94200) are at the core of this transition, working in major assembly plants to build the next generation of zero-emission cars, vans, and light trucks. While traditionally focused on internal combustion engines, the 2026 worker is increasingly skilled in handling high-capacity battery systems and advanced electronic sensors. Although classified as TEER 4, these roles offer high-wage stability and a direct pathway to permanent residency through specialized provincial programs.",
+  "classification": {
+    "category": "N/A",
+    "teer": "FeatureDetailsBroad Occupational Category9 – Occupations in manufacturing and utilitiesTEER Category4 (Usually requiring secondary school and on-the-job training)Major Group94 – Machine operators, assemblers and inspectorsSub-Major Group942 – Assemblers and inspectors in manufacturing",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Automobile Assembler",
+    "Assembly Inspector – Motor Vehicle Manufacturing",
+    "Production Operator – EV Assembly",
+    "Automobile Engine Tester",
+    "Body Production Operator",
+    "Trim and Final Inspector"
+  ],
+  "duties": [
+    "Assembly: Reading electrical schematics and blueprints to bolt, screw, or weld motor vehicle parts and components together using hand and power tools.",
+    "Automation Management: Operating and tending automated assembling equipment, including robotic welding and fixed automation systems.",
+    "Electrical Installation: Connecting cables, tubes, and wires to complete complex subassemblies like instrument panels and transmissions.",
+    "Inspection & Testing: Using digital meters and analyzers to test electrical assemblies and driving vehicles on \"roll testing\" benches to ensure brakes and axles function perfectly.",
+    "2026 Update: Monitoring AI-driven quality sensors that detect micron-level misalignments in battery pack installations."
+  ],
+  "employment_requirements": [
+    "Education: Completion of secondary school is typically required.",
+    "Training: Skills are normally acquired through extensive on-the-job training provided by the manufacturer (often 3–6 months).",
+    "Skills: Strong spatial perception, manual dexterity, and the ability to work in a fast-paced, high-precision environment.",
+    "Safety: Mandatory 2026 WHMIS and specialized high-voltage safety training for EV production lines."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Ontario",
+      "low": "22.00",
+      "median": "32.50",
+      "high": "42.39"
+    },
+    {
+      "region": "Quebec",
+      "low": "20.00",
+      "median": "28.00",
+      "high": "38.50"
+    },
+    {
+      "region": "Alberta",
+      "low": "19.50",
+      "median": "26.00",
+      "high": "35.00"
+    },
+    {
+      "region": "Canada (National)",
+      "low": "21.00",
+      "median": "31.80",
+      "high": "42.00"
+    },
+    "Note: Workers in top-tier \"Big Three\" assembly plants often earn significantly higher through profit-sharing and shift premiums."
+  ],
+  "job_outlook": [
+    "The Canadian Occupational Projection System (COPS) indicates a \"Balanced\" market. While automation reduces the need for basic manual tasks, the complexity of 2026-grade smart vehicles requires more technical inspectors and testers. Retirements will account for a large portion of the 5,000+ openings projected over the next decade."
+  ],
+  "labour_market_demand": [
+    "The 2026 outlook is characterized by a \"Limited\" overall growth due to plant retooling, but high demand for workers with EV-related technical skills:",
+    "Ontario (Windsor, Oshawa, Oakville): Limited but Stable. Ontario is the heart of Canada's auto sector. While some layoffs occurred during the 2025 retooling phase, 2026 marks the return to full capacity for major EV production lines.",
+    "Quebec: Good prospects. Driven by the expansion of electric bus and specialized transport manufacturing in the Montreal and North Shore regions.",
+    "National Trend: Approximately 27,350 people work in this occupation. While traditional roles are shifting, the move to EVs is creating a \"Skill Gap\" that favors international workers with modern technical backgrounds.",
+    "Why Work in Canada as a Motor Vehicle Assembler?",
+    "Lead the EV Revolution: Gain hands-on experience with cutting-edge electric drivetrain and autonomous driving technologies.",
+    "Market-Leading Manufacturing Wages: Automotive assembly remains one of the highest-paying technical sectors in Canada for workers without a university degree.",
+    "Path to PR: Frequently prioritized in Provincial Nominee Program (PNP) streams for manufacturing and eligible for the 2026 TR to PR transition programs.",
+    "Comprehensive Union Benefits: Most major plants (Unifor-represented) offer world-class medical, dental, and pension plans from day one."
+  ],
+  "benefits": [],
+  "pathways": [
+    "TR to PR Pathway (April 2026): Motor vehicle assemblers are classified as \"Essential Manufacturing Workers,\" making them high-priority candidates for this 33,000-person transition quota.",
+    "Ontario Employer Job Offer (In-Demand Skills): This NOC is frequently eligible for provincial nomination for those with a valid job offer in Ontario’s automotive corridor.",
+    "OINP Express Entry Human Capital Priorities: Periodically targets candidates with experience in specialized manufacturing sectors.",
+    "Saskatchewan Hard-to-Fill Skills Pilot: A streamlined pathway for technical machine operators to obtain Permanent Residency with a provincial job offer."
+  ],
+  "additional_information": []
+}

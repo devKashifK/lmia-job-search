@@ -1,0 +1,144 @@
+{
+  "noc": "22221",
+  "title": "NOC 22221 – User Support Technicians | GTR Immigration",
+  "slug": "noc-22221-user-support-technicians-gtr-immigration",
+  "description": "User Support Technicians are in strong demand across Canada, driven by digital transformation, cloud adoption, cybersecurity needs, and the expansion of IT operations in government agencies, healthcare systems, financial institutions, and private enterprises. Classified under NOC 22221 (TEER 2), this occupation aligns well with:",
+  "classification": {
+    "category": "2 – Natural and applied sciences",
+    "teer": "2 – College diploma or apprenticeship normally required",
+    "major_group": "222 – Applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2222 – Computer & information-systems technicians"
+  },
+  "common_job_titles": [
+    "User support technician",
+    "Help desk technician",
+    "Technical support analyst",
+    "Systems support representative",
+    "Computer help-desk supervisor",
+    "Hardware installation technician",
+    "Software technical-support analyst",
+    "Call-centre agent – technical support"
+  ],
+  "duties": [
+    "Professionals in this role typically:",
+    "Communicate with users to diagnose technical issues",
+    "Research solutions using manuals and documentation",
+    "Reproduce and resolve hardware/software faults",
+    "Train users on systems and applications",
+    "Provide network and internet support",
+    "Maintain issue-resolution logs",
+    "Participate in software redesign projects",
+    "Supervise junior technicians"
+  ],
+  "employment_requirements": [
+    "Applicants usually require:",
+    "College diploma in computer science, IT support, or network administration",
+    "Vendor certifications (Microsoft, CompTIA, ITIL, Cisco) preferred by many employers",
+    "Customer-service and troubleshooting experience",
+    "Regulatory registration required in Saskatchewan"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Average)",
+      "low": "20.50",
+      "median": "31.47",
+      "high": "49.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "20.19",
+      "median": "30.00",
+      "high": "57.69"
+    },
+    {
+      "region": "British Columbia",
+      "low": "21.06",
+      "median": "33.65",
+      "high": "48.72"
+    },
+    {
+      "region": "Manitoba",
+      "low": "16.25",
+      "median": "26.15",
+      "high": "44.08"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "18.50",
+      "median": "27.69",
+      "high": "40.87"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "22.60",
+      "median": "32.05",
+      "high": "45.79"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "19.00",
+      "median": "26.00",
+      "high": "41.60"
+    },
+    {
+      "region": "Ontario",
+      "low": "20.00",
+      "median": "33.00",
+      "high": "51.28"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "16.50",
+      "median": "29.74",
+      "high": "51.79"
+    },
+    {
+      "region": "Quebec",
+      "low": "22.00",
+      "median": "30.77",
+      "high": "46.15"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "19.96",
+      "median": "32.00",
+      "high": "43.34"
+    },
+    {
+      "region": "Yukon",
+      "low": "19.99",
+      "median": "34.18",
+      "high": "44.75"
+    }
+  ],
+  "job_outlook": [
+    "Canada projects:",
+    "52,600 new openings",
+    "52,300 job seekers",
+    "This balanced but opportunity-rich outlook favours candidates with:",
+    "Help-desk & enterprise-support experience",
+    "ITIL or CompTIA certifications",
+    "Network-support exposure",
+    "Cybersecurity fundamentals",
+    "Strong customer-service skills"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [
+    "Professionals benefit from:",
+    "Skilled-occupation PR eligibility",
+    "Provincial nomination opportunities",
+    "Stable public- and private-sector roles",
+    "Competitive compensation packages",
+    "Public healthcare coverage",
+    "Pension & insurance benefits",
+    "Career advancement into systems administration, cybersecurity, or IT management"
+  ],
+  "additional_information": [
+    "Labour-Market Demand",
+    "Canadian employers continue to recruit user-support professionals for:",
+    "IT help-desk & service centresSoftware-development firmsHardware manufacturers & retailersHealthcare & education networksFederal, provincial & municipal governmentsFinancial-services institutionsManaged IT service providers",
+    "Annual salaries commonly range from $39,000–$52,153 CAD, depending on province, certifications, and experience level."
+  ]
+}

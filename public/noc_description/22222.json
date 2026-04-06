@@ -1,0 +1,112 @@
+{
+  "noc": "22222",
+  "title": "NOC 22222 – Information Systems Testing Technicians | GTR Immigration",
+  "slug": "noc-22222-information-systems-testing-technicians-gtr-immigration",
+  "description": "Information Systems Testing Technicians are in strong demand across Canada, driven by rapid software deployment, cloud migrations, cybersecurity upgrades, fintech expansion, and government IT modernization projects. Classified under NOC 22222 (TEER 2), this occupation aligns well with:",
+  "classification": {
+    "category": "2 – Natural and applied sciences",
+    "teer": "2 – College diploma or apprenticeship normally required",
+    "major_group": "222 – Applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2222 – Computer & information-systems technicians"
+  },
+  "common_job_titles": [
+    "Software tester",
+    "Systems testing technician",
+    "Application tester",
+    "Software test coordinator",
+    "User acceptance tester",
+    "QA technician",
+    "Application testing technician"
+  ],
+  "duties": [
+    "Professionals in this role typically:",
+    "Develop and document testing strategies & plans",
+    "Configure systems for test environments",
+    "Execute functional, regression & system tests",
+    "Analyze results and report defects",
+    "Write automation scripts & testing procedures",
+    "Track bug resolution cycles",
+    "Propose quality improvements"
+  ],
+  "employment_requirements": [
+    "Applicants usually require:",
+    "College diploma in computer science, programming, or network administration",
+    "Coursework in software development or IT systems",
+    "Vendor or automation-tool certifications preferred",
+    "Experience with QA frameworks & test-management systems"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Average)",
+      "low": "14.50",
+      "median": "26.44",
+      "high": "48.08"
+    },
+    {
+      "region": "Alberta",
+      "low": "25.33",
+      "median": "37.50",
+      "high": "47.18"
+    },
+    {
+      "region": "British Columbia",
+      "low": "22.00",
+      "median": "33.33",
+      "high": "40.46"
+    },
+    {
+      "region": "Manitoba",
+      "low": "19.23",
+      "median": "36.92",
+      "high": "45.64"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "19.33",
+      "median": "25.02",
+      "high": "46.72"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "26.44",
+      "median": "32.00",
+      "high": "45.67"
+    },
+    {
+      "region": "Ontario",
+      "low": "16.83",
+      "median": "32.52",
+      "high": "46.74"
+    }
+  ],
+  "job_outlook": [
+    "Canada projects:",
+    "18,600 new openings",
+    "15,300 job seekers",
+    "This favourable gap makes the occupation attractive for candidates with:",
+    "Automation-testing expertise (Selenium, Cypress, Playwright)",
+    "API & performance-testing experience",
+    "Agile/Scrum QA backgrounds",
+    "Cloud-platform exposure",
+    "Cybersecurity fundamentals"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [
+    "Professionals benefit from:",
+    "Skilled-occupation PR eligibility",
+    "Provincial nomination opportunities",
+    "Stable public- and private-sector roles",
+    "Competitive compensation packages",
+    "Public healthcare coverage",
+    "Strong long-term tech-sector growth",
+    "Career progression into QA engineering, automation testing, or DevOps"
+  ],
+  "additional_information": [
+    "Labour-Market Demand",
+    "Canadian employers are actively hiring testing professionals in:",
+    "Software-development firmsSaaS & cloud providersFinancial-technology companiesHealthcare IT systemsTelecommunications networksFederal, provincial & municipal departmentsCybersecurity service providers",
+    "Annual salaries typically range between $27,900–$92,400 CAD, depending on province, automation skills, and specialization."
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "noc": "21211",
+  "title": "NOC 21211 – Data Scientists | GTR Immigration",
+  "slug": "noc-21211-data-scientists-gtr-immigration",
+  "description": "Data Scientists are among the most sought-after technology professionals across Canada, driving innovation in artificial intelligence, financial analytics, automation, healthcare research, and public-sector policy modelling. Classified under NOC 21211 (TEER 1), this occupation qualifies for skilled-worker immigration streams such as Express-Entry-aligned programs, Provincial Nominee Programs (PNPs), LMIA-supported work permits, and long-term Permanent Residence (PR) strategies.",
+  "classification": {
+    "category": "2 – Natural and applied sciences and related occupations",
+    "teer": "1 – Occupations usually require a university degree",
+    "major_group": "212 – Professional occupations in applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2121 – Mathematicians, statisticians, actuaries, and data scientists"
+  },
+  "common_job_titles": [
+    "Data scientist",
+    "Data architect",
+    "Machine-learning engineer",
+    "Machine-learning specialist",
+    "Quantitative analyst",
+    "Artificial-intelligence (AI) designer"
+  ],
+  "duties": [
+    "Data Scientists typically:",
+    "Apply machine-learning, deep-learning, and AI techniques",
+    "Run large-scale experiments on complex datasets",
+    "Build regression, clustering, simulation, and neural-network models",
+    "Extract and prepare data using programming languages",
+    "Implement new statistical or mathematical methodologies",
+    "Visualize data for rapid business decision-making",
+    "Design and deploy AI models",
+    "Clean and organize structured and unstructured data",
+    "Coordinate research and analytics initiatives"
+  ],
+  "employment_requirements": [
+    "Applicants generally require:",
+    "Bachelor’s degree in statistics, mathematics, computer science, engineering, or related field",
+    "Master’s or PhD in data science, machine learning, or quantitative disciplines (often preferred)",
+    "Strong programming skills (Python, R, SQL, etc.)",
+    "Experience in statistical modelling and machine learning"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "23.08",
+      "median": "39.00",
+      "high": "56.41"
+    },
+    {
+      "region": "Alberta",
+      "low": "21.63",
+      "median": "41.24",
+      "high": "55.77"
+    },
+    {
+      "region": "British Columbia",
+      "low": "24.04",
+      "median": "40.60",
+      "high": "60.44"
+    },
+    {
+      "region": "Manitoba",
+      "low": "20.80",
+      "median": "34.87",
+      "high": "50.47"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "17.72",
+      "median": "37.91",
+      "high": "48.08"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "17.72",
+      "median": "37.91",
+      "high": "48.08"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "21.00",
+      "median": "38.46",
+      "high": "48.52"
+    },
+    {
+      "region": "Ontario",
+      "low": "23.00",
+      "median": "40.87",
+      "high": "57.69"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "15.60",
+      "median": "34.36",
+      "high": "46.15"
+    },
+    {
+      "region": "Quebec",
+      "low": "23.49",
+      "median": "33.65",
+      "high": "55.29"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "16.00",
+      "median": "38.73",
+      "high": "56.41"
+    }
+  ],
+  "job_outlook": [
+    "Between 2022–2031, Canada is projected to create 29,300 new positions, with approximately 32,700 job seekers—showing a competitive but immigration-friendly market, particularly for candidates with:",
+    "AI & machine-learning specialization",
+    "Financial-modelling experience",
+    "Cloud-analytics backgrounds",
+    "Employer sponsorship or provincial nomination"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [],
+  "additional_information": [
+    "Labour-Market Outlook in Canada",
+    "Demand continues to surge nationwide due to:",
+    "AI adoption across government servicesDigital-banking expansionHealth-data researchAutomation and predictive modellingSmart-city and infrastructure analytics",
+    "Common employers include:",
+    "Consulting firmsUniversities and research institutesBanks and financial institutionsGovernment departmentsTechnology companiesEnterprise analytics teams",
+    "Annual salaries generally range between $44,300–$108,600 CAD, depending on experience, province, and technical specialization.",
+    "Why Choose Canada as a Data Scientist?",
+    "Professionals benefit from:",
+    "Fast-growing tech labour marketPR-linked skilled-worker pathwaysProvincial nomination opportunitiesStrong AI research ecosystemUniversal healthcareFamily sponsorship optionsMulticultural professional environment"
+  ]
+}

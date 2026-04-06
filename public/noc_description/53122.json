@@ -1,0 +1,94 @@
+{
+  "noc": "53122",
+  "title": "NOC 53122 – Painters, Sculptors and Other Visual Artists | GTR Immigration",
+  "slug": "noc-53122-painters-sculptors-and-other-visual-artists-gtr-immigration",
+  "description": "Visual artists in Canada contribute to the country's aesthetic landscape through original creations and public art. Under NOC 53122, painters, sculptors, and digital artists are recognized for their creative contributions. For immigration, this category is unique as it heavily favors the Self-Employed Persons Program, allowing artists with a significant track record to move to Canada and continue their practice independently while contributing to the local art scene.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category5 – Occupations in art, culture, recreation and sportTEER Level3Major Group53 – Occupations in art, culture and sportSub-Major Group531 – Occupations in art and cultureMinor Group5312 – Occupations in creative and performing artsNOC Code53122",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Portrait Painter",
+    "Sculptor",
+    "Landscape Artist",
+    "Printmaker",
+    "Art Instructor (Non-academic)",
+    "Digital Artist"
+  ],
+  "duties": [
+    "Create drawings, paintings, and other artwork using various media (oils, watercolours, charcoal).",
+    "Create sculptures and three-dimensional artwork by carving or shaping materials like clay, stone, or metal.",
+    "Develop original concepts and designs for artistic works.",
+    "Teach students the techniques and methods of artistic expression.",
+    "May act as independent contractors or sell works through galleries and exhibitions."
+  ],
+  "employment_requirements": [
+    "Creative ability and talent, as demonstrated by a portfolio of work, are required.",
+    "Art programs are offered at universities and colleges, though formal education is not always mandatory for independent artists.",
+    "Art instructors may be required to have a university degree or college diploma in a related field."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "18.75",
+      "median": "29.57",
+      "high": "45.09"
+    },
+    {
+      "region": "Alberta",
+      "low": "20.00",
+      "median": "31.00",
+      "high": "48.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "21.00",
+      "median": "32.00",
+      "high": "50.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "18.24",
+      "median": "29.00",
+      "high": "43.15"
+    },
+    {
+      "region": "Quebec",
+      "low": "17.50",
+      "median": "26.00",
+      "high": "40.00"
+    },
+    {
+      "region": "Manitoba",
+      "low": "16.00",
+      "median": "24.00",
+      "high": "35.00"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "15.50",
+      "median": "22.00",
+      "high": "32.00"
+    }
+  ],
+  "job_outlook": [
+    "The outlook is Stable. While the primary income for many artists comes from sales and commissions, the integration of art into digital spaces and urban planning ensures that visual artists remain an essential part of the workforce."
+  ],
+  "labour_market_demand": [
+    "The demand for visual artists is driven by private galleries, corporate commissions, and the growing field of digital art and NFTs. Additionally, art instruction—teaching in community centers or private schools—remains a stable source of employment for those in this NOC. Urban centers like Toronto, Vancouver, and Montreal offer the highest density of galleries and artist-run centers.",
+    "Why Work in Canada",
+    "Public Art Programs: Many Canadian cities mandate a percentage of construction budgets for public art.",
+    "Diverse Markets: Access to a sophisticated market of collectors and institutions.",
+    "Artistic Support: Numerous grants available for resident artists through provincial and federal agencies."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Self-Employed Persons Program: The premier pathway for world-class and professional independent artists.",
+    "Express Entry: For those employed by design firms or educational institutions.",
+    "Provincial Nominee Programs (PNP): Selective draws for cultural workers in specific provinces."
+  ],
+  "additional_information": []
+}

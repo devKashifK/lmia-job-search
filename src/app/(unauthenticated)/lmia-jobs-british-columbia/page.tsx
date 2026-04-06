@@ -11,10 +11,10 @@ export default function BritishColumbiaLMIAJobs() {
   return (
     <div className="min-h-screen bg-#F5F7FA flex flex-col">
       <Navbar />
-      
+
       <main className="flex-1">
         {/* HERO SECTION */}
-        <section className="bg-brand-900 pt-24 pb-16 px-6 relative overflow-hidden">
+        <section className="bg-brand-900 pt-40 pb-16 px-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(15,123,94,0.18)_0%,transparent_60%)] pointer-events-none" />
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
@@ -23,20 +23,20 @@ export default function BritishColumbiaLMIAJobs() {
                 <span>/</span>
                 <span className="text-white">British Columbia</span>
               </div>
-              
+
               <div className="inline-flex items-center gap-2 bg-emerald-100/50 border border-emerald-700/40 text-emerald-700 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <MapPin className="w-3.5 h-3.5" />
                 British Columbia · BC
               </div>
-              
+
               <h1 className="text-4xl md:text-5xl lg:text-[52px] font-black text-white leading-[1.1] tracking-tight mb-6">
                 LMIA Jobs in <span className="text-amber-400">British Columbia</span>
               </h1>
-              
+
               <p className="text-blue-100/70 text-lg leading-relaxed mb-10 font-light max-w-xl">
                 British Columbia offers one of Canada's most diverse LMIA job markets — from Vancouver's world-class tech sector to BC's booming construction industry and thriving hospitality scene. BC PNP draws are among Canada's most active.
               </p>
-              
+
               <div className="grid grid-cols-3 gap-4 mb-10">
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
                   <div className="text-2xl font-black text-white tracking-tight">2,400+</div>
@@ -53,14 +53,14 @@ export default function BritishColumbiaLMIAJobs() {
               </div>
 
               <div className="flex flex-wrap items-center gap-4">
-                <Link 
+                <Link
                   href="/search?province=british columbia"
                   className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5"
                 >
                   Search All BC LMIA Jobs
                   <ArrowRight className="w-4 h-4 text-brand-900" />
                 </Link>
-                <Link 
+                <Link
                   href="/faq"
                   className="bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/40 text-white/80 hover:text-white font-medium px-6 py-4 rounded-full transition-all"
                 >
@@ -76,7 +76,7 @@ export default function BritishColumbiaLMIAJobs() {
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                   Live Listings — British Columbia
                 </div>
-                
+
                 <div className="flex flex-wrap gap-2 mb-6">
                   <Badge className="bg-emerald-50 hover:bg-emerald-50 text-emerald-700 border-emerald-200 uppercase text-[10px] tracking-wider py-1.5 px-3">British Columbia</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">All Industries</Badge>
@@ -203,7 +203,7 @@ export default function BritishColumbiaLMIAJobs() {
 
               <div className="flex flex-wrap gap-3 mb-10">
                 {['Vancouver', 'Surrey', 'Burnaby', 'Kelowna', 'Victoria', 'Prince George'].map((city, idx) => (
-                  <Link 
+                  <Link
                     key={idx}
                     href={`/search?province=british columbia&city=${city.toLowerCase()}`}
                     className="bg-white border border-brand-100 hover:border-brand-50/500 hover:text-brand-600 text-brand-900 px-5 py-2.5 rounded-full text-sm font-semibold transition-all shadow-sm"
@@ -218,25 +218,25 @@ export default function BritishColumbiaLMIAJobs() {
                   <TrendingUp className="w-4 h-4" /> Quick Stats — British Columbia
                 </div>
                 <div className="space-y-4">
-                   <div className="flex justify-between items-center text-sm">
-                     <span className="text-gray-500">LMIA listings updated</span>
-                     <span className="font-bold text-gray-900">Daily (6am ET)</span>
-                   </div>
-                   <div className="w-full h-px bg-gray-100" />
-                   <div className="flex justify-between items-center text-sm">
-                     <span className="text-gray-500">Average listings per month</span>
-                     <span className="font-bold text-gray-900">2,400+</span>
-                   </div>
-                   <div className="w-full h-px bg-gray-100" />
-                   <div className="flex justify-between items-center text-sm">
-                     <span className="text-gray-500">Top occupation category</span>
-                     <span className="font-bold text-gray-900">Technology</span>
-                   </div>
-                   <div className="w-full h-px bg-gray-100" />
-                   <div className="flex justify-between items-center text-sm">
-                     <span className="text-gray-500">Province abbreviation</span>
-                     <span className="font-bold text-gray-900">BC</span>
-                   </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">LMIA listings updated</span>
+                    <span className="font-bold text-gray-900">Daily (6am ET)</span>
+                  </div>
+                  <div className="w-full h-px bg-gray-100" />
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Average listings per month</span>
+                    <span className="font-bold text-gray-900">2,400+</span>
+                  </div>
+                  <div className="w-full h-px bg-gray-100" />
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Top occupation category</span>
+                    <span className="font-bold text-gray-900">Technology</span>
+                  </div>
+                  <div className="w-full h-px bg-gray-100" />
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Province abbreviation</span>
+                    <span className="font-bold text-gray-900">BC</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -246,24 +246,24 @@ export default function BritishColumbiaLMIAJobs() {
         {/* BOTTOM CTA */}
         <section className="bg-brand-900 py-24 px-6 text-center border-t-4 border-amber-400">
           <div className="max-w-2xl mx-auto">
-             <div className="text-xs font-bold text-blue-200/60 uppercase tracking-widest mb-4">Start Searching</div>
-             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
-               Find LMIA jobs in British Columbia now
-             </h2>
-             <p className="text-blue-100/70 text-lg mb-10 font-light">
-               Sign up free and search 2,400+ live LMIA listings in British Columbia — filter by city, NOC, TEER, industry, and more.
-             </p>
-             <Link 
-                href="/sign-up"
-                className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
-              >
-                Search British Columbia LMIA Jobs Free
-                <ArrowRight className="w-5 h-5 text-brand-900" />
-              </Link>
-              <div className="mt-8 text-sm text-blue-200/50 flex items-center justify-center gap-4">
-                <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> No credit card required</span>
-                <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Daily-updated listings</span>
-              </div>
+            <div className="text-xs font-bold text-blue-200/60 uppercase tracking-widest mb-4">Start Searching</div>
+            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
+              Find LMIA jobs in British Columbia now
+            </h2>
+            <p className="text-blue-100/70 text-lg mb-10 font-light">
+              Sign up free and search 2,400+ live LMIA listings in British Columbia — filter by city, NOC, TEER, industry, and more.
+            </p>
+            <Link
+              href="/sign-up"
+              className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
+            >
+              Search British Columbia LMIA Jobs Free
+              <ArrowRight className="w-5 h-5 text-brand-900" />
+            </Link>
+            <div className="mt-8 text-sm text-blue-200/50 flex items-center justify-center gap-4">
+              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> No credit card required</span>
+              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Daily-updated listings</span>
+            </div>
           </div>
         </section>
 
@@ -281,7 +281,7 @@ export default function BritishColumbiaLMIAJobs() {
                 { title: '🚛 Trucking LMIA Jobs', href: '/lmia-jobs-trucking' },
                 { title: '📋 What is LMIA?', href: '/what-is-lmia' },
               ].map((link, i) => (
-                <Link 
+                <Link
                   key={i}
                   href={link.href}
                   className="bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 hover:text-gray-900 px-6 py-3 rounded-full text-sm font-medium transition-colors"
@@ -294,7 +294,7 @@ export default function BritishColumbiaLMIAJobs() {
         </section>
 
       </main>
-      
+
       <Footer />
     </div>
   );

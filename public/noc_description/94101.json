@@ -1,0 +1,83 @@
+{
+  "noc": "94101",
+  "title": "NOC 94101 – Foundry workers | GTR Immigration",
+  "slug": "noc-94101-foundry-workers-gtr-immigration",
+  "description": "In 2026, Canada’s foundry industry remains a critical pillar of the automotive, aerospace, and construction sectors. Foundry Workers (NOC 94101) are the skilled hands that transform molten metal into high-precision components. As the industry integrates greener melting technologies and advanced casting methods, these roles offer a stable, essential-service career path with significant opportunities for international workers to settle in Canada’s industrial heartlands.",
+  "classification": {
+    "category": "N/A",
+    "teer": "FeatureDetailsBroad Occupational Category9 – Occupations in manufacturing and utilitiesTEER Category4 (Usually requiring secondary school and on-the-job training)Major Group94 – Processing and manufacturing machine operatorsSub-Major Group941 – Machine operators in mineral and metal processing",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Foundry Moulder / Core Maker",
+    "Die Casting Machine Operator",
+    "Foundry Furnace Operator",
+    "Metal Caster (Ferrous and Non-Ferrous)",
+    "Centrifugal Casting Machine Tender"
+  ],
+  "duties": [
+    "Mouldmaking: Making and repairing sand moulds by hand or using automated moulding machines and patterns.",
+    "Coremaking: Creating sand or ceramic cores to form internal holes or void spaces within metal castings.",
+    "Furnace Operation: Operating electric, induction, or gas furnaces to melt metals for casting.",
+    "Casting: Pouring molten metal into moulds using hand ladles or by operating specialized casting machines.",
+    "Finishing: Monitoring the cooling process and ensuring castings meet precise engineering specifications."
+  ],
+  "employment_requirements": [
+    "Education: Completion of secondary school is required.",
+    "Experience: Several weeks to several months of on-the-job training are typically provided.",
+    "Specialized Training: For manual mouldmakers, up to two years of on-the-job training or an apprenticeship may be required.",
+    "Certifications: WHMIS 2026 (Workplace Hazardous Materials Information System) and specific safety training for high-heat environments are mandatory."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Ontario",
+      "low": "18.23",
+      "median": "23.00",
+      "high": "29.29"
+    },
+    {
+      "region": "Quebec",
+      "low": "19.95",
+      "median": "28.77",
+      "high": "39.99"
+    },
+    {
+      "region": "Alberta",
+      "low": "19.00",
+      "median": "25.00",
+      "high": "34.00"
+    },
+    {
+      "region": "Canada (National)",
+      "low": "18.50",
+      "median": "26.00",
+      "high": "34.45"
+    },
+    "Note: High-seniority roles in specialized aerospace foundries in Quebec can reach upwards of $40.00/hr."
+  ],
+  "job_outlook": [
+    "While automation is optimizing the casting process, the need for human oversight in precision inspection and complex manual mouldmaking remains high. The 10-year outlook is \"Balanced,\" with the majority of openings stemming from a massive wave of retirements in the primary metal manufacturing sector."
+  ],
+  "labour_market_demand": [
+    "The 2026 outlook for foundry workers is driven by a high replacement need for retiring workers and steady growth in the specialized manufacturing sector:",
+    "Ontario (Hamilton & GTA): Moderate demand as the province’s \"Battery Belt\" and automotive assembly lines require a constant supply of cast components.",
+    "Quebec: Stable to Good prospects in the Montreal and Saguenay regions, particularly for foundries serving the aerospace and primary metal industries.",
+    "British Columbia: Limited but steady demand within specialized marine and industrial foundries.",
+    "National Trend: Over 95% of the workforce is currently male, but there is an aggressive 2026 initiative to recruit diverse talent into these high-paying technical roles.",
+    "Why Work in Canada as a Foundry Worker?",
+    "Essential Infrastructure Role: Foundry workers support the manufacturing of everything from municipal water pipes to aircraft engines, ensuring high job security.",
+    "Technological Shift: Gain experience with induction furnaces, 3D-printed sand moulds, and cleaner, low-emission casting processes.",
+    "Path to Higher TEER Roles: Proven experience often leads to promotion into NOC 92010 (Supervisors) or NOC 93100 (Central Control Operators), which are higher-tier PR qualifiers.",
+    "Stable Earnings: These roles often come with strong union representation and comprehensive medical benefits that exceed the manufacturing average."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Provincial Nominee Programs (PNP): This is the strongest route for TEER 4 workers. The Ontario In-Demand Skills Stream and the Saskatchewan Hard-to-Fill Skills Pilot are prime targets.",
+    "Express Entry (Trade Category): In 2026, IRCC has renewed the Trade Occupations category. While NOC 94101 is TEER 4, workers who advance to \"Setup\" or \"Lead Hand\" roles may qualify for category-based draws.",
+    "AIP (Atlantic Immigration Program): A direct PR pathway for those with a job offer from a designated employer in Atlantic Canada.",
+    "TR to PR: If you have 12 months of Canadian work experience, you may qualify for specific localized transition programs updated for 2026."
+  ],
+  "additional_information": []
+}

@@ -1,0 +1,128 @@
+{
+  "noc": "21230",
+  "title": "NOC 21230 – Computer Systems Developers and Programmers | GTR Immigration",
+  "slug": "noc-21230-computer-systems-developers-and-programmers-gtr-immigration",
+  "description": "Computer Systems Developers and Programmers are in strong demand across Canada, driven by rapid growth in software engineering, scientific computing, digital transformation, fintech platforms, and public-sector IT modernization. Classified under NOC 21230 (TEER 1), this occupation qualifies for Express-Entry-linked programs, Provincial Nominee Programs (PNPs), LMIA-supported work permits, and long-term Permanent Residence (PR) pathways.",
+  "classification": {
+    "category": "2 – Natural and applied sciences and related occupations",
+    "teer": "1 – Occupations usually require a university degree",
+    "major_group": "212 – Professional occupations in applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2123 – Computer, software, and web designers and developers"
+  },
+  "common_job_titles": [
+    "Computer programmer",
+    "Operating-systems programmer",
+    "Programmer analyst",
+    "Scientific programmer",
+    "Systems programmer"
+  ],
+  "duties": [
+    "Computer Systems Developers and Programmers typically:",
+    "Write, modify, integrate, and test software code",
+    "Maintain and enhance existing applications",
+    "Diagnose technical problems and propose solutions",
+    "Prepare technical documentation and reports",
+    "Collect and analyze user requirements",
+    "Assist with system specifications",
+    "Lead or coordinate development teams",
+    "Evaluate new software products"
+  ],
+  "employment_requirements": [
+    "Applicants usually require:",
+    "Bachelor’s degree or college diploma in computer science, engineering, or related field",
+    "Programming-focused academic training",
+    "Specialized study or experience for scientific or engineering systems programming"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "25.00",
+      "median": "43.75",
+      "high": "65.83"
+    },
+    {
+      "region": "Alberta",
+      "low": "25.38",
+      "median": "44.68",
+      "high": "63.46"
+    },
+    {
+      "region": "British Columbia",
+      "low": "23.08",
+      "median": "43.27",
+      "high": "69.23"
+    },
+    {
+      "region": "Manitoba",
+      "low": "25.62",
+      "median": "40.72",
+      "high": "53.63"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "21.63",
+      "median": "40.00",
+      "high": "66.35"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "21.63",
+      "median": "40.00",
+      "high": "51.28"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "20.00",
+      "median": "40.87",
+      "high": "67.88"
+    },
+    {
+      "region": "Ontario",
+      "low": "25.00",
+      "median": "46.15",
+      "high": "66.35"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "28.61",
+      "median": "35.90",
+      "high": "47.18"
+    },
+    {
+      "region": "Quebec",
+      "low": "28.96",
+      "median": "41.03",
+      "high": "64.90"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "29.81",
+      "median": "39.50",
+      "high": "52.88"
+    }
+  ],
+  "job_outlook": [
+    "Between 2022–2031, Canada projects:",
+    "80,500 new positions",
+    "89,900 job seekers",
+    "This keeps the occupation immigration-friendly, especially for overseas applicants with:",
+    "Enterprise-systems experience",
+    "Scientific-computing exposure",
+    "C/C++ / Java / Python / systems-level coding",
+    "Cloud-platform integration skills",
+    "Provincial job offers"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [],
+  "additional_information": [
+    "Labour-Market Outlook in Canada",
+    "Canada’s expanding technology sector continues to fuel recruitment for:",
+    "Systems-level software developmentScientific & engineering applicationsOperating-system programmingEmbedded platformsFinancial-technology solutions",
+    "Typical annual salaries range from $45,406–$113,458 CAD, depending on experience, province, and technical specialization.",
+    "Why Choose Canada as a Systems Developer or Programmer?",
+    "Professionals benefit from:",
+    "PR-linked skilled-worker immigration streamsProvincial nomination optionsCompetitive tech-sector wagesUniversal healthcareWork–life balance cultureMulticultural workplacesLong-term settlement stability"
+  ]
+}

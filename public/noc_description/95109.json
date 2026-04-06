@@ -1,0 +1,89 @@
+{
+  "noc": "95109",
+  "title": "NOC 95109 – Other labourers in processing, manufacturing and utilities | GTR Immigration",
+  "slug": "noc-95109-other-labourers-in-processing-manufacturing-and-utilities-gtr-immigration",
+  "description": "In 2026, Canada’s industrial sector relies on the versatility of Other Labourers in Processing, Manufacturing and Utilities (NOC 95109) to maintain the fluid operation of diverse production facilities. This \"catch-all\" category includes essential support roles in industries ranging from pharmaceutical packaging to electronic assembly and recycling centers. While classified as TEER 5, these positions are the entry-level engine of the Canadian economy, providing international workers with immediate employment and a documented \"foot in the door\" for various regional and federal permanent residency pathways.",
+  "classification": {
+    "category": "N/A",
+    "teer": "FeatureDetailsBroad Occupational Category9 – Occupations in manufacturing and utilitiesTEER Category5 (Occupations usually requiring short work demonstration)Major Group95 – Labourers in processing, manufacturing and utilitiesSub-Major Group951 – Labourers in processing and manufacturing",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Electronics Manufacturing Labourer",
+    "Pharmaceutical Packaging Labourer",
+    "Recycling Plant Labourer",
+    "Light Bulb Assembler Helper",
+    "Battery Cell Fabricator Helper",
+    "General Labourer – Utilities"
+  ],
+  "duties": [
+    "Material Handling: Moving raw materials, finished products, and packaging components between work stations manually or using hand trucks.",
+    "Assembly Support: Assisting in the manual assembly of small components, such as electronic parts or consumer goods.",
+    "Cleaning & Waste Management: Clearing work areas of debris, sorting recyclable materials, and maintaining high standards of facility cleanliness.",
+    "Packaging & Labelling: Manually or mechanically packing products into containers and applying shipping labels.",
+    "2026 Update: Operating smart-sorting bins and using handheld digital scanners to track inventory movement in automated warehouses."
+  ],
+  "employment_requirements": [
+    "Education: Some secondary school education may be required. No formal degree or diploma is mandatory for entry-level roles.",
+    "Training: Short-term on-the-job training (usually 1–2 weeks) is provided by the employer.",
+    "Physical Demands: Ability to perform repetitive tasks, stand for long durations, and lift moderate loads (up to 15-20kg).",
+    "Safety: Mandatory 2026 WHMIS (Workplace Hazardous Materials Information System) certification."
+  ],
+  "salary_prospects": [
+    {
+      "region": "British Columbia",
+      "low": "17.50",
+      "median": "21.00",
+      "high": "28.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "16.50",
+      "median": "20.00",
+      "high": "28.50"
+    },
+    {
+      "region": "Ontario",
+      "low": "16.50",
+      "median": "19.00",
+      "high": "26.00"
+    },
+    {
+      "region": "Quebec",
+      "low": "16.00",
+      "median": "18.50",
+      "high": "25.00"
+    },
+    {
+      "region": "Canada (National)",
+      "low": "16.00",
+      "median": "19.50",
+      "high": "27.00"
+    }
+  ],
+  "job_outlook": [
+    "The Canadian Occupational Projection System (COPS) indicates a \"Balanced\" market. While automation replaces some manual sorting roles, the expansion of the \"Circular Economy\" (recycling and refurbishment) is creating new niches for general labourers. Over 12,000 openings are expected over the next decade due to retirement and industry diversification."
+  ],
+  "labour_market_demand": [
+    "The 2026 outlook for general industrial labourers is characterized by high turnover and consistent vacancies in urban manufacturing hubs:",
+    "Ontario (GTA & Southwestern Ontario): Good prospects. The high density of diverse manufacturing in Brampton, Mississauga, and London ensures a constant need for general labourers.",
+    "Quebec: Stable demand. Focused in the Montreal and Montérégie regions, particularly within the light manufacturing and packaging sectors.",
+    "British Columbia: Good prospects. Demand is driven by the warehousing and light assembly sectors in the Lower Mainland.",
+    "Alberta: Moderate demand. Steady needs within the industrial parks of Calgary and Edmonton supporting the construction and logistics sectors.",
+    "Why Work in Canada as a General Industrial Labourer?",
+    "Immediate Workforce Integration: No formal academic credentials or prior specialized experience are required, allowing for a fast start to your Canadian career.",
+    "Cross-Sector Experience: Gain exposure to various industries (electronics, pharmaceuticals, recycling), helping you decide on a specialized trade for future growth.",
+    "Path to PR: These roles are eligible for the 2026 TR to PR Pathway and specific Provincial Nominee Program (PNP) semi-skilled streams.",
+    "Stepping Stone to TEER 4: Many labourers are promoted to Machine Operators (NOC 94100 series) within their first 12 months of employment."
+  ],
+  "benefits": [],
+  "pathways": [
+    "2026 TR to PR Pathway: A dedicated 2026 initiative for 33,000 temporary residents. General labourers with 12 months of Canadian experience in manufacturing are high-priority candidates.",
+    "Saskatchewan Hard-to-Fill Skills Pilot: One of the most direct PR pathways for TEER 5 labourers with a job offer in the province.",
+    "Ontario In-Demand Skills Stream: Eligible for candidates with a job offer in specific manufacturing sectors across designated regions of Ontario.",
+    "BC PNP Entry-Level and Semi-Skilled (ELSS): Provides a route for labourers working in the manufacturing or processing sectors in regional BC communities."
+  ],
+  "additional_information": []
+}

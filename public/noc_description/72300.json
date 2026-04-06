@@ -1,0 +1,86 @@
+{
+  "noc": "72300",
+  "title": "NOC 72300 – Plumbers | GTR Immigration",
+  "slug": "noc-72300-plumbers-gtr-immigration",
+  "description": "In 2026, Plumbers (NOC 72300) are at the absolute center of Canada’s strategy to solve the housing crisis and meet \"Net-Zero\" climate goals. Beyond traditional pipe repair, modern Canadian plumbers are high-tech mechanical installers working with greywater recycling systems, hydronic radiant heating, and smart leak-detection IoT sensors. Classified as TEER 2, this is a \"Compulsory Trade\" in most provinces, meaning you must be a registered apprentice or a certified Journeyperson to work. With Canada aiming to build millions of new homes by 2030, the demand for plumbers has reached \"Critical\" levels across every province.",
+  "classification": {
+    "category": "N/A",
+    "teer": "FeatureDetailsBroad Occupational Category7 – Trades, transport and equipment operators and related occupationsTEER Category2 (Requires college, apprenticeship, or significant experience)Major Group72 – Technical trades and transportation officersSub-Major Group723 – Pipefitting trades",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Journeyperson Plumber",
+    "Maintenance Plumber",
+    "Radiator Mechanic (non-automotive)",
+    "Pipefitter-Plumber",
+    "Apprentice Plumber"
+  ],
+  "duties": [
+    "System Design: Reading blueprints, drawings, and specifications to determine the layout of water supply, waste, and venting systems.",
+    "Installation: Installing, repairing, and maintaining domestic, commercial, or industrial plumbing fixtures and systems.",
+    "Pipe Joining: Cutting, threading, and bending pipe using various tools, and joining pipes using couplings, clamps, screws, bolts, cement, or soldering/brazing equipment.",
+    "Testing: Testing pipes for leaks using air and water pressure gauges to ensure compliance with the 2026 National Plumbing Code.",
+    "Green Tech: Installing and maintaining high-efficiency water heaters and water-treatment systems."
+  ],
+  "employment_requirements": [
+    "Education: Completion of secondary school is the standard requirement.",
+    "Apprenticeship: Completion of a four- to five-year apprenticeship program is usually required to be eligible for trade certification.",
+    "Certification: Trade certification is compulsory in Nova Scotia, Prince Edward Island, New Brunswick, Quebec, Ontario, Saskatchewan, and Alberta. It is voluntary in other provinces, but highly recommended.",
+    "Red Seal: The Interprovincial Standards Red Seal is the \"Gold Standard\" for mobility across Canada and higher pay scales."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Alberta",
+      "low": "28.00",
+      "median": "40.00",
+      "high": "55.00"
+    },
+    {
+      "region": "Ontario (GTA)",
+      "low": "24.00",
+      "median": "38.00",
+      "high": "52.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "25.00",
+      "median": "39.50",
+      "high": "50.00"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "22.00",
+      "median": "37.00",
+      "high": "48.50"
+    },
+    {
+      "region": "Canada (National)",
+      "low": "22.00",
+      "median": "38.00",
+      "high": "53.00"
+    }
+  ],
+  "job_outlook": [],
+  "labour_market_demand": [
+    "The 2026 outlook for plumbers is Strong to Extreme, driven by high-density residential construction and aging infrastructure:",
+    "Ontario: Extreme Demand. In February 2026, Ontario issued targeted OINP invitations for NOC 72300 under the Skilled Trades stream. Scores for these draws remained highly accessible for those with 1–2 years of Canadian experience.",
+    "British Columbia: Very High demand. BC projects over 4,500 openings for plumbers through 2035. The \"Mainland/Southwest\" region is particularly desperate for commercial and multi-unit residential plumbers.",
+    "Alberta: Strong demand. Plumbers in Alberta enjoy some of the highest wages in Canada, with a median of $40.00/hr and top earners in industrial settings reaching $55.00/hr.",
+    "National Trend: Over 90% of plumbers are employed full-time, and approximately 20% are self-employed contractors. The 2026 market favors those with Red Seal certification.",
+    "Why Work in Canada as a Plumber?",
+    "Job Security for Decades: You are an essential part of the \"National Housing Plan.\" Your skills cannot be automated or outsourced.",
+    "High-Tech Specialization: Move into high-growth niches like solar thermal water heating or high-efficiency heat pump integration.",
+    "Entrepreneurial Pathway: Plumber has one of the highest success rates for new small businesses in Canada.",
+    "Immigration Fast-Track: Plumbers are a \"Priority Occupation\" in the 2026 Express Entry \"Trade Occupations\" category, often requiring lower CRS scores than office-based roles."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Express Entry (Trade Occupations Category): Plumbers with 1 year of experience (increased from 6 months in 2025) are eligible for targeted trades draws.",
+    "2026 TR to PR Pathway: A confirmed initiative targeting up to 33,000 temporary residents. Plumbers in the construction sector are considered \"Top Priority.\"",
+    "OINP Skilled Trades Stream: A high-success route for plumbers already working in Ontario. This stream does not require a job offer, only 1 year of Ontario work experience.",
+    "BC PNP Construction Stream: Provides priority processing and lower score requirements for plumbers with a valid job offer in BC."
+  ],
+  "additional_information": []
+}

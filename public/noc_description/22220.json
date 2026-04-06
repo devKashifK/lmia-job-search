@@ -1,0 +1,157 @@
+{
+  "noc": "22220",
+  "title": "NOC 22220 – Computer Network and Web Technicians | GTR Immigration",
+  "slug": "noc-22220-computer-network-and-web-technicians-gtr-immigration",
+  "description": "Computer Network and Web Technicians are in strong demand across Canada, driven by digital-transformation projects, cloud adoption, cybersecurity upgrades, government IT modernization, and rapid expansion of data centres and enterprise networks. Classified under NOC 22220 (TEER 2), this occupation aligns well with:",
+  "classification": {
+    "category": "2 – Natural and applied sciences",
+    "teer": "2 – College diploma or apprenticeship normally required",
+    "major_group": "222 – Applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2222 – Computer & information-systems technicians"
+  },
+  "common_job_titles": [
+    "Computer network technician",
+    "Network administrator",
+    "Network support technician",
+    "Network systems administrator",
+    "LAN administrator / technician",
+    "Data-centre operator",
+    "Web technician",
+    "Internet website technician"
+  ],
+  "duties": [
+    "Professionals in this role typically:",
+    "Network Operations",
+    "Maintain and troubleshoot LAN/WAN systems",
+    "Install servers, routers, firewalls & switches",
+    "Monitor network performance and security",
+    "Perform backups and disaster-recovery procedures",
+    "Conduct vulnerability testing",
+    "Provide user technical support",
+    "Run scripts and automation tasks",
+    "Supervise junior technicians",
+    "Web & Server Support",
+    "Install and maintain web-server platforms",
+    "Optimize server performance",
+    "Implement traffic & security monitoring tools",
+    "Manage email systems & access controls",
+    "Respond to web-service support requests"
+  ],
+  "employment_requirements": [
+    "Applicants usually require:",
+    "College diploma in computer science, networking, or web technology",
+    "Vendor certifications (Cisco, Microsoft, Linux, cloud platforms) preferred by many employers",
+    "Regulatory-body registration required in Saskatchewan",
+    "Practical systems-administration experience"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Average)",
+      "low": "19.23",
+      "median": "32.00",
+      "high": "49.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "16.75",
+      "median": "38.64",
+      "high": "53.57"
+    },
+    {
+      "region": "British Columbia",
+      "low": "22.48",
+      "median": "29.50",
+      "high": "47.80"
+    },
+    {
+      "region": "Manitoba",
+      "low": "20.00",
+      "median": "30.00",
+      "high": "49.94"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "18.00",
+      "median": "26.44",
+      "high": "35.90"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "17.50",
+      "median": "30.77",
+      "high": "38.46"
+    },
+    {
+      "region": "Northwest Territories",
+      "low": "30.91",
+      "median": "41.98",
+      "high": "53.09"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "16.25",
+      "median": "30.00",
+      "high": "48.08"
+    },
+    {
+      "region": "Nunavut",
+      "low": "31.12",
+      "median": "44.81",
+      "high": "56.32"
+    },
+    {
+      "region": "Ontario",
+      "low": "18.00",
+      "median": "34.87",
+      "high": "47.34"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "14.50",
+      "median": "27.40",
+      "high": "42.67"
+    },
+    {
+      "region": "Quebec",
+      "low": "20.00",
+      "median": "31.00",
+      "high": "49.38"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "22.00",
+      "median": "34.44",
+      "high": "49.00"
+    }
+  ],
+  "job_outlook": [
+    "Canada projects:",
+    "18,800 new openings",
+    "21,500 job seekers",
+    "This competitive outlook still favours candidates with:",
+    "Cloud-infrastructure experience",
+    "Cybersecurity certifications",
+    "Data-centre operations exposure",
+    "Enterprise-network administration skills",
+    "Linux & scripting expertise"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [
+    "Professionals benefit from:",
+    "Skilled-occupation PR eligibility",
+    "Provincial nomination opportunities",
+    "Stable public- and private-sector roles",
+    "Competitive compensation packages",
+    "Public healthcare coverage",
+    "Strong long-term tech-sector growth",
+    "Career progression into cybersecurity, cloud, or systems architecture"
+  ],
+  "additional_information": [
+    "Labour-Market Demand",
+    "Canadian employers are actively hiring network and web infrastructure professionals for:",
+    "Data-centre operationsCloud-services providersGovernment IT departmentsTelecom & ISP companiesFinancial-services networksHealthcare IT systemsCybersecurity & managed-service firms",
+    "Annual salaries typically range between $36,900–$94,300 CAD, depending on province, certifications, and specialization."
+  ]
+}

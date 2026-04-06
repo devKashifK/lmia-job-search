@@ -1,0 +1,80 @@
+{
+  "noc": "00012",
+  "title": "Introduction",
+  "slug": "introduction",
+  "description": "NOC 00012 – Senior managers - financial, communications and other business services | GTR Immigration Senior managers under NOC 00012 are the C-suite executives and vice-presidents who lead Canada’s most influential financial and communication corporations. This TEER 0 role is a \"Power NOC\" for immigration, offering a direct and prestigious pathway to Permanent Residency. With Canada being a global hub for FinTech and Telecommunications, these executives are highly sought after by the Global Talent Stream and specialized PNP Managerial draws.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category0 – Management occupationsTEER Level0Major Group00 – Legislative and senior management occupationsSub-Major Group000 – Legislative and senior management occupationsMinor Group0001 – Senior management occupationsNOC Code00012",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Chief Executive Officer (CEO)",
+    "Chief Financial Officer (CFO)",
+    "Vice-President - Marketing",
+    "Chief Operations Officer (COO)",
+    "Executive Director - Communications"
+  ],
+  "duties": [
+    "Establish the mission and strategic direction of the organization.",
+    "Authorize and organize the establishment of major departments and associated senior staff positions.",
+    "Allocate material, human, and financial resources to implement organizational policies and programs.",
+    "Represent the organization, or delegate representatives to act on behalf of the organization, in negotiations or other official functions.",
+    "Oversee the development and implementation of financial and communications strategies."
+  ],
+  "employment_requirements": [
+    "A university degree in business administration, commerce, computer science, or a related field is usually required.",
+    "Several years of experience as a middle manager in financial, communications, or other business services are mandatory."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "45.00",
+      "median": "76.92",
+      "high": "150.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "48.00",
+      "median": "80.00",
+      "high": "155.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "46.00",
+      "median": "78.00",
+      "high": "145.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "50.00",
+      "median": "85.00",
+      "high": "160.00"
+    },
+    {
+      "region": "Quebec",
+      "low": "42.00",
+      "median": "70.00",
+      "high": "135.00"
+    }
+  ],
+  "job_outlook": [
+    "The outlook is Excellent. As Canadian companies expand internationally, the demand for senior executives with global experience is projected to outpace domestic supply."
+  ],
+  "labour_market_demand": [
+    "Demand is Very Good, particularly in Toronto (Canada's financial heart) and Montreal. The rapid evolution of AI in financial services and the expansion of 5G networks have created a critical need for executives who can navigate digital transformation at scale.",
+    "Why Work in Canada",
+    "World-Class Financial System: Lead within one of the most stable banking systems globally.",
+    "Innovation Hub: Access to Canada’s massive R&D incentives for communications and tech.",
+    "Executive Compensation: Top-tier salary packages, including performance-based equity and bonuses."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Express Entry (Federal Skilled Worker): High priority for TEER 0 roles with maximum points for experience.",
+    "Global Talent Stream: Fast-tracked work permits for executives in specialized tech/comms sectors.",
+    "OINP Corporate Stream: For senior managers transferred to Ontario-based branches."
+  ],
+  "additional_information": []
+}

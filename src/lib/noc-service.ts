@@ -1,6 +1,21 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 
+export interface SalaryProspect {
+    region: string;
+    low: string;
+    median: string;
+    high: string;
+}
+
+export interface NocClassification {
+    category: string;
+    teer: string;
+    major_group: string;
+    sub_major_group: string;
+    minor_group: string;
+}
+
 export interface NocProfile {
     code: string;
     title: string;
@@ -8,6 +23,14 @@ export interface NocProfile {
     mainDuties: Record<string, string[]>;
     employmentRequirements: string[];
     additionalInfo: string[];
+    // New fields
+    classification?: NocClassification;
+    commonJobTitles?: string[];
+    salaryProspects?: SalaryProspect[];
+    jobOutlook?: string[];
+    labourMarketDemand?: string[];
+    benefits?: string[];
+    pathways?: string[];
 }
 
 export interface NocSummary {
@@ -16,7 +39,8 @@ export interface NocSummary {
     teer: string;
 }
 
-const DATA_PATH = path.join(process.cwd(), 'public/noc_description/noc_profiles.json');
+const DATA_DIR = path.join(process.cwd(), 'public/noc_description');
+const SUMMARIES_PATH = path.join(DATA_DIR, 'noc_profiles.json');
 
 // Cache the data in memory for server-side performance
 let nocCache: Record<string, NocProfile> | null = null;
@@ -25,7 +49,7 @@ async function getNocData(): Promise<Record<string, NocProfile>> {
     if (nocCache) return nocCache;
 
     try {
-        const fileContents = await fs.readFile(DATA_PATH, 'utf8');
+        const fileContents = await fs.readFile(SUMMARIES_PATH, 'utf8');
         nocCache = JSON.parse(fileContents);
         return nocCache as Record<string, NocProfile>;
     } catch (error) {
@@ -35,8 +59,51 @@ async function getNocData(): Promise<Record<string, NocProfile>> {
 }
 
 export async function getNocProfile(code: string): Promise<NocProfile | null> {
-    const data = await getNocData();
-    return data[code] || null;
+    const summaryData = await getNocData();
+    const summary = summaryData[code];
+
+    try {
+        const filePath = path.join(DATA_DIR, `${code}.json`);
+        const fileContents = await fs.readFile(filePath, 'utf8');
+        const rawData = JSON.parse(fileContents);
+
+        // Title Fallback: Use summary title if individual file has generic title
+        let cleanTitle = rawData.title || '';
+        if (!cleanTitle || cleanTitle.toLowerCase() === 'introduction' || cleanTitle === 'N/A') {
+            cleanTitle = summary?.title || `NOC ${code}`;
+        } else {
+            cleanTitle = cleanTitle
+                .split('|')[0] // Remove " | GTR Immigration"
+                .replace(`NOC ${code} – `, '') // Remove redundant "NOC XXXX – "
+                .trim();
+        }
+
+        // Clean Overview: Remove redundant "NOC XXXX – Title | GTR Immigration" prefix
+        let overview = rawData.description || summary?.overview || '';
+        const prefixPattern = new RegExp(`^NOC ${code} [–-] [^|]+ \\| GTR Immigration\\s*`, 'i');
+        overview = overview.replace(prefixPattern, '').trim();
+
+        // Map new schema to our interface
+        return {
+            code: rawData.noc || code,
+            title: cleanTitle,
+            overview: overview,
+            mainDuties: { "Main Duties": rawData.duties || summary?.mainDuties?.["Main Duties"] || [] },
+            employmentRequirements: rawData.employment_requirements || summary?.employmentRequirements || [],
+            additionalInfo: rawData.additional_information || summary?.additionalInfo || [],
+            // New fields
+            classification: rawData.classification,
+            commonJobTitles: rawData.common_job_titles,
+            salaryProspects: rawData.salary_prospects,
+            jobOutlook: rawData.job_outlook,
+            labourMarketDemand: rawData.labour_market_demand,
+            benefits: rawData.benefits,
+            pathways: rawData.pathways
+        };
+    } catch (error) {
+        // Fallback to legacy summary data if individual file fails
+        return summary || null;
+    }
 }
 
 export async function getAllNocSummaries(): Promise<NocSummary[]> {

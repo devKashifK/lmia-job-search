@@ -1,0 +1,58 @@
+{
+  "noc": "64313",
+  "title": "Introduction",
+  "slug": "introduction",
+  "description": "NOC 64313 – Ground and water transport ticket agents, cargo service representatives and related clerks | GTR Immigration Ground and water transport ticket agents (NOC 64313) are essential to Canada's inter-city transit and logistics networks. Whether managing rail reservations for VIA Rail, ferry bookings for BC Ferries, or cargo shipments for national trucking lines, these TEER 4 professionals keep Canada moving. At GTR Immigration, we help cargo and transport clerks leverage their logistical experience to secure Permanent Residency through regional and provincial pathways.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category6 – Sales and service occupationsTEER Level4Major Group64 – Sales and service representativesSub-Major Group643 – Occupations in food, accommodation and tourismMinor Group6431 – Occupations in travel and accommodationNOC Code64313",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Bus Ticket Agent",
+    "Railway Station Agent",
+    "Cargo Service Representative",
+    "Ferry Terminal Agent",
+    "Express Clerk - Transport"
+  ],
+  "duties": [],
+  "employment_requirements": [],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "16.50",
+      "median": "21.20",
+      "high": "30.55"
+    },
+    {
+      "region": "Alberta",
+      "low": "17.50",
+      "median": "23.50",
+      "high": "35.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "17.45",
+      "median": "22.76",
+      "high": "29.22"
+    },
+    {
+      "region": "Ontario",
+      "low": "17.60",
+      "median": "21.00",
+      "high": "31.00"
+    }
+  ],
+  "job_outlook": [],
+  "labour_market_demand": [
+    "The demand is Good, particularly in coastal provinces (BC and the Maritimes) for water transport and in central hubs for rail and bus transit. The rise of e-commerce has significantly boosted the demand for Cargo Service Representatives to manage the documentation of goods."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Atlantic Immigration Program (AIP): A high-conversion pathway for water transport agents in the Atlantic region.",
+    "Rural and Northern Immigration Pilot (RNIP): Addressing transit needs in participating communities."
+  ],
+  "additional_information": []
+}

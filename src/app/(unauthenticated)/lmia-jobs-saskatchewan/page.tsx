@@ -11,10 +11,10 @@ export default function SaskatchewanLMIAJobs() {
   return (
     <div className="min-h-screen bg-#F5F7FA flex flex-col">
       <Navbar />
-      
+
       <main className="flex-1">
         {/* HERO SECTION */}
-        <section className="bg-brand-900 pt-24 pb-16 px-6 relative overflow-hidden">
+        <section className="bg-brand-900 pt-40 pb-16 px-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(184,58,110,0.18)_0%,transparent_60%)] pointer-events-none" />
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
@@ -23,20 +23,20 @@ export default function SaskatchewanLMIAJobs() {
                 <span>/</span>
                 <span className="text-white">Saskatchewan</span>
               </div>
-              
+
               <div className="inline-flex items-center gap-2 bg-brand-100/50 border border-brand-200 text-brand-600 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <MapPin className="w-3.5 h-3.5" />
                 Saskatchewan · SK
               </div>
-              
+
               <h1 className="text-4xl md:text-5xl lg:text-[52px] font-black text-white leading-[1.1] tracking-tight mb-6">
                 LMIA Jobs in <span className="text-amber-400">Saskatchewan</span>
               </h1>
-              
+
               <p className="text-blue-100/70 text-lg leading-relaxed mb-10 font-light max-w-xl">
                 Saskatchewan is one of Canada's most RCIC-friendly provinces for LMIA job placement. With consistent SINP draws and a growing economy anchored by healthcare, agriculture, and mining, Saskatchewan offers strong opportunities for immigration pathways at every skill level.
               </p>
-              
+
               <div className="grid grid-cols-3 gap-4 mb-10">
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
                   <div className="text-2xl font-black text-white tracking-tight">1,100+</div>
@@ -53,14 +53,14 @@ export default function SaskatchewanLMIAJobs() {
               </div>
 
               <div className="flex flex-wrap items-center gap-4">
-                <Link 
+                <Link
                   href="/search?province=saskatchewan"
                   className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5"
                 >
                   Search All SK LMIA Jobs
                   <ArrowRight className="w-4 h-4 text-brand-900" />
                 </Link>
-                <Link 
+                <Link
                   href="/faq"
                   className="bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/40 text-white/80 hover:text-white font-medium px-6 py-4 rounded-full transition-all"
                 >
@@ -76,7 +76,7 @@ export default function SaskatchewanLMIAJobs() {
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                   Live Listings — Saskatchewan
                 </div>
-                
+
                 <div className="flex flex-wrap gap-2 mb-6">
                   <Badge className="bg-brand-50 hover:bg-brand-50 text-brand-600 border-brand-200 uppercase text-[10px] tracking-wider py-1.5 px-3">Saskatchewan</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">All Industries</Badge>
@@ -203,7 +203,7 @@ export default function SaskatchewanLMIAJobs() {
 
               <div className="flex flex-wrap gap-3 mb-10">
                 {['Regina', 'Saskatoon', 'Prince Albert', 'Moose Jaw', 'Swift Current'].map((city, idx) => (
-                  <Link 
+                  <Link
                     key={idx}
                     href={`/search?province=saskatchewan&city=${city.toLowerCase()}`}
                     className="bg-white border border-brand-100 hover:border-brand-50/500 hover:text-brand-600 text-brand-900 px-5 py-2.5 rounded-full text-sm font-semibold transition-all shadow-sm"
@@ -218,25 +218,25 @@ export default function SaskatchewanLMIAJobs() {
                   <TrendingUp className="w-4 h-4" /> Quick Stats — Saskatchewan
                 </div>
                 <div className="space-y-4">
-                   <div className="flex justify-between items-center text-sm">
-                     <span className="text-gray-500">LMIA listings updated</span>
-                     <span className="font-bold text-gray-900">Daily (6am ET)</span>
-                   </div>
-                   <div className="w-full h-px bg-gray-100" />
-                   <div className="flex justify-between items-center text-sm">
-                     <span className="text-gray-500">Average listings per month</span>
-                     <span className="font-bold text-gray-900">1,100+</span>
-                   </div>
-                   <div className="w-full h-px bg-gray-100" />
-                   <div className="flex justify-between items-center text-sm">
-                     <span className="text-gray-500">Top occupation category</span>
-                     <span className="font-bold text-gray-900">Healthcare</span>
-                   </div>
-                   <div className="w-full h-px bg-gray-100" />
-                   <div className="flex justify-between items-center text-sm">
-                     <span className="text-gray-500">Province abbreviation</span>
-                     <span className="font-bold text-gray-900">SK</span>
-                   </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">LMIA listings updated</span>
+                    <span className="font-bold text-gray-900">Daily (6am ET)</span>
+                  </div>
+                  <div className="w-full h-px bg-gray-100" />
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Average listings per month</span>
+                    <span className="font-bold text-gray-900">1,100+</span>
+                  </div>
+                  <div className="w-full h-px bg-gray-100" />
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Top occupation category</span>
+                    <span className="font-bold text-gray-900">Healthcare</span>
+                  </div>
+                  <div className="w-full h-px bg-gray-100" />
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Province abbreviation</span>
+                    <span className="font-bold text-gray-900">SK</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -246,24 +246,24 @@ export default function SaskatchewanLMIAJobs() {
         {/* BOTTOM CTA */}
         <section className="bg-brand-900 py-24 px-6 text-center border-t-4 border-amber-400">
           <div className="max-w-2xl mx-auto">
-             <div className="text-xs font-bold text-blue-200/60 uppercase tracking-widest mb-4">Ready to search?</div>
-             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
-               Find LMIA jobs in Saskatchewan now
-             </h2>
-             <p className="text-blue-100/70 text-lg mb-10 font-light">
-               Sign up free and search 1,100+ live LMIA listings in Saskatchewan — filter by city, NOC, TEER, industry, and more.
-             </p>
-             <Link 
-                href="/sign-up"
-                className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
-              >
-                Search Saskatchewan LMIA Jobs Free
-                <ArrowRight className="w-5 h-5 text-brand-900" />
-              </Link>
-              <div className="mt-8 text-sm text-blue-200/50 flex items-center justify-center gap-4">
-                <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> No credit card required</span>
-                <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Daily-updated listings</span>
-              </div>
+            <div className="text-xs font-bold text-blue-200/60 uppercase tracking-widest mb-4">Ready to search?</div>
+            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
+              Find LMIA jobs in Saskatchewan now
+            </h2>
+            <p className="text-blue-100/70 text-lg mb-10 font-light">
+              Sign up free and search 1,100+ live LMIA listings in Saskatchewan — filter by city, NOC, TEER, industry, and more.
+            </p>
+            <Link
+              href="/sign-up"
+              className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
+            >
+              Search Saskatchewan LMIA Jobs Free
+              <ArrowRight className="w-5 h-5 text-brand-900" />
+            </Link>
+            <div className="mt-8 text-sm text-blue-200/50 flex items-center justify-center gap-4">
+              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> No credit card required</span>
+              <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Daily-updated listings</span>
+            </div>
           </div>
         </section>
 
@@ -281,7 +281,7 @@ export default function SaskatchewanLMIAJobs() {
                 { title: '🚛 Trucking LMIA Jobs', href: '/lmia-jobs-trucking' },
                 { title: '📋 What is LMIA?', href: '/what-is-lmia' },
               ].map((link, i) => (
-                <Link 
+                <Link
                   key={i}
                   href={link.href}
                   className="bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 hover:text-gray-900 px-6 py-3 rounded-full text-sm font-medium transition-colors"
@@ -294,7 +294,7 @@ export default function SaskatchewanLMIAJobs() {
         </section>
 
       </main>
-      
+
       <Footer />
     </div>
   );

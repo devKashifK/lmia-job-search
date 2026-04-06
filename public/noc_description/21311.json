@@ -1,0 +1,125 @@
+{
+  "noc": "21311",
+  "title": "NOC 21311 – Computer Engineers | GTR Immigration",
+  "slug": "noc-21311-computer-engineers-gtr-immigration",
+  "description": "Computer Engineers are in strong demand across Canada, driven by growth in telecommunications infrastructure, semiconductor manufacturing, hardware R&D, data-network expansion, and advanced electronics. Classified under NOC 21311 (TEER 1), this occupation is well-suited for:",
+  "classification": {
+    "category": "2 – Natural and applied sciences and related occupations",
+    "teer": "1 – Occupations usually require a university degree",
+    "major_group": "213 – Professional occupations in engineering",
+    "sub_major_group": "N/A",
+    "minor_group": "2131 – Electrical, electronics, and computer engineers"
+  },
+  "common_job_titles": [
+    "Computer hardware engineer",
+    "Fibre-optic network designer",
+    "Hardware development engineer",
+    "Network-infrastructure engineer",
+    "Telecommunications-hardware engineer",
+    "Wireless-communications network engineer",
+    "Systems designer – hardware"
+  ],
+  "duties": [
+    "Computer Engineers commonly:",
+    "Hardware & Telecommunications",
+    "Analyze system requirements and design architecture",
+    "Develop microprocessors, circuit boards, and semiconductor devices",
+    "Conduct simulations and prototype testing",
+    "Supervise manufacturing and installation",
+    "Support system deployment",
+    "Manage supplier and client relationships",
+    "Lead multidisciplinary engineering teams",
+    "Network Systems",
+    "Design communication-network architecture",
+    "Integrate network hardware and software",
+    "Optimize performance and capacity",
+    "Supervise system-integration projects"
+  ],
+  "employment_requirements": [
+    "Applicants usually require:",
+    "Bachelor’s degree in computer, electrical, or electronics engineering",
+    "Master’s/PhD for advanced roles (sometimes)",
+    "Eligibility for Professional Engineer (P.Eng.) licensing",
+    "Completion of supervised Canadian experience",
+    "Passing provincial professional-practice exams"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "25.96",
+      "median": "46.43",
+      "high": "65.13"
+    },
+    {
+      "region": "Alberta",
+      "low": "16.83",
+      "median": "43.00",
+      "high": "81.73"
+    },
+    {
+      "region": "British Columbia",
+      "low": "32.98",
+      "median": "42.00",
+      "high": "71.15"
+    },
+    {
+      "region": "Manitoba",
+      "low": "33.65",
+      "median": "44.91",
+      "high": "57.69"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "29.71",
+      "median": "35.00",
+      "high": "50.48"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "29.71",
+      "median": "35.00",
+      "high": "50.48"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "31.25",
+      "median": "34.60",
+      "high": "48.08"
+    },
+    {
+      "region": "Ontario",
+      "low": "25.96",
+      "median": "40.87",
+      "high": "57.69"
+    },
+    {
+      "region": "Quebec",
+      "low": "34.00",
+      "median": "52.82",
+      "high": "64.62"
+    }
+  ],
+  "job_outlook": [
+    "From 2022–2031, Canada projects:",
+    "12,400 new positions",
+    "13,900 job seekers",
+    "This keeps Computer Engineering a priority-relevant occupation for immigration—especially for professionals experienced in:",
+    "Telecom infrastructure",
+    "Semiconductor manufacturing",
+    "Hardware design & validation",
+    "Network architecture",
+    "Wireless systems"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [],
+  "additional_information": [
+    "Labour-Market Outlook",
+    "Canada’s telecom firms, hardware manufacturers, network providers, and IT-consulting companies continue to recruit Computer Engineers for:",
+    "Semiconductor & chip designNetwork infrastructureFibre-optic systemsData-communications architectureEmbedded hardware platforms",
+    "Annual earnings typically range from $49,800–$125,300 CAD, depending on province, licensing status, and specialization.",
+    "Why Choose Canada as a Computer Engineer?",
+    "Professionals benefit from:",
+    "Skilled-worker PR programsProvincial nominationsLong-term tech-sector growthCompetitive salaries & benefitsUniversal healthcareMulticultural workplacesHigh employment stability"
+  ]
+}

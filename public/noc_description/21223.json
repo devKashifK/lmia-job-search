@@ -1,0 +1,135 @@
+{
+  "noc": "21223",
+  "title": "NOC 21223 – Database Analysts and Data Administrators | GTR Immigration",
+  "slug": "noc-21223-database-analysts-and-data-administrators-gtr-immigration",
+  "description": "Database Analysts and Data Administrators are in strong demand across Canada, supporting digital transformation, cybersecurity readiness, AI platforms, and enterprise-data governance. Classified under NOC 21223 (TEER 1), this occupation qualifies for Express-Entry-linked programs, Provincial Nominee Programs (PNPs), LMIA-supported work permits, and long-term Permanent Residence (PR) pathways.",
+  "classification": {
+    "category": "2 – Natural and applied sciences and related occupations",
+    "teer": "1 – Occupations usually require a university degree",
+    "major_group": "212 – Professional occupations in applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2122 – Computer and information systems professionals"
+  },
+  "common_job_titles": [
+    "Database administrator (DBA)",
+    "Database analyst",
+    "Data administrator",
+    "Data custodian",
+    "Data-warehouse analyst",
+    "Technical architect – database",
+    "Data-dictionary administrator"
+  ],
+  "duties": [
+    "Database Analysts",
+    "Collect and document user requirements",
+    "Design and develop database architectures",
+    "Build and test data models and DBMS platforms",
+    "Provide technical guidance on database tools",
+    "Operate systems for analytics and data mining",
+    "Supervise junior database staff",
+    "Data Administrators",
+    "Develop data-governance policies and standards",
+    "Define security, access, and retention frameworks",
+    "Establish backup and disaster-recovery protocols",
+    "Advise IT teams on data availability and compliance",
+    "Write stored-procedure and trigger scripts",
+    "Lead data-administration teams"
+  ],
+  "employment_requirements": [
+    "Applicants generally need:",
+    "Bachelor’s degree or college diploma in computer science, engineering, mathematics, or related field",
+    "Programming experience",
+    "Practical experience managing enterprise-scale databases"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "25.38",
+      "median": "42.36",
+      "high": "61.54"
+    },
+    {
+      "region": "Alberta",
+      "low": "33.33",
+      "median": "44.23",
+      "high": "60.58"
+    },
+    {
+      "region": "British Columbia",
+      "low": "26.97",
+      "median": "43.96",
+      "high": "69.23"
+    },
+    {
+      "region": "Manitoba",
+      "low": "30.77",
+      "median": "38.94",
+      "high": "57.69"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "26.00",
+      "median": "36.88",
+      "high": "46.15"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "29.81",
+      "median": "47.26",
+      "high": "68.66"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "20.00",
+      "median": "32.00",
+      "high": "52.88"
+    },
+    {
+      "region": "Ontario",
+      "low": "25.38",
+      "median": "43.27",
+      "high": "62.50"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "18.00",
+      "median": "32.55",
+      "high": "49.23"
+    },
+    {
+      "region": "Quebec",
+      "low": "26.00",
+      "median": "42.05",
+      "high": "54.30"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "25.48",
+      "median": "40.00",
+      "high": "61.03"
+    }
+  ],
+  "job_outlook": [
+    "Between 2022–2031, Canada forecasts:",
+    "29,300 new positions",
+    "32,700 job seekers",
+    "This creates a favourable immigration environment for overseas candidates with:",
+    "SQL/Oracle/PostgreSQL expertise",
+    "Cloud-database migration skills",
+    "Data-security experience",
+    "Financial-systems exposure",
+    "Provincial job offers"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [],
+  "additional_information": [
+    "Labour-Market Outlook in Canada",
+    "Canada’s fast-growing tech ecosystem continues to drive hiring for:",
+    "Enterprise-data modernizationCloud migrationsAI & analytics platformsCybersecurity governanceFinancial-technology systems",
+    "Typical annual earnings range between $44,252–$108,532 CAD, depending on province, experience, and specialization.",
+    "Why Choose Canada as a Database Analyst or Data Administrator?",
+    "Professionals benefit from:",
+    "PR-linked skilled-worker immigration routesProvincial nomination opportunitiesStrong tech-sector growthCompetitive salariesUniversal healthcareWork–life balance cultureMulticultural workplaces"
+  ]
+}

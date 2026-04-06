@@ -1,0 +1,93 @@
+{
+  "noc": "84120",
+  "title": "NOC 84120 – Specialized livestock workers and farm machinery operators | GTR Immigration",
+  "slug": "noc-84120-specialized-livestock-workers-and-farm-machinery-operators-gtr-immigration",
+  "description": "NOC 84120 represents the skilled technical heart of Canada’s agricultural industry. As a TEER 4 occupation, this category combines two essential roles: specialized livestock workers who manage breeding, health, and nutrition programs, and farm machinery operators who utilize advanced technology to till, plant, and harvest. In 2026, as Canada pushes toward \"Agriculture 4.0\" with autonomous equipment and data-driven animal husbandry, these professionals are in high demand to ensure food security and operational efficiency. For immigration, this role remains a cornerstone of the Saskatchewan Agriculture Talent Pathway and was a primary eligible occupation for the Agri-Food Immigration Pilot.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category8 – Natural resources, agriculture and related production occupationsTEER Level4Major Group84 – Workers in natural resources, agriculture and related productionSub-Major Group841 – Workers in natural resources and fisheriesMinor Group8412 – Workers in agriculture and fishing occupationsNOC Code84120",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Artificial Inseminator",
+    "Cattle / Dairy / Swine Herdsperson",
+    "Pork Production Technician",
+    "Farm Machinery Operator",
+    "Harvester Machine Operator",
+    "Horse Trainer",
+    "Sheep Shearer"
+  ],
+  "duties": [
+    "Specialized Livestock Workers:",
+    "Perform or assist in animal husbandry activities (e.g., milking, feeding, vaccinating).",
+    "Implement breeding programs (pasture or pen breeding) and develop specialized feeding schedules.",
+    "Detect and treat common livestock diseases and maintain detailed performance records.",
+    "Set and monitor environmental controls (water lines, airflow, temperature) in barns and pens.",
+    "Farm Machinery Operators:",
+    "Operate and maintain farm equipment for tilling soil, planting, and harvesting crops.",
+    "Perform routine maintenance and minor repairs to ensure machinery is functioning at peak efficiency.",
+    "Monitor automated machinery that can be electronically programmed and adjusted.",
+    "Load and unload crops or materials and follow strict safety procedures."
+  ],
+  "employment_requirements": [
+    "Completion of secondary school is usually required.",
+    "Specialized Livestock Workers: May require a college certificate or specialized training in agriculture or livestock husbandry.",
+    "Farm Machinery Operators: No specific formal education is required, but courses in farm equipment mechanics or agricultural welding are highly beneficial.",
+    "Experience: Basic farm knowledge, often obtained through work on a family farm or as a general laborer, is usually required.",
+    "Certifications: A First Aid certificate and a pesticide application license may be required for certain roles."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "17.60",
+      "median": "21.00",
+      "high": "32.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "18.55",
+      "median": "22.22",
+      "high": "34.87"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "17.00",
+      "median": "21.50",
+      "high": "30.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "17.60",
+      "median": "19.44",
+      "high": "30.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "17.85",
+      "median": "20.00",
+      "high": "31.00"
+    },
+    "Note: High-level swine technicians and herdspersons in Alberta can earn annual salaries exceeding $65,000."
+  ],
+  "job_outlook": [
+    "The outlook is Favourable. As global food demand rises, Canada is expanding its agri-export capabilities. The shift toward \"Smart Farming\" means that while manual labor is decreasing, the demand for specialized operators and technicians is increasing. Over 5,000 new job openings are expected annually due to industry growth and the retirement of the aging workforce."
+  ],
+  "labour_market_demand": [
+    "The demand for specialized farm workers is Very Good across the Prairie provinces and Southern Ontario. In 2026, Alberta, Saskatchewan, and Manitoba are reporting significant labor shortages in large-scale dairy and swine operations. Furthermore, the rapid adoption of automated harvesting equipment has increased the need for operators who can handle electronically programmed machinery. With a 70% hiring difficulty rate reported in certain provinces, Canadian farm owners are heavily reliant on international workers to fill these skilled gaps.",
+    "Why Work in Canada",
+    "Technological Advancement: Gain hands-on experience with robotic milking systems, AI-driven livestock monitoring, and GPS-guided autonomous tractors.",
+    "Essential Industry Stability: Agriculture is a recession-proof sector in Canada, offering long-term job security and steady year-round employment (especially in livestock).",
+    "Career Progression: Experience in this NOC often leads to Farm Supervisor (NOC 82030) or Farm Manager (NOC 80020) positions.",
+    "High Demand Pathways: Benefit from specialized PR streams specifically designed to retain agricultural talent in Canada."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Saskatchewan Agriculture Talent Pathway: A dedicated stream for workers with an SINP-approved job offer and 6–12 months of experience.",
+    "Agri-Food Immigration Pilot (Transition Phase): While the pilot closed for new applications in May 2025, IRCC continues to process existing applicants throughout 2026. Keep an eye out for a potential permanent successor stream.",
+    "BC PNP Entry-Level and Semi-Skilled (ELSS): Accessible for those working in the province's agricultural sector for at least 9 months.",
+    "Rural and Northern Immigration Pilot (RNIP): Targeted at workers moving to agricultural-dependent communities across Western Canada and Ontario."
+  ],
+  "additional_information": []
+}

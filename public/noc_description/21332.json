@@ -1,0 +1,109 @@
+{
+  "noc": "21332",
+  "title": "NOC 21332 – Petroleum Engineers | GTR Immigration",
+  "slug": "noc-21332-petroleum-engineers-gtr-immigration",
+  "description": "Petroleum Engineers are in strong demand across Canada, driven by ongoing energy projects, offshore development, enhanced-recovery programs, and advanced drilling technologies. Classified under NOC 21332 (TEER 1), this occupation is well suited for:",
+  "classification": {
+    "category": "2 – Natural and applied sciences",
+    "teer": "1 – University degree normally required",
+    "major_group": "213 – Engineering occupations",
+    "sub_major_group": "N/A",
+    "minor_group": "2133 – Natural resources engineers"
+  },
+  "common_job_titles": [
+    "Petroleum engineer",
+    "Oil & gas drilling engineer",
+    "Oil & gas production engineer",
+    "Reservoir engineer",
+    "Well-completion engineer",
+    "Subsea engineer"
+  ],
+  "duties": [
+    "Petroleum Engineers typically:",
+    "Conduct field-development feasibility studies",
+    "Direct drilling and production operations",
+    "Design drilling programs and select fluids & bits",
+    "Supervise well completion, testing, and surveys",
+    "Specify corrosion-control and treatment systems",
+    "Develop stimulation and recovery programs",
+    "Analyze reservoir rock and fluid data",
+    "Forecast reservoir performance and reserves",
+    "Design subsea production systems",
+    "Oversee installation and maintenance of equipment"
+  ],
+  "employment_requirements": [
+    "Applicants generally need:",
+    "Bachelor’s degree in petroleum engineering or related field",
+    "Master’s/PhD for research or senior roles (sometimes)",
+    "Eligibility for Professional Engineer (P.Eng.) licensing",
+    "Supervised engineering work experience",
+    "Passing provincial professional-practice exams"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "30.61",
+      "median": "52.88",
+      "high": "84.13"
+    },
+    {
+      "region": "Alberta",
+      "low": "30.77",
+      "median": "55.56",
+      "high": "86.54"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "30.81",
+      "median": "43.01",
+      "high": "58.10"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "31.59",
+      "median": "53.00",
+      "high": "72.12"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "26.85",
+      "median": "49.14",
+      "high": "78.01"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "31.25",
+      "median": "42.00",
+      "high": "53.85"
+    }
+  ],
+  "job_outlook": [
+    "Canada projects:",
+    "8,200 new openings",
+    "6,900 job seekers",
+    "This indicates favourable prospects for internationally trained Petroleum Engineers—especially those with:",
+    "Offshore platform experience",
+    "Deep-well drilling exposure",
+    "Reservoir-simulation expertise",
+    "Carbon-capture & storage projects",
+    "LNG or Arctic-region operations"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [
+    "Professionals benefit from:",
+    "Priority engineering-stream PR pathways",
+    "Provincial nomination potential",
+    "Strong wages in energy provinces",
+    "Long-term industrial demand",
+    "Public healthcare access",
+    "Offshore & Arctic-project premiums",
+    "Career mobility into hydrogen & carbon-capture sectors"
+  ],
+  "additional_information": [
+    "Labour-Market Demand",
+    "Energy operators and engineering consultancies recruit Petroleum Engineers for:",
+    "Drilling & well-completion programsOffshore and subsea projectsReservoir modeling & forecastingEnhanced oil recovery (EOR)Corrosion control systemsDigital-oilfield & automation projects",
+    "Annual salaries often range from $58,900–$151,900 CAD, depending on province, offshore exposure, and licensing status."
+  ]
+}

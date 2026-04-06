@@ -1,0 +1,126 @@
+{
+  "noc": "21232",
+  "title": "NOC 21232 – Software Developers and Programmers | GTR Immigration",
+  "slug": "noc-21232-software-developers-and-programmers-gtr-immigration",
+  "description": "Software Developers and Programmers are among the most in-demand professionals across Canada, especially in major technology hubs such as Toronto, Vancouver, and Montreal. Classified under NOC 21232 (TEER 1), this occupation qualifies for multiple immigration pathways including Express Entry–linked programs, Provincial Nominee Programs (PNPs), LMIA-supported work permits, and long-term Permanent Residence (PR) options.",
+  "classification": {
+    "category": "2 – Natural and applied sciences and related occupations",
+    "teer": "1 – Occupations usually require a university degree",
+    "major_group": "212 – Professional occupations in applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2123 – Computer, software, and web designers and developers"
+  },
+  "common_job_titles": [
+    "Application programmer",
+    "Computer-game developer",
+    "E-business software developer",
+    "Interactive-media developer",
+    "Multimedia developer",
+    "Software developer",
+    "Software programmer",
+    "Software-development project manager"
+  ],
+  "duties": [
+    "Software Developers and Programmers typically:",
+    "Design, write, test, and debug software code",
+    "Analyze system requirements and propose upgrades",
+    "Evaluate interactions between program modules",
+    "Program animation and interactive-media software",
+    "Develop mobile, web, and e-commerce applications",
+    "Maintain gameplay features for digital platforms",
+    "Prepare documentation for new and updated software"
+  ],
+  "employment_requirements": [
+    "Applicants usually need:",
+    "Bachelor’s degree in computer science, software engineering, or a related field",
+    "Or a college program with strong programming components",
+    "Demonstrated coding experience",
+    "English or French language proficiency",
+    "Career progression into software-engineering roles with experience"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "23.60",
+      "median": "40.38",
+      "high": "58.97"
+    },
+    {
+      "region": "Alberta",
+      "low": "22.12",
+      "median": "39.83",
+      "high": "64.90"
+    },
+    {
+      "region": "British Columbia",
+      "low": "25.00",
+      "median": "42.79",
+      "high": "62.50"
+    },
+    {
+      "region": "Manitoba",
+      "low": "23.59",
+      "median": "37.18",
+      "high": "52.88"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "22.12",
+      "median": "36.92",
+      "high": "57.69"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "21.79",
+      "median": "36.06",
+      "high": "58.65"
+    },
+    {
+      "region": "Ontario",
+      "low": "24.25",
+      "median": "43.00",
+      "high": "60.00"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "20.00",
+      "median": "33.33",
+      "high": "56.41"
+    },
+    {
+      "region": "Quebec",
+      "low": "22.00",
+      "median": "37.46",
+      "high": "54.10"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "22.14",
+      "median": "36.45",
+      "high": "57.69"
+    }
+  ],
+  "job_outlook": [
+    "Between 2022–2031, Canada projects:",
+    "80,500 new positions",
+    "89,900 job seekers",
+    "This keeps the occupation high-priority for immigration, especially for overseas professionals with:",
+    "Web & mobile development experience",
+    "Game-development portfolios",
+    "Cloud-based systems exposure",
+    "Startup or enterprise software backgrounds",
+    "Provincial job offers"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [],
+  "additional_information": [
+    "Labour-Market Outlook in Canada",
+    "Canada’s rapidly expanding digital economy, startup ecosystem, and enterprise-software sector continue to fuel strong recruitment for:",
+    "Full-stack developersMobile-app programmersGame developersMultimedia engineersE-commerce specialistsInteractive-media developers",
+    "Annual salaries typically range from $45,406–$113,458 CAD, depending on province, experience level, and technical specialization.",
+    "Why Choose Canada as a Software Developer or Programmer?",
+    "Professionals enjoy:",
+    "Direct PR-linked skilled-worker immigration streamsProvincial nomination opportunitiesGlobal tech employers and startupsUniversal healthcareMulticultural workplacesCompetitive pay & benefitsStrong work–life balance"
+  ]
+}

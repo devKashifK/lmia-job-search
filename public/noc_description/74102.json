@@ -1,0 +1,91 @@
+{
+  "noc": "74102",
+  "title": "NOC 74102 – Couriers and messengers | GTR Immigration",
+  "slug": "noc-74102-couriers-and-messengers-gtr-immigration",
+  "description": "NOC 74102 professionals are the high-speed link for time-sensitive logistics within Canada's business and healthcare ecosystems. As a TEER 4 occupation, Couriers and Messengers specialize in the hand-delivery of legal documents, medical samples, and high-value securities that require a chain of custody. In 2026, while general parcel delivery is handled by larger fleets (NOC 75201), these specialized couriers are classified as Critical Service Talent for the legal and ambulatory health sectors. For immigration, this role is a key beneficiary of the New 2026 TR to PR Pathway and the Atlantic Immigration Program (AIP).",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category7 – Trades, transport and equipment operators and related occupationsTEER Level4Major Group74 – Mail and message distribution, other transport equipment operators and related maintenance workersSub-Major Group741 – Mail and message distribution occupationsMinor Group7410 – Mail and message distribution occupationsNOC Code74102",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Courier",
+    "Bank Messenger",
+    "Medical Courier",
+    "Legal Document Runner",
+    "Copy Runner - Courier Service",
+    "Bill Distributor",
+    "Office Messenger",
+    "Door-to-Door Courier"
+  ],
+  "duties": [
+    "Pick-up & Delivery: Collect messages, legal documents, cheques, securities, and medical samples from clients and hand-deliver them to specified addresses within strict timeframes.",
+    "Mode of Transport: Navigate urban environments by walking, cycling, or driving light vehicles to avoid traffic congestion and ensure on-time delivery.",
+    "Security & Payment: Collect payments for items delivered (COD) and maintain a secure chain of custody for high-value or sensitive items.",
+    "Record Keeping: Use handheld delivery information acquisition devices to scan barcodes, obtain digital signatures, and update real-time tracking systems.",
+    "Route Planning: Utilize advanced navigation and routing software to plan the most efficient delivery sequence.",
+    "Vehicle Upkeep: (For drivers) Perform daily inspections and basic maintenance of the delivery vehicle to ensure safety and compliance."
+  ],
+  "employment_requirements": [
+    "Completion of secondary school is typically required.",
+    "Training: Short-term on-the-job training is usually provided, focusing on security protocols and routing software.",
+    "Bondability: Many employers require the ability to be bonded (a background check for handling high-value items).",
+    "Licensing: A valid driver’s license (Class 5) is required for those using motorized vehicles.",
+    "Physical Fitness: High physical stamina is required for walking/cycling roles; manual handling of small parcels is common.",
+    "Tech Literacy: Proficiency with handheld scanners and GPS navigation is mandatory in 2026."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "17.50",
+      "median": "23.00",
+      "high": "35.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "19.00",
+      "median": "23.08",
+      "high": "35.29"
+    },
+    {
+      "region": "British Columbia",
+      "low": "19.00",
+      "median": "24.00",
+      "high": "36.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "18.50",
+      "median": "23.50",
+      "high": "37.00"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "20.74",
+      "median": "26.24",
+      "high": "29.96"
+    },
+    "Note: In 2026, the federal minimum wage is set at $18.10/hr. Specialized medical or corporate couriers in urban centers often earn total compensation packages exceeding $55,000 annually."
+  ],
+  "job_outlook": [
+    "The outlook is Moderate. Employment growth is expected to remain stable, primarily driven by the replacement of retiring workers. While the \"Paperless Office\" trend impacts some messenger roles, the growth of the Diagnostic Healthcare sector and the need for physical transport of biological samples ensure a steady stream of job openings. Growth is most concentrated in the Avalon Peninsula (NL) and Vancouver Island (BC)."
+  ],
+  "labour_market_demand": [
+    "The demand for specialized couriers in 2026 is Stable, though it varies significantly by region. In Ontario, the outlook is \"Limited\" due to increased digitalization of legal filings, but demand remains robust in Newfoundland and Labrador (Good) and British Columbia (Moderate). There is a persistent labor shortage for couriers with experience in Medical Logistics (transporting lab samples and organs) and those willing to work in dense urban cores like Toronto and Vancouver. Approximately 81% of workers in this NOC are employed full-time, with a high self-employment rate of 21%.",
+    "Why Work in Canada",
+    "High-Stakes Logistics: Gain experience in \"Chain of Custody\" transport for Canada’s top law firms, banks, and specialized healthcare laboratories like LifeLabs.",
+    "Urban Mobility Options: This is one of the few transport roles where you can choose your mode of delivery—be it by foot, bicycle, or light vehicle—allowing for diverse work environments.",
+    "Gateway to the Private Sector: Work for global leaders such as FedEx Express Canada or established local courier networks with high non-wage benefits.",
+    "Strategic PR Pathways: This TEER 4 role is a direct target for the 2026 federal and provincial pilots designed to retain essential service workers who have at least one year of Canadian experience."
+  ],
+  "benefits": [],
+  "pathways": [
+    "New 2026 TR to PR Pathway: A dedicated stream for 33,000 workers already in Canada, specifically targeting those in TEER 4 and 5 roles with one year of experience.",
+    "Atlantic Immigration Program (AIP): A high-priority route for couriers with a job offer from a designated employer in the Atlantic provinces.",
+    "Saskatchewan SINP (Hard-to-Fill Skills): A direct route for couriers with a valid job offer in the province’s service sector.",
+    "BC PNP Entry-Level and Semi-Skilled (ELSS): Ideal for couriers currently employed in British Columbia for at least 9 months."
+  ],
+  "additional_information": []
+}

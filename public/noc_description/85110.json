@@ -1,0 +1,89 @@
+{
+  "noc": "85110",
+  "title": "NOC 85110 – Mine labourers | GTR Immigration",
+  "slug": "noc-85110-mine-labourers-gtr-immigration",
+  "description": "NOC 85110 covers the essential entry-level workforce providing general labor support in Canada's robust mining sector. As a TEER 5 occupation, these laborers perform a variety of manual tasks to assist in the extraction of coal, minerals, and ore, as well as maintaining the safety and cleanliness of underground and surface mining environments. In 2026, as the demand for \"Critical Minerals\" like lithium and nickel surges, mine laborers are the frontline workers ensuring operational continuity. For immigration, this role is a key starting point for Regional PNP streams and the New 2026 TEER 5 PR Pathway.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category8 – Natural resources, agriculture and related production occupationsTEER Level5Major Group85 – Harvesting, landscaping and natural resources labourersSub-Major Group851 – Harvesting, landscaping and natural resources labourersMinor Group8511 – Mine and oil and gas drilling, services and related labourersNOC Code85110",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Mine Labourer",
+    "Chute Puller / Chute Loader",
+    "Shoveller - Underground Mining",
+    "Miner Helper",
+    "Pit Scaler - Underground Mining",
+    "Core Cutter Helper"
+  ],
+  "duties": [
+    "Support Operations: Assist other mine workers in maintaining or constructing underground installations and infrastructure.",
+    "Maintenance: Clean underground rooms, roadways, working areas, and mining equipment using hand and power tools.",
+    "Material Handling: Load, move, sort, and pile materials, tools, and supplies required for daily operations.",
+    "Spill Management: Clear spills of ore or coal from conveyor systems and roadways to prevent operational delays.",
+    "Exploration Support: Cut core samples and prepare core sample boxes for geologists during mine exploration phases.",
+    "Safety: Assist in prospecting for mineral deposits and perform various tasks related to general geophysical surveys."
+  ],
+  "employment_requirements": [
+    "No formal education is strictly required, though completion of secondary school is usually preferred by major employers.",
+    "On-the-Job Training: A short period of introductory training (usually 2–4 weeks) is provided.",
+    "Certifications: * In Ontario, registration in the Basic Common Core program is mandatory.First Aid and CPR certifications are standard requirements.WHMIS (Workplace Hazardous Materials Information System) training.",
+    "First Aid and CPR certifications are standard requirements.",
+    "WHMIS (Workplace Hazardous Materials Information System) training.",
+    "Physical stamina, the ability to work in confined spaces, and a clean criminal record (for site access) are essential."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "21.00",
+      "median": "32.50",
+      "high": "48.65"
+    },
+    {
+      "region": "British Columbia",
+      "low": "24.00",
+      "median": "38.00",
+      "high": "50.00"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "22.00",
+      "median": "35.00",
+      "high": "46.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "21.50",
+      "median": "32.00",
+      "high": "44.00"
+    },
+    {
+      "region": "Quebec",
+      "low": "20.00",
+      "median": "34.00",
+      "high": "45.00"
+    },
+    "Note: Total annual earnings frequently exceed $65,000 - $80,000 when including overtime and remote site premiums."
+  ],
+  "job_outlook": [
+    "The outlook is Stable. According to the Canadian Occupational Projection System (COPS), the sector will face replacement demand as 25% of the current workforce is aged 50 or over. As Canada positions itself as a global hub for the \"Green Economy\" minerals, the demand for entry-level support staff to help build and maintain new mine sites remains consistent."
+  ],
+  "labour_market_demand": [
+    "The demand for mine laborers is Moderate to Good, with higher concentrations in resource-heavy provinces. In 2026, Saskatchewan, Manitoba, and British Columbia are reporting steady demand as new mining projects move from exploration to production. While some regions like Ontario have a \"limited\" short-term outlook due to increased automation, the overall national trend shows a moderate risk of shortage through 2033 as many veteran workers retire or promote into skilled operator roles.",
+    "Why Work in Canada",
+    "Competitive Entry-Level Pay: Unlike many TEER 5 roles in retail or service, mining labor offers significantly higher starting wages, often starting above $25/hour.",
+    "Rapid Advancement: This role is the primary \"proving ground.\" With 6–12 months of experience, laborers can promote to Underground Miner (NOC 83100) or Service Support (NOC 84100).",
+    "Unique Work Schedules: Many sites operate on Fly-In-Fly-Out (FIFO) rotations (e.g., 2 weeks on, 2 weeks off), allowing for extended periods of rest at home.",
+    "Health & Safety Excellence: Work in a highly regulated environment that prioritizes worker safety through advanced PPE and monitoring technology."
+  ],
+  "benefits": [],
+  "pathways": [
+    "New 2026 TEER 4 & 5 Pathway: A newly launched federal stream targeting essential workers with at least one year of Canadian work experience.",
+    "Saskatchewan INP (Semi-Skilled Agriculture/Natural Resources): A direct route for laborers with 6 months of experience in the province.",
+    "Alberta Opportunity Stream: Accessible for workers currently employed on a valid work permit in the province.",
+    "Rural and Northern Immigration Pilot (RNIP): Targeted at workers moving to mining-dependent communities such as Sudbury, ON, or Claresholm, AB."
+  ],
+  "additional_information": []
+}

@@ -1,0 +1,128 @@
+{
+  "noc": "21231",
+  "title": "NOC 21231 – Software Engineers and Designers | Canada Immigration with GTR Immigration",
+  "slug": "noc-21231-software-engineers-and-designers-canada-immigration-with-gtr-immigration",
+  "description": "Software Engineers and Designers are among the most sought-after tech professionals across Canada, especially in innovation hubs such as Toronto, Vancouver, and Montreal. Classified under NOC 21231 (TEER 1), this occupation qualifies for Express-Entry-linked programs, Provincial Nominee Programs (PNPs), LMIA-supported work permits, and long-term Permanent Residence (PR) pathways.",
+  "classification": {
+    "category": "2 – Natural and applied sciences and related occupations",
+    "teer": "1 – Occupations usually require a university degree",
+    "major_group": "212 – Professional occupations in applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2123 – Computer, software, and web designers and developers"
+  },
+  "common_job_titles": [
+    "Application architect",
+    "Cloud infrastructure engineer",
+    "Embedded software engineer",
+    "Mobile development lead",
+    "Site reliability engineer",
+    "Software architect",
+    "Software systems-integration engineer",
+    "Software testing engineer",
+    "Telecommunications software engineer"
+  ],
+  "duties": [
+    "Software Engineers and Designers typically:",
+    "Gather and document user requirements",
+    "Design, develop, and test computer-based systems and mobile apps",
+    "Build data, process, and network models",
+    "Plan system architecture and integration",
+    "Troubleshoot and upgrade operating systems and applications",
+    "Develop maintenance procedures",
+    "Lead or coordinate development teams",
+    "Support embedded and process-control software systems"
+  ],
+  "employment_requirements": [
+    "Applicants usually require:",
+    "Bachelor’s degree in computer science, software engineering, systems engineering, mathematics, or related field",
+    "Possible master’s or doctoral degree for advanced roles",
+    "Programming experience",
+    "Professional Engineer (P. Eng.) licensing when approving engineering designs",
+    "Completion of supervised work experience and professional exams for engineering registration"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "29.54",
+      "median": "49.38",
+      "high": "72.12"
+    },
+    {
+      "region": "Alberta",
+      "low": "23.75",
+      "median": "46.15",
+      "high": "72.12"
+    },
+    {
+      "region": "British Columbia",
+      "low": "32.00",
+      "median": "52.88",
+      "high": "75.00"
+    },
+    {
+      "region": "Manitoba",
+      "low": "25.12",
+      "median": "36.81",
+      "high": "61.54"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "31.25",
+      "median": "42.31",
+      "high": "57.69"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "32.31",
+      "median": "41.03",
+      "high": "64.90"
+    },
+    {
+      "region": "Ontario",
+      "low": "28.85",
+      "median": "50.00",
+      "high": "72.12"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "31.25",
+      "median": "42.31",
+      "high": "57.69"
+    },
+    {
+      "region": "Quebec",
+      "low": "30.77",
+      "median": "47.69",
+      "high": "69.71"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "36.06",
+      "median": "46.15",
+      "high": "82.50"
+    }
+  ],
+  "job_outlook": [
+    "Between 2022–2031, Canada projects:",
+    "44,300 new positions",
+    "48,800 job seekers",
+    "This keeps the occupation immigration-friendly, particularly for overseas professionals with:",
+    "Cloud-platform experience",
+    "AI / ML exposure",
+    "Mobile-app development",
+    "DevOps & SRE skills",
+    "Provincial job offers"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [],
+  "additional_information": [
+    "Labour-Market Outlook in Canada",
+    "Canada’s digital-economy expansion, cloud adoption, AI development, and fintech growth continue to drive recruitment for:",
+    "Enterprise-software engineersCloud-infrastructure specialistsEmbedded-systems designersMobile-app developersSite-reliability engineers",
+    "Typical annual salaries range from $56,834–$138,758 CAD, depending on province, specialization, and seniority.",
+    "Why Choose Canada as a Software Engineer or Designer?",
+    "Professionals benefit from:",
+    "Multiple PR-linked skilled-worker immigration streamsProvincial nomination opportunitiesGlobal tech-company presenceUniversal healthcareFlexible work arrangementsMulticultural workplacesStrong work–life balance"
+  ]
+}

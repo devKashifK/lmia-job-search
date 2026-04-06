@@ -1,0 +1,128 @@
+{
+  "noc": "21101",
+  "title": "NOC 21101 – Chemists | GTR Immigration",
+  "slug": "noc-21101-chemists-gtr-immigration",
+  "description": "Chemists are essential to research, pharmaceuticals, environmental protection, manufacturing, and advanced materials across Canada. Classified under NOC 21101 (TEER 1), this profession remains in steady national demand—supporting immigration pathways through Express Entry–linked streams, Provincial Nominee Programs (PNPs), and employer-driven work permits.",
+  "classification": {
+    "category": "2 – Natural and applied sciences and related occupations",
+    "teer": "1 – Occupations usually require a university degree",
+    "major_group": "211 – Professional occupations in natural sciences",
+    "sub_major_group": "N/A",
+    "minor_group": "2110 – Physical science professionals"
+  },
+  "common_job_titles": [
+    "Analytical chemist",
+    "Environmental chemist",
+    "Pharmaceutical chemist",
+    "Polymer chemist",
+    "Quality-control chemist",
+    "Research chemist",
+    "Soil chemist",
+    "Food chemist",
+    "Medicinal chemist",
+    "Biochemist"
+  ],
+  "duties": [
+    "Typical responsibilities include:",
+    "Analyzing and synthesizing chemical compounds",
+    "Conducting quality-control testing of raw and finished materials",
+    "Investigating environmental contaminants",
+    "Developing new chemical formulations and industrial processes",
+    "Conducting fundamental and applied research",
+    "Studying drug mechanisms and health impacts",
+    "Working on interdisciplinary R&D teams",
+    "Acting as a technical consultant",
+    "Supervising junior chemists and technicians",
+    "Supporting commercialization of new products"
+  ],
+  "employment_requirements": [
+    "Applicants usually require:",
+    "Bachelor’s degree in chemistry, biochemistry, or related field",
+    "Master’s or PhD for research roles",
+    "Provincial licensing required in Quebec; voluntary in some other provinces",
+    "Regulatory requirements vary by province"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "20.81",
+      "median": "35.90",
+      "high": "64.90"
+    },
+    {
+      "region": "Alberta",
+      "low": "38.46",
+      "median": "53.85",
+      "high": "80.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "25.00",
+      "median": "33.65",
+      "high": "74.36"
+    },
+    {
+      "region": "Manitoba",
+      "low": "32.97",
+      "median": "43.27",
+      "high": "55.77"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "14.75",
+      "median": "31.79",
+      "high": "43.27"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "24.02",
+      "median": "41.13",
+      "high": "59.16"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "14.50",
+      "median": "32.82",
+      "high": "38.46"
+    },
+    {
+      "region": "Ontario",
+      "low": "20.81",
+      "median": "37.03",
+      "high": "71.79"
+    },
+    {
+      "region": "Prince Edward Island",
+      "low": "19.00",
+      "median": "31.79",
+      "high": "58.17"
+    },
+    {
+      "region": "Quebec",
+      "low": "21.85",
+      "median": "31.43",
+      "high": "62.50"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "27.00",
+      "median": "34.62",
+      "high": "46.63"
+    }
+  ],
+  "job_outlook": [
+    "Between 2022–2031, Canada is projected to create 10,100 new chemist positions, while around 9,600 workers will enter the labour market—indicating stable to favourable immigration prospects for internationally trained professionals."
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [],
+  "additional_information": [
+    "Labour-Market Outlook in Canada",
+    "Chemists continue to be sought across both private and public sectors, particularly in:",
+    "Pharmaceutical and biotechnology firmsPetrochemical and chemical manufacturersEnvironmental testing labsUniversities and research institutesGovernment agenciesMining, pulp & paper, and utilities",
+    "Annual salaries typically range between $40,100–$123,200 CAD, depending on specialization, province, and seniority.",
+    "Why Choose Canada as a Chemist?",
+    "Professionals benefit from:",
+    "Strong R&D investment nationwidePR-linked skilled-worker immigration programsAdvanced laboratory infrastructureCompetitive compensationFree public healthcareFamily sponsorship pathwaysMulticultural working environments"
+  ]
+}

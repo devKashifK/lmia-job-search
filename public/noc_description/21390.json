@@ -1,0 +1,102 @@
+{
+  "noc": "21390",
+  "title": "NOC 21390 – Aerospace Engineers | GTR Immigration",
+  "slug": "noc-21390-aerospace-engineers-gtr-immigration",
+  "description": "Aerospace Engineers are in rising demand across Canada as aircraft manufacturing expands, satellite programs grow, and defence, research, and space-technology investments accelerate. Classified under NOC 21390 (TEER 1), this occupation is well suited for:",
+  "classification": {
+    "category": "2 – Natural and applied sciences",
+    "teer": "1 – University degree normally required",
+    "major_group": "213 – Engineering occupations",
+    "sub_major_group": "N/A",
+    "minor_group": "2139 – Other engineers"
+  },
+  "common_job_titles": [
+    "Aerospace engineer",
+    "Aeronautical engineer",
+    "Aerospace structural engineer",
+    "Aerospace systems engineer",
+    "Aircraft design engineer",
+    "Aerospace test engineer",
+    "Stress engineer – aerospace"
+  ],
+  "duties": [
+    "Aerospace Engineers typically:",
+    "Design aircraft, spacecraft, satellites, and missile systems",
+    "Run advanced computer simulations and modelling",
+    "Specify aerospace materials and manufacturing processes",
+    "Supervise assembly, modification, and overhaul operations",
+    "Coordinate ground and flight testing",
+    "Prepare maintenance manuals and operational standards",
+    "Develop logistical and technical-support systems",
+    "Investigate accidents or structural failures and recommend fixes"
+  ],
+  "employment_requirements": [
+    "Applicants generally need:",
+    "Bachelor’s degree in aerospace or related engineering field",
+    "Master’s/PhD for advanced research roles (sometimes)",
+    "Eligibility for Professional Engineer (P.Eng.) licensing",
+    "Supervised engineering work experience",
+    "Passing provincial professional-practice exams"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "26.92",
+      "median": "43.27",
+      "high": "75.91"
+    },
+    {
+      "region": "Ontario",
+      "low": "27.55",
+      "median": "46.63",
+      "high": "72.12"
+    },
+    {
+      "region": "Quebec",
+      "low": "27.00",
+      "median": "43.27",
+      "high": "76.92"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "28.10",
+      "median": "40.24",
+      "high": "56.11"
+    },
+    {
+      "region": "Manitoba",
+      "low": "20.00",
+      "median": "43.27",
+      "high": "47.98"
+    }
+  ],
+  "job_outlook": [
+    "Canada projects:",
+    "14,600 new openings",
+    "18,100 job seekers",
+    "This signals competitive but accessible prospects—especially for candidates with:",
+    "Aircraft-certification experience",
+    "Composite-materials expertise",
+    "Satellite-systems design",
+    "Defence-sector backgrounds",
+    "UAV / drone development exposure"
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [
+    "Professionals benefit from:",
+    "Engineering-priority PR pathways",
+    "Provincial nomination potential",
+    "Strong wages in aerospace hubs",
+    "Long-term R&D demand",
+    "Public healthcare access",
+    "Defence & satellite-sector growth",
+    "Mobility into drone, space, and AI-aided flight systems"
+  ],
+  "additional_information": [
+    "Labour-Market Demand",
+    "Canada’s aerospace ecosystem—spanning aircraft manufacturing, avionics, satellites, drones, and defence systems—continues to recruit engineers for:",
+    "Aircraft & spacecraft designStructural analysis and testingSatellite systemsFlight-test engineeringAdvanced materialsSpace-communications hardware",
+    "Annual salaries often range from $51,800–$146,100 CAD, depending on province, clearance level, specialization, and licensing status."
+  ]
+}

@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t border-gray-100 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 lg:gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-12 lg:gap-8 mb-16">
 
           {/* Brand Column */}
           <div className="col-span-1 lg:col-span-2">
@@ -48,15 +48,30 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* SEO Hubs */}
+          {/* Province Hubs */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-4 text-sm">Resources</h4>
+            <h4 className="font-semibold text-gray-900 mb-4 text-sm">Provinces</h4>
             <ul className="space-y-3 text-sm text-gray-500">
-              <li><FooterLink href="/lmia-jobs-ontario">Ontario Jobs</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs-ontario">Ontario</FooterLink></li>
               <li><FooterLink href="/lmia-jobs-british-columbia">BC Jobs</FooterLink></li>
-              <li><FooterLink href="/lmia-jobs-alberta">Alberta Jobs</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs-alberta">Alberta</FooterLink></li>
               <li><FooterLink href="/lmia-jobs-saskatchewan">Saskatchewan</FooterLink></li>
-              <li><FooterLink href="/lmia-jobs-healthcare">Healthcare Hub</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs/manitoba">Manitoba</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs/new-brunswick">New Brunswick</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs/nova-scotia">Nova Scotia</FooterLink></li>
+            </ul>
+          </div>
+
+          {/* Industry Hubs */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-4 text-sm">Industries</h4>
+            <ul className="space-y-3 text-sm text-gray-500">
+              <li><FooterLink href="/blog">Immigration Blog</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs">Browse Jobs</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs/agriculture">Agriculture</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs/construction">Construction</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs/hospitality">Hospitality</FooterLink></li>
+              <li><FooterLink href="/lmia-jobs-healthcare">Healthcare</FooterLink></li>
               <li><FooterLink href="/lmia-jobs-trucking">Trucking Hub</FooterLink></li>
             </ul>
           </div>

@@ -1,0 +1,75 @@
+{
+  "noc": "00010",
+  "title": "Introduction",
+  "slug": "introduction",
+  "description": "NOC 00010 – Legislators | GTR Immigration Legislators under NOC 00010 represent the highest level of public service in Canada, encompassing elected or appointed officials at the federal, provincial, and territorial levels. While these roles are typically filled by Canadian citizens through democratic processes, the classification remains a critical part of the TEER 0 hierarchy. For immigration strategists, understanding this tier is essential for evaluating high-level governmental experience that may translate into senior consulting or executive roles within the Canadian private and public sectors.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category0 – Management occupationsTEER Level0Major Group00 – Legislative and senior management occupationsSub-Major Group000 – Legislative and senior management occupationsMinor Group0001 – Senior management occupationsNOC Code00010",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Member of Parliament (MP)",
+    "Member of the Legislative Assembly (MLA)",
+    "Senator",
+    "City Councillor",
+    "Mayor",
+    "Premier"
+  ],
+  "duties": [
+    "Participate in the development and amendment of laws and regulations.",
+    "Serve on government committees to examine specific policy issues (e.g., Finance, Health, Immigration).",
+    "Represent the interests of constituents and act as a liaison between the public and the government.",
+    "Participate in debates and vote on legislation in the House of Commons or provincial legislatures.",
+    "Approve government budgets and expenditures."
+  ],
+  "employment_requirements": [
+    "Election to a legislative body is required for most roles.",
+    "Appointment by the Governor General or Lieutenant-Governor (e.g., for Senators).",
+    "There are no specific educational requirements, though most legislators have extensive experience in law, business, or community leadership."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "30.00",
+      "median": "55.00",
+      "high": "100.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "35.00",
+      "median": "60.00",
+      "high": "110.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "32.00",
+      "median": "58.00",
+      "high": "105.00"
+    },
+    {
+      "region": "Quebec",
+      "low": "28.00",
+      "median": "50.00",
+      "high": "95.00"
+    }
+  ],
+  "job_outlook": [
+    "The outlook is Stable. Openings are primarily created by the conclusion of terms or retirements, ensuring a regular turnover of legislative talent."
+  ],
+  "labour_market_demand": [
+    "The demand for legislators is tied to the electoral cycles of the Federal and Provincial governments. As Canada addresses complex issues such as housing, healthcare, and economic digital transformation, the need for experienced policy-makers and community representatives remains constant.",
+    "Why Work in Canada",
+    "Democratic Stability: Canada is recognized globally for its stable political environment and rule of law.",
+    "Influence: Play a direct role in shaping the legislation that impacts 40 million+ Canadians.",
+    "Network: Access to a high-level network of international diplomats and domestic business leaders."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Federal Skilled Worker (Express Entry): While the role itself is elected, the managerial experience gained is highly ranked in the CRS.",
+    "Consultancy Pathways: Many former legislators successfully transition to PR through Executive Management or Public Policy consulting roles."
+  ],
+  "additional_information": []
+}

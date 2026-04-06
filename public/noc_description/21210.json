@@ -1,0 +1,104 @@
+{
+  "noc": "21210",
+  "title": "NOC 21210 – Mathematicians, Statisticians, and Actuaries | GTR Immigration",
+  "slug": "noc-21210-mathematicians-statisticians-and-actuaries-gtr-immigration",
+  "description": "Mathematicians, Statisticians, and Actuaries play a vital role in data-driven decision-making, financial risk management, insurance modelling, research, and public-policy development across Canada. Classified under NOC 21210 (TEER 1), this occupation qualifies for skilled-immigration pathways such as Express-Entry-aligned programs, Provincial Nominee Programs (PNPs), employer-supported work permits, and long-term Permanent Residence (PR) strategies.",
+  "classification": {
+    "category": "2 – Natural and applied sciences and related occupations",
+    "teer": "1 – Occupations usually require a university degree",
+    "major_group": "212 – Professional occupations in applied sciences (except engineering)",
+    "sub_major_group": "N/A",
+    "minor_group": "2121 – Mathematicians, statisticians, actuaries, and data scientists"
+  },
+  "common_job_titles": [
+    "Actuary",
+    "Consulting actuary",
+    "Insurance actuary",
+    "Statistician",
+    "Statistical analyst",
+    "Biostatistician",
+    "Demographer",
+    "Mathematician"
+  ],
+  "duties": [
+    "Mathematicians",
+    "Conduct theoretical research in algebra, geometry, probability, and logic",
+    "Apply mathematical models to engineering, computing, operations research, and management",
+    "Statisticians",
+    "Develop statistical methodologies",
+    "Analyze data across scientific, business, and social-science fields",
+    "Advise on real-world applications of statistical theory",
+    "Actuaries",
+    "Forecast insurance and pension liabilities",
+    "Design insurance products and calculate premiums",
+    "Support investment and risk-management decisions",
+    "Provide expert testimony on financial projections"
+  ],
+  "employment_requirements": [
+    "Applicants generally require:",
+    "Graduate degree in mathematics or statistics (for mathematicians/statisticians)",
+    "Post-secondary education in actuarial science, economics, or related field (for actuaries)",
+    "Fellowship through the Canadian Institute of Actuaries after exams + three years of work experience"
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada",
+      "low": "30.43",
+      "median": "46.70",
+      "high": "73.33"
+    },
+    {
+      "region": "Manitoba",
+      "low": "26.21",
+      "median": "43.59",
+      "high": "63.59"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "21.00",
+      "median": "36.15",
+      "high": "44.75"
+    },
+    {
+      "region": "Newfoundland and Labrador",
+      "low": "21.00",
+      "median": "36.15",
+      "high": "44.75"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "21.00",
+      "median": "36.15",
+      "high": "44.75"
+    },
+    {
+      "region": "Ontario",
+      "low": "34.34",
+      "median": "50.77",
+      "high": "78.37"
+    },
+    {
+      "region": "Quebec",
+      "low": "25.58",
+      "median": "46.70",
+      "high": "71.43"
+    }
+  ],
+  "job_outlook": [
+    "Between 2022–2031, Canada is projected to create 4,600 new positions, with around 2,800 job seekers—indicating a strong immigration outlook, particularly for internationally trained professionals with actuarial credentials, analytics experience, and employer sponsorship."
+  ],
+  "labour_market_demand": [],
+  "benefits": [],
+  "pathways": [],
+  "additional_information": [
+    "Labour-Market Outlook in Canada",
+    "Demand continues to grow nationwide due to:",
+    "Expansion of insurance and financial-services sectorsData-analytics adoption in government and researchPension-fund modelling requirementsRisk-management and forecasting rolesUniversity research and consulting demand",
+    "Common employers include:",
+    "Universities and research institutesFederal & provincial governmentsBanks and trust companiesInsurance firmsPension-consulting companiesEngineering & analytics consultancies",
+    "Annual salaries typically range between $58,500–$141,100 CAD, depending on specialization, credentials, and province.",
+    "Why Choose Canada in This Occupation?",
+    "Professionals benefit from:",
+    "High-paying analytical careersPR-linked skilled-worker pathwaysProvincial nomination opportunitiesStable public-sector employmentUniversal healthcareFamily-sponsorship programsMulticultural professional environment"
+  ]
+}

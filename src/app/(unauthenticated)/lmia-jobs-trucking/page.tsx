@@ -11,10 +11,10 @@ export default function TruckingLMIAJobs() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-inter">
       <Navbar />
-      
+
       <main className="flex-1">
         {/* HERO SECTION */}
-        <section className="bg-brand-900 pt-24 pb-16 px-6 relative overflow-hidden">
+        <section className="bg-brand-900 pt-40 pb-16 px-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(245,166,35,0.1)_0%,transparent_60%)] pointer-events-none" />
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
@@ -23,20 +23,20 @@ export default function TruckingLMIAJobs() {
                 <span>/</span>
                 <span className="text-white">Trucking & Transportation</span>
               </div>
-              
+
               <div className="inline-flex items-center gap-2 bg-amber-100/50 border border-amber-400/40 text-amber-400 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <Activity className="w-3.5 h-3.5" />
                 Trucking & Transportation Sector
               </div>
-              
+
               <h1 className="text-4xl md:text-5xl lg:text-[52px] font-black text-white leading-[1.1] tracking-tight mb-6">
                 LMIA Jobs in <span className="text-amber-400">Trucking & Transportation</span>
               </h1>
-              
+
               <p className="text-blue-100/70 text-lg leading-relaxed mb-10 font-light max-w-xl">
                 Long-haul trucking is one of Canada's most consistently LMIA-approved occupations. With a chronic driver shortage across every province, transportation employers regularly obtain positive LMIAs.
               </p>
-              
+
               <div className="grid grid-cols-3 gap-4 mb-10">
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
                   <div className="text-2xl font-black text-white tracking-tight">1,400+</div>
@@ -53,14 +53,14 @@ export default function TruckingLMIAJobs() {
               </div>
 
               <div className="flex flex-wrap items-center gap-4">
-                 <Link 
+                <Link
                   href="/search?category=Transportation"
                   className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5 shadow-xl shadow-amber-100"
                 >
                   Search Trucking LMIA Jobs
                   <ArrowRight className="w-4 h-4 text-brand-900" />
                 </Link>
-                <Link 
+                <Link
                   href="/what-is-lmia"
                   className="bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/40 text-white/80 hover:text-white font-medium px-6 py-4 rounded-full transition-all flex items-center gap-2"
                 >
@@ -151,23 +151,23 @@ export default function TruckingLMIAJobs() {
         {/* BOTTOM CTA */}
         <section className="bg-brand-900 py-24 px-6 text-center border-t-4 border-amber-400">
           <div className="max-w-2xl mx-auto">
-             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
-               Search 1,400+ Trucking LMIA listings
-             </h2>
-             <p className="text-blue-100/70 text-lg mb-10 font-light">
-               Updated daily. Filter by province, city, NOC code, TEER level, and wage range.
-             </p>
-             <Link 
-                href="/sign-up"
-                className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg"
-              >
-                Search Transportation LMIA Jobs Free
-                <ArrowRight className="w-5 h-5 text-brand-900" />
-              </Link>
+            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
+              Search 1,400+ Trucking LMIA listings
+            </h2>
+            <p className="text-blue-100/70 text-lg mb-10 font-light">
+              Updated daily. Filter by province, city, NOC code, TEER level, and wage range.
+            </p>
+            <Link
+              href="/sign-up"
+              className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg"
+            >
+              Search Transportation LMIA Jobs Free
+              <ArrowRight className="w-5 h-5 text-brand-900" />
+            </Link>
           </div>
         </section>
       </main>
-      
+
       <Footer />
     </div>
   );

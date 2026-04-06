@@ -1,0 +1,89 @@
+{
+  "noc": "74101",
+  "title": "NOC 74101 – Letter carriers | GTR Immigration",
+  "slug": "noc-74101-letter-carriers-gtr-immigration",
+  "description": "NOC 74101 professionals are the visible face of the Canada Post Corporation, ensuring the reliable delivery of mail and small parcels across every neighborhood in the country. As a TEER 4 occupation, Letter Carriers are responsible for sorting, routing, and delivering physical correspondence and high-priority items. In 2026, while digital communication has reduced letter volumes, the exponential rise in small e-commerce deliveries has transformed this role into a critical component of the national last-mile logistics network. For immigration, this role is a targeted occupation under the New 2026 TR to PR Pathway and the Rural Community Immigration Pilot (RCIP).",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category7 – Trades, transport and equipment operators and related occupationsTEER Level4Major Group74 – Mail and message distribution, other transport equipment operators and related maintenance workersSub-Major Group741 – Mail and message distribution occupationsMinor Group7410 – Mail and message distribution occupationsNOC Code74101",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Letter Carrier",
+    "Postal Carrier",
+    "Rural Mail Carrier",
+    "Mail Carrier",
+    "Postman / Postwoman",
+    "Courier (Postal Service)"
+  ],
+  "duties": [
+    "Sorting & Preparation: Organize letters, small parcels, and printed matter by address and load them into mailbags or delivery vehicles.",
+    "Delivery: Walk or drive established routes to deliver mail and parcels to residential and commercial addresses.",
+    "Revenue Collection: Collect payments for cash-on-delivery (COD) service and record the delivery of registered mail.",
+    "Customer Interaction: Leave notices for undeliverable items indicating the location for pickup and handle customer inquiries regarding postal services.",
+    "Returns: Return undeliverable mail to the postal station and report any route changes or safety hazards (e.g., aggressive animals or infrastructure damage).",
+    "Documentation: Maintain accurate records of delivery sequences and high-security items (e.g., passports or legal documents)."
+  ],
+  "employment_requirements": [
+    "Completion of secondary school is typically required.",
+    "Training: Two weeks to one month of specialized on-the-job training is provided by the Canada Post Corporation.",
+    "Physical Fitness: High physical stamina is mandatory; workers must be able to walk long distances and lift packages weighing up to 35 kg.",
+    "Licensing: A valid driver’s license (Class 5) is required for those on motorized or rural routes.",
+    "Security Clearance: Applicants must pass a federal Reliability Status security check.",
+    "Weather Resilience: Ability to work outdoors in all Canadian weather conditions (extreme cold, heat, or precipitation) is a core requirement."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "23.00",
+      "median": "28.85",
+      "high": "33.65"
+    },
+    {
+      "region": "Quebec",
+      "low": "22.00",
+      "median": "28.07",
+      "high": "33.65"
+    },
+    {
+      "region": "Ontario",
+      "low": "23.00",
+      "median": "28.77",
+      "high": "33.65"
+    },
+    {
+      "region": "Nova Scotia",
+      "low": "20.00",
+      "median": "26.95",
+      "high": "32.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "23.00",
+      "median": "29.50",
+      "high": "34.00"
+    },
+    "Note: In 2026, the federal minimum wage is indexed to inflation, but most Letter Carriers earn well above this due to unionized pay scales. Annual salaries for experienced carriers often range from $52,000 to $68,000."
+  ],
+  "job_outlook": [
+    "The outlook is Moderate. Employment is expected to remain stable through 2027. While automation is increasing in sorting centers (NOC 74100), the physical delivery of items to doorsteps remains a human-dependent task. Growth will be most prominent in \"Growth Corridors\" like the Okanagan (BC) and the Greater Golden Horseshoe (ON) where new housing creates new delivery points."
+  ],
+  "labour_market_demand": [
+    "The demand for Letter Carriers in 2026 is Moderate to Stable. In regions with high population growth, such as Ontario (GTA) and the BC Lower Mainland, demand remains steady to support new residential developments. According to 2026 Job Bank data, the majority of job openings are driven by a moderate number of retirements. While some provinces like Alberta show a slight decline in traditional mail positions, the shift toward \"Parcel-Heavy\" routes has stabilized the workforce. Approximately 92% of workers in this NOC are employed full-time, which is significantly higher than the national average for similar service roles.",
+    "Why Work in Canada",
+    "Federal Employment Benefits: As employees of Canada Post, over 95.4% of Letter Carriers receive premium benefits, including employer-sponsored pension plans and comprehensive dental/medical insurance.",
+    "Active Outdoor Lifestyle: Ideal for those who enjoy independent work and physical activity, with most of the workday spent walking established routes in various environments.",
+    "Predictable Scheduling: Unlike many logistics roles, Letter Carriers typically work stable daytime hours (35–40 hours/week) with limited weekend requirements.",
+    "Strategic PR Pathways: This TEER 4 role is a direct beneficiary of the New 2026 TR to PR Pathway, which targets 33,000 workers already in Canada contributing to essential infrastructure."
+  ],
+  "benefits": [],
+  "pathways": [
+    "New 2026 TR to PR Pathway: A one-time measure for 33,000 temporary residents already in Canada, targeting workers with established roots in their communities.",
+    "Rural Community Immigration Pilot (RCIP): A direct route for Letter Carriers willing to settle in smaller, high-growth communities.",
+    "OINP In-Demand Skills Stream: Occasionally targets distribution roles for regions outside the GTA.",
+    "Saskatchewan SINP (Hard-to-Fill Skills): A high-priority route for carriers with a valid job offer in the province."
+  ],
+  "additional_information": []
+}

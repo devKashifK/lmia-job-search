@@ -1,0 +1,91 @@
+{
+  "noc": "72302",
+  "title": "NOC 72302 – Gas fitters | GTR Immigration",
+  "slug": "noc-72302-gas-fitters-gtr-immigration",
+  "description": "In 2026, Gas Fitters (NOC 72302) are the specialized technicians powering Canada’s transition to high-efficiency energy systems. As the country moves toward \"Net-Zero\" residential and industrial heating, these professionals are essential for installing and maintaining the complex gas lines and equipment that heat homes and drive industrial processes. Classified as TEER 2, this is a compulsory trade in many provinces, requiring formal apprenticeship and licensing. In 2026, the role has expanded to include the conversion of systems to renewable natural gas (RNG) and the integration of smart, IoT-enabled gas meters and regulators.",
+  "classification": {
+    "category": "N/A",
+    "teer": "FeatureDetailsBroad Occupational Category7 – Trades, transport and equipment operators and related occupationsTEER Category2 (Requires college, apprenticeship, or significant experience)Major Group72 – Technical trades and transportation officersSub-Major Group723 – Pipefitting trades",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Journeyperson Gas Fitter (Class A or B)",
+    "Gas Technician",
+    "Gas Servicer / Customer Servicer",
+    "Industrial Gas Fitter-Tester",
+    "Apprentice Gas Fitter",
+    "Furnace Converter"
+  ],
+  "duties": [
+    "Layout Design: Studying drawings and specifications to determine the layout of gas lines and the materials required for installation.",
+    "Installation: Installing and maintaining gas meters, regulators, and piping between gas units and meters in residential and industrial settings.",
+    "Equipment Maintenance: Servicing gas heating units, burners, valves, and automatic controls to ensure peak performance.",
+    "Leak Detection: Testing pipes and connections for gas leaks using advanced digital detecting devices and pressure gauges.",
+    "Safety Advising: Advising clients on safety features, maintenance standards, and the 2026-grade safety protocols for gas units.",
+    "Vehicle Conversion: Converting motor vehicles or appliances to use natural gas fuels."
+  ],
+  "employment_requirements": [
+    "Education: Completion of secondary school is typically required.",
+    "Apprenticeship: Completion of a two- or three-year Gas Fitter Apprenticeship program is mandatory.",
+    "Licensing: A provincial gas fitter licence is required. Trade certification is compulsory in Nova Scotia, Quebec, Alberta, British Columbia, and the Territories.",
+    "Classes:Class B: Work on appliances up to a specific BTU limit (typically 400,000 BTU).Class A: No BTU limit; allows for work on large-scale industrial systems (requires 2 years of Class B experience).",
+    "Class B: Work on appliances up to a specific BTU limit (typically 400,000 BTU).",
+    "Class A: No BTU limit; allows for work on large-scale industrial systems (requires 2 years of Class B experience).",
+    "Red Seal: The Interprovincial Standards Red Seal is highly recommended for national mobility and higher wages."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Alberta",
+      "low": "24.00",
+      "median": "46.22",
+      "high": "55.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "26.00",
+      "median": "36.06",
+      "high": "62.50"
+    },
+    {
+      "region": "British Columbia",
+      "low": "25.00",
+      "median": "40.00",
+      "high": "51.00"
+    },
+    {
+      "region": "New Brunswick",
+      "low": "25.00",
+      "median": "35.24",
+      "high": "48.47"
+    },
+    {
+      "region": "Canada (National)",
+      "low": "26.44",
+      "median": "40.00",
+      "high": "59.62"
+    }
+  ],
+  "job_outlook": [],
+  "labour_market_demand": [
+    "The 2026 outlook for gas fitters is Moderate to Strong, driven by the maintenance of existing energy infrastructure and new high-efficiency heating mandates:",
+    "Alberta: Strongest Demand. Gas fitters in Alberta earn the highest wages in the country, with median earnings of $46.22/hr and top-tier industrial roles reaching $55.00/hr. Alberta currently reports a significant skill shortage, with nearly 50% of employers experiencing hiring difficulties.",
+    "Ontario: Moderate prospects. Demand is steady across the province, particularly in the GTA and Ottawa for residential HVAC and utility services. Ontario’s 3-year forecast (2025–2027) remains stable, with over 3,700 people currently employed in the sector.",
+    "British Columbia: Very High demand. Driven by new \"CleanBC\" building standards and the expansion of natural gas infrastructure. BC requires Class B or Class A certification with a Red Seal endorsement for most new applicants.",
+    "National Trend: Over 91% of gas fitters work full-time. The 2026 market highly values those who hold a Class A license, which allows for work on industrial systems with unlimited BTUs.",
+    "Why Work in Canada as a Gas Fitter?",
+    "Essential Infrastructure Role: You are the frontline for Canada’s energy security, managing the systems that keep 15 million homes warm during the winter.",
+    "High-Tech Specialization: Gain experience with 2026-grade technologies, including digital leak-detection devices and high-efficiency appliance conversion kits.",
+    "Excellent Compensation: As a TEER 2 trade, your median hourly wage in Canada is $40.00/hr, with many experienced technicians earning over $95,000 annually.",
+    "Priority for PR: Gas fitters are a \"Priority Occupation\" in the 2026 Express Entry \"Trade Occupations\" category and are frequently targeted by OINP and BC PNP draws."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Express Entry (Trade Occupations Category): For 2026, IRCC has increased the experience requirement. You now need 12 months of full-time work experience (up from 6 months) in a relevant trade to be eligible for category-based draws.",
+    "OINP Employer Job Offer: In March 2026, Ontario issued targeted invitations for trades including NOC 72302. This is a high-success route for those with a valid Ontario job offer.",
+    "BC PNP Construction/Skilled Worker: As a Priority Trade, gas fitters benefit from faster processing and lower score requirements in BC provincial draws.",
+    "2026 TR to PR Pathway: A confirmed initiative targeting up to 33,000 temporary residents. Gas fitters are classified as \"High-Priority Essential Infrastructure Workers.\""
+  ],
+  "additional_information": []
+}

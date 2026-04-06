@@ -1,0 +1,87 @@
+{
+  "noc": "72403",
+  "title": "NOC 72403 – Railway carmen/women | GTR Immigration",
+  "slug": "noc-72403-railway-carmen-women-gtr-immigration",
+  "description": "In 2026, Railway Carmen and Carwomen (NOC 72403) are the vital structural and mechanical experts ensuring the safety and reliability of Canada’s rail corridors. As the rail industry integrates Automatic Train Inspection (ATI) and Digital Automatic Coupling (DAC), these professionals have transitioned from purely manual repairs to high-tech troubleshooting. Operating at the TEER 2 level, they inspect, maintain, and repair everything from high-capacity freight cars to modern urban transit and subway vehicles. In 2026, the role is increasingly focused on digital braking systems and specialized maintenance for the new generation of zero-emission locomotives.",
+  "classification": {
+    "category": "N/A",
+    "teer": "FeatureDetailsBroad Occupational Category7 – Trades, transport and equipment operators and related occupationsTEER Category2 (Occupations usually requiring college, apprenticeship, or supervisory experience)Major Group72 – Technical trades and transportation officers and controllersSub-Major Group724 – Machine repair and maintenance trades",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Railway Carman/Woman",
+    "Rail Vehicle Mechanic",
+    "Railway Car Inspector",
+    "Streetcar and Subway Car Mechanic",
+    "Brake Inspector – Railway Car",
+    "Railway Carman/Woman Apprentice"
+  ],
+  "duties": [
+    "Structural Inspection: Inspecting interior and exterior components of freight and passenger cars to determine defects, wear, and extent of damage.",
+    "Mechanical Repair: Installing and repairing railway car parts such as compressors, air valves, bearings, couplings, and piping.",
+    "Electrical Systems: Repairing and maintaining the sophisticated electrical and electronic controls for propulsion and braking systems.",
+    "Metal & Wood Fabrication: Using power tools and welding equipment to repair defective metal and wood components.",
+    "Performance Testing: Testing and adjusting parts using digital gauges and advanced diagnostic equipment to ensure compliance with 2026 Rail Safety Standards."
+  ],
+  "employment_requirements": [
+    "Education: Completion of secondary school is the standard requirement.",
+    "Apprenticeship: Completion of an industry-offered apprenticeship program (usually 3–4 years) or equivalent on-the-job training is mandatory.",
+    "Certification: Trade certification is available but voluntary in Ontario, Manitoba, and British Columbia. However, it is highly recommended for higher pay and progression to supervisory roles (NOC 72020).",
+    "Skills: Strong mechanical aptitude, attention to detail, and proficiency in digital maintenance-logging software."
+  ],
+  "salary_prospects": [
+    {
+      "region": "British Columbia",
+      "low": "43.00",
+      "median": "46.00",
+      "high": "54.29"
+    },
+    {
+      "region": "Alberta",
+      "low": "32.73",
+      "median": "41.59",
+      "high": "50.92"
+    },
+    {
+      "region": "Ontario",
+      "low": "29.88",
+      "median": "40.13",
+      "high": "47.12"
+    },
+    {
+      "region": "Quebec (Montérégie)",
+      "low": "31.00",
+      "median": "42.65",
+      "high": "49.00"
+    },
+    {
+      "region": "Canada (National)",
+      "low": "30.00",
+      "median": "42.00",
+      "high": "52.00"
+    }
+  ],
+  "job_outlook": [],
+  "labour_market_demand": [
+    "The 2026 outlook is Good, driven by the expansion of urban transit systems and a steady volume of retirements in the freight sector:",
+    "Ontario (Toronto/GTA): Very Good prospects. With roughly 520 people working in this occupation in the Toronto region as of 2026, demand is high for subway and streetcar mechanics (TTC) and GO Transit maintenance crews.",
+    "British Columbia: Strong demand. BC projects a high median wage of $46.00/hr, with roughly 78% of workers employed full-time. The Port of Vancouver expansion continues to drive the need for freight car carmen.",
+    "Alberta & Saskatchewan: Steady demand. As the logistics heart of Canada's grain and energy exports, these provinces offer high job stability. Median wages in the Prairies are highly competitive, reaching $45.00/hr.",
+    "National Trend: Over 95% of the workforce is currently male, but 2026 has seen a surge in targeted recruitment for women and underrepresented groups to fill the \"leadership vacuum\" left by retirees.",
+    "Why Work in Canada as a Railway Carman/Woman?",
+    "Lead the Digital Rail Transition: Gain hands-on experience with 2026-grade technologies, including laser-based wheel profile scanners and wireless braking diagnostic tools.",
+    "Unrivaled Stability: In an era of economic shifts, rail remains the backbone of Canada’s trade. Approximately 74% of railway carmen work all year round.",
+    "Comprehensive Benefits: Over 98% of professionals in this NOC receive full medical, dental, and pension plans, typically through major employers like CN, CPKC, or Metrolinx.",
+    "Priority for PR: In 2026, \"Transport Occupations\" are a core focus for Express Entry Category-Based draws, often allowing for PR invitations at lower CRS scores."
+  ],
+  "benefits": [],
+  "pathways": [
+    "2026 TR to PR Pathway: A one-time federal initiative designed to grant permanent residence to up to 33,000 temporary residents. Railway carmen in the transport sector are classified as \"High-Priority Essential Workers.\"",
+    "Express Entry (Transport Category): IRCC has prioritized \"Transport Occupations\" for category-based draws in 2026. Eligible candidates require 12 months of full-time experience to qualify for lower CRS threshold draws.",
+    "Ontario OINP (REDI Pilot): In March 2026, Ontario targeted transport-related occupations under the Regional Economic Development through Immigration (REDI) pilot, favoring candidates with job offers in industrial hubs outside the GTA.",
+    "BC PNP Skilled Worker: A reliable route for those with a job offer from a BC-based rail or transit system, particularly with the current focus on the \"Construction and Transport\" priority sectors."
+  ],
+  "additional_information": []
+}

@@ -1,0 +1,81 @@
+{
+  "noc": "64312",
+  "title": "Introduction",
+  "slug": "introduction",
+  "description": "NOC 64312 – Airline ticket and service agents | GTR Immigration NOC 64312 (Airline ticket and service agents) professionals are the operational heart of Canada's aviation industry. From issuing tickets and managing check-ins to the critical calculation of aircraft load weights, these TEER 4 agents ensure the safety and efficiency of air travel. With Canada's major airports in Toronto, Vancouver, and Montreal seeing record-breaking passenger volumes in 2026, the demand for skilled agents is at an all-time high. For immigration, this role offers a stable entry into the transportation sector with significant growth potential into supervisory and load planning management.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category6 – Sales and service occupationsTEER Level4Major Group64 – Sales and service representativesSub-Major Group643 – Occupations in food, accommodation and tourismMinor Group6431 – Occupations in travel and accommodationNOC Code64312",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Airline Ticket Agent",
+    "Passenger Service Agent",
+    "Load Planner - Airline",
+    "Check-in Agent",
+    "Baggage Service Agent"
+  ],
+  "duties": [
+    "Issue tickets and handle passenger baggage at check-in counters.",
+    "Assist passengers at the gate during boarding and deplaning.",
+    "Calculate aircraft weight and balance and prepare load sheets for pilots (Load Planners).",
+    "Provide information on flight schedules, fares, and gate assignments.",
+    "Trace lost or misdirected baggage and process claims for damaged items."
+  ],
+  "employment_requirements": [
+    "Completion of secondary school is required.",
+    "Several weeks of on-the-job training are provided by the employer.",
+    "Load planners usually require specialized certification from the airline."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "17.00",
+      "median": "21.00",
+      "high": "35.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "18.50",
+      "median": "23.00",
+      "high": "38.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "17.90",
+      "median": "22.75",
+      "high": "48.08"
+    },
+    {
+      "region": "Ontario",
+      "low": "17.60",
+      "median": "19.50",
+      "high": "30.00"
+    },
+    {
+      "region": "Quebec",
+      "low": "16.50",
+      "median": "18.50",
+      "high": "28.00"
+    }
+  ],
+  "job_outlook": [
+    "The outlook is Stable. Over 12,000 new job openings are expected due to the recovery of international travel and the expansion of domestic low-cost carriers."
+  ],
+  "labour_market_demand": [
+    "The demand for airline ticket and service agents is currently Good, especially in provinces with major international hubs (Ontario, BC, and Alberta). As airlines expand their global routes, there is a specific shortage of Load Planners and agents with multilingual capabilities to assist international travelers.",
+    "Why Work in Canada",
+    "Aviation Growth: Work with global leaders like Air Canada and WestJet during a period of massive industry expansion.",
+    "Specialized Training: Gain high-level technical skills in aircraft weight/balance and global distribution systems (GDS).",
+    "Travel Benefits: Access to flight \"standby\" perks and industry discounts across the global aviation network."
+  ],
+  "benefits": [],
+  "pathways": [
+    "CEC (Canadian Experience Class): Accessible for agents with 12 months of Canadian work experience.",
+    "BC PNP Skills Immigration: Targeted draws for the transportation sector.",
+    "Saskatchewan INP: Addressing regional airport operational needs."
+  ],
+  "additional_information": []
+}

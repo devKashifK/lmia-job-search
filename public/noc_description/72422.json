@@ -1,0 +1,88 @@
+{
+  "noc": "72422",
+  "title": "NOC 72422 – Electrical mechanics | GTR Immigration",
+  "slug": "noc-72422-electrical-mechanics-gtr-immigration",
+  "description": "In 2026, Electrical Mechanics (NOC 72422) are the specialized technicians powering Canada’s industrial and utility sectors. Unlike general electricians who work on building wiring, electrical mechanics are the \"machine doctors\" who maintain, test, and rebuild the complex apparatus that generates and distributes power. Operating at the TEER 2 level, they specialize in heavy-duty equipment like electric motors, transformers, and industrial switchgear. In 2026, the role has become increasingly digital, requiring mechanics to use AI-driven predictive maintenance and high-precision thermal imaging to prevent system failures before they occur.",
+  "classification": {
+    "category": "N/A",
+    "teer": "FeatureDetailsBroad Occupational Category7 – Trades, transport and equipment operators and related occupationsTEER Category2 (Requires college, apprenticeship, or supervisory experience)Major Group72 – Technical trades and transportation officersSub-Major Group724 – Machine repair and maintenance trades",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Electric Motor System Technician",
+    "Transformer Repairer",
+    "Industrial Switchgear Mechanic",
+    "Armature Winder Repairer",
+    "Automotive Generator and Starter Repairer",
+    "Coil Connector Repairer",
+    "Electric Motor Repairer Apprentice"
+  ],
+  "duties": [
+    "Advanced Diagnostics: Testing and observing electrical apparatus (motors, transformers, etc.) using voltmeters, ammeters, and thermal imaging cameras to isolate faults.",
+    "Precision Rebuilding: Disassembling and rebuilding large motors and generators, including winding armatures and replacing bearings and bushings.",
+    "Transformer Service: Maintaining and repairing power transformers, including testing dielectric strength of insulating oils and servicing cooling systems.",
+    "Switchgear Maintenance: Testing and repairing high-voltage switchgear and control equipment to ensure grid stability and safety.",
+    "Corrective Repair: Machining and refinishing parts like commutators or shafts to exact manufacturer specifications."
+  ],
+  "employment_requirements": [
+    "Education: Completion of secondary school and some college or vocational training is typically required.",
+    "Apprenticeship: Completion of a four-year apprenticeship program OR a combination of over four years of work experience and industry courses is required for trade certification.",
+    "Certification: Trade certification for electric motor system technicians is available but voluntary in most provinces (except Quebec for specific winding trades). However, it is highly recommended for higher pay and union roles.",
+    "Red Seal: The Interprovincial Standards Red Seal is the \"Gold Standard,\" allowing you to work in any province and access high-paying utility contracts."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Alberta",
+      "low": "25.00",
+      "median": "41.00",
+      "high": "55.00"
+    },
+    {
+      "region": "Ontario (Toronto)",
+      "low": "24.90",
+      "median": "40.13",
+      "high": "49.77"
+    },
+    {
+      "region": "British Columbia",
+      "low": "23.00",
+      "median": "34.50",
+      "high": "48.50"
+    },
+    {
+      "region": "Quebec",
+      "low": "21.15",
+      "median": "36.00",
+      "high": "54.31"
+    },
+    {
+      "region": "Canada (National)",
+      "low": "21.64",
+      "median": "31.00",
+      "high": "49.77"
+    }
+  ],
+  "job_outlook": [],
+  "labour_market_demand": [
+    "The 2026 outlook is Moderate but Highly Stable, with demand concentrated in Canada's energy and manufacturing hubs:",
+    "Ontario: Moderate to Stable. While traditional manufacturing has slowed, the utility and green energy sectors (including nuclear refurbishments) continue to drive demand. In February 2026, Ontario issued targeted OINP invitations for skilled trades, with scores starting at 50, specifically looking for mechanics to support regional industrial corridors.",
+    "Alberta: Strongest Demand. Alberta offers the highest median wages for this NOC, reaching $41.00/hr. The province reports a steady need for mechanics to maintain large-scale electrical equipment in the energy and mining sectors.",
+    "British Columbia: High Priority. Electrical mechanics are currently on the BC PNP Priority Occupations List for construction and infrastructure. Candidates with a job offer benefit from targeted draws and faster Permanent Residency processing.",
+    "National Trend: Over 87% of workers in this NOC receive comprehensive non-wage benefits. Approximately 76% of electrical mechanics work all year round—providing significantly better job security than seasonal construction roles.",
+    "Why Work in Canada as an Electrical Mechanic?",
+    "Command Industrial Power: Gain experience with 2026-grade technologies, including digital automatic coupling for transformers and smart-grid switchgear systems.",
+    "Diverse Sector Impact: Work across critical industries: Utilities (34%), specialized repair shops (13%), and large-scale manufacturing (12%).",
+    "Elite Compensation: As a TEER 2 trade, your median hourly wage in Canada is $31.00/hr, with high-tier specialists in the GTA and Alberta earning upwards of $49.00/hr.",
+    "Priority for PR: In 2026, this NOC remains a core target for Provincial Nominee Program (PNP) draws and is a renewed priority in the Express Entry \"Trade Occupations\" category."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Express Entry (2026 Trade Occupations Category): Renewed for 2026. Eligible candidates now require 12 months of full-time work experience (or equivalent part-time) within the last 3 years to qualify for targeted draws.",
+    "OINP Employer Job Offer: In February 2026, OINP issued invitations to candidates in skilled trades-related occupations, including NOC 72422, with scores starting at 50. This is a prime route for those with an Ontario job offer.",
+    "BC PNP Skilled Worker: As a Priority Trade, electrical mechanics benefit from targeted draws and faster processing if they have a valid BC job offer.",
+    "2026 TR to PR Pathway: A confirmed initiative targeting up to 33,000 temporary residents. Electrical mechanics in the utility and manufacturing sectors are classified as \"High-Priority Essential Workers.\""
+  ],
+  "additional_information": []
+}

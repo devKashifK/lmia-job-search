@@ -1,0 +1,87 @@
+{
+  "noc": "85100",
+  "title": "NOC 85100 – Livestock labourers | GTR Immigration",
+  "slug": "noc-85100-livestock-labourers-gtr-immigration",
+  "description": "NOC 85100 represents the fundamental workforce that supports Canada’s diverse livestock, poultry, and ranching operations. As a TEER 5 occupation, these labourers provide the essential daily care and maintenance required to raise animals for food, fur, and other products. In 2026, as Canada faces a critical labor shortage in rural municipalities, these roles have become vital entry points for international workers seeking to establish a career in the Canadian agri-food sector. For immigration, this role is a primary candidate for the Atlantic Immigration Program (AIP) and specialized Provincial Nominee Program (PNP) semi-skilled streams.",
+  "classification": {
+    "category": "N/A",
+    "teer": "Classification LevelDetailsBroad Occupation Category8 – Natural resources, agriculture and related production occupationsTEER Level5Major Group85 – Harvesting, landscaping and natural resources labourersSub-Major Group851 – Harvesting, landscaping and natural resources labourersMinor Group8510 – Agriculture, horticulture and harvesting labourersNOC Code85100",
+    "major_group": "N/A",
+    "sub_major_group": "N/A",
+    "minor_group": "N/A"
+  },
+  "common_job_titles": [
+    "Beef Cattle Farm Worker",
+    "Dairy Farm Labourer",
+    "Cattle ranch labourer",
+    "Poultry farm worker",
+    "Apiary (Bee) worker",
+    "Stable hand / Groom",
+    "Egg gatherer / grader"
+  ],
+  "duties": [
+    "Animal Care: Feed and tend to livestock, poultry, and other animals; milk cows or goats manually or using machines.",
+    "Handling: Sort, brand, and handle animals for health checks, breeding, or sale.",
+    "Maintenance: Maintain farm facilities and infrastructure, including cleaning stables, barns, barnyards, and pens.",
+    "Breeding Support: Assist with breeding activities and monitor the health of animals to provide basic care or report issues.",
+    "Logistics: Prepare animals for transportation and operate/maintain basic farm machinery and equipment."
+  ],
+  "employment_requirements": [
+    "No specific education or training requirements are mandatory.",
+    "Short work demonstration and on-the-job training are typically provided by the employer.",
+    "Physical stamina, strength, and the ability to work in varied weather conditions are essential.",
+    "A basic understanding of English or French is usually required for safety compliance."
+  ],
+  "salary_prospects": [
+    {
+      "region": "Canada (Overall)",
+      "low": "15.50",
+      "median": "19.00",
+      "high": "28.00"
+    },
+    {
+      "region": "Alberta",
+      "low": "16.00",
+      "median": "23.00",
+      "high": "30.00"
+    },
+    {
+      "region": "Ontario",
+      "low": "17.60",
+      "median": "19.50",
+      "high": "28.00"
+    },
+    {
+      "region": "British Columbia",
+      "low": "17.85",
+      "median": "20.00",
+      "high": "27.50"
+    },
+    {
+      "region": "Saskatchewan",
+      "low": "15.50",
+      "median": "21.00",
+      "high": "32.00"
+    },
+    "Note: In 2026, many farms also offer non-wage benefits such as on-site housing, which can significantly lower your cost of living."
+  ],
+  "job_outlook": [
+    "The outlook is Favourable. Industry projections for 2026 indicate that the livestock sector will continue to see steady employment growth. In regions like Nova Scotia (Annapolis Valley) and Saskatchewan, the employment outlook is rated as \"Good\" due to the high volume of vacancies and a moderate number of retirements expected in the coming years."
+  ],
+  "labour_market_demand": [
+    "The demand for livestock labourers is Very Good across Canada, especially in the Prairie provinces and the Atlantic region. In 2026, Saskatchewan, Alberta, and Ontario are prioritizing recruitment for this sector to support large-scale beef, dairy, and poultry operations. With a significant number of job openings driven by both industry growth and retirements, Canadian farm owners are actively seeking workers who can commit to the year-round demands of animal care.",
+    "Why Work in Canada",
+    "High Accessibility: No formal education or training requirements, making it one of the easiest roles to secure with a short work demonstration.",
+    "Modern Farming Experience: Work on farms that utilize automated feeding systems and advanced animal health monitoring technology.",
+    "Career Growth: Excellent potential to advance to Specialized Livestock Worker (NOC 84120) or Farm Supervisor (NOC 82030) with experience.",
+    "Pathway to PR: Despite being a TEER 5 role, it is eligible for multiple \"Semi-Skilled\" immigration streams designed to retain essential agricultural workers."
+  ],
+  "benefits": [],
+  "pathways": [
+    "Atlantic Immigration Program (AIP): A high-priority route for workers with job offers from designated employers in NB, NS, PEI, or NL.",
+    "Saskatchewan Agriculture Talent Pathway: Targeted specifically at agricultural workers with 6 months of experience in the province.",
+    "Alberta Opportunity Stream: Fast-track PR for those currently working in Alberta’s farm and food sector.",
+    "BC PNP Entry-Level and Semi-Skilled (ELSS): Accessible for those working in the province's livestock or food processing sectors for at least 9 months."
+  ],
+  "additional_information": []
+}
