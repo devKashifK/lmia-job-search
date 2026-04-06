@@ -8,13 +8,13 @@ import { insertSearch } from '@/lib/api/searches';
 export const useCreditData = () => {
   const { session } = useSession();
   const { data: creditData, error: creditError, isLoading } = useQuery({
-    queryKey: ['credits', session.trial, session?.user?.id],
+    queryKey: ['credits', session?.user?.id],
     queryFn: async () => {
       if (session?.trial) return null;
       // Removed artificial delay
       return getUserCredits(session?.user?.id!);
     },
-    enabled: !!session?.user?.id && !session.trial,
+    enabled: !!session?.user?.id
   });
 
   const isUnlimited = isUnlimitedPlan(creditData);

@@ -67,7 +67,7 @@ export default function Footer() {
             <h4 className="font-semibold text-gray-900 mb-4 text-sm">Industries</h4>
             <ul className="space-y-3 text-sm text-gray-500">
               <li><FooterLink href="/blog">Immigration Blog</FooterLink></li>
-              <li><FooterLink href="/lmia-jobs">Browse Jobs</FooterLink></li>
+              <li><FooterLink href="/search">Browse Jobs</FooterLink></li>
               <li><FooterLink href="/lmia-jobs/agriculture">Agriculture</FooterLink></li>
               <li><FooterLink href="/lmia-jobs/construction">Construction</FooterLink></li>
               <li><FooterLink href="/lmia-jobs/hospitality">Hospitality</FooterLink></li>
