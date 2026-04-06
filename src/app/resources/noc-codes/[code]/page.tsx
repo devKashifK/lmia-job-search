@@ -23,10 +23,13 @@ import Link from 'next/link';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
+import NocCTA from '../components/noc-cta';
 
 interface PageProps {
     params: Promise<{ code: string }>;
 }
+
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { code } = await params;
@@ -355,20 +358,7 @@ export default async function NocDetailPage({ params }: PageProps) {
                                 )}
 
                                 {/* CTA CARD */}
-                                <Card className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-[2rem] p-8 shadow-xl border-none text-brand-900">
-                                    <h4 className="text-xl font-black mb-4">Start your move to Canada</h4>
-                                    <p className="text-sm font-medium mb-8 leading-relaxed opacity-90">
-                                        JobMaze tracks 10,000+ LMIA opportunities specifically for professionals in NOC {profile.code}.
-                                    </p>
-                                    <Link href="/sign-up" className="block">
-                                        <Button className="w-full bg-brand-900 hover:bg-brand-800 text-white font-bold py-6 rounded-2xl shadow-lg transition-all active:scale-95">
-                                            Create Free  Account
-                                        </Button>
-                                    </Link>
-                                    <p className="text-[10px] uppercase font-black text-center mt-4 tracking-widest opacity-60">
-                                        TRUSTED BY 1,200+ CONSULTANTS
-                                    </p>
-                                </Card>
+                                <NocCTA code={profile.code} />
 
                             </div>
                         </div>
