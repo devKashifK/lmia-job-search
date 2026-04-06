@@ -31,8 +31,8 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-gray-500">
               <li><FooterLink href="/search">Job Search</FooterLink></li>
               <li><FooterLink href="/dashboard">Data Dashboard</FooterLink></li>
-              <li><FooterLink href="/pricing">Pricing Plans</FooterLink></li>
-              <li><FooterLink href="/faq">FAQ</FooterLink></li>
+              <li><FooterLink href="/resources/wage-finder">Wage Finder</FooterLink></li>
+              <li><FooterLink href="/resources/noc-codes">NOC Guide</FooterLink></li>
             </ul>
           </div>
 
@@ -82,8 +82,9 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-gray-500">
               <li><FooterLink href="/about">About Us</FooterLink></li>
               <li><FooterLink href="/resources/documentation">Documentation</FooterLink></li>
-              <li><FooterLink href="/resources/noc-codes">NOC Guide</FooterLink></li>
               <li><FooterLink href="/contact">Contact Support</FooterLink></li>
+              <li><FooterLink href="/pricing">Pricing Plans</FooterLink></li>
+              <li><FooterLink href="/faq">FAQ</FooterLink></li>
             </ul>
           </div>
         </div>

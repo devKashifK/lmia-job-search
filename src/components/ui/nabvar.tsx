@@ -26,7 +26,8 @@ import {
   Bell,
   ChevronRight,
   LogIn,
-  UserPlus
+  UserPlus,
+  HandCoins
 } from 'lucide-react';
 import {
   Tooltip,
@@ -55,6 +56,7 @@ export default function Navbar({ className }: { className?: string }) {
     { name: 'Insights', href: '/insights', icon: Lightbulb },
     { name: 'Analysis', href: '/analysis', icon: BarChart3 },
     { name: 'Comparator', href: '/compare', icon: GitCompare },
+    { name: 'Wage Finder', href: '/resources/wage-finder', icon: HandCoins },
     { name: 'NOC Guide', href: '/resources/noc-codes', icon: BookOpen },
     { name: 'Pricing', href: '/pricing', icon: DollarSign },
   ];

@@ -24,6 +24,7 @@ import BackgroundWrapper from '@/components/ui/background-wrapper';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
 import NocCTA from '../components/noc-cta';
+import { cn } from '@/lib/utils';
 
 interface PageProps {
     params: Promise<{ code: string }>;
@@ -127,60 +128,74 @@ export default async function NocDetailPage({ params }: PageProps) {
                                     </Link>
                                 </div>
                             </div>
-                        </div>
+                        </div>                        {/* DASHBOARD GRID */}
+                        {(() => {
+                            const hasCommonTitles = profile.commonJobTitles && profile.commonJobTitles.length > 0;
+                            const hierarchyItems = [
+                                { label: 'Major Group', val: profile.classification?.major_group },
+                                { label: 'Sub-Major', val: profile.classification?.sub_major_group },
+                                { label: 'Minor Group', val: profile.classification?.minor_group },
+                            ].filter(item => 
+                                item.val && 
+                                item.val !== 'N/A' && 
+                                !item.val.toLowerCase().includes('major groups:') &&
+                                !item.val.toLowerCase().includes('sub-major group:') &&
+                                !item.val.toLowerCase().includes('minor group:')
+                            );
+                            const hasHierarchy = hierarchyItems.length > 0;
 
-                        {/* DASHBOARD GRID */}
-                        {(profile.classification || (profile.commonJobTitles && profile.commonJobTitles.length > 0)) && (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                            if (!hasCommonTitles && !hasHierarchy) return null;
 
-                                {/* Classification Details */}
-                                {profile.classification && (
-                                    <Card className="lg:col-span-1 rounded-[2rem] border-none shadow-lg ring-1 ring-gray-100 bg-white">
-                                        <CardHeader className="pb-4">
-                                            <div className="flex items-center gap-3 text-brand-600 mb-2">
-                                                <Layers className="w-5 h-5" />
-                                                <span className="text-xs font-black uppercase tracking-widest">Classification Hierarchy</span>
-                                            </div>
-                                            <CardTitle className="text-lg font-bold">Standard Occupational Structure</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
-                                            {[
-                                                { label: 'Major Group', val: profile.classification.major_group },
-                                                { label: 'Sub-Major', val: profile.classification.sub_major_group },
-                                                { label: 'Minor Group', val: profile.classification.minor_group },
-                                            ].map((item, i) => item.val && item.val !== 'N/A' && (
-                                                <div key={i} className="pb-3 border-b border-gray-50 last:border-0 last:pb-0">
-                                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{item.label}</div>
-                                                    <div className="text-sm font-medium text-gray-700 leading-snug">{item.val}</div>
+                            return (
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+                                    {/* Classification Details */}
+                                    {hasHierarchy && (
+                                        <Card className="lg:col-span-1 rounded-[2rem] border-none shadow-lg ring-1 ring-gray-100 bg-white">
+                                            <CardHeader className="pb-4">
+                                                <div className="flex items-center gap-3 text-brand-600 mb-2">
+                                                    <Layers className="w-5 h-5" />
+                                                    <span className="text-xs font-black uppercase tracking-widest">Classification Hierarchy</span>
                                                 </div>
-                                            ))}
-                                        </CardContent>
-                                    </Card>
-                                )}
-
-                                {/* Common Titles */}
-                                {profile.commonJobTitles && profile.commonJobTitles.length > 0 && (
-                                    <Card className={`${profile.classification ? 'lg:col-span-2' : 'lg:col-span-3'} rounded-[2rem] border-none shadow-lg ring-1 ring-gray-100 bg-white`}>
-                                        <CardHeader className="pb-4">
-                                            <div className="flex items-center gap-3 text-emerald-600 mb-2">
-                                                <CheckCircle2 className="w-5 h-5" />
-                                                <span className="text-xs font-black uppercase tracking-widest">Common Job Titles</span>
-                                            </div>
-                                            <CardTitle className="text-lg font-bold">This NOC code includes roles like...</CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="flex flex-wrap gap-2">
-                                                {profile.commonJobTitles.map((title, i) => (
-                                                    <Badge key={i} variant="secondary" className="bg-gray-50 hover:bg-emerald-50 text-gray-600 hover:text-emerald-700 border-gray-200 hover:border-emerald-200 transition-all py-2 px-4 rounded-xl text-sm font-medium">
-                                                        {title}
-                                                    </Badge>
+                                                <CardTitle className="text-lg font-bold">Standard Occupational Structure</CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="space-y-4">
+                                                {hierarchyItems.map((item, i) => (
+                                                    <div key={i} className="pb-3 border-b border-gray-50 last:border-0 last:pb-0">
+                                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{item.label}</div>
+                                                        <div className="text-sm font-medium text-gray-700 leading-snug">{item.val}</div>
+                                                    </div>
                                                 ))}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                )}
-                            </div>
-                        )}
+                                            </CardContent>
+                                        </Card>
+                                    )}
+
+                                    {/* Common Titles */}
+                                    {hasCommonTitles && (
+                                        <Card className={cn(
+                                            "rounded-[2rem] border-none shadow-lg ring-1 ring-gray-100 bg-white",
+                                            hasHierarchy ? 'lg:col-span-2' : 'lg:col-span-3'
+                                        )}>
+                                            <CardHeader className="pb-4">
+                                                <div className="flex items-center gap-3 text-emerald-600 mb-2">
+                                                    <CheckCircle2 className="w-5 h-5" />
+                                                    <span className="text-xs font-black uppercase tracking-widest">Common Job Titles</span>
+                                                </div>
+                                                <CardTitle className="text-lg font-bold">This NOC code includes roles like...</CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {profile.commonJobTitles?.map((title, i) => (
+                                                        <Badge key={i} variant="secondary" className="bg-gray-50 hover:bg-emerald-50 text-gray-600 hover:text-emerald-700 border-gray-200 hover:border-emerald-200 transition-all py-2 px-4 rounded-xl text-sm font-medium">
+                                                            {title}
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    )}
+                                </div>
+                            );
+                        })()}
 
                         {/* CONTENT GRID */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -201,16 +216,33 @@ export default async function NocDetailPage({ params }: PageProps) {
                                     <CardContent className="p-8 pt-4">
                                         {filteredDuties.length > 0 ? (
                                             <ul className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                                                {filteredDuties.map((duty, idx) => (
-                                                    <li key={idx} className="flex items-start gap-4 p-4 rounded-2xl bg-gray-50/50 hover:bg-brand-50/30 transition-colors group">
-                                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center flex-shrink-0 font-bold text-xs text-brand-600 group-hover:bg-brand-600 group-hover:text-white transition-all shadow-sm">
-                                                            {idx + 1}
-                                                        </div>
-                                                        <span className="text-gray-700 leading-relaxed text-base">
-                                                            {duty.replace(/^[-\s•*]+/, '').trim()}
-                                                        </span>
-                                                    </li>
-                                                ))}
+                                                {filteredDuties.map((duty, idx) => {
+                                                    const isHeader = duty.trim().endsWith(':');
+                                                    const cleanDuty = duty.replace(/^[-\s•*]+/, '').trim();
+
+                                                    if (isHeader) {
+                                                        return (
+                                                            <li key={idx} className={cn(
+                                                                "text-lg font-black text-brand-900 border-b border-brand-50 pb-2 flex items-center gap-3",
+                                                                idx > 0 ? "mt-8" : "mt-2"
+                                                            )}>
+                                                                <div className="w-2 h-6 bg-brand-600 rounded-full" />
+                                                                {cleanDuty}
+                                                            </li>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <li key={idx} className="flex items-start gap-4 p-4 rounded-2xl bg-gray-50/50 hover:bg-brand-50/30 transition-colors group">
+                                                            <div className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center flex-shrink-0 font-bold text-xs text-brand-600 group-hover:bg-brand-600 group-hover:text-white transition-all shadow-sm">
+                                                                {idx + 1}
+                                                            </div>
+                                                            <span className="text-gray-700 leading-relaxed text-base">
+                                                                {cleanDuty}
+                                                            </span>
+                                                        </li>
+                                                    );
+                                                })}
                                             </ul>
                                         ) : (
                                             <div className="text-center py-10 text-gray-400 italic">No specific duties documented for this classification.</div>
@@ -272,14 +304,30 @@ export default async function NocDetailPage({ params }: PageProps) {
                                         </CardHeader>
                                         <CardContent className="p-8 pt-4">
                                             <div className="space-y-4">
-                                                {profile.employmentRequirements.map((req, idx) => (
-                                                    <div key={idx} className="flex items-start gap-4 p-4 rounded-2xl border border-gray-50 hover:border-amber-100 hover:bg-amber-50/10 transition-all">
-                                                        <div className="mt-1 text-amber-500 flex-shrink-0">
-                                                            <CheckCircle2 className="w-5 h-5" />
+                                                {profile.employmentRequirements.map((req, idx) => {
+                                                    const isHeader = req.trim().endsWith(':');
+                                                    const cleanReq = req.replace(/^[-\s•*]+/, '').trim();
+
+                                                    if (isHeader) {
+                                                        return (
+                                                            <div key={idx} className={cn(
+                                                                "text-base font-black text-gray-900 border-l-4 border-amber-400 pl-4 py-1",
+                                                                idx > 0 ? "mt-8" : "mt-2"
+                                                            )}>
+                                                                {cleanReq}
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <div key={idx} className="flex items-start gap-4 p-4 rounded-2xl border border-gray-50 hover:border-amber-100 hover:bg-amber-50/10 transition-all">
+                                                            <div className="mt-1 text-amber-500 flex-shrink-0">
+                                                                <CheckCircle2 className="w-5 h-5" />
+                                                            </div>
+                                                            <p className="text-gray-700 leading-relaxed font-bold">{cleanReq}</p>
                                                         </div>
-                                                        <p className="text-gray-700 leading-relaxed font-bold">{req.replace(/^[-\s•*]+/, '').trim()}</p>
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -305,12 +353,27 @@ export default async function NocDetailPage({ params }: PageProps) {
                                             {profile.labourMarketDemand && profile.labourMarketDemand.length > 0 && (
                                                 <div className="space-y-3 mt-6">
                                                     <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Market Demand Factors</div>
-                                                    {profile.labourMarketDemand.map((demand, i) => (
-                                                        <div key={i} className="text-sm text-gray-600 flex gap-3 items-start">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
-                                                            {demand}
-                                                        </div>
-                                                    ))}
+                                                    {profile.labourMarketDemand.map((demand, i) => {
+                                                        const isHeader = demand.trim().endsWith(':') || /^(why|how|what|overview|summary)/i.test(demand.trim());
+                                                        
+                                                        if (isHeader) {
+                                                            return (
+                                                                <div key={i} className={cn(
+                                                                    "text-sm font-black text-gray-900",
+                                                                    i > 0 ? "mt-8" : "mt-2"
+                                                                )}>
+                                                                    {demand}
+                                                                </div>
+                                                            );
+                                                        }
+
+                                                        return (
+                                                            <div key={i} className="text-sm text-gray-600 flex gap-3 items-start pl-1">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
+                                                                {demand}
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
                                             )}
                                         </CardContent>
@@ -338,24 +401,52 @@ export default async function NocDetailPage({ params }: PageProps) {
                                 )}
 
                                 {/* Additional Info */}
-                                {profile.additionalInfo.length > 0 && (
-                                    <div className="bg-brand-900 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-2xl">
-                                        <div className="absolute -right-4 -bottom-4 opacity-10">
-                                            <Info className="w-40 h-40" />
+                                {(() => {
+                                    // Professional Context Refinement
+                                    // Filter out strings that look like smashed classification hierarchy (e.g. "10 - text100 - text1001 - text")
+                                    const filteredInfo = profile.additionalInfo.filter(info => {
+                                        const cleanStr = info.trim();
+                                        // Detect pattern: numbers followed by text repeated (at least 2 occurrences)
+                                        const hierarchyPattern = /(\d{1,4}\s*–\s*.*){2,}/;
+                                        return !hierarchyPattern.test(cleanStr) && cleanStr.length > 5;
+                                    });
+
+                                    if (filteredInfo.length === 0) return null;
+
+                                    return (
+                                        <div className="bg-brand-900 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-2xl">
+                                            <div className="absolute -right-4 -bottom-4 opacity-10">
+                                                <Info className="w-40 h-40" />
+                                            </div>
+                                            <h3 className="text-lg font-bold mb-6 flex items-center gap-2" id="professional-context">
+                                                <Info className="w-5 h-5 text-amber-400" />
+                                                Professional Context
+                                            </h3>
+                                            <ul className="space-y-4 relative z-10">
+                                                {filteredInfo.map((info, idx) => {
+                                                    const isHeader = info.trim().endsWith(':') || /^(why|how|what|overview|summary)/i.test(info.trim());
+                                                    
+                                                    if (isHeader) {
+                                                        return (
+                                                            <li key={idx} className={cn(
+                                                                "text-sm font-black text-amber-300",
+                                                                idx > 0 ? "pt-6" : "pt-0"
+                                                            )}>
+                                                                {info}
+                                                            </li>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <li key={idx} className="text-sm text-blue-100/80 leading-relaxed font-light pl-4 border-l-2 border-amber-400/30">
+                                                            {info}
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
                                         </div>
-                                        <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                                            <Info className="w-5 h-5 text-amber-400" />
-                                            Professional Context
-                                        </h3>
-                                        <ul className="space-y-4 relative z-10">
-                                            {profile.additionalInfo.map((info, idx) => (
-                                                <li key={idx} className="text-sm text-blue-100/80 leading-relaxed font-light pl-4 border-l-2 border-amber-400/30">
-                                                    {info}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
+                                    );
+                                })()}
 
                                 {/* CTA CARD */}
                                 <NocCTA code={profile.code} />
