@@ -43,7 +43,7 @@ export const GET_CATEGORIES = gql`
 
 export const GET_ALL_POSTS = gql`
   query AllPosts($first: Int!, $search: String) {
-    posts(first: $first, where: { search: $search }) {
+    posts(first: $first, where: { search: $search, stati: [PUBLISH] }) {
       nodes {
         id
         title

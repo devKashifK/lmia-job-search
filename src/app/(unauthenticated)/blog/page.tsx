@@ -36,9 +36,16 @@ export default function BlogPage() {
         const postsRes = await client.query<{ posts: { nodes: Post[] } }>({
           query: GET_ALL_POSTS,
           variables: { first: 100, search },
+          fetchPolicy: 'no-cache',
         });
 
-        setAllPosts(postsRes.data?.posts?.nodes || []);
+        const fetchedPosts = postsRes.data?.posts?.nodes || [];
+        console.log(`[Blog] Fetched ${fetchedPosts.length} posts from WordPress. Search: "${search}"`);
+        if (fetchedPosts.length > 0) {
+          console.log(`[Blog] Latest Post: "${fetchedPosts[0].title}" (ID: ${fetchedPosts[0].id})`);
+        }
+        
+        setAllPosts(fetchedPosts);
       } catch (error) {
         console.error("Error fetching blog data:", error);
       } finally {

@@ -8,4 +8,14 @@ export const getServerClient = () => new ApolloClient({
         fetch,
     }),
     cache: new InMemoryCache(),
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'ignore',
+        },
+        query: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'all',
+        },
+    },
 });
