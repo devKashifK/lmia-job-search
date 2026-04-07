@@ -136,7 +136,7 @@ export default function BlogPage() {
                     </div>
 
                     {/* Right: Media */}
-                    <div className="flex-1 min-h-[400px] lg:min-h-auto relative overflow-hidden order-1 lg:order-2">
+                    <div className="w-full lg:flex-1 aspect-video lg:aspect-auto relative overflow-hidden order-1 lg:order-2">
                       {featuredPost.featuredImage?.node.sourceUrl ? (
                         <img 
                           src={featuredPost.featuredImage.node.sourceUrl} 

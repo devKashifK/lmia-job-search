@@ -9,10 +9,29 @@ import {
   User,
   GitCompare,
   Briefcase,
+  Menu,
   LucideIcon,
+  Lightbulb,
+  HandCoins,
+  BookOpen,
+  Newspaper,
+  DollarSign,
+  LayoutDashboard,
+  LogOut,
+  Settings,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CustomLink from '../ui/CustomLink';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { useSession } from '@/hooks/use-session';
+import UserDropdown from '../ui/user-dropdown';
+import { Button } from '../ui/button';
 
 interface NavItem {
   name: string;
@@ -23,19 +42,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    name: 'Dashboard',
-    icon: Home,
-    href: '/dashboard',
-  },
-  {
     name: 'Search',
     icon: Search,
     href: '/',
-  },
-  {
-    name: 'Compare',
-    icon: GitCompare,
-    href: '/compare',
   },
   {
     name: 'Analysis',
@@ -43,14 +52,14 @@ const navItems: NavItem[] = [
     href: '/analysis',
   },
   {
-    name: 'Apps',
-    icon: Briefcase,
-    href: '/dashboard/applications',
+    name: 'Compare',
+    icon: GitCompare,
+    href: '/compare',
   },
   {
-    name: 'Profile',
-    icon: User,
-    href: '/dashboard/profile',
+    name: 'Dashboard',
+    icon: Home,
+    href: '/dashboard',
   },
 ];
 
@@ -124,6 +133,72 @@ export function BottomNav() {
             </CustomLink>
           );
         })}
+
+        {/* Menu Hamburger at the end */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <button
+              className="relative flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-2xl transition-all duration-300 min-w-[64px] text-gray-500 hover:text-brand-500 active:scale-95"
+            >
+              <div className="relative z-10">
+                <Menu className="w-5 h-5" strokeWidth={2} />
+              </div>
+              <span className="relative z-10 text-[10px] font-semibold text-gray-600">
+                Menu
+              </span>
+            </button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[280px] p-0 flex flex-col">
+            <SheetHeader className="p-4 border-b border-gray-50 text-left">
+              <SheetTitle className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Navigation</SheetTitle>
+            </SheetHeader>
+            
+            <div className="flex-1 overflow-y-auto py-2">
+              <div className="px-3 space-y-0.5">
+                {[
+                  { name: 'Search', href: '/search', icon: Search },
+                  { name: 'Insights', href: '/insights', icon: Lightbulb },
+                  { name: 'Analysis', href: '/analysis', icon: BarChart3 },
+                  { name: 'Comparator', href: '/compare', icon: GitCompare },
+                  { name: 'Wage Finder', href: '/resources/wage-finder', icon: HandCoins },
+                  { name: 'NOC Guide', href: '/resources/noc-codes', icon: BookOpen },
+                  { name: 'Blog', href: '/blog', icon: Newspaper },
+                  { name: 'Pricing', href: '/pricing', icon: DollarSign },
+                ].map((item) => (
+                  <CustomLink
+                    key={item.name}
+                    href={item.href}
+                    className="flex items-center gap-3 px-3 py-1.5 rounded-xl text-gray-600 hover:text-brand-600 hover:bg-brand-50/50 transition-all group"
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-brand-600 shadow-sm border border-gray-100/50">
+                      <item.icon className="w-4 h-4" />
+                    </div>
+                    <span className="text-[13px] font-semibold">{item.name}</span>
+                  </CustomLink>
+                ))}
+              </div>
+              
+              <div className="mt-4 px-3">
+                <div className="h-px bg-gray-100 mb-4" />
+                <div className="space-y-0.5">
+                   <CustomLink
+                    href="/dashboard"
+                    className="flex items-center gap-3 px-3 py-1.5 rounded-xl text-gray-600 hover:text-brand-600 hover:bg-brand-50/50 transition-all group"
+                  >
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-brand-600 shadow-sm border border-gray-100/50">
+                      <LayoutDashboard className="w-4 h-4" />
+                    </div>
+                    <span className="text-[13px] font-semibold">Dashboard</span>
+                  </CustomLink>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-gray-50/50 border-t border-gray-100">
+               <UserDropdown />
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </motion.nav>
   );

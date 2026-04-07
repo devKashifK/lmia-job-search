@@ -593,7 +593,7 @@ export function SearchBox() {
               }}
               className={cn(
                 "relative cursor-pointer hover:bg-gray-50/50 transition-colors",
-                isMobile ? "p-4 border-b border-gray-100" : "h-full flex-[1.5] rounded-l-full pl-8 pr-4 flex flex-col justify-center", // Flex grow for input
+                isMobile ? "p-6 border-b border-gray-100" : "h-full flex-[1.5] rounded-l-full pl-8 pr-4 flex flex-col justify-center", // Flex grow for input
                 !isMobile && activeField === 'what' && "bg-gray-100/50 rounded-full"
               )}
             >
@@ -671,7 +671,7 @@ export function SearchBox() {
               }}
               className={cn(
                 "relative cursor-pointer hover:bg-gray-50/50 transition-colors",
-                isMobile ? "p-4 border-b border-gray-100" : "h-full flex-1 pl-6 pr-4 flex flex-col justify-center",
+                isMobile ? "p-6 border-b border-gray-100" : "h-full flex-1 pl-6 pr-4 flex flex-col justify-center",
                 !isMobile && activeField === 'where' && "bg-gray-100/50 rounded-full"
               )}
             >
@@ -697,7 +697,7 @@ export function SearchBox() {
                 <div
                   className={cn(
                     "relative cursor-pointer hover:bg-gray-50/50 transition-colors",
-                    isMobile ? "p-4" : "h-full flex-1 pl-6 pr-20 flex flex-col justify-center", // Padding right for button
+                    isMobile ? "p-6" : "h-full flex-1 pl-6 pr-20 flex flex-col justify-center", // Padding right for button
                     !isMobile && activeField === 'dates' && "bg-gray-100/50 rounded-full"
                   )}
                   onClick={() => setActiveField('dates')}
@@ -746,7 +746,7 @@ export function SearchBox() {
             </Popover>
 
             {/* Search Button (Floating) */}
-            <div className={isMobile ? "flex gap-3 p-4 pt-0" : "absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2"}>
+            <div className={isMobile ? "flex items-center gap-3 p-6 pt-0" : "absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2"}>
               {/* Alert Button (Desktop) */}
               {!isMobile && (
                 <Button
@@ -1000,9 +1000,15 @@ export function SearchBox() {
           </div >
 
           {/* Search By Options (Premium UI) */}
-          <div className="flex justify-center mt-6">
-            <div className="inline-flex items-center bg-white/80 backdrop-blur-md border border-white/50 shadow-sm rounded-full p-1.5 gap-1">
-              <span className="text-xs font-semibold text-gray-400 px-3 uppercase tracking-wider">Search by</span>
+          <div className="flex justify-center mt-6 w-full">
+            <div className={cn(
+              "inline-flex items-center bg-white/80 backdrop-blur-md border border-white/50 shadow-sm rounded-full p-1.5 gap-1",
+              isMobile && "max-w-[calc(100vw-2rem)] overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap px-4"
+            )}>
+              <span className={cn(
+                "text-xs font-semibold text-gray-400 px-3 uppercase tracking-wider",
+                isMobile && "sticky left-0 bg-white/80 backdrop-blur-md z-10 py-1"
+              )}>Search by</span>
               {['all', 'job_title', 'category', 'noc_code', 'employer', 'city'].map((field) => (
                 <button
                   key={field}
@@ -1121,8 +1127,6 @@ export function SearchBox() {
 
         </motion.div>
       </div >
-      {isMobile && <BottomNav />
-      }
     </>
   );
 }
