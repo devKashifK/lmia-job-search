@@ -1,7 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
 import db from '@/db'; // Supabase client
-import { useTrial } from '@/context/trail';
+import { useTrial } from '@/context/trial';
 
 // export function useSession() {
 //   const [session, setSession] = useState(null);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { initializeThemeColor } from "@/lib/colors";
 import { useSession } from "@/hooks/use-session";
+import { TrialTimer } from "@/components/ui/trial-timer";
 
 export default function ClientLayout({
   children,
@@ -22,5 +23,10 @@ export default function ClientLayout({
     return null; // Don't render anything until theme is initialized
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <TrialTimer />
+      {children}
+    </>
+  );
 }

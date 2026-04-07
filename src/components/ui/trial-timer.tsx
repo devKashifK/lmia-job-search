@@ -3,7 +3,7 @@
 import React from 'react';
 import { Clock, AlertCircle } from 'lucide-react';
 import { useControl } from '@/context/control';
-import { useTrial } from '@/context/trail';
+import { useTrial } from '@/context/trial';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function TrialTimer() {
@@ -14,7 +14,7 @@ export function TrialTimer() {
 
   const minutes = Math.floor(remainingTime / 60);
   const seconds = remainingTime % 60;
-  const isUrgent = remainingTime <= 30; // Last 30 seconds
+  const isUrgent = remainingTime <= 60; // Last 60 seconds
 
   return (
     <AnimatePresence>

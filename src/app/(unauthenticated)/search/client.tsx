@@ -8,10 +8,12 @@ import { BottomNav } from '@/components/mobile/bottom-nav';
 import Navbar from '@/components/ui/nabvar';
 import useMobile from '@/hooks/use-mobile';
 import { ProfileCompletionCheck } from '@/components/ui/profile-completion-check';
+import { useSession } from '@/hooks/use-session';
 
 
 export default function Page() {
   const { isMobile, isMounted } = useMobile();
+  const { user } = useSession();
 
   if (!isMounted) {
     return null;
@@ -19,7 +21,7 @@ export default function Page() {
 
   return (
     <div className="bg-gradient-to-b from-brand-50 to-white min-h-screen flex flex-col">
-      <ProfileCompletionCheck />
+      {user && <ProfileCompletionCheck />}
       <Navbar className="" />
 
       <main className="flex-grow pt-20 pb-16">

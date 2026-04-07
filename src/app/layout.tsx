@@ -10,7 +10,7 @@ import { ThemeProvider } from '@/components/ui/theme-provider';
 import ClientLayout from './client-layout';
 import Script from 'next/script';
 import { ControlContextProvider } from '@/context/control';
-import { TrialProvider } from '@/context/trail';
+import { TrialProvider } from '@/context/trial';
 import { PreventCopyPaste } from '@/components/security/prevent-copy-paste';
 import Honeypot from '@/components/security/honeypot';
 

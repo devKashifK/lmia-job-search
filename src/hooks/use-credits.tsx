@@ -28,8 +28,10 @@ export const useUpdateCredits = () => {
   const queryClient = useQueryClient();
 
   const updateCreditsAndSearch = async (keyword: string, filters?: Record<string, any>) => {
-    if (session?.trial) return null;
-    if (!session?.user?.id) throw new Error('User not authenticated');
+    // If guest or trial, skip database recording
+    if (session?.trial || !session?.user?.id) {
+        return null;
+    }
 
     try {
       // Searches are now free - removed incrementUsedCredit call

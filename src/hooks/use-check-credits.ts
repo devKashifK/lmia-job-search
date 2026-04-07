@@ -9,14 +9,9 @@ export function useCheckCredits() {
     const router = useRouter();
 
     const checkCredits = async (requiredCredits: number = 1): Promise<boolean> => {
-        if (session?.trial) return true;
-        if (!session?.user?.id) {
-            toast({
-                title: 'Error',
-                description: 'You must be logged in to perform this action',
-                variant: 'destructive',
-            });
-            return false;
+        // Allow trial mode or unauthenticated guests to use basic features
+        if (session?.trial || !session?.user?.id) {
+            return true;
         }
 
         try {
