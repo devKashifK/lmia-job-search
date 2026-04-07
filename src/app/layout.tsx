@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     description: 'Discover jobs across Canada with JobMaze. Search real-time vacancies, LMIA opportunities, and immigration-friendly jobs with powerful AI search tools.',
     siteName: 'JobMaze',
     images: [{
-      url: '/feature_image_jobmaze.svg',
+      url: '/og-image.png',
       width: 1200,
       height: 630,
       alt: 'JobMaze – AI Job Search Platform for Canada Jobs',
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'JobMaze – AI Job Search Platform for Canada Jobs',
     description: 'Discover jobs across Canada with JobMaze. Search real-time vacancies, LMIA opportunities, and immigration-friendly jobs with powerful AI search tools.',
-    images: ['/feature_image_jobmaze.svg'],
+    images: ['/og-image.png'],
   },
 };
 

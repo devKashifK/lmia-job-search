@@ -1,9 +1,32 @@
 import { MetadataRoute } from 'next'
+import { getServerClient } from './(unauthenticated)/blog/serverClient'
+import { GET_ALL_POST_SLUGS } from './(unauthenticated)/blog/queries'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = 'https://jobmaze.ca'
+    const client = getServerClient()
 
-    return [
+    // Fetch dynamic blog posts from WordPress
+    let blogPosts: MetadataRoute.Sitemap = []
+    try {
+        const { data } = await client.query({
+            query: GET_ALL_POST_SLUGS,
+            variables: { first: 100 }
+        })
+
+        if (data?.posts?.nodes) {
+            blogPosts = data.posts.nodes.map((post: any) => ({
+                url: `${baseUrl}/blog/${post.slug}`,
+                lastModified: new Date(post.modified || new Date()),
+                changeFrequency: 'weekly',
+                priority: 0.7,
+            }))
+        }
+    } catch (error) {
+        console.error('Sitemap: Error fetching blog posts:', error)
+    }
+
+    const staticRoutes: MetadataRoute.Sitemap = [
         { url: `${baseUrl}/sitemap/trending.xml`, lastModified: new Date() },
         { url: `${baseUrl}/sitemap/lmia.xml`, lastModified: new Date() },
         { url: `${baseUrl}/sitemap/blog.xml`, lastModified: new Date() },
@@ -126,4 +149,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { url: `${baseUrl}/lmia-jobs-healthcare`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
         { url: `${baseUrl}/lmia-jobs-trucking`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
     ];
+
+    return [...staticRoutes, ...blogPosts];
 }
