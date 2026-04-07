@@ -40,40 +40,42 @@ interface NavItem {
   badge?: number;
 }
 
-const navItems: NavItem[] = [
-  {
-    name: 'Search',
-    icon: Search,
-    href: '/',
-  },
-  {
-    name: 'Analysis',
-    icon: BarChart3,
-    href: '/analysis',
-  },
-  {
-    name: 'Compare',
-    icon: GitCompare,
-    href: '/compare',
-  },
-  {
-    name: 'Dashboard',
-    icon: Home,
-    href: '/dashboard',
-  },
-];
 
 export function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
+  const session = useSession();
 
   const isActive = (href: string) => {
     if (!pathname) return false;
-    if (href === '/dashboard') {
-      return pathname === '/dashboard';
+    if (href === '/dashboard' || href === '/sign-in') {
+      return pathname === href;
     }
     return pathname.startsWith(href);
   };
+
+  const currentNavItems: NavItem[] = [
+    {
+      name: 'Search',
+      icon: Search,
+      href: '/',
+    },
+    {
+      name: 'Analysis',
+      icon: BarChart3,
+      href: '/analysis',
+    },
+    {
+      name: 'Compare',
+      icon: GitCompare,
+      href: '/compare',
+    },
+    {
+      name: session?.user ? 'Dashboard' : 'Login',
+      icon: session?.user ? Home : User,
+      href: session?.user ? '/dashboard' : '/sign-in',
+    },
+  ];
 
   return (
     <motion.nav
@@ -82,7 +84,7 @@ export function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200 shadow-2xl shadow-brand-500/10 pb-safe"
     >
       <div className="flex items-center justify-around px-2 py-2">
-        {navItems.map((item) => {
+        {currentNavItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
 
@@ -91,7 +93,7 @@ export function BottomNav() {
               key={item.name}
               href={item.href}
               className={cn(
-                'relative flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-2xl transition-all duration-300 min-w-[64px]',
+                'relative flex flex-col items-center justify-center gap-1 px-2 py-2 rounded-2xl transition-all duration-300 min-w-[64px]',
                 active
                   ? 'text-brand-600'
                   : 'text-gray-500 hover:text-brand-500 active:scale-95'
@@ -138,7 +140,7 @@ export function BottomNav() {
         <Sheet>
           <SheetTrigger asChild>
             <button
-              className="relative flex flex-col items-center justify-center gap-1 px-4 py-2 rounded-2xl transition-all duration-300 min-w-[64px] text-gray-500 hover:text-brand-500 active:scale-95"
+              className="relative flex flex-col items-center justify-center gap-1 px-2 py-2 rounded-2xl transition-all duration-300 min-w-[64px] text-gray-500 hover:text-brand-500 active:scale-95"
             >
               <div className="relative z-10">
                 <Menu className="w-5 h-5" strokeWidth={2} />
@@ -178,20 +180,22 @@ export function BottomNav() {
                 ))}
               </div>
               
-              <div className="mt-4 px-3">
-                <div className="h-px bg-gray-100 mb-4" />
-                <div className="space-y-0.5">
-                   <CustomLink
-                    href="/dashboard"
-                    className="flex items-center gap-3 px-3 py-1.5 rounded-xl text-gray-600 hover:text-brand-600 hover:bg-brand-50/50 transition-all group"
-                  >
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-brand-600 shadow-sm border border-gray-100/50">
-                      <LayoutDashboard className="w-4 h-4" />
-                    </div>
-                    <span className="text-[13px] font-semibold">Dashboard</span>
-                  </CustomLink>
+              {session?.user && (
+                <div className="mt-4 px-3">
+                  <div className="h-px bg-gray-100 mb-4" />
+                  <div className="space-y-0.5">
+                    <CustomLink
+                      href="/dashboard"
+                      className="flex items-center gap-3 px-3 py-1.5 rounded-xl text-gray-600 hover:text-brand-600 hover:bg-brand-50/50 transition-all group"
+                    >
+                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-brand-600 shadow-sm border border-gray-100/50">
+                        <LayoutDashboard className="w-4 h-4" />
+                      </div>
+                      <span className="text-[13px] font-semibold">Dashboard</span>
+                    </CustomLink>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="p-4 bg-gray-50/50 border-t border-gray-100">
