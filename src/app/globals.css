@@ -255,3 +255,94 @@
   -ms-user-select: none;
   user-select: none;
 }
+/* Rich Blog Typography Styles - High Specificity */
+.blog-content-rich {
+    @apply text-slate-600 leading-[1.7] text-base;
+}
+
+.blog-content-rich h2 {
+    @apply text-2xl md:text-3xl font-black text-brand-900 mt-12 mb-6 border-b border-slate-100 pb-3 tracking-tight;
+}
+
+.blog-content-rich h3 {
+    @apply text-xl font-black text-brand-900 mt-10 mb-4 tracking-tight;
+}
+
+.blog-content-rich p {
+    @apply mb-6 leading-relaxed;
+}
+
+.blog-content-rich strong {
+    @apply font-black text-brand-900;
+}
+
+.blog-content-rich ul {
+    @apply list-disc pl-5 mb-8 space-y-2 marker:text-brand-500;
+}
+
+.blog-content-rich ol {
+    @apply list-decimal pl-5 mb-8 space-y-2 marker:text-brand-500;
+}
+
+.blog-content-rich li {
+    @apply pl-1;
+}
+
+.blog-content-rich blockquote {
+    @apply border-l-4 border-brand-500 bg-brand-50/30 p-8 rounded-r-lg italic text-xl font-medium text-brand-900 my-10;
+}
+
+.blog-content-rich img {
+    @apply rounded-[1.5rem] shadow-xl my-12 w-full object-cover;
+}
+
+.blog-content-rich a {
+    @apply text-brand-600 font-bold underline decoration-1 underline-offset-4 hover:text-brand-700 transition-colors;
+}
+
+.blog-content-rich figure.wp-block-table {
+    @apply my-10 overflow-hidden bg-transparent;
+}
+
+.blog-content-rich table {
+    @apply w-full border-collapse my-8 bg-transparent;
+}
+
+.blog-content-rich thead {
+    @apply bg-slate-50/80 border-b border-slate-200;
+}
+
+.blog-content-rich th {
+    @apply p-4 font-black text-brand-900 uppercase tracking-widest text-[10px] text-left;
+}
+
+.blog-content-rich td {
+    @apply p-4 text-slate-600 border-b border-slate-100/50 font-medium text-[13px] leading-relaxed;
+}
+
+.blog-content-rich tr:nth-child(even) {
+    @apply bg-slate-50/30;
+}
+
+.blog-content-rich tr:last-child td {
+    @apply border-none;
+}
+
+.blog-content-rich tr:hover td {
+    @apply bg-brand-50/30 transition-colors;
+}
+
+/* Fix for missing line breaks and internal component spacing */
+.blog-content-rich blockquote > * + * {
+    margin-top: 1.5rem !important;
+}
+
+.blog-content-rich p + p {
+    margin-top: 1.5rem;
+}
+
+.blog-content-rich br + br {
+    display: block;
+    content: "";
+    margin-top: 1rem;
+}

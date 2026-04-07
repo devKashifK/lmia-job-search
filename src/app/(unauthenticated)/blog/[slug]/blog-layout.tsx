@@ -41,7 +41,7 @@ export default function BlogLayout({ children }: BlogLayoutProps) {
             <main className="flex-1 relative">
                 {/* Minimal Sticky Sub-header */}
                 <div
-                    className={`fixed top-[72px] left-0 right-0 z-[100] transition-all duration-500 ${
+                    className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
                         isScrolled 
                         ? "translate-y-0 opacity-100 bg-white/70 backdrop-blur-2xl border-b border-slate-200/50 shadow-sm" 
                         : "-translate-y-4 opacity-0 pointer-events-none"

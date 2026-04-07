@@ -70,17 +70,52 @@ export default function PostContent({ post }: { post: Post | null }) {
 
     // Options for html-react-parser to add IDs to h2 tags
     const options: HTMLReactParserOptions = {
-        replace: (domNode) => {
-            if (domNode instanceof Element && domNode.name === 'h2') {
+        replace: (domNode: any) => {
+            // Handle H2 IDs for TOC and Styling
+            if (domNode.name === 'h2') {
                 const text = (domNode.children[0] as any)?.data || "";
                 const id = toc.find(t => t.text === text)?.id;
                 if (id) {
                     return (
-                        <h2 id={id} className="text-3xl md:text-4xl font-black text-brand-900 mt-16 mb-8 tracking-tight scroll-mt-24">
-                            {domToReact(domNode.children as any, options)}
+                        <h2 id={id} className="scroll-mt-24">
+                            {domToReact(domNode.children, options as any)}
                         </h2>
                     );
                 }
+            }
+
+            // Handle Tables with responsive wrapper
+            // We use the global CSS .blog-content-rich to style the table parts
+            if (domNode.name === 'table') {
+                return (
+                    <div className="my-4 overflow-x-auto rounded-[2rem]">
+                        <table className="w-full">
+                            {domToReact(domNode.children, options as any)}
+                        </table>
+                    </div>
+                );
+            }
+
+            // Handle WordPress table blocks
+            if (domNode.attribs?.class?.includes('wp-block-table')) {
+                return (
+                    <div className="my-8 overflow-x-auto rounded-[2rem]">
+                        {domToReact(domNode.children, options as any)}
+                    </div>
+                );
+            }
+
+            // Handle links to open in a new tab
+            if (domNode.name === 'a') {
+                return (
+                    <a
+                        {...domNode.attribs}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {domToReact(domNode.children, options as any)}
+                    </a>
+                );
             }
         }
     };
@@ -163,20 +198,7 @@ export default function PostContent({ post }: { post: Post | null }) {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.6, delay: 0.4 }}
-                            className="prose prose-slate prose-lg max-w-none 
-                                prose-headings:text-brand-900 prose-headings:font-black prose-headings:tracking-tight
-                                prose-h2:text-3xl md:prose-h2:text-4xl prose-h2:mt-12 prose-h2:mb-6
-                                prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-5
-                                prose-p:text-slate-600 prose-p:leading-[1.7] prose-p:mb-6
-                                prose-strong:text-brand-900 prose-strong:font-black
-                                prose-blockquote:border-l-4 prose-blockquote:border-brand-500 prose-blockquote:bg-brand-50/50 
-                                prose-blockquote:p-6 prose-blockquote:rounded-r-2xl prose-blockquote:italic prose-blockquote:text-xl
-                                prose-blockquote:text-brand-900 prose-blockquote:font-medium prose-blockquote:not-italic
-                                prose-img:rounded-[1.5rem] prose-img:shadow-2xl prose-img:my-10
-                                prose-a:text-brand-600 prose-a:font-bold prose-a:no-underline hover:prose-a:underline
-                                prose-li:text-slate-600 prose-li:mb-1
-                                prose-ul:list-disc prose-ul:marker:text-brand-500
-                            "
+                            className="blog-content-rich max-w-none"
                         >
                             {parse(post.content || "", options)}
                         </motion.div>
