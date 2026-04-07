@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Briefcase, ArrowRight, CheckCircle2, ChevronRight, Activity, MapPin } from 'lucide-react';
+import { Briefcase, ArrowRight, CheckCircle2, ChevronRight, Activity, MapPin, Truck } from 'lucide-react';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
 import { Badge } from '@/components/ui/badge';
@@ -24,8 +24,8 @@ export default function TruckingLMIAJobs() {
                 <span className="text-white">Trucking & Transportation</span>
               </div>
 
-              <div className="inline-flex items-center gap-2 bg-amber-100/50 border border-amber-400/40 text-amber-400 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
-                <Activity className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
+                <Truck className="w-3.5 h-3.5" />
                 Trucking & Transportation Sector
               </div>
 
@@ -54,11 +54,11 @@ export default function TruckingLMIAJobs() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/search?category=Transportation"
-                  className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5 shadow-xl shadow-amber-100"
+                  href="/search/lmia/all?category=Trucking&t=lmia"
+                  className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-amber-500/20"
                 >
                   Search Trucking LMIA Jobs
-                  <ArrowRight className="w-4 h-4 text-brand-900" />
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/what-is-lmia"
@@ -72,8 +72,8 @@ export default function TruckingLMIAJobs() {
             {/* LIVE PREVIEW */}
             <div className="relative">
               <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl">
-                <div className="text-xs font-bold tracking-widest uppercase text-brand-400 mb-4 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <div className="text-xs font-bold tracking-widest uppercase text-emerald-400 mb-4 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   Sample Transportation Listings
                 </div>
                 <div className="space-y-3 relative">
@@ -88,7 +88,7 @@ export default function TruckingLMIAJobs() {
                         <div className="font-medium text-white text-sm truncate">{job.t}</div>
                         <div className="text-xs text-blue-200/60 mt-0.5">{job.s}</div>
                       </div>
-                      <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 text-[10px]">LMIA Active</Badge>
+                      <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase tracking-widest">LMIA Active</Badge>
                     </div>
                   ))}
                   <div className="absolute -bottom-2 -left-2 -right-2 h-24 bg-gradient-to-t from-brand-900 to-transparent pointer-events-none rounded-b-2xl" />
@@ -107,7 +107,7 @@ export default function TruckingLMIAJobs() {
         <section className="py-20 px-6 bg-white border-b border-gray-100">
           <div className="max-w-5xl mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <div className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3">In-Demand Occupations</div>
+              <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3">In-Demand Occupations</div>
               <h2 className="text-3xl md:text-4xl font-black text-brand-900 tracking-tight mb-4">
                 Top Trucking occupations with LMIA activity
               </h2>
@@ -158,7 +158,7 @@ export default function TruckingLMIAJobs() {
               Updated daily. Filter by province, city, NOC code, TEER level, and wage range.
             </p>
             <Link
-              href="/sign-up"
+              href="/search/lmia/all?category=Trucking&t=lmia"
               className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg"
             >
               Search Transportation LMIA Jobs Free

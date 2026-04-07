@@ -96,7 +96,7 @@ export default function AgricultureJobsPage() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/lmia-jobs?industry=agriculture"
+                  href="/search/lmia/all?category=Agriculture&t=lmia"
                   className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-emerald-500/20"
                 >
                   Search Agriculture LMIA Jobs
@@ -206,7 +206,7 @@ export default function AgricultureJobsPage() {
               Search 1,200+ live agricultural LMIA listings — updated hourly to help you find the right match faster.
             </p>
             <Link
-              href="/sign-up"
+              href="/search/lmia/all?category=Agriculture&t=lmia"
               className="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-12 py-5 rounded-full transition-all inline-flex items-center gap-3 hover:-translate-y-1 shadow-2xl shadow-emerald-500/30 text-lg"
             >
               Search Agriculture Jobs Free

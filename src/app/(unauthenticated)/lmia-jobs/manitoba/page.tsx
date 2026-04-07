@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 
 export default function ManitobaJobsPage() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-brand-900 flex flex-col">
       <Navbar />
 
       <main className="flex-1">
@@ -41,7 +41,7 @@ export default function ManitobaJobsPage() {
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-[56px] font-black text-white leading-[1.1] tracking-tight mb-6">
-                LMIA Jobs in <span className="text-amber-400">Manitoba</span>
+                LMIA Jobs in <span className="text-blue-400">Manitoba</span>
               </h1>
 
               <p className="text-blue-100/70 text-lg leading-relaxed mb-10 font-light max-w-xl">
@@ -65,7 +65,7 @@ export default function ManitobaJobsPage() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/lmia-jobs?province=manitoba"
+                  href="/search/lmia/all?state=Manitoba&t=lmia"
                   className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-blue-500/20"
                 >
                   Search All Manitoba LMIA Jobs
@@ -98,7 +98,7 @@ export default function ManitobaJobsPage() {
                         <div className="font-bold text-white text-sm truncate">{job.title}</div>
                         <div className="text-blue-300/40 text-[11px] font-medium mt-0.5 truncate">{job.employer} · {job.location}</div>
                       </div>
-                      <Badge className={`bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-black uppercase tracking-wider`}>LMIA {job.status}</Badge>
+                      <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-black uppercase tracking-widest">LMIA {job.status}</Badge>
                     </div>
                   ))}
                   <div className="absolute -bottom-2 -left-2 -right-2 h-24 bg-gradient-to-t from-brand-900 to-transparent pointer-events-none rounded-b-2xl" />
@@ -115,11 +115,11 @@ export default function ManitobaJobsPage() {
         </section>
 
         {/* STATS & INFO SECTION */}
-        <section className="py-24 px-6 bg-white">
+        <section className="py-24 px-6 bg-brand-900 border-t border-white/10">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
             <div>
               <div className="text-xs font-black text-blue-600 uppercase tracking-widest mb-3 italic">Top Industries</div>
-              <h2 className="text-3xl md:text-4xl font-black text-brand-900 tracking-tight leading-tight mb-8 text-slate-900">
+              <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight mb-8">
                 Where LMIA hiring is active in Manitoba
               </h2>
               <div className="flex flex-wrap gap-2 mb-10">
@@ -131,16 +131,16 @@ export default function ManitobaJobsPage() {
               </div>
 
               {/* TOP CITIES */}
-              <div className="bg-slate-50 border border-slate-100 rounded-[2.5rem] p-8 md:p-10 shadow-sm">
-                <div className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+              <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-sm">
+                <div className="text-[11px] font-black text-blue-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                   <MapPin className="w-3.5 h-3.5" /> Top Cities in Manitoba
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {['Winnipeg', 'Brandon', 'Steinbach', 'Thompson', 'Portage la Prairie'].map((city, i) => (
                     <Link
                       key={i}
-                      href={`/lmia-jobs?province=manitoba&city=${city.toLowerCase()}`}
-                      className="bg-white hover:bg-blue-500 hover:text-white border border-slate-200 text-slate-600 px-6 py-3 rounded-full text-sm font-bold shadow-sm transition-all duration-300"
+                      href={`/search/lmia/all?state=Manitoba&city=${city}&t=lmia`}
+                      className="bg-white/5 hover:bg-blue-500 hover:text-white border border-white/10 text-white px-6 py-3 rounded-full text-sm font-bold shadow-sm transition-all duration-300"
                     >
                       {city}
                     </Link>
@@ -154,7 +154,7 @@ export default function ManitobaJobsPage() {
               <h2 className="text-3xl font-black text-brand-900 tracking-tight leading-tight mb-6">
                 Manitoba Provincial Nominee Program (MPNP)
               </h2>
-              <p className="text-slate-500 text-lg leading-relaxed font-light mb-8 max-w-xl">
+              <p className="text-blue-100/70 text-lg leading-relaxed mb-8 max-w-xl font-light">
                 An LMIA job offer is a critical component of several Manitoba immigration streams. Use JobMaze to find the right employer match for your client's pathway.
               </p>
 
@@ -189,7 +189,7 @@ export default function ManitobaJobsPage() {
               Filter by city, NOC, TEER, industry, and wage. Targeted listings for immigration professionals.
             </p>
             <Link
-              href="/sign-up"
+              href="/search/lmia/all?state=Manitoba&t=lmia"
               className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-black px-12 py-5 rounded-full transition-all inline-flex items-center gap-3 hover:-translate-y-1 shadow-2xl shadow-amber-400/30 text-lg"
             >
               Sign Up for Access

@@ -15,7 +15,7 @@ export default function HealthcareLMIAJobs() {
       <main className="flex-1">
         {/* HERO SECTION */}
         <section className="bg-brand-900 pt-40 pb-16 px-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(15,123,94,0.18)_0%,transparent_60%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(16,185,129,0.1)_0%,transparent_60%)] pointer-events-none" />
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
               <div className="text-sm font-medium text-blue-200/60 mb-6 flex items-center gap-2">
@@ -24,7 +24,7 @@ export default function HealthcareLMIAJobs() {
                 <span className="text-white">Healthcare</span>
               </div>
 
-              <div className="inline-flex items-center gap-2 bg-emerald-100/50 border border-emerald-700/40 text-emerald-700 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <Activity className="w-3.5 h-3.5" />
                 Healthcare Sector
               </div>
@@ -54,11 +54,11 @@ export default function HealthcareLMIAJobs() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/search?category=Healthcare"
-                  className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5 shadow-lg shadow-amber-100"
+                  href="/search/lmia/all?category=Healthcare&t=lmia"
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-emerald-500/20 text-sm"
                 >
                   Search Healthcare LMIA Jobs
-                  <ArrowRight className="w-4 h-4 text-brand-900" />
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/what-is-lmia"
@@ -72,8 +72,8 @@ export default function HealthcareLMIAJobs() {
             {/* LIVE PREVIEW COMPONENT */}
             <div className="relative">
               <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl">
-                <div className="text-xs font-bold tracking-widest uppercase text-brand-400 mb-4 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <div className="text-xs font-bold tracking-widest uppercase text-emerald-400 mb-4 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   Sample Healthcare Listings
                 </div>
 
@@ -101,7 +101,7 @@ export default function HealthcareLMIAJobs() {
                       <div className="font-medium text-white text-sm truncate">Licensed Practical Nurse</div>
                       <div className="text-xs text-blue-200/60 mt-0.5 truncate">NOC 32101 · TEER 2 · Multiple provinces</div>
                     </div>
-                    <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 font-medium whitespace-nowrap text-[10px]">LMIA Active</Badge>
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold whitespace-nowrap text-[10px] tracking-widest uppercase">LMIA Active</Badge>
                   </div>
                   <div className="bg-white/[0.06] hover:bg-white/10 border border-white/10 rounded-xl p-3 flex gap-4 items-center transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 text-xl">
@@ -121,7 +121,7 @@ export default function HealthcareLMIAJobs() {
                       <div className="font-medium text-white text-sm truncate">Medical Laboratory Technician</div>
                       <div className="text-xs text-blue-200/60 mt-0.5 truncate">NOC 32120 · TEER 2 · Multiple provinces</div>
                     </div>
-                    <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 font-medium whitespace-nowrap text-[10px]">LMIA Active</Badge>
+                    <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold whitespace-nowrap text-[10px] tracking-widest uppercase">LMIA Active</Badge>
                   </div>
 
                   <div className="absolute -bottom-2 -left-2 -right-2 h-24 bg-gradient-to-t from-brand-900 to-transparent pointer-events-none rounded-b-2xl" />
@@ -165,7 +165,7 @@ export default function HealthcareLMIAJobs() {
                     <div className="text-sm font-medium text-gray-900 truncate">{occ.title}</div>
                     <div className="text-xs text-gray-500 mt-1">{occ.noc} · {occ.teer}</div>
                   </div>
-                  <Badge variant="outline" className={`${occ.demandColor} font-medium border-black/5 whitespace-nowrap`}>
+                  <Badge variant="outline" className={`${occ.demandColor} font-black uppercase tracking-widest text-[9px] border-emerald-500/20 whitespace-nowrap`}>
                     {occ.demand}
                   </Badge>
                 </div>
@@ -250,11 +250,11 @@ export default function HealthcareLMIAJobs() {
               Updated daily. Filter by province, city, NOC code, TEER level, and wage range.
             </p>
             <Link
-              href="/sign-up"
-              className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
+              href="/search/lmia/all?category=Healthcare&t=lmia"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-emerald-500/30"
             >
               Search Healthcare LMIA Jobs Free
-              <ArrowRight className="w-5 h-5 text-brand-900" />
+              <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
         </section>

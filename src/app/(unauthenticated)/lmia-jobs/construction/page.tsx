@@ -58,7 +58,7 @@ export default function ConstructionJobsPage() {
       <main className="flex-1">
         {/* HERO SECTION */}
         <section className="bg-brand-900 pt-40 pb-16 px-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(245,166,35,0.1)_0%,transparent_55%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(251,191,36,0.1)_0%,transparent_55%)] pointer-events-none" />
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
               <div className="text-sm font-medium text-blue-200/60 mb-6 flex items-center gap-2">
@@ -97,7 +97,7 @@ export default function ConstructionJobsPage() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/lmia-jobs?industry=construction"
+                  href="/search/lmia/all?category=Construction&t=lmia"
                   className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-amber-400/20"
                 >
                   Search Construction LMIA Jobs
@@ -162,8 +162,8 @@ export default function ConstructionJobsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {constructionOccupations.map((occ, i) => (
                 <div key={i} className="bg-white border border-slate-200 rounded-3xl p-6 hover:-translate-y-1 hover:border-amber-400/30 hover:shadow-2xl hover:shadow-slate-100 transition-all duration-300 flex flex-col items-center text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-3xl mb-4 group-hover:bg-amber-400 transition-all">
-                    {i === 0 ? <Hammer className="w-7 h-7 text-amber-600" /> : i === 3 ? <Truck className="w-7 h-7 text-amber-600" /> : <HardHat className="w-7 h-7 text-amber-600" />}
+                  <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-3xl mb-4 group-hover:bg-amber-500 transition-all">
+                    {i === 0 ? <Hammer className="w-7 h-7 text-amber-500 group-hover:text-white" /> : i === 3 ? <Truck className="w-7 h-7 text-amber-500 group-hover:text-white" /> : <HardHat className="w-7 h-7 text-amber-500 group-hover:text-white" />}
                   </div>
                   <h3 className="font-bold text-brand-900 mb-2 leading-tight">{occ.title}</h3>
                   <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-4">NOC {occ.noc} · TEER {occ.teer}</div>
@@ -203,7 +203,7 @@ export default function ConstructionJobsPage() {
               Find the perfect trade opportunity across Canada. Updated daily with direct employer information for subscribers.
             </p>
             <Link
-              href="/sign-up"
+              href="/search/lmia/all?category=Construction&t=lmia"
               className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-black px-12 py-5 rounded-full transition-all inline-flex items-center gap-3 hover:-translate-y-1 shadow-2xl shadow-amber-400/30 text-lg"
             >
               Start Free Search

@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 
 export default function SaskatchewanLMIAJobs() {
   return (
-    <div className="min-h-screen bg-#F5F7FA flex flex-col">
+    <div className="min-h-screen bg-brand-900 flex flex-col">
       <Navbar />
 
       <main className="flex-1">
@@ -19,12 +19,12 @@ export default function SaskatchewanLMIAJobs() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
               <div className="text-sm font-medium text-blue-200/60 mb-6 flex items-center gap-2">
-                <Link href="/search" className="hover:text-white transition-colors">LMIA Jobs</Link>
+                <Link href="/lmia-jobs" className="hover:text-white transition-colors">LMIA Jobs</Link>
                 <span>/</span>
                 <span className="text-white">Saskatchewan</span>
               </div>
 
-              <div className="inline-flex items-center gap-2 bg-brand-100/50 border border-brand-200 text-brand-600 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <MapPin className="w-3.5 h-3.5" />
                 Saskatchewan · SK
               </div>
@@ -54,11 +54,11 @@ export default function SaskatchewanLMIAJobs() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/search?province=saskatchewan"
-                  className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5"
+                  href="/search/lmia/all?state=Saskatchewan&t=lmia"
+                  className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-amber-500/20"
                 >
                   Search All SK LMIA Jobs
-                  <ArrowRight className="w-4 h-4 text-brand-900" />
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/faq"
@@ -78,7 +78,7 @@ export default function SaskatchewanLMIAJobs() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <Badge className="bg-brand-50 hover:bg-brand-50 text-brand-600 border-brand-200 uppercase text-[10px] tracking-wider py-1.5 px-3">Saskatchewan</Badge>
+                  <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase text-[10px] tracking-wider py-1.5 px-3">Saskatchewan</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">All Industries</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">TEER 0–4</Badge>
                 </div>
@@ -112,7 +112,7 @@ export default function SaskatchewanLMIAJobs() {
                       <div className="font-medium text-white text-sm truncate">Mining Engineer — Cameco Corporation</div>
                       <div className="text-xs text-blue-200/60 mt-0.5 truncate">Saskatoon, SK · $95–120k/yr · NOC 21330</div>
                     </div>
-                    <Badge className="bg-brand-100 text-brand-400 border border-brand-300 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
+                    <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
                   </div>
                   <div className="bg-white/[0.06] hover:bg-white/10 border border-white/10 rounded-xl p-3 flex gap-4 items-center transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -159,10 +159,10 @@ export default function SaskatchewanLMIAJobs() {
                 { icon: '🚛', title: 'Trucking', desc: 'Active LMIA hiring in Saskatchewan — filter by this sector on JobMaze' },
                 { icon: '🏗️', title: 'Construction', desc: 'Active LMIA hiring in Saskatchewan — filter by this sector on JobMaze' },
               ].map((ind, i) => (
-                <div key={i} className="bg-white border border-gray-200 rounded-2xl p-5 hover:-translate-y-1 hover:border-rose-500/40 transition-all duration-300 shadow-sm">
+                <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 hover:-translate-y-1 hover:border-emerald-500/40 transition-all duration-300 shadow-sm">
                   <div className="text-3xl mb-3">{ind.icon}</div>
-                  <h3 className="text-sm font-bold text-brand-900 mb-2">{ind.title}</h3>
-                  <p className="text-[11px] text-gray-500 leading-relaxed">{ind.desc}</p>
+                  <h3 className="text-sm font-bold text-slate-900 mb-2">{ind.title}</h3>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">{ind.desc}</p>
                 </div>
               ))}
             </div>
@@ -205,8 +205,8 @@ export default function SaskatchewanLMIAJobs() {
                 {['Regina', 'Saskatoon', 'Prince Albert', 'Moose Jaw', 'Swift Current'].map((city, idx) => (
                   <Link
                     key={idx}
-                    href={`/search?province=saskatchewan&city=${city.toLowerCase()}`}
-                    className="bg-white border border-brand-100 hover:border-brand-50/500 hover:text-brand-600 text-brand-900 px-5 py-2.5 rounded-full text-sm font-semibold transition-all shadow-sm"
+                    href={`/search/lmia/all?state=Saskatchewan&city=${city}&t=lmia`}
+                    className="bg-white border border-slate-200 hover:bg-emerald-600 hover:text-white text-slate-900 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm duration-300"
                   >
                     {city}
                   </Link>
@@ -254,7 +254,7 @@ export default function SaskatchewanLMIAJobs() {
               Sign up free and search 1,100+ live LMIA listings in Saskatchewan — filter by city, NOC, TEER, industry, and more.
             </p>
             <Link
-              href="/sign-up"
+              href="/search/lmia/all?state=Saskatchewan&t=lmia"
               className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
             >
               Search Saskatchewan LMIA Jobs Free

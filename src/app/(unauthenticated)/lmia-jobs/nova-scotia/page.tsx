@@ -64,7 +64,7 @@ export default function NovaScotiaJobsPage() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/lmia-jobs?province=nova-scotia"
+                  href="/search/lmia/all?state=Nova Scotia&t=lmia"
                   className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-emerald-500/20"
                 >
                   Search Nova Scotia LMIA Jobs
@@ -189,7 +189,7 @@ export default function NovaScotiaJobsPage() {
               Filter by city, NOC, TEER, industry, and wage. Direct-to-employer data available for all listings.
             </p>
             <Link
-              href="/sign-up"
+              href="/search/lmia/all?state=Nova Scotia&t=lmia"
               className="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-12 py-5 rounded-full transition-all inline-flex items-center gap-3 hover:-translate-y-1 shadow-2xl shadow-emerald-500/30 text-lg"
             >
               Get Started Free

@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 
 export default function OntarioLMIAJobs() {
   return (
-    <div className="min-h-screen bg-#F5F7FA flex flex-col">
+    <div className="min-h-screen bg-brand-900 flex flex-col">
       <Navbar />
 
       <main className="flex-1">
@@ -19,12 +19,12 @@ export default function OntarioLMIAJobs() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
             <div>
               <div className="text-sm font-medium text-blue-200/60 mb-6 flex items-center gap-2">
-                <Link href="/search" className="hover:text-white transition-colors">LMIA Jobs</Link>
+                <Link href="/lmia-jobs" className="hover:text-white transition-colors">LMIA Jobs</Link>
                 <span>/</span>
                 <span className="text-white">Ontario</span>
               </div>
 
-              <div className="inline-flex items-center gap-2 bg-brand-100/50 border border-brand-200 text-brand-600 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
+              <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <MapPin className="w-3.5 h-3.5" />
                 Ontario · ON
               </div>
@@ -54,11 +54,11 @@ export default function OntarioLMIAJobs() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/search?province=ontario"
-                  className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-0.5"
+                  href="/search/lmia/all?state=Ontario&t=lmia"
+                  className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-amber-500/20"
                 >
                   Search All Ontario LMIA Jobs
-                  <ArrowRight className="w-4 h-4 text-brand-900" />
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/faq"
@@ -78,7 +78,7 @@ export default function OntarioLMIAJobs() {
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <Badge className="bg-brand-50 hover:bg-brand-50 text-brand-600 border-brand-200 uppercase text-[10px] tracking-wider py-1.5 px-3">Ontario</Badge>
+                  <Badge className="bg-blue-500/10 text-blue-400 border border-blue-500/20 uppercase text-[10px] tracking-wider py-1.5 px-3">Ontario</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">All Industries</Badge>
                   <Badge variant="outline" className="bg-white/5 text-gray-300 border-white/10 uppercase text-[10px] tracking-wider py-1.5 px-3">TEER 0–4</Badge>
                 </div>
@@ -102,7 +102,7 @@ export default function OntarioLMIAJobs() {
                       <div className="font-medium text-white text-sm truncate">Software Engineer — Shopify Canada</div>
                       <div className="text-xs text-blue-200/60 mt-0.5 truncate">Ottawa, ON · $95–120k/yr · NOC 21232</div>
                     </div>
-                    <Badge className="bg-brand-100 text-brand-400 border border-brand-300 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
+                    <Badge className="bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium whitespace-nowrap text-[10px]">LMIA Eligible</Badge>
                   </div>
                   <div className="bg-white/[0.06] hover:bg-white/10 border border-white/10 rounded-xl p-3 flex gap-4 items-center transition-colors">
                     <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -139,14 +139,14 @@ export default function OntarioLMIAJobs() {
         </section>
 
         {/* TOP INDUSTRIES */}
-        <section className="py-20 px-6 bg-gray-50 border-b border-gray-100">
+        <section className="py-20 px-6 bg-white border-b border-slate-100">
           <div className="max-w-5xl mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <div className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3">Top Industries</div>
-              <h2 className="text-3xl md:text-4xl font-black text-brand-900 tracking-tight mb-4">
+              <div className="text-xs font-black text-blue-600 uppercase tracking-widest mb-3 italic">Top Industries</div>
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-4">
                 Where LMIA hiring is most active in Ontario
               </h2>
-              <p className="text-gray-500 text-lg">
+              <p className="text-slate-500 text-lg font-light leading-relaxed">
                 These sectors consistently post LMIA-eligible positions in Ontario. Use JobMaze's industry filter to narrow your search for clients seeking roles in these expanding fields.
               </p>
             </div>
@@ -174,18 +174,18 @@ export default function OntarioLMIAJobs() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* PNP column */}
             <div>
-              <div className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3">Provincial Nominee Program</div>
-              <h3 className="text-3xl font-black text-brand-900 tracking-tight mb-6">Ontario Immigrant Nominee Program (OINP)</h3>
-              <p className="text-gray-600 mb-8 text-lg">
+              <div className="text-xs font-black text-blue-600 uppercase tracking-widest mb-3 italic">Provincial Nominee Program</div>
+              <h3 className="text-3xl font-black text-slate-900 tracking-tight mb-6 italic">Ontario Immigrant Nominee Program (OINP)</h3>
+              <p className="text-slate-500 mb-8 text-lg font-light leading-relaxed">
                 An LMIA job offer is a key component for several Ontario PNP streams. Finding the right employer through JobMaze is the first step to a successful nomination for your client across active pathways.
               </p>
 
-              <div className="bg-brand-50 border border-brand-100 rounded-2xl p-6">
-                <div className="text-[13px] font-bold text-brand-600 uppercase tracking-widest mb-4">Active Streams</div>
+              <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 shadow-sm">
+                <div className="text-[11px] font-black text-blue-600 uppercase tracking-widest mb-4 italic">Active Streams</div>
                 <div className="space-y-4">
                   {['Employer Job Offer – Foreign Worker', 'Employer Job Offer – International Student', 'Human Capital Priorities', 'Tech Draw'].map((stream, idx) => (
-                    <div key={idx} className="flex items-start gap-3 border-b border-brand-50 pb-3 last:border-0 last:pb-0 text-sm text-gray-800 font-medium">
-                      <ChevronRight className="w-4 h-4 text-brand-600 mt-0.5" />
+                    <div key={idx} className="flex items-start gap-3 border-b border-blue-50 pb-3 last:border-0 last:pb-0 text-sm text-slate-800 font-bold tracking-tight">
+                      <ChevronRight className="w-4 h-4 text-blue-600 mt-0.5" />
                       {stream}
                     </div>
                   ))}
@@ -195,9 +195,9 @@ export default function OntarioLMIAJobs() {
 
             {/* CITIES & STATS column */}
             <div>
-              <div className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-3">Cities Covered</div>
-              <h3 className="text-3xl font-black text-brand-900 tracking-tight mb-6">Job searches by Ontario city</h3>
-              <p className="text-gray-600 mb-8 text-lg">
+              <div className="text-xs font-black text-blue-600 uppercase tracking-widest mb-3 italic">Cities Covered</div>
+              <h3 className="text-3xl font-black text-slate-900 tracking-tight mb-6 italic">Job searches by Ontario city</h3>
+              <p className="text-slate-500 mb-8 text-lg font-light leading-relaxed">
                 JobMaze covers LMIA jobs in every ON city and rural municipality. Use the city filter to narrow results for your client's preferred location.
               </p>
 
@@ -205,8 +205,8 @@ export default function OntarioLMIAJobs() {
                 {['Toronto', 'Ottawa', 'Mississauga', 'Brampton', 'Hamilton', 'London'].map((city, idx) => (
                   <Link
                     key={idx}
-                    href={`/search?province=ontario&city=${city.toLowerCase()}`}
-                    className="bg-white border border-brand-100 hover:border-brand-50/500 hover:text-brand-600 text-brand-900 px-5 py-2.5 rounded-full text-sm font-semibold transition-all shadow-sm"
+                    href={`/search/lmia/all?state=Ontario&city=${city}&t=lmia`}
+                    className="bg-white border border-slate-200 hover:bg-blue-600 hover:text-white text-slate-900 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm duration-300"
                   >
                     {city}
                   </Link>
@@ -254,7 +254,7 @@ export default function OntarioLMIAJobs() {
               Sign up free and search 3,200+ live LMIA listings in Ontario — filter by city, NOC, TEER, industry, and more.
             </p>
             <Link
-              href="/sign-up"
+              href="/search/lmia/all?state=Ontario&t=lmia"
               className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
             >
               Search Ontario LMIA Jobs Free
