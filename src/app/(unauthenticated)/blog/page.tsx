@@ -1,305 +1,304 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
   Calendar,
   Clock,
-  Search,
-  Mail,
   ChevronRight,
   Zap,
-  BookOpen
+  Layout,
+  Search as SearchIcon,
+  Sparkles,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-
-const categories = [
-  'All posts',
-  'LMIA Guides',
-  'Work Permits',
-  'Express Entry',
-  'Provincial Programs',
-  'For RCICs',
-  'News & Updates'
-];
-
-const blogPosts = [
-  {
-    title: 'TR to PR Pathway Canada 2026 — Full Breakdown',
-    excerpt: 'Who qualifies, how to apply, and what LMIA jobs help your clients transition to permanent residence. Updated with the latest eligibility criteria.',
-    category: 'Immigration Pathway',
-    color: 'emerald',
-    date: 'Mar 2026',
-    readTime: '12 min read',
-    href: '/blog/tr-to-pr-pathway'
-  },
-  {
-    title: 'LMIA Processing Times 2026 — By Stream & Province',
-    excerpt: 'Current ESDC processing time data for every LMIA stream. Global Talent Stream, High-Wage, Low-Wage, Agricultural, and more.',
-    category: 'Processing Times',
-    color: 'amber',
-    date: 'Apr 2026',
-    readTime: '8 min read',
-    href: '/blog/lmia-processing-time'
-  },
-  {
-    title: 'How to Extend a Work Permit in Canada — Step-by-Step Guide 2026',
-    excerpt: 'A complete guide to work permit extension in Canada — who is eligible, what documents are needed, and how long it takes.',
-    category: 'Work Permits',
-    color: 'pink',
-    date: 'Mar 2026',
-    readTime: '10 min read',
-    href: '/blog/work-permit-extension'
-  },
-  {
-    title: 'LMIA vs Work Permit — What\'s the Difference?',
-    excerpt: 'Many clients confuse LMIAs with work permits. This guide explains exactly how they relate, what each document does, and when you need both.',
-    category: 'LMIA Basics',
-    color: 'blue',
-    date: 'Feb 2026',
-    readTime: '7 min read',
-    href: '/blog/lmia-vs-work-permit'
-  },
-  {
-    title: 'Spousal Open Work Permit (SOWP) 2026 — Eligibility & Application',
-    excerpt: 'Who qualifies for a spousal open work permit in 2026, TEER requirements, how to apply, and common mistakes to avoid.',
-    category: 'Work Permits',
-    color: 'emerald',
-    date: 'Mar 2026',
-    readTime: '9 min read',
-    href: '/blog/spousal-open-work-permit'
-  },
-  {
-    title: 'How an LMIA Job Offer Boosts Your Express Entry CRS Score',
-    excerpt: 'A detailed breakdown of how a valid LMIA-backed job offer adds up to 200 CRS points to an Express Entry profile — and how to find qualifying employers.',
-    category: 'Express Entry',
-    color: 'amber',
-    date: 'Apr 2026',
-    readTime: '11 min read',
-    href: '/blog/express-entry-lmia'
-  },
-  {
-    title: 'SINP Jobs 2026 — How to Find LMIA Jobs for Saskatchewan PNP',
-    excerpt: 'A guide to using LMIA job listings to support Saskatchewan Immigrant Nominee Program (SINP) applications in 2026.',
-    category: 'Saskatchewan',
-    color: 'pink',
-    date: 'Apr 2026',
-    readTime: '9 min read',
-    href: '/blog/sinp-jobs'
-  },
-  {
-    title: 'Canada PR Application — A Complete Guide for Immigration Consultants',
-    excerpt: 'An end-to-end overview of Canada\'s permanent residence pathways — Express Entry, PNP, family class, and more. With links to LMIA job resources.',
-    category: 'PR Pathways',
-    color: 'blue',
-    date: 'Mar 2026',
-    readTime: '14 min read',
-    href: '/blog/canada-pr-application'
-  },
-  {
-    title: 'Family Sponsorship Canada 2026 — Complete Application Guide',
-    excerpt: 'Everything you need to know about sponsoring a family member for Canadian permanent residence — eligibility, documents, timelines, and common issues.',
-    category: 'Family Immigration',
-    color: 'emerald',
-    date: 'Feb 2026',
-    readTime: '13 min read',
-    href: '/blog/family-sponsorship'
-  },
-  {
-    title: 'LMIA Approved Employers List Canada — How to Find & Use It',
-    excerpt: 'How to find, verify, and use ESDC\'s LMIA employer data to identify the best job opportunities for your immigration clients.',
-    category: 'Employer Research',
-    color: 'amber',
-    date: 'Apr 2026',
-    readTime: '8 min read',
-    href: '/blog/lmia-employers-list'
-  },
-  {
-    title: 'How RCICs Use JobMaze to Save 4+ Hours Per Client',
-    excerpt: 'A look at how Regulated Canadian Immigration Consultants are using JobMaze to streamline LMIA research and take on more clients.',
-    category: 'For RCICs',
-    color: 'pink',
-    date: 'Mar 2026',
-    readTime: '6 min read',
-    href: '/blog/for-rcics'
-  }
-];
+import { getServerClient } from "./serverClient";
+import { GET_ALL_POSTS } from "./queries";
+import type { Post } from "./types";
+import BlogClientComponents from "@/app/(unauthenticated)/blog/blog-client-components";
+import { useSearchParams } from 'next/navigation';
 
 export default function BlogPage() {
+  const searchParams = useSearchParams();
+  const search = searchParams.get('search') || "";
+
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const client = getServerClient();
+        const postsRes = await client.query<{ posts: { nodes: Post[] } }>({
+          query: GET_ALL_POSTS,
+          variables: { first: 100, search },
+        });
+
+        setAllPosts(postsRes.data?.posts?.nodes || []);
+      } catch (error) {
+        console.error("Error fetching blog data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [search]);
+
+  const filteredPosts = allPosts;
+  const featuredPost = allPosts[0];
+  const gridPosts = allPosts.slice(1);
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-brand-500/30 selection:text-brand-900">
       <Navbar />
 
       <main className="flex-1">
-        {/* HERO SECTION */}
-        <section className="bg-brand-900 pt-40 pb-16 px-6 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_50%_120%,rgba(15,123,94,0.2)_0%,transparent_65%)] pointer-events-none" />
-          <div className="max-w-4xl mx-auto text-center relative z-10">
-            <div className="text-brand-400 text-xs font-bold uppercase tracking-[0.2em] mb-4">Immigration Guides</div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight mb-6">
-              The JobMaze Blog
-            </h1>
-            <p className="text-blue-100/70 text-lg md:text-xl font-light leading-relaxed max-w-2xl mx-auto">
-              LMIA guides, immigration updates, and practical resources for Canadian immigration professionals.
-            </p>
+        {/* PROGRESSIVE HERO SECTION */}
+        <section className="relative pt-48 pb-24 px-6 overflow-hidden bg-brand-900">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 z-0">
+            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-emerald-500/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2 animate-pulse" />
+            <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-brand-500/10 blur-[100px] rounded-full -translate-x-1/2 translate-y-1/2" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150 pointer-events-none mix-blend-overlay" />
           </div>
-        </section>
 
-        {/* FEATURED POST */}
-        <section className="py-12 px-6">
-          <div className="max-w-6xl mx-auto">
-            <Link
-              href="/what-is-lmia"
-              className="group block bg-brand-900 rounded-3xl overflow-hidden shadow-2xl hover:shadow-brand-900/20 transition-all duration-500"
+          <div className="max-w-6xl mx-auto relative z-10 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="p-8 md:p-12">
-                  <div className="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/20 text-amber-400 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-6">
-                    <Zap className="w-3 h-3" />
-                    Featured Guide
-                  </div>
-                  <h2 className="text-3xl md:text-4xl font-black text-white leading-tight tracking-tight mb-4 group-hover:text-amber-400 transition-colors">
-                    What is an LMIA? The Complete 2026 Guide
-                  </h2>
-                  <p className="text-blue-100/70 text-lg leading-relaxed mb-8 font-light">
-                    Everything immigration professionals need to know about Canada's Labour Market Impact Assessment — streams, costs, processing times, and more.
-                  </p>
-                  <div className="flex items-center gap-3 text-amber-400 font-bold group-hover:gap-5 transition-all">
-                    Read the full guide
-                    <ArrowRight className="w-5 h-5" />
-                  </div>
-                </div>
-                <div className="bg-white/5 p-8 md:p-12 flex flex-col justify-center border-l border-white/10">
-                  <div className="text-blue-300/60 text-xs font-bold uppercase tracking-widest mb-6">Quick Answer</div>
-                  <p className="text-blue-50 text-lg leading-relaxed mb-8">
-                    An LMIA is a document issued by ESDC confirming a Canadian employer could not find a qualified Canadian for a position — allowing them to hire a foreign worker.
-                  </p>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-black text-white">$1,000</div>
-                      <div className="text-[10px] text-blue-300/50 uppercase tracking-widest font-bold">App Fee</div>
-                    </div>
-                    <div className="text-center border-x border-white/10 px-2">
-                      <div className="text-2xl font-black text-white">18 mo</div>
-                      <div className="text-[10px] text-blue-300/50 uppercase tracking-widest font-bold">Valid</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-black text-white">2 wks</div>
-                      <div className="text-[10px] text-blue-300/50 uppercase tracking-widest font-bold">GTS Time</div>
-                    </div>
-                  </div>
-                </div>
+              <div className="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 text-brand-400 px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] mb-8">
+                <Sparkles className="w-3.5 h-3.5" />
+                Insider Resources
               </div>
-            </Link>
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter mb-8">
+                The <span className="text-brand-400">Knowledge</span> <br />
+                <span className="relative inline-block mt-2 underline decoration-brand-500/30 underline-offset-8 decoration-4">Maze</span>
+              </h1>
+              <p className="text-blue-100/60 text-lg md:text-2xl font-light leading-relaxed max-w-3xl mx-auto mb-12">
+                Expert LMIA guides, immigration updates, and industry insights curated specifically for professionals navigating the Canadian landscape.
+              </p>
+
+              {/* INTEGRATED SEARCH (Client Component) */}
+              <div className="max-w-2xl mx-auto">
+                <BlogClientComponents currentSearch={search} />
+              </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* CATEGORIES & BLOG GRID */}
-        <section className="pb-24 px-6">
-          <div className="max-w-6xl mx-auto">
-            {/* SEARCH & FILTERS */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 py-8 border-y border-slate-200">
-              <div className="flex flex-wrap gap-2">
-                {categories.map((cat, i) => (
-                  <button
-                    key={i}
-                    className={`px-5 py-2 rounded-full text-sm font-semibold transition-all shadow-sm ${i === 0
-                      ? 'bg-brand-500 text-white shadow-brand-500/20'
-                      : 'bg-white border border-slate-200 text-slate-600 hover:border-brand-500/50 hover:text-brand-600'
-                      }`}
+        {/* FEATURED MAG SECTION */}
+        <AnimatePresence mode="wait">
+          {featuredPost && !search && (
+            <section className="py-24 px-6 relative -mt-12">
+              <div className="max-w-6xl mx-auto">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <Link
+                    href={`/blog/${featuredPost.slug}`}
+                    className="group relative flex flex-col lg:flex-row bg-white rounded-[2.5rem] overflow-hidden shadow-[0_32px_80px_-20px_rgba(0,0,0,0.15)] ring-1 ring-slate-200/50 hover:shadow-[0_48px_100px_-25px_rgba(0,0,0,0.2)] transition-all duration-700"
                   >
-                    {cat}
-                  </button>
+                    {/* Left: Info */}
+                    <div className="flex-1 p-10 md:p-16 flex flex-col justify-between order-2 lg:order-1 relative z-10 bg-white">
+                      <div>
+                        <div className="flex items-center gap-4 mb-8">
+                          <div className="bg-brand-900 text-white px-3 py-1 rounded text-[10px] font-black uppercase tracking-widest">
+                            {featuredPost.categories?.nodes[0]?.name || "Featured"}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                            <Clock className="w-3.5 h-3.5" />
+                            {Math.ceil((featuredPost.content || "").split(" ").length / 200)} min read
+                          </div>
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-black text-brand-900 leading-[1.1] tracking-tight mb-6 group-hover:text-brand-500 transition-colors duration-500">
+                          {featuredPost.title}
+                        </h2>
+                        <div 
+                          className="text-slate-500 text-lg leading-relaxed mb-10 font-light line-clamp-3" 
+                          dangerouslySetInnerHTML={{ __html: featuredPost.excerpt || "" }} 
+                        />
+                      </div>
+                      <div className="inline-flex items-center gap-3 text-brand-900 font-black text-lg group-hover:gap-6 transition-all duration-500 group/btn">
+                        Explore Full Article
+                        <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center group-hover/btn:bg-brand-900 group-hover/btn:text-white transition-colors">
+                          <ArrowRight className="w-6 h-6" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right: Media */}
+                    <div className="flex-1 min-h-[400px] lg:min-h-auto relative overflow-hidden order-1 lg:order-2">
+                      {featuredPost.featuredImage?.node.sourceUrl ? (
+                        <img 
+                          src={featuredPost.featuredImage.node.sourceUrl} 
+                          alt={featuredPost.featuredImage.node.altText || featuredPost.title}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-brand-900 flex items-center justify-center">
+                          <Layout className="w-24 h-24 text-white/5" />
+                        </div>
+                      )}
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/10 to-transparent hidden lg:block" />
+                    </div>
+                  </Link>
+                </motion.div>
+              </div>
+            </section>
+          )}
+        </AnimatePresence>
+
+        {/* FEED GRID */}
+        <section className={`py-12 px-6 ${search ? 'pt-40' : ''}`}>
+          <div className="max-w-6xl mx-auto">
+            {search && (
+              <div className="mb-12 border-b border-slate-100 pb-8">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-2">Search Results</h3>
+                <h4 className="text-3xl font-black text-brand-900">Showing matches for "{search}"</h4>
+              </div>
+            )}
+
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1 }
+                }
+              }}
+            >
+              {(search ? filteredPosts : gridPosts).map((post) => (
+                <motion.div
+                  key={post.id}
+                  variants={{
+                    hidden: { opacity: 0, y: 30 },
+                    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
+                  }}
+                >
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="group block"
+                  >
+                    <div className="aspect-[16/10] w-full bg-slate-100 rounded-[2rem] overflow-hidden relative mb-8 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.08)] group-hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.12)] transition-all duration-500">
+                      {post.featuredImage?.node.sourceUrl ? (
+                        <img 
+                          src={post.featuredImage.node.sourceUrl} 
+                          alt={post.featuredImage.node.altText || post.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1)"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-200">
+                          <Zap className="w-12 h-12 opacity-50" />
+                        </div>
+                      )}
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-brand-900/0 group-hover:bg-brand-900/40 transition-colors duration-500 flex items-center justify-center">
+                        <div className="w-14 h-14 rounded-full bg-white text-brand-900 flex items-center justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-75 shadow-xl">
+                          <ChevronRight className="w-6 h-6" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 px-2 text-center md:text-left">
+                      <div className="flex items-center justify-center md:justify-start gap-4">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-brand-500 bg-brand-50 px-3 py-1 rounded">
+                          {post.categories?.nodes[0]?.name || "Uncategorized"}
+                        </div>
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                          {post.date ? new Date(post.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ""}
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-black text-brand-900 leading-tight group-hover:text-brand-500 transition-colors duration-300">
+                        {post.title}
+                      </h3>
+                      <div 
+                        className="text-slate-500 text-sm leading-relaxed line-clamp-2 font-normal" 
+                        dangerouslySetInnerHTML={{ __html: post.excerpt || "" }} 
+                      />
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {loading && allPosts.length === 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="aspect-[16/10] bg-slate-200 rounded-[2rem] mb-6" />
+                    <div className="h-4 bg-slate-200 rounded w-1/4 mb-4" />
+                    <div className="h-8 bg-slate-200 rounded w-full mb-4" />
+                    <div className="h-4 bg-slate-200 rounded w-2/3" />
+                  </div>
                 ))}
               </div>
-              <div className="relative max-w-xs w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  placeholder="Search articles..."
-                  className="pl-11 rounded-full border-slate-200 focus-visible:ring-brand-500 bg-white"
-                />
-              </div>
-            </div>
+            )}
 
-            {/* GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {blogPosts.map((post, i) => (
-                <Link
-                  key={i}
-                  href={post.href}
-                  className="group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-slate-200 hover:-translate-y-1 transition-all duration-300"
+            {filteredPosts.length === 0 && !loading && (
+              <div className="text-center py-40 px-6 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
+                <SearchIcon className="w-16 h-16 text-slate-200 mx-auto mb-6" />
+                <h3 className="text-2xl font-black text-slate-900 mb-2">Mystery Unsolved</h3>
+                <p className="text-slate-500 max-w-sm mx-auto font-light leading-relaxed">
+                  We couldn't find any articles matching your search criteria. Try using different keywords or exploring popular categories.
+                </p>
+                <Button 
+                  onClick={() => window.location.href = '/blog'}
+                  variant="outline" 
+                  className="mt-8 rounded-full border-slate-200 text-slate-600 hover:text-brand-900 px-8"
                 >
-                  <div className={`h-1.5 w-full bg-${post.color}-500`} />
-                  <div className="p-6">
-                    <div className={`text-[10px] font-black uppercase tracking-widest mb-3 text-${post.color}-600`}>
-                      {post.category}
-                    </div>
-                    <h3 className="text-xl font-bold text-brand-900 leading-snug mb-3 group-hover:text-brand-500 transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="text-slate-500 text-sm leading-relaxed mb-6 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center justify-between mt-auto pt-6 border-t border-slate-50">
-                      <div className="flex items-center gap-3 text-xs text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {post.date}
-                        </span>
-                        <span className="w-1 h-1 rounded-full bg-slate-200" />
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {post.readTime}
-                        </span>
-                      </div>
-                      <div className="bg-slate-50 text-brand-900 w-8 h-8 rounded-full flex items-center justify-center group-hover:bg-brand-500 group-hover:text-white transition-all">
-                        <ChevronRight className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-
-            {/* PAGINATION (MOCK) */}
-            <div className="flex justify-center mt-16">
-              <Button variant="outline" className="rounded-full px-8 py-6 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-brand-600 font-bold gap-2">
-                Load More Articles
-                <BookOpen className="w-4 h-4" />
-              </Button>
-            </div>
+                  View All Resources
+                </Button>
+              </div>
+            )}
           </div>
         </section>
 
-        {/* NEWSLETTER SECTION */}
-        <section className="bg-brand-900 py-20 px-6 overflow-hidden relative border-t-4 border-emerald-500">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-500/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
-
-          <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-4">
-              Get the weekly LMIA digest
-            </h2>
-            <p className="text-blue-100/70 text-lg mb-10 max-w-xl mx-auto font-light leading-relaxed">
-              New LMIA job listings, draw updates, and immigration news — delivered to your inbox every Monday.
-            </p>
-            <form className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-lg mx-auto mb-6">
-              <Input
-                type="email"
-                placeholder="RCIC@immigration.ca"
-                className="h-12 rounded-full border-white/10 bg-white/5 text-white placeholder:text-blue-200/30 focus-visible:ring-emerald-500 px-6 min-w-[280px]"
-              />
-              <Button className="h-12 w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-brand-900 px-8 rounded-full font-bold shadow-lg shadow-amber-400/20 transition-all active:scale-95 whitespace-nowrap">
-                Subscribe Now
-              </Button>
-            </form>
-            <div className="text-blue-300/40 text-xs font-medium">
-              Join 500+ immigration professionals · Unsubscribe anytime
+        {/* PREMIUM NEWSLETTER */}
+        <section className="py-24 px-6 overflow-hidden">
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-brand-900 rounded-[3rem] p-8 md:p-20 relative overflow-hidden text-center group">
+              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/5 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2 transition-transform duration-700 group-hover:scale-125" />
+              <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-500/10 blur-[80px] rounded-full -translate-x-1/2 translate-y-1/2" />
+              
+              <div className="relative z-10 max-w-3xl mx-auto">
+                <Sparkles className="w-12 h-12 text-brand-400 mx-auto mb-8 animate-bounce" />
+                <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-6 leading-none">
+                  Get the Weekly <br />
+                  <span className="text-brand-400">LMIA Digest</span>
+                </h2>
+                <p className="text-blue-100/70 text-lg md:text-xl mb-12 font-light leading-relaxed">
+                  Join 5,000+ immigration professionals receiving curated job trends, draw updates, and deep-dives every Monday.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-lg mx-auto">
+                  <div className="relative w-full">
+                    <input
+                      type="email"
+                      placeholder="Enter your professional email"
+                      className="h-16 w-full rounded-2xl border border-white/10 bg-white/5 text-white placeholder:text-blue-200/30 focus:outline-none focus:ring-4 focus:ring-brand-500/20 px-8 transition-all duration-300"
+                    />
+                  </div>
+                  <Button className="h-16 w-full sm:w-auto bg-brand-500 hover:bg-brand-400 text-brand-900 px-10 rounded-2xl font-black text-lg shadow-xl shadow-brand-500/30 active:scale-95 transition-all">
+                    Subscribe
+                  </Button>
+                </div>
+                <p className="mt-8 text-blue-300/40 text-xs font-bold uppercase tracking-widest">
+                  Secure · Spam-Free · Unsubscribe Anytime
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -309,3 +308,5 @@ export default function BlogPage() {
     </div>
   );
 }
+
+

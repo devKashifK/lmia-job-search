@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { useSession } from '@/hooks/use-session';
 import UserDropdown from '@/components/ui/user-dropdown';
 import { NotificationsPopover } from '@/components/ui/notifications-popover';
+import { CreditsPopover } from '@/components/ui/credits-popover';
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -27,7 +28,9 @@ import {
   ChevronRight,
   LogIn,
   UserPlus,
-  HandCoins
+  HandCoins,
+  Newspaper,
+  Wallet
 } from 'lucide-react';
 import {
   Tooltip,
@@ -58,6 +61,7 @@ export default function Navbar({ className }: { className?: string }) {
     { name: 'Comparator', href: '/compare', icon: GitCompare },
     { name: 'Wage Finder', href: '/resources/wage-finder', icon: HandCoins },
     { name: 'NOC Guide', href: '/resources/noc-codes', icon: BookOpen },
+    { name: 'Blog', href: '/blog', icon: Newspaper },
     { name: 'Pricing', href: '/pricing', icon: DollarSign },
   ];
 
@@ -78,7 +82,7 @@ export default function Navbar({ className }: { className?: string }) {
             "pointer-events-auto flex transition-all duration-500 ease-in-out",
             scrolled
               ? "flex-col items-center gap-4 p-3 bg-white/90 backdrop-blur-2xl border border-gray-200/50 shadow-2xl rounded-3xl ring-1 ring-black/5"
-              : "items-center justify-between w-full max-w-6xl rounded-full px-6 py-3 bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg shadow-black/5"
+              : "items-center justify-between w-full max-w-7xl rounded-full px-6 py-3 bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg shadow-black/5"
           )}
         >
           {/* Logo Section */}
@@ -154,6 +158,19 @@ export default function Navbar({ className }: { className?: string }) {
                     Dashboard
                   </CustomLink>
                 )}
+
+                <div className="relative">
+                  {scrolled ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div><CreditsPopover /></div>
+                      </TooltipTrigger>
+                      <TooltipContent side="left">Credits & Plan</TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <CreditsPopover />
+                  )}
+                </div>
 
                 <div className="relative">
                   <NotificationsPopover />
