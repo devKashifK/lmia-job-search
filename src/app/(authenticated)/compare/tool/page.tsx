@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 
@@ -66,6 +66,8 @@ import { MobileHeader } from '@/components/mobile/mobile-header';
 import { BottomNav } from '@/components/mobile/bottom-nav';
 import Footer from '@/sections/homepage/footer';
 import { usePlanFeatures } from '@/hooks/use-plan-features';
+import { useCreditUnlock } from '@/components/ui/credit-unlock-dialog';
+import { consumeCreditsIfNoPremium } from '@/lib/api/credits';
 
 type ComparisonType = 'job_title' | 'state' | 'city' | 'employer';
 
@@ -226,9 +228,17 @@ export default function ComparePage() {
   const { data: employerOptions, isLoading: employersLoading } = useCompareData('employer');
   const { data: savedJobs, isLoading: savedJobsLoading } = useSavedJobs();
   const { session } = useSession();
-  const { planType, isLoading: isPlanLoading } = usePlanFeatures();
+  const { planType, creditRemaining, isLoading: isPlanLoading, canUseComparator } = usePlanFeatures();
+  const { showUnlockDialog, CreditUnlockComponent } = useCreditUnlock();
+  const isPremium = canUseComparator;
   const queryClient = useQueryClient();
-  const isPremium = planType !== 'free';
+  const [isUnlocking, setIsUnlocking] = useState(false);
+
+  const comparisonKey = useMemo(() => {
+    return [dataSource, comparisonType, entity1, entity2, entity3].filter(Boolean).sort().join('_');
+  }, [dataSource, comparisonType, entity1, entity2, entity3]);
+
+  const isLocallyUnlocked = !!(typeof window !== 'undefined' && comparisonKey && localStorage.getItem(`unlocked_compare_${session?.user?.id}_${comparisonKey}`) === 'true');
 
   const hasSavedJobs = savedJobs && savedJobs.length > 0;
 
@@ -402,15 +412,55 @@ export default function ComparePage() {
     }
   };
 
-  const handleCompare = () => {
+  const executeComparison = async () => {
+    setIsUnlocking(true);
+    try {
+      const success = await consumeCreditsIfNoPremium(session?.user?.id || '', 100);
+      if (success) {
+        toast.success('Comparison Unlocked!', {
+          description: '100 credits have been deducted from your account.',
+        });
+        await queryClient.invalidateQueries({ queryKey: ['credits', session?.user?.id] });
+        if (comparisonKey) {
+          localStorage.setItem(`unlocked_compare_${session?.user?.id}_${comparisonKey}`, 'true');
+        }
+        setShowResults(true);
+        saveToRecentComparisons(entity1, entity2, comparisonType);
+      } else {
+        toast.error('Insufficient Credits', {
+          description: 'You need at least 100 credits to unlock this comparison.',
+          action: { label: 'Top Up', onClick: () => router.push('/dashboard/credits') }
+        });
+      }
+    } catch (error) {
+      console.error('Error unlocking comparison:', error);
+      toast.error('Failed to unlock comparison');
+    } finally {
+      setIsUnlocking(false);
+    }
+  };
+
+  const handleCompare = async () => {
     if (entity1 && entity2) {
-      if (enable3Way && !isPremium) {
+      if (enable3Way && !isPremium && !isLocallyUnlocked) {
         toast.error('Premium Feature', {
-          description: '3-Way Comparison is available on premium plans.',
+          description: '3-Way Comparison is only available on premium plans or through credits.',
           action: { label: 'Upgrade', onClick: () => router.push('/pricing') }
         });
         return;
       }
+
+      if (!isPremium && !isLocallyUnlocked) {
+        showUnlockDialog({
+          title: 'Unlock Comparative Engine',
+          description: 'You are about to use the comparative engine. This feature is reserved for premium members or can be unlocked for 100 credits.',
+          creditAmount: 100,
+          userCredits: creditRemaining === Infinity ? 999999 : creditRemaining,
+          onConfirm: executeComparison
+        });
+        return;
+      }
+
       saveToRecentComparisons(entity1, entity2, comparisonType);
       setShowResults(true);
     }
@@ -786,13 +836,14 @@ export default function ComparePage() {
                             setEntity3(comparedCompanies[2].name);
                             setEnable3Way(true);
                           }
-                          saveToRecentComparisons(comparedCompanies[0].name, comparedCompanies[1].name, 'employer');
-                          setShowResults(true);
+                          // This will trigger handleCompare's credit check if needed
+                          setTimeout(() => handleCompare(), 100);
                         }}
                         className="h-12 px-8 bg-brand-600 hover:bg-brand-700 text-white rounded-2xl font-black shadow-lg shadow-brand-500/20 transition-all hover:-translate-y-1 active:scale-95 group"
+                        disabled={isUnlocking}
                       >
                         <BarChart3 className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform" />
-                        INITIALIZE {comparedCompanies.length >= 3 ? `TOP 3` : 'DUAL'} ENGINE
+                        {isUnlocking ? 'Unlocking...' : `INITIALIZE ${comparedCompanies.length >= 3 ? 'TOP 3' : 'DUAL'} ENGINE`}
                       </Button>
                     </div>
                   )}
@@ -1672,13 +1723,13 @@ export default function ComparePage() {
                     <Button
                       onClick={handleCompare}
                       disabled={
-                        !entity1 || !entity2 || (enable3Way && !entity3)
+                        !entity1 || !entity2 || (enable3Way && !entity3) || isUnlocking
                       }
                       size="lg"
-                      className="px-8 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-8 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed group"
                     >
-                      <BarChart3 className="w-5 h-5 mr-2" />
-                      Compare {enable3Way ? '3' : '2'} Entities
+                      {isUnlocking ? 'Unlocking Engine...' : 'Run Comparative Engine'}
+                      {!isUnlocking && <Sparkles className="w-4 h-4 ml-2 group-hover:rotate-12 transition-transform" />}
                     </Button>
                   </motion.div>
                 </Card>
@@ -1691,10 +1742,12 @@ export default function ComparePage() {
               entity2={entity2}
               entity3={enable3Way ? entity3 : undefined}
               dataSource={dataSource}
+              isUnlocked={isLocallyUnlocked}
               onReset={handleReset}
               onModify={() => setShowResults(false)}
             />
           )}
+          <CreditUnlockComponent />
         </div>
       </div>
 

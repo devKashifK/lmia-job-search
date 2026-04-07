@@ -11,7 +11,9 @@ export interface PlanFeatures {
     isUnlimited: boolean;
     canViewEmployerContacts: boolean;
     canUseAIAnalysis: boolean;
+    canUseComparator: boolean;
     expiresAt: string | null;
+    creditRemaining: number;
     isLoading: boolean;
 }
 
@@ -41,17 +43,22 @@ export function usePlanFeatures(): PlanFeatures {
 
     const planType = (credits?.plan_type as PlanType) || 'free';
     const isUnlimited = isUnlimitedPlan(credits);
+    const creditRemaining = isUnlimited ? Infinity : (credits?.total_credit ?? 0) - (credits?.used_credit ?? 0);
     
     // Feature gating logic
-    const canViewEmployerContacts = ['pay_as_you_go', 'weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'].includes(planType);
-    const canUseAIAnalysis = ['monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'].includes(planType);
+    const premiumPlans = ['weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'];
+    const canViewEmployerContacts = premiumPlans.includes(planType);
+    const canUseAIAnalysis = ['weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'].includes(planType);
+    const canUseComparator = ['weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'].includes(planType);
 
     return {
         planType,
         isUnlimited,
         canViewEmployerContacts,
         canUseAIAnalysis,
+        canUseComparator,
         expiresAt: credits?.expires_at || null,
+        creditRemaining,
         isLoading,
     };
 }

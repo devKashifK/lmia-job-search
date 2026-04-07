@@ -8,7 +8,7 @@ export function useCheckCredits() {
     const { toast } = useToast();
     const router = useRouter();
 
-    const checkCredits = async (): Promise<boolean> => {
+    const checkCredits = async (requiredCredits: number = 1): Promise<boolean> => {
         if (session?.trial) return true;
         if (!session?.user?.id) {
             toast({
@@ -22,10 +22,13 @@ export function useCheckCredits() {
         try {
             const remaining = await getRemainingCredits(session.user.id);
 
-            if (remaining <= 0) {
+            // If remaining is Infinity, it means they have an unlimited plan
+            if (remaining === Infinity) return true;
+
+            if (remaining < requiredCredits) {
                 toast({
-                    title: 'No Credits Remaining',
-                    description: "You've used all your credits. Please purchase more to continue searching.",
+                    title: 'Insufficient Credits',
+                    description: `This feature requires ${requiredCredits} credits. You have ${remaining} remaining.`,
                     variant: 'destructive',
                 });
                 router.push('/dashboard/credits');

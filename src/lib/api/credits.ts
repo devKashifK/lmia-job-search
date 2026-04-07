@@ -65,10 +65,10 @@ export async function getRemainingCredits(userId: string): Promise<number> {
 }
 
 /**
- * Increment used_credit by 1 for a user and return updated record.
+ * Increment used_credit by a specified amount for a user and return updated record.
  * Bypasses increment if plan is unlimited.
  */
-export async function incrementUsedCredit(userId: string) {
+export async function incrementUsedCredit(userId: string, amount: number = 1) {
     const current = await getUserCredits(userId);
     if (!current) return null;
 
@@ -79,13 +79,32 @@ export async function incrementUsedCredit(userId: string) {
 
     const { data, error } = await (db as any)
         .from('credits')
-        .update({ used_credit: (current.used_credit ?? 0) + 1 })
+        .update({ used_credit: (current.used_credit ?? 0) + amount })
         .eq('id', userId)
         .select()
         .single();
 
     if (error) throw error;
     return data;
+}
+
+/**
+ * Check if a user has sufficient credits or a premium plan, then consumes credits if not premium.
+ * Returns true if successful (either premium or credits deducted).
+ */
+export async function consumeCreditsIfNoPremium(userId: string, amount: number): Promise<boolean> {
+    const credits = await getUserCredits(userId);
+    if (!credits) return false;
+
+    // If on premium plan, return true immediately (unlimited access)
+    if (isUnlimitedPlan(credits)) return true;
+
+    const remaining = (credits.total_credit ?? 0) - (credits.used_credit ?? 0);
+    if (remaining < amount) return false;
+
+    // Deduct credits
+    const updated = await incrementUsedCredit(userId, amount);
+    return !!updated;
 }
 
 /**
@@ -96,7 +115,7 @@ export async function verifyPremiumAccess(userId: string): Promise<boolean> {
     if (!credits) return false;
 
     // Check if plan type is premium
-    const premiumPlans = ['monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'];
+    const premiumPlans = ['weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'];
     if (!premiumPlans.includes(credits.plan_type)) return false;
 
     // Check expiration

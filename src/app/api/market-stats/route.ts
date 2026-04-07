@@ -11,19 +11,9 @@ export async function GET() {
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
 
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const isPremium = await verifyPremiumAccess(user.id);
-        if (!isPremium) {
-            return NextResponse.json(
-                { error: 'Premium Plan Required' },
-                { status: 403 }
-            );
-        }
-
+        // High-level market stats are public to all logged-in users
         const stats = await getMarketStats();
+        return NextResponse.json(stats);
         return NextResponse.json(stats);
     } catch (error) {
         console.error('Error in /api/market-stats:', error);

@@ -89,17 +89,89 @@ const STATS = [
     { value: '24/7', label: 'Live Updates' },
 ];
 
+import { usePlanFeatures } from '@/hooks/use-plan-features';
+import { useToast } from '@/hooks/use-toast';
+import { useSession } from '@/hooks/use-session';
+import { consumeCreditsIfNoPremium } from '@/lib/api/credits';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCreditUnlock } from '@/components/ui/credit-unlock-dialog';
+
 export default function CompareLandingPage() {
     const router = useRouter();
     const { isMobile } = useMobile();
+    const { canUseComparator, creditRemaining, isLoading: isPlanLoading } = usePlanFeatures();
+    const { session } = useSession();
+    const { toast } = useToast();
+    const queryClient = useQueryClient();
+    const [isUnlocking, setIsUnlocking] = React.useState(false);
+    const { showUnlockDialog, CreditUnlockComponent } = useCreditUnlock();
 
-    const handleLaunchTool = (type?: string) => {
-        if (type) {
-            router.push(`/compare/tool?type=${type}`);
-        } else {
-            router.push('/compare/tool');
+    const isLocallyUnlocked = typeof window !== 'undefined' && localStorage.getItem(`unlocked_comparator_${session?.user?.id}`) === 'true';
+
+    const handleLaunchTool = async (type?: string) => {
+        if (canUseComparator || isLocallyUnlocked) {
+            router.push(type ? `/compare/tool?type=${type}` : '/compare/tool');
+            return;
+        }
+
+        // If not premium and not locally unlocked, show toast or handle as needed
+        // For simplicity in this UI, I'll just trigger the same unlock flow
+        await handleUnlockWithCredits(type);
+    };
+
+    const executeUnlock = async (type?: string) => {
+        setIsUnlocking(true);
+        try {
+            const success = await consumeCreditsIfNoPremium(session?.user?.id || '', 100);
+            if (success) {
+                toast({
+                    title: 'Comparator Unlocked!',
+                    description: '100 credits have been deducted from your account.',
+                });
+                await queryClient.invalidateQueries({ queryKey: ['credits', session?.user?.id] });
+                localStorage.setItem(`unlocked_comparator_${session?.user?.id}`, 'true');
+                router.push(type ? `/compare/tool?type=${type}` : '/compare/tool');
+            } else {
+                toast({
+                    title: 'Insufficient Credits',
+                    description: 'You need at least 100 credits to unlock this feature.',
+                    variant: 'destructive',
+                });
+                router.push('/dashboard/credits');
+            }
+        } catch (error) {
+            console.error('Error unlocking comparator:', error);
+            toast({
+                title: 'Error',
+                description: 'Failed to unlock comparator. Please try again.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsUnlocking(false);
         }
     };
+
+    const handleUnlockWithCredits = async (type?: string) => {
+        if (!session?.user?.id) return;
+        
+        showUnlockDialog({
+            title: 'Unlock Comparative Engine',
+            description: 'You are about to use the comparative engine. This feature is reserved for premium members or can be unlocked for 100 credits.',
+            creditAmount: 100,
+            userCredits: creditRemaining === Infinity ? 999999 : creditRemaining,
+            onConfirm: () => executeUnlock(type)
+        });
+    };
+
+    if (isPlanLoading) {
+        return (
+            <BackgroundWrapper>
+                <div className="flex-1 flex items-center justify-center p-6 min-h-screen">
+                    <div className="w-12 h-12 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
+                </div>
+            </BackgroundWrapper>
+        );
+    }
 
     return (
         <BackgroundWrapper>
@@ -406,6 +478,7 @@ export default function CompareLandingPage() {
             </div>
 
             {isMobile && <BottomNav />}
+            <CreditUnlockComponent />
         </BackgroundWrapper>
     );
 }

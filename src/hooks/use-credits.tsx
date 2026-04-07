@@ -32,7 +32,7 @@ export const useUpdateCredits = () => {
     if (!session?.user?.id) throw new Error('User not authenticated');
 
     try {
-      const updatedCredits = await incrementUsedCredit(session.user.id);
+      // Searches are now free - removed incrementUsedCredit call
 
       const { search_id: currentSearchId } = await insertSearch({
         id: session.user.id,
@@ -45,13 +45,12 @@ export const useUpdateCredits = () => {
         sessionStorage.setItem('currentSearchId', String(currentSearchId));
       }
 
-      await queryClient.invalidateQueries({
-        queryKey: ['credits', session.trial, session.user.id],
-      });
-
-      return updatedCredits;
+      // No need to invalidate credits query since they didn't change
+      // But we might want to refresh search history if needed
+      
+      return true;
     } catch (error) {
-      console.error('Error updating credits:', error);
+      console.error('Error recording search:', error);
       throw error;
     }
   };

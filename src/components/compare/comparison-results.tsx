@@ -92,6 +92,7 @@ interface ComparisonResultsProps {
   dataSource?: 'trending_job' | 'lmia';
   onReset: () => void;
   onModify?: () => void;  // go back to setup without clearing selections
+  isUnlocked?: boolean;
 }
 
 export default function ComparisonResults({
@@ -102,11 +103,12 @@ export default function ComparisonResults({
   dataSource = 'trending_job',
   onReset,
   onModify,
+  isUnlocked = false,
 }: ComparisonResultsProps) {
   const router = useRouter();
   const { isMobile } = useMobile();
   const { planType, isLoading: isPlanLoading } = usePlanFeatures();
-  const isPremium = planType !== 'free';
+  const isPremium = planType !== 'free' || isUnlocked;
   const { data, isLoading } = useComparisonData(type, entity1, entity2, entity3);
   const [saveDialogOpen, setSaveDialogOpen] = React.useState(false);
   const [infoDialogOpen, setInfoDialogOpen] = React.useState(false);

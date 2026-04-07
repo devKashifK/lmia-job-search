@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useMemo, use } from 'react';
+import React, { Suspense, useState, useEffect, useMemo, use } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -98,7 +98,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+
 import Navbar from '@/components/ui/nabvar';
 import Footer from '@/sections/homepage/footer';
 
@@ -114,7 +114,6 @@ const staggerContainer = {
 
 import { Icon } from '@iconify/react/dist/iconify.js';
 import BackgroundWrapper from '@/components/ui/background-wrapper';
-import { AnalysisDetailDialog } from '@/components/analytics/analysis-detail-dialog';
 import { useQuery } from '@tanstack/react-query';
 import { usePlanFeatures } from '@/hooks/use-plan-features';
 
@@ -129,6 +128,11 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { WageVisualization } from '@/components/analytics/wage-visualization';
+import { useSession } from '@/hooks/use-session';
+import { useToast } from '@/hooks/use-toast';
+import { consumeCreditsIfNoPremium } from '@/lib/api/credits';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCreditUnlock } from '@/components/ui/credit-unlock-dialog';
 
 type PageProps = {
   params: Promise<{ name: string }>;
@@ -980,7 +984,67 @@ function CompanyAnalysisContent({
 
   const router = useRouter();
   const { isMobile } = useMobile();
-  const { canUseAIAnalysis, isLoading: isPlanLoading } = usePlanFeatures();
+  const { canUseAIAnalysis, creditRemaining, isLoading: isPlanLoading } = usePlanFeatures();
+  const { showUnlockDialog, CreditUnlockComponent } = useCreditUnlock();
+  const { session } = useSession();
+  const queryClient = useQueryClient();
+  const { toast: toastHook } = useToast();
+  const [isUnlocking, setIsUnlocking] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  useEffect(() => {
+    if (session?.user?.id && companyName) {
+      const lockKey = `unlocked_analysis_${session.user.id}_${companyName}`;
+      if (localStorage.getItem(lockKey) === 'true') {
+        setIsUnlocked(true);
+      }
+    }
+  }, [session?.user?.id, companyName]);
+
+  const executeUnlock = async () => {
+    if (!session?.user?.id) return;
+    setIsUnlocking(true);
+    try {
+      const success = await consumeCreditsIfNoPremium(session.user.id, 100);
+      if (success) {
+        toastHook({
+          title: 'Analysis Unlocked!',
+          description: `100 credits have been deducted to unlock ${companyName} analysis.`,
+        });
+        await queryClient.invalidateQueries({ queryKey: ['credits', session.user.id] });
+        localStorage.setItem(`unlocked_analysis_${session.user.id}_${companyName}`, 'true');
+        setIsUnlocked(true);
+      } else {
+        toastHook({
+          title: 'Insufficient Credits',
+          description: 'You need at least 100 credits to unlock this feature.',
+          variant: 'destructive',
+        });
+        router.push('/dashboard/credits');
+      }
+    } catch (error) {
+      console.error('Error unlocking analysis:', error);
+      toastHook({
+        title: 'Error',
+        description: 'Failed to unlock analysis. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUnlocking(false);
+    }
+  };
+
+  const handleUnlockWithCredits = async () => {
+    if (!session?.user?.id) return;
+    
+    showUnlockDialog({
+      title: 'Unlock Company Analysis',
+      description: `You are about to unlock the detailed analysis for ${companyName}. This will use 100 credits from your balance.`,
+      creditAmount: 100,
+      userCredits: creditRemaining === Infinity ? 999999 : creditRemaining,
+      onConfirm: executeUnlock
+    });
+  };
 
   const pathname = usePathname();
   const goBack = () => {
@@ -1396,6 +1460,7 @@ function CompanyAnalysisContent({
           </div>
         </div>
         <Footer />
+        <CreditUnlockComponent />
       </BackgroundWrapper>
     );
   }
@@ -1566,7 +1631,7 @@ function CompanyAnalysisContent({
   }
 
   // Premium Gating
-  if (!canUseAIAnalysis) {
+  if (!canUseAIAnalysis && !isUnlocked) {
     return (
       <BackgroundWrapper>
         <Navbar />
@@ -1616,12 +1681,17 @@ function CompanyAnalysisContent({
                   <Button
                     variant="outline"
                     size="lg"
-                    className="h-12 px-8 border-gray-200 hover:bg-gray-50 rounded-xl font-bold text-gray-600 transition-all text-base"
-                    onClick={goBack}
+                    className="h-12 px-8 border-brand-200 hover:bg-brand-50 rounded-xl font-bold text-brand-600 transition-all text-base bg-brand-50"
+                    onClick={handleUnlockWithCredits}
+                    disabled={isUnlocking}
                   >
-                    Go Back
+                    {isUnlocking ? 'Unlocking...' : `Unlock for 100 Credits`}
+                    {!isUnlocking && <Sparkles className="w-4 h-4 ml-2 fill-current" />}
                   </Button>
                 </div>
+                <p className="text-xs text-gray-400 mt-4">
+                  Your current credits: <span className="font-bold text-brand-600">{creditRemaining === Infinity ? 'Unlimited' : creditRemaining}</span>
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -1633,6 +1703,7 @@ function CompanyAnalysisContent({
 
   return (
     <BackgroundWrapper>
+      <CreditUnlockComponent />
       {isMobile ? (
         <MobileHeader title={companyName} showBack={true} />
       ) : null}

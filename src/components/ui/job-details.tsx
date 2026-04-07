@@ -15,7 +15,13 @@ import { Button } from './button';
 import { usePlanFeatures } from '@/hooks/use-plan-features';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Separator } from './separator';
-import { Mail, Phone, Contact } from 'lucide-react';
+import { Mail, Phone, Contact, Sparkles } from 'lucide-react';
+import { useSession } from '@/hooks/use-session';
+import { useToast } from '@/hooks/use-toast';
+import { consumeCreditsIfNoPremium } from '@/lib/api/credits';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCreditUnlock } from '@/components/ui/credit-unlock-dialog';
+import { useState } from 'react';
 
 interface Job {
   id?: number;
@@ -54,7 +60,64 @@ export function JobDetails({
   isSaved = false,
   className = '',
 }: JobDetailsProps) {
-  const { canViewEmployerContacts } = usePlanFeatures();
+  const { canViewEmployerContacts, creditRemaining } = usePlanFeatures();
+  const { session } = useSession();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [isUnlocking, setIsUnlocking] = useState(false);
+  const { showUnlockDialog, CreditUnlockComponent } = useCreditUnlock();
+
+  // Per-job local unlock state
+  const jobId = job?.RecordID || (job as any).id;
+  const isLocallyUnlocked = typeof window !== 'undefined' && jobId && localStorage.getItem(`unlocked_contact_${session?.user?.id}_${jobId}`) === 'true';
+
+  const executeUnlock = async () => {
+    setIsUnlocking(true);
+    try {
+      const success = await consumeCreditsIfNoPremium(session?.user?.id || '', 150);
+      if (success) {
+        toast({
+          title: 'Contacts Unlocked!',
+          description: '150 credits have been deducted from your account.',
+        });
+        await queryClient.invalidateQueries({ queryKey: ['credits', session?.user?.id] });
+        if (jobId) {
+          localStorage.setItem(`unlocked_contact_${session?.user?.id}_${jobId}`, 'true');
+          window.location.reload(); // Refresh to show contacts
+        }
+      } else {
+        toast({
+          title: 'Insufficient Credits',
+          description: 'You need at least 150 credits to unlock this feature.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error unlocking contacts:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to unlock contacts. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUnlocking(false);
+    }
+  };
+
+  const handleUnlockWithCredits = async () => {
+    if (!session?.user?.id) return;
+    
+    showUnlockDialog({
+      title: 'Unlock Employer Contacts',
+      description: 'You are about to unlock the direct contact information for this employer. This will use 150 credits from your balance.',
+      creditAmount: 150,
+      userCredits: creditRemaining === Infinity ? 999999 : creditRemaining,
+      onConfirm: executeUnlock
+    });
+  };
+
+  const isUnlocked = canViewEmployerContacts || isLocallyUnlocked;
+
   if (!job) {
     return (
       <div className={`flex items-center justify-center h-full ${className}`}>
@@ -284,25 +347,40 @@ export function JobDetails({
 
         {/* Contact Information (Gated) */}
         <Card className="mt-8 border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-          <CardHeader className={`pb-4 ${canViewEmployerContacts ? 'bg-emerald-50' : 'bg-gray-50'}`}>
+          <CardHeader className={`pb-4 ${isUnlocked ? 'bg-emerald-50' : 'bg-gray-50'}`}>
             <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
-              <Contact className={`w-5 h-5 ${canViewEmployerContacts ? 'text-emerald-600' : 'text-brand-600'}`} />
+              <Contact className={`w-5 h-5 ${isUnlocked ? 'text-emerald-600' : 'text-brand-600'}`} />
               Employer Contact Information
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            {!canViewEmployerContacts ? (
+            {!isUnlocked ? (
               <div className="text-center py-4">
                 <div className="bg-brand-50 rounded-xl p-4 border border-brand-100 mb-4">
                   <p className="text-sm text-brand-900 font-medium mb-2">Contact Details Locked</p>
-                  <p className="text-xs text-gray-600 mb-4">Upgrade to a premium plan to reveal employer email and phone number.</p>
-                  <Button 
-                    size="sm" 
-                    className="bg-brand-600 hover:bg-brand-700"
-                    onClick={() => window.location.href = '/pricing'}
-                  >
-                    View Pricing
-                  </Button>
+                  <p className="text-xs text-gray-600 mb-4">Upgrade plan or use credits to reveal employer email and phone number.</p>
+                  <div className="flex flex-col gap-2 sm:flex-row justify-center">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="border-brand-200 text-brand-600 hover:bg-brand-50"
+                      onClick={() => window.location.href = '/pricing'}
+                    >
+                      View Pricing
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="bg-brand-600 hover:bg-brand-700"
+                      onClick={handleUnlockWithCredits}
+                      disabled={isUnlocking}
+                    >
+                      {isUnlocking ? 'Unlocking...' : 'Unlock for 150 Credits'}
+                      {!isUnlocking && <Sparkles className="w-4 h-4 ml-2 fill-current" />}
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-3">
+                    Your current credits: <span className="font-bold text-brand-600">{creditRemaining === Infinity ? 'Unlimited' : creditRemaining}</span>
+                  </p>
                 </div>
               </div>
             ) : (
@@ -339,6 +417,7 @@ export function JobDetails({
           </CardContent>
         </Card>
       </div>
+      <CreditUnlockComponent />
     </div>
   );
 }

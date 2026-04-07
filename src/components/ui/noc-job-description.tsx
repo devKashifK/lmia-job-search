@@ -45,6 +45,10 @@ import { useRouter } from 'next/navigation';
 import { parseJobDescription } from '@/utils/parse-job-description';
 import { ApplyJobDialog } from './apply-job-dialog';
 import { differenceInDays, parseISO } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
+import { consumeCreditsIfNoPremium } from '@/lib/api/credits';
+import { useCreditUnlock } from '@/components/ui/credit-unlock-dialog';
 
 interface NocProfile {
   code: string;
@@ -193,7 +197,7 @@ export function NocJobDescription({
   isSelected = false,
 }: NocJobDescriptionProps) {
   const { session } = useSession();
-  const { canViewEmployerContacts, isLoading: planLoading } = usePlanFeatures();
+  const { canViewEmployerContacts, creditRemaining, isLoading: planLoading } = usePlanFeatures();
   const router = useRouter();
   const recordId = job ? getJobRecordId(job) : undefined;
   const {
@@ -209,6 +213,64 @@ export function NocJobDescription({
   const [copied, setCopied] = useState(false);
   const [openPremium, setOpenPremium] = useState(false);
   const [openApplyDialog, setOpenApplyDialog] = useState(false);
+  const [isUnlocking, setIsUnlocking] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { showUnlockDialog, CreditUnlockComponent } = useCreditUnlock();
+
+  const jobId = job?.RecordID || (job as any)?.id;
+  const isLocallyUnlocked = typeof window !== 'undefined' && jobId && localStorage.getItem(`unlocked_contact_${session?.user?.id}_${jobId}`) === 'true';
+
+  const isUnlocked = canViewEmployerContacts || isLocallyUnlocked;
+
+  const executeUnlock = async () => {
+    setIsUnlocking(true);
+    try {
+      const success = await consumeCreditsIfNoPremium(session?.user?.id || '', 150);
+      if (success) {
+        toast({
+          title: 'Contacts Unlocked!',
+          description: '150 credits have been deducted from your account.',
+        });
+        await queryClient.invalidateQueries({ queryKey: ['credits', session?.user?.id] });
+        if (jobId) {
+          localStorage.setItem(`unlocked_contact_${session?.user?.id}_${jobId}`, 'true');
+          window.location.reload();
+        }
+      } else {
+        toast({
+          title: 'Insufficient Credits',
+          description: 'You need at least 150 credits to unlock this feature.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error unlocking contacts:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to unlock contacts. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsUnlocking(false);
+    }
+  };
+
+  const handleUnlockWithCredits = async () => {
+    if (!session?.user?.id) {
+      setOpenPremium(false);
+      router.push('/sign-in');
+      return;
+    }
+
+    showUnlockDialog({
+      title: 'Unlock Employer Contacts',
+      description: 'You are about to unlock the direct contact information for this employer. This will use 150 credits from your balance.',
+      creditAmount: 150,
+      userCredits: creditRemaining === Infinity ? 999999 : creditRemaining,
+      onConfirm: executeUnlock
+    });
+  };
 
   const isFresh = job?.date_of_job_posting
     ? differenceInDays(new Date(), new Date(job.date_of_job_posting)) <= 30
@@ -620,37 +682,79 @@ export function NocJobDescription({
                           </Tooltip>
 
                           <div className="flex gap-1">
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setOpenPremium(true)}
-                                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
-                                >
-                                  <Phone className="w-3.5 h-3.5" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="text-xs">Upgrade to unlock Phone</p>
-                              </TooltipContent>
-                            </Tooltip>
+                            {isUnlocked ? (
+                              <>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      asChild
+                                      className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
+                                    >
+                                      <a href={`tel:${job?.phone}`}>
+                                        <Phone className="w-3.5 h-3.5" />
+                                      </a>
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">{job?.phone || 'No phone provided'}</p>
+                                  </TooltipContent>
+                                </Tooltip>
 
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setOpenPremium(true)}
-                                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
-                                >
-                                  <Mail className="w-3.5 h-3.5" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="text-xs">Upgrade to unlock Email</p>
-                              </TooltipContent>
-                            </Tooltip>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      asChild
+                                      className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
+                                    >
+                                      <a href={`mailto:${job?.email}`}>
+                                        <Mail className="w-3.5 h-3.5" />
+                                      </a>
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">{job?.email || 'No email provided'}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </>
+                            ) : (
+                              <>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setOpenPremium(true)}
+                                      className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
+                                    >
+                                      <Phone className="w-3.5 h-3.5" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Unlock to view Phone</p>
+                                  </TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setOpenPremium(true)}
+                                      className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm px-2 py-1.5 hover:scale-105 transition-all duration-200"
+                                    >
+                                      <Mail className="w-3.5 h-3.5" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="text-xs">Unlock to view Email</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -833,17 +937,17 @@ export function NocJobDescription({
                     onClick={() => {
                       if (!session) {
                         router.push('/sign-in');
-                      } else if (!canViewEmployerContacts) {
+                      } else if (!isUnlocked) {
                         setOpenPremium(true);
                       }
                     }}
                   >
                     <Contact className="w-4 h-4 mr-2" />
-                    {canViewEmployerContacts ? 'Contact Details Unlocked' : 'Unlock Contact Details'}
+                    {isUnlocked ? 'Contact Details Unlocked' : 'Unlock Contact Details'}
                   </Button>
                 </motion.div>
 
-                {canViewEmployerContacts && (session) && (
+                {isUnlocked && (session) && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -900,16 +1004,32 @@ export function NocJobDescription({
                       Get Direct Access to {job?.employer}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      Upgrade to premium to unlock employer email addresses,
-                      phone numbers, and direct contact information.
+                      Unlock employer email addresses and contact information using credits or upgrade to premium.
                     </p>
                   </div>
-                  <Button
-                    className="w-full bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700"
-                    onClick={() => router.push('/pricing')}
-                  >
-                    Upgrade to Premium
-                  </Button>
+                  
+                  <div className="w-full space-y-2">
+                    <Button
+                      className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold"
+                      onClick={handleUnlockWithCredits}
+                      disabled={isUnlocking}
+                    >
+                      {isUnlocking ? 'Unlocking...' : 'Unlock for 150 Credits'}
+                      <Sparkles className="w-4 h-4 ml-2" />
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      className="w-full border-brand-200 text-brand-600 hover:bg-brand-50"
+                      onClick={() => router.push('/pricing')}
+                    >
+                      Upgrade to Premium
+                    </Button>
+                    
+                    <p className="text-[10px] text-gray-400 mt-2 font-medium">
+                      You have {creditRemaining === Infinity ? 'Unlimited' : `${creditRemaining} credits remaining`}
+                    </p>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
@@ -933,6 +1053,7 @@ export function NocJobDescription({
         />
       </motion.div>
       <LoginAlertComponent />
+      <CreditUnlockComponent />
     </TooltipProvider>
   );
 }

@@ -8,6 +8,12 @@ import { useQuery } from '@tanstack/react-query';
 import { getTrendingRoles, getRegionalHotspots, getCategorizedCompanies, getDistinctCompanies } from '@/lib/api/analysis';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { usePlanFeatures } from '@/hooks/use-plan-features';
+import { useCreditUnlock } from '@/components/ui/credit-unlock-dialog';
+import { useSession } from '@/hooks/use-session';
+import { consumeCreditsIfNoPremium } from '@/lib/api/credits';
+import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
 import db from '@/db';
 
 interface CompanySearchBarProps {
@@ -26,6 +32,12 @@ export function CompanySearchBar({
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const { canUseAIAnalysis, creditRemaining } = usePlanFeatures();
+    const { showUnlockDialog, CreditUnlockComponent } = useCreditUnlock();
+    const { session, loading: isSessionLoading } = useSession();
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+    const [isUnlocking, setIsUnlocking] = useState(false);
 
     // Close suggestions when clicking outside
     useEffect(() => {
@@ -70,21 +82,79 @@ export function CompanySearchBar({
         staleTime: 1000 * 60 * 5, // 5 mins
     });
 
-    const handleSelect = (company: string) => {
+    const checkAndRedirect = async (companyName: string) => {
+        const company = companyName.trim();
+        if (!company) return;
+
+        // Ensure session is loaded before checking gating
+        if (isSessionLoading) return;
+
+        if (!session?.user?.id) {
+            router.push(`/analysis/${encodeURIComponent(company)}`);
+            return;
+        }
+
+        const lockKey = `unlocked_analysis_${session.user.id}_${company}`;
+        const isLocallyUnlocked = localStorage.getItem(lockKey) === 'true';
+
+        if (canUseAIAnalysis || isLocallyUnlocked) {
+            router.push(`/analysis/${encodeURIComponent(company)}`);
+            return;
+        }
+
+        // Show unlock dialog
+        showUnlockDialog({
+            title: 'Unlock Company Analysis',
+            description: `Unlock deep-dive analytics and AI insights for ${company}. This will use 100 credits.`,
+            creditAmount: 100,
+            userCredits: creditRemaining === Infinity ? 999 : creditRemaining,
+            onConfirm: async () => {
+                setIsUnlocking(true);
+                try {
+                    const success = await consumeCreditsIfNoPremium(session.user.id, 100);
+                    if (success) {
+                        localStorage.setItem(lockKey, 'true');
+                        queryClient.invalidateQueries({ queryKey: ['credits', session.user.id] });
+                        toast({
+                            title: 'Analysis Unlocked',
+                            description: `100 credits deducted for ${company}.`,
+                        });
+                        router.push(`/analysis/${encodeURIComponent(company)}`);
+                    } else {
+                        toast({
+                            title: 'Insufficient Credits',
+                            description: 'You need 100 credits to unlock this analysis.',
+                            variant: 'destructive',
+                        });
+                        router.push('/dashboard/credits');
+                    }
+                } catch (error) {
+                    console.error('Error unlocking:', error);
+                } finally {
+                    setIsUnlocking(false);
+                }
+            }
+        });
+    };
+
+    const handleSelect = (e: React.MouseEvent, company: string) => {
+        e.preventDefault();
+        e.stopPropagation();
         setQuery(company);
         setIsOpen(false);
-        router.push(`/analysis/${encodeURIComponent(company)}`);
+        checkAndRedirect(company);
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (query) {
-            router.push(`/analysis/${encodeURIComponent(query)}`);
+            checkAndRedirect(query);
         }
     };
 
     return (
         <div ref={wrapperRef} className={cn("relative w-full max-w-2xl mx-auto", className)}>
+            <CreditUnlockComponent />
             <form onSubmit={handleSubmit} className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
                     <Search className="h-5 w-5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
@@ -133,8 +203,9 @@ export function CompanySearchBar({
                             {suggestions.map((company, index) => (
                                 <button
                                     key={`${company}-${index}`}
-                                    onClick={() => handleSelect(company)}
-                                    className="w-full flex items-center px-4 py-3 hover:bg-brand-50/50 transition-colors text-left group"
+                                    type="button"
+                                    onClick={(e) => handleSelect(e, company)}
+                                    className="w-full flex items-center px-4 py-3 hover:bg-brand-50/50 transition-all text-left group"
                                 >
                                     <div className="flex-shrink-0 mr-3">
                                         <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 group-hover:bg-brand-100 group-hover:text-brand-600 transition-colors">

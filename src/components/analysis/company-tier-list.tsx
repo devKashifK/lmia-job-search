@@ -23,6 +23,12 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { usePlanFeatures } from '@/hooks/use-plan-features';
+import { useCreditUnlock } from '@/components/ui/credit-unlock-dialog';
+import { useSession } from '@/hooks/use-session';
+import { consumeCreditsIfNoPremium } from '@/lib/api/credits';
+import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
 
 // Tier Configuration
 const TIERS = [
@@ -91,6 +97,13 @@ const TIERS = [
 export function CompanyTierList() {
     const [isLmia, setIsLmia] = useState(true);
     const router = useRouter();
+    const { canUseAIAnalysis, creditRemaining } = usePlanFeatures();
+    const { showUnlockDialog, CreditUnlockComponent } = useCreditUnlock();
+    const { session } = useSession();
+    const queryClient = useQueryClient();
+    const { toast } = useToast();
+    const [isUnlocking, setIsUnlocking] = useState(false);
+
     const tableName = isLmia ? 'lmia' : 'trending_job';
 
     const { data: tierData, isLoading } = useQuery({
@@ -129,8 +142,59 @@ export function CompanyTierList() {
         staleTime: 1000 * 60 * 30 // 30 minutes
     });
 
+    const handleCompanyClick = (companyName: string) => {
+        const url = `/analysis/${encodeURIComponent(companyName)}?t=${isLmia ? 'lmia' : 'hot_leads'}`;
+
+        if (!session?.user?.id) {
+            router.push(url);
+            return;
+        }
+
+        const lockKey = `unlocked_analysis_${session.user.id}_${companyName}`;
+        const isLocallyUnlocked = localStorage.getItem(lockKey) === 'true';
+
+        if (canUseAIAnalysis || isLocallyUnlocked) {
+            router.push(url);
+            return;
+        }
+
+        showUnlockDialog({
+            title: 'Unlock Company Analysis',
+            description: `Unlock deep-dive analytics and AI insights for ${companyName}. This will use 100 credits.`,
+            creditAmount: 100,
+            userCredits: creditRemaining === Infinity ? 999 : creditRemaining,
+            onConfirm: async () => {
+                setIsUnlocking(true);
+                try {
+                    const success = await consumeCreditsIfNoPremium(session.user.id, 100);
+                    if (success) {
+                        localStorage.setItem(lockKey, 'true');
+                        queryClient.invalidateQueries({ queryKey: ['credits', session.user.id] });
+                        toast({
+                            title: 'Analysis Unlocked',
+                            description: `100 credits deducted for ${companyName}.`,
+                        });
+                        router.push(url);
+                    } else {
+                        toast({
+                            title: 'Insufficient Credits',
+                            description: 'You need 100 credits to unlock this analysis.',
+                            variant: 'destructive',
+                        });
+                        router.push('/dashboard/credits');
+                    }
+                } catch (error) {
+                    console.error('Error unlocking:', error);
+                } finally {
+                    setIsUnlocking(false);
+                }
+            }
+        });
+    };
+
     return (
         <div className="space-y-8">
+            <CreditUnlockComponent />
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -210,7 +274,7 @@ export function CompanyTierList() {
                                         {companies.map((company: any) => (
                                             <div
                                                 key={company.name}
-                                                onClick={() => router.push(`/analysis/${encodeURIComponent(company.name)}?t=${isLmia ? 'lmia' : 'hot_leads'}`)}
+                                                onClick={() => handleCompanyClick(company.name)}
                                                 className="group cursor-pointer bg-gray-50 hover:bg-white border border-gray-100 hover:border-brand-200 rounded-xl p-3 px-4 transition-all duration-200 hover:shadow-sm flex items-center justify-between"
                                             >
                                                 <div className="min-w-0">

@@ -14,25 +14,25 @@ export function PreventCopyPaste() {
             e.preventDefault();
         };
 
-        // Disable Key Combinations
+        // Disable All Key Combinations (Ctrl+Key, Cmd+Key, Alt+Key)
         const handleKeyDown = (e: KeyboardEvent) => {
             // Prevent F12 (DevTools)
-            if (e.key === 'F12') e.preventDefault();
-
-            // Prevent Ctrl+Shift+I/J/C (DevTools)
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+            if (e.key === 'F12') {
                 e.preventDefault();
+                return;
             }
 
-            // Prevent Ctrl+U (View Source)
-            if (e.ctrlKey && e.key === 'u') e.preventDefault();
-
-            // Prevent Cmd+Option+I (Mac DevTools)
-            if (e.metaKey && e.altKey && e.key === 'i') e.preventDefault();
-
-            // Copy/cut still blocked
-            if (e.ctrlKey && e.key === 'c') e.preventDefault();
-            if (e.ctrlKey && e.key === 'x') e.preventDefault();
+            // Block any combination involving Ctrl, Meta(Cmd), or Alt
+            if (e.ctrlKey || e.metaKey || e.altKey) {
+                // List of keys to potentially WHITELIST if absolutely necessary (e.g., Tab for accessibility)
+                const whitelist = ['Tab', 'Space', 'Enter', 'Escape', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+                
+                if (!whitelist.includes(e.key)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                }
+            }
         };
 
         const handleCopy = (e: ClipboardEvent) => {
@@ -44,7 +44,7 @@ export function PreventCopyPaste() {
         };
 
         document.addEventListener('contextmenu', handleContextMenu);
-        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keydown', handleKeyDown, true); // Use capture to intercept early
         document.addEventListener('copy', handleCopy);
         document.addEventListener('cut', handleCut);
 
