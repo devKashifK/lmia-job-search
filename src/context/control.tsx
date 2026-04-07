@@ -1,5 +1,6 @@
 'use client';
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { getVisitorInfo, VisitorInfo } from '@/lib/get-visitor-info';
 import { trackVisitor } from '@/lib/api/users';
 import { LoginAlertDialog } from '@/components/ui/login-alert-dialog';
@@ -127,14 +128,18 @@ export const ControlContextProvider = ({
     visitorInfo,
   };
 
+  const pathname = usePathname();
+  const PROTECTED_ROUTES = ['/analysis', '/compare', '/resources/wage-finder', '/search'];
+  const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname?.startsWith(route));
+
   return (
     <ControlContext.Provider value={value}>
       {children}
-      {showLoginAlert && !session?.user ? (
+      {showLoginAlert && isProtectedRoute && !session?.user ? (
         <LoginAlertDialog
           isOpen={showLoginAlert}
           onClose={() => setShowLoginAlert(false)}
-          message="Your 10-minute free trial has ended. Please login to continue using the platform and access all features."
+          message="Your 10-minute free trial has ended. Please login to continue using the platform's premium search and analysis tools."
         />
       ) : null}
     </ControlContext.Provider>
