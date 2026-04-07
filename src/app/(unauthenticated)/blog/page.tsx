@@ -35,15 +35,15 @@ export default function BlogPage() {
         const client = getServerClient();
         const postsRes = await client.query<{ posts: { nodes: Post[] } }>({
           query: GET_ALL_POSTS,
-          variables: { first: 100, search },
+          variables: { 
+            first: 100, 
+            search: search.trim() === "" ? undefined : search 
+          },
           fetchPolicy: 'no-cache',
         });
 
         const fetchedPosts = postsRes.data?.posts?.nodes || [];
         console.log(`[Blog] Fetched ${fetchedPosts.length} posts from WordPress. Search: "${search}"`);
-        if (fetchedPosts.length > 0) {
-          console.log(`[Blog] Latest Post: "${fetchedPosts[0].title}" (ID: ${fetchedPosts[0].id})`);
-        }
         
         setAllPosts(fetchedPosts);
       } catch (error) {
@@ -55,9 +55,16 @@ export default function BlogPage() {
     fetchData();
   }, [search]);
 
-  const filteredPosts = allPosts;
-  const featuredPost = allPosts[0];
-  const gridPosts = allPosts.slice(1);
+  // Client-side filtering as a fallback for backend inconsistencies
+  const displayPosts = search
+    ? allPosts.filter(post => 
+        post.title.toLowerCase().includes(search.toLowerCase()) || 
+        post.excerpt?.toLowerCase().includes(search.toLowerCase())
+      )
+    : allPosts;
+
+  const featuredPost = displayPosts[0];
+  const gridPosts = search ? displayPosts : displayPosts.slice(1);
 
   return (
     <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-brand-500/30 selection:text-brand-900">
@@ -177,9 +184,8 @@ export default function BlogPage() {
 
             <motion.div 
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
+              initial="visible"
+              animate="visible"
               variants={{
                 hidden: { opacity: 0 },
                 visible: {
@@ -188,7 +194,7 @@ export default function BlogPage() {
                 }
               }}
             >
-              {(search ? filteredPosts : gridPosts).map((post) => (
+              {gridPosts.map((post) => (
                 <motion.div
                   key={post.id}
                   variants={{
@@ -255,7 +261,7 @@ export default function BlogPage() {
               </div>
             )}
 
-            {filteredPosts.length === 0 && !loading && (
+            {displayPosts.length === 0 && !loading && (
               <div className="text-center py-40 px-6 bg-slate-50 rounded-[3rem] border border-dashed border-slate-200">
                 <SearchIcon className="w-16 h-16 text-slate-200 mx-auto mb-6" />
                 <h3 className="text-2xl font-black text-slate-900 mb-2">Mystery Unsolved</h3>

@@ -130,3 +130,13 @@ export const GET_ALL_POSTS_OF_BLOG = gql`
     }
   }
 `;
+export const GET_ALL_POST_SLUGS = gql`
+  query AllPostSlugs($first: Int!) {
+    posts(first: $first, where: { stati: [PUBLISH] }) {
+      nodes {
+        slug
+        modified
+      }
+    }
+  }
+`;
