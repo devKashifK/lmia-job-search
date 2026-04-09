@@ -2,12 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-    ChevronLeft, 
-    History, 
+import {
+    ChevronLeft,
+    History,
     CalcIcon,
     AlertCircle,
-    ArrowRight,
     Star,
     BadgeCheck
 } from 'lucide-react';
@@ -41,9 +40,9 @@ export default function EligibilityDashboard() {
             const [prof, hist] = await Promise.all([
                 getUserProfile(session!.user.id),
                 db.from('calculator_results')
-                  .select('*')
-                  .eq('user_id', session!.user.id)
-                  .order('created_at', { ascending: false })
+                    .select('*')
+                    .eq('user_id', session!.user.id)
+                    .order('created_at', { ascending: false })
             ]);
             setProfile(prof);
             setHistory(hist.data || []);
@@ -130,8 +129,8 @@ export default function EligibilityDashboard() {
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-6"
                     >
-                        <Button 
-                            variant="ghost" 
+                        <Button
+                            variant="ghost"
                             onClick={() => setSelectedCalc(null)}
                             className="rounded-xl font-bold text-xs uppercase tracking-widest text-gray-500 hover:text-gray-900 -ml-2"
                         >
@@ -141,7 +140,7 @@ export default function EligibilityDashboard() {
 
                         <div className="bg-white border border-gray-100 rounded-3xl shadow-sm overflow-hidden">
                             {CALCULATOR_CONFIGS[selectedCalc] ? (
-                                <CalculatorPage 
+                                <CalculatorPage
                                     config={CALCULATOR_CONFIGS[selectedCalc]}
                                     userId={session?.user?.id}
                                     initialData={profile ? mapProfileToCalculator(profile) : {}}
@@ -169,5 +168,5 @@ export default function EligibilityDashboard() {
 }
 
 const ArrowRight = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
 );
