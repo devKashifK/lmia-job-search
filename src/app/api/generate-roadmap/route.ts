@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     try {
         const authHeader = req.headers.get("authorization");
         const token = authHeader?.split("Bearer ")[1];
-        
+
         const supabase = await createClient();
         let user;
 
@@ -23,18 +23,17 @@ export async function POST(req: NextRequest) {
 
         // 1. Fetch User Profile and Preferences for AI context
         const [{ data: profile }, { data: preferences }] = await Promise.all([
-            (supabase.from('user_profiles') as any).select('*').eq('user_id', user.id).single(),
-            (supabase.from('user_preferences') as any).select('*').eq('user_id', user.id).single()
+            (supabase.from('user_profiles') as any).select('*').eq('user_id', user.id).maybeSingle(),
+            (supabase.from('user_preferences') as any).select('*').eq('user_id', user.id).maybeSingle()
         ]);
 
-        if (!profile && !preferences) {
-            return NextResponse.json({ error: 'Please complete your profile first' }, { status: 400 });
-        }
+        // We no longer hard-block if profile/preferences are missing. 
+        // We will use fallbacks from the auth user metadata instead.
 
         // 2. Prepare AI Context
         const { GoogleGenerativeAI } = await import('@google/generative-ai');
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const toArray = (val: any) => {
             if (Array.isArray(val)) return val;
@@ -78,10 +77,10 @@ Return ONLY a valid JSON array of strings:
 
         const result = await model.generateContent(prompt);
         const text = result.response.text().trim();
-        
+
         const jsonMatch = text.match(/\[[\s\S]*\]/);
         if (!jsonMatch) throw new Error('Invalid AI response format');
-        
+
         const steps = JSON.parse(jsonMatch[0]);
         if (!Array.isArray(steps) || steps.length === 0) throw new Error('Invalid steps format');
 

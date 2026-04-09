@@ -17,10 +17,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 
 interface ClientMatchesProps {
   clientId: string;
+  clientUrn: string;
   extractedData: any;
 }
 
-export function ClientMatches({ clientId, extractedData }: ClientMatchesProps) {
+export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatchesProps) {
   const [matches, setMatches] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -59,6 +60,26 @@ export function ClientMatches({ clientId, extractedData }: ClientMatchesProps) {
   const [showContactsModal, setShowContactsModal] = React.useState(false);
 
   const { toast } = useToast();
+  const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set());
+
+  // Fetch already applied jobs for this client
+  useEffect(() => {
+    async function fetchAppliedJobs() {
+        try {
+            const { data, error } = await (db as any)
+                .from('job_applications')
+                .select('job_id')
+                .ilike('client_urn', clientUrn);
+            
+            if (data) {
+                setAppliedJobIds(new Set((data as any[]).map(a => a.job_id)));
+            }
+        } catch (err) {
+            console.error("Failed to fetch applied jobs:", err);
+        }
+    }
+    if (clientUrn) fetchAppliedJobs();
+  }, [clientUrn]);
 
   const isDirty = React.useMemo(() => {
     return JSON.stringify(selectedTitles) !== JSON.stringify(extractedData.recommended_job_titles || []) ||
@@ -202,7 +223,7 @@ export function ClientMatches({ clientId, extractedData }: ClientMatchesProps) {
           const applicationsToInsert = selectedMatches.map(m => ({
               user_id: session.user.id, // For standard applications, user_id is the applicant, but for agency it's the agency_id
               agency_id: session.user.id,
-              client_urn: extractedData.urn || clientId,
+              client_urn: clientUrn,
               job_id: m.job_id,
               job_title: m.job_data?.job_title || m.job_data?.JobTitle || 'Unknown Position',
               noc_code: m.job_data?.noc_code || m.job_data?.noc || '00000',
@@ -220,6 +241,12 @@ export function ClientMatches({ clientId, extractedData }: ClientMatchesProps) {
               console.error("Failed to insert bulk applications:", error);
               toast({ variant: 'destructive', title: 'Apply Failed', description: error.message });
           } else {
+              // Update local state for immediate feedback
+              setAppliedJobIds(prev => {
+                  const next = new Set(prev);
+                  selectedJobIds.forEach(id => next.add(id));
+                  return next;
+              });
               setSelectedJobIds([]);
               toast({ title: `✅ Applied to ${applicationsToInsert.length} job(s)`, description: 'Applications saved to the tracking pipeline.' });
           }
@@ -477,13 +504,19 @@ export function ClientMatches({ clientId, extractedData }: ClientMatchesProps) {
                 <input 
                     type="checkbox" 
                     className="w-3.5 h-3.5 rounded border-gray-300 text-brand-600 focus:ring-brand-500 cursor-pointer"
-                    checked={matches.length > 0 && selectedJobIds.length === matches.length}
+                    checked={matches.length > 0 && matches.every(m => appliedJobIds.has(m.job_id) || selectedJobIds.includes(m.job_id))}
                     onChange={(e) => {
-                        if (e.target.checked) setSelectedJobIds(matches.map(m => m.job_id));
-                        else setSelectedJobIds([]);
+                        if (e.target.checked) {
+                            const newSelectableIds = matches
+                                .filter(m => !appliedJobIds.has(m.job_id))
+                                .map(m => m.job_id);
+                            setSelectedJobIds(newSelectableIds);
+                        } else {
+                            setSelectedJobIds([]);
+                        }
                     }}
                 />
-                <label className="text-[10px] font-bold text-gray-500 cursor-pointer">Select All Results</label>
+                <label className="text-[10px] font-bold text-gray-500 cursor-pointer">Select All New Jobs</label>
             </div>
             <div className="flex items-center gap-2">
                 {isLoading && <Loader2 className="w-3 h-3 text-brand-600 animate-spin" />}
@@ -502,9 +535,14 @@ export function ClientMatches({ clientId, extractedData }: ClientMatchesProps) {
                     {isUnlocking ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Lock className="w-3.5 h-3.5 mr-1.5" />}
                     Unlock Contact ({selectedJobIds.length})
                 </Button>
-                <Button onClick={handleBulkApply} size="sm" disabled={isApplying} className="bg-brand-500 hover:bg-brand-400 text-white border-none shrink-0 text-xs font-bold">
+                <Button 
+                    onClick={handleBulkApply} 
+                    size="sm" 
+                    disabled={isApplying || selectedJobIds.filter(id => !appliedJobIds.has(id)).length === 0} 
+                    className="bg-brand-500 hover:bg-brand-400 text-white border-none shrink-0 text-xs font-bold"
+                >
                    {isApplying ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin"/> : null}
-                   Apply to Selected ({selectedJobIds.length})
+                   Apply to Selected ({selectedJobIds.filter(id => !appliedJobIds.has(id)).length})
                 </Button>
             </div>
          </div>
@@ -532,8 +570,9 @@ export function ClientMatches({ clientId, extractedData }: ClientMatchesProps) {
                     )}>
                         <div className="flex gap-3">
                              <div className="pt-0.5">
-                                 <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 cursor-pointer" 
+                                 <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed" 
                                         checked={selectedJobIds.includes(match.job_id)}
+                                        disabled={appliedJobIds.has(match.job_id)}
                                         onChange={(e) => {
                                             if (e.target.checked) setSelectedJobIds([...selectedJobIds, match.job_id]);
                                             else setSelectedJobIds(selectedJobIds.filter(id => id !== match.job_id));
@@ -556,12 +595,26 @@ export function ClientMatches({ clientId, extractedData }: ClientMatchesProps) {
                                               </div>
                                          </div>
                                      </div>
-                                     <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border-none px-2 py-0.5 text-[11px] font-bold rounded-md shrink-0 shadow-sm ring-1 ring-green-600/10">
-                                          {Math.round(match.score * 100)}% Match
-                                     </Badge>
-                                 </div>
-                                 
-                                 <div className="flex items-center justify-between mt-2 flex-wrap">
+                                      <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border-none px-2 py-0.5 text-[11px] font-bold rounded-md shrink-0 shadow-sm ring-1 ring-green-600/10">
+                                           {Math.round(match.score * 100)}% Match
+                                      </Badge>
+                                  </div>
+
+                                  {appliedJobIds.has(match.job_id) && (
+                                      <div className="bg-brand-50/50 border border-brand-100 p-2 rounded-lg flex items-center justify-between">
+                                          <div className="flex items-center gap-2">
+                                              <div className="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center">
+                                                  <CheckCircle2 className="w-3.5 h-3.5 text-brand-600" />
+                                              </div>
+                                              <span className="text-[10px] font-black uppercase text-brand-700 tracking-wider">Already Applied</span>
+                                          </div>
+                                          <Badge variant="outline" className="text-[9px] font-bold text-brand-600 border-brand-200 bg-white">
+                                              In Pipeline
+                                          </Badge>
+                                      </div>
+                                  )}
+                                  
+                                  <div className="flex items-center justify-between mt-2 flex-wrap">
                                      <div className="flex flex-wrap gap-1.5 flex-1 pr-2">
                                          {match.reasons.slice(0, 2).map((reason: string, idx: number) => (
                                              <span key={idx} className="bg-green-50/50 text-green-700 text-[8.5px] font-bold px-2 py-1 rounded truncate uppercase tracking-widest">

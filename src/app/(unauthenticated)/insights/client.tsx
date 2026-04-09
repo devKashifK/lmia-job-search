@@ -710,9 +710,11 @@ export default function InsightsClient({ initialPrograms = [] }: { initialProgra
     useEffect(() => { fetchData(); }, [fetchData]);
 
     const visibleRegions = useMemo(() => {
+        // We filter out 'canada' from visibleRegions because it is handled separately 
+        // as a featured "National Overview" table above the grid.
         let filtered = activeTab === 'all'
             ? regions.filter(r => r.key !== 'canada')
-            : regions.filter(r => r.key === activeTab);
+            : regions.filter(r => r.key === activeTab && r.key !== 'canada');
 
         if (search.trim()) {
             const sq = search.toLowerCase();
@@ -928,6 +930,16 @@ export default function InsightsClient({ initialPrograms = [] }: { initialProgra
 
                 {/* ── Content ───────────────────────────────────────────────── */}
                 <section className="max-w-6xl mx-auto px-4 py-10">
+                    
+                    {/* Disclaimer */}
+                    {!loading && !error && (
+                        <div className="mb-6 flex items-center gap-3 px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+                            <Lightbulb className="w-4 h-4 text-blue-500 shrink-0" />
+                            <p className="text-[11px] text-blue-700 font-medium">
+                                <span className="font-bold">Disclaimer:</span> This metric is based on our databases and internal research, and may not reflect the entirety of the actual Canadian market data.
+                            </p>
+                        </div>
+                    )}
 
                     {loading && (
                         <div className="flex flex-col items-center justify-center py-32 gap-3">

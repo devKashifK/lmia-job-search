@@ -110,9 +110,14 @@ export async function POST(req: NextRequest) {
         "company": "Current or most recent Company Name",
         "bio": "A professional summary (write one if not present, max 400 characters, focusing on key skills and experience)",
         "skills": "Comma separated list of top 10 technical and soft skills found in the resume",
-        "education": "Array of strings. Each string MUST include: Degree, Institution, Date Range (Month YYYY - Month YYYY), and Description. Use format: 'Degree at Institution (Date Range): Description'",
-        "work_experience": "Array of strings. Each string MUST include: Job Role, Company, Date Range (Month YYYY - Month YYYY), and detailed Description of tasks/achievements. Use format: 'Role at Company (Date Range): Description'",
-        "experience": "Total years of experience (number, e.g. 5)",
+        "education": "Array of strings. Format: 'Degree at Institution (Date Range): Description'",
+        "education_level": "Standardized degree level (high_school, diploma, bachelors, masters, phbe). Leave empty if not found.",
+        "work_experience": "Array of strings. Format: 'Role at Company (Date Range): Description'",
+        "experience_years": "Total numeric years of experience. Leave empty if not determinable.",
+        "age": "Current age in years (number). ONLY if DOB is present or can be clearly inferred from graduation dates (e.g. Grad Year - 22). Leave empty if not found.",
+        "language_clb": "Detected English CLB level (4-10) based on IELTS/CELPIP mentions. Do NOT guess if no language metrics are present.",
+        "noc_teer": "Inferred NOC TEER level (0-5) based on responsibilities. Leave empty if unclear.",
+        "job_offer": "Is there a mention of a valid Canadian job offer? ('yes' or 'no'). Leave empty if not mentioned.",
         "recommended_job_titles": "Array of 3-5 job titles strictly selected from the 'Valid Titles List'."
       }
     `;
@@ -173,6 +178,22 @@ export async function POST(req: NextRequest) {
         let profileData;
         try {
             profileData = JSON.parse(cleanedJson);
+
+            // Normalization
+            if (profileData.experience_years && !profileData.experience) {
+                profileData.experience = profileData.experience_years;
+            }
+            if (profileData.experience && !profileData.experience_years) {
+                profileData.experience_years = profileData.experience;
+            }
+
+            // Numeric cleaning
+            if (profileData.experience_years) {
+                profileData.experience_years = parseFloat(String(profileData.experience_years)) || 0;
+            }
+            if (profileData.age) {
+                profileData.age = parseFloat(String(profileData.age)) || 0;
+            }
 
             // Validate recommended job titles against DB list
             if (profileData.recommended_job_titles && Array.isArray(profileData.recommended_job_titles) && allTitles.length > 0) {

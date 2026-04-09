@@ -56,14 +56,15 @@ CANDIDATE PROFILE:
 - Target Employers: ${recommendedEmployers.slice(0, 5).join(', ') || 'N/A'}
 - Current Country: ${clientData.country || 'Not specified'}
 
-Generate exactly 7 steps. Each step must be:
-1. Specific to this candidate's profile (mention their actual NOC, titles, province, etc.)
-2. Actionable (start with a strong verb)
-3. Maximum 15 words long
-4. Focused on Canadian job market strategy
+Generate exactly 7 steps. 
+Each step must include a "title" (CRITICAL: max 4 words, use professional sentence case, no all-caps) and a "description" (max 25 words, detail the specific tactical action).
+Ensure the steps are specific to their NOC and target province.
 
-Return ONLY a valid JSON array of strings, no other text:
-["Step 1 text", "Step 2 text", ..., "Step 7 text"]`;
+Return ONLY a valid JSON array of objects, no other text:
+[
+  { "title": "Obtain Degree ECA", "description": "Liaise with WES to verify your Masters degree for CRS points equivalency." },
+  ...
+]`;
 
         const result = await model.generateContent(prompt);
         const text = result.response.text().trim();

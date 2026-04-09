@@ -4,7 +4,8 @@ import React from 'react';
 import { useAgencyApplications, APPLICATION_STATUSES, ApplicationStatus } from '@/hooks/use-agency-applications';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Building2, Calendar, ExternalLink, Briefcase, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Building2, Calendar, ExternalLink, Briefcase, ChevronRight, MoreHorizontal, RefreshCw, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,7 +29,7 @@ const STAGE_CONFIG: Record<ApplicationStatus, { label: string; color: string; bg
 };
 
 export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
-  const { applications, isLoading, updateApplicationStatus } = useAgencyApplications(clientUrn);
+  const { applications, isLoading, error, refresh, updateApplicationStatus } = useAgencyApplications(clientUrn);
 
   if (isLoading) {
     return (
@@ -42,15 +43,46 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
     );
   }
 
+  if (error) {
+    return (
+      <Card className="p-12 border-red-100 bg-red-50/10 flex flex-col items-center justify-center text-center space-y-4">
+        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
+            <AlertCircle className="w-6 h-6 text-red-400" />
+        </div>
+        <div>
+            <h3 className="text-sm font-bold text-gray-900 font-black uppercase tracking-tight">Sync Failed</h3>
+            <p className="text-[11px] text-red-600 max-w-xs mx-auto mb-4">{error}</p>
+            <Button size="sm" onClick={refresh} className="bg-red-600 hover:bg-red-700 text-white rounded-xl h-8 px-6 text-[10px] font-bold">
+                Retry Connection
+            </Button>
+        </div>
+      </Card>
+    );
+  }
+
   if (applications.length === 0) {
     return (
-      <Card className="p-12 border-dashed border-2 border-gray-100 flex flex-col items-center justify-center text-center space-y-3">
+      <Card className="p-12 border-dashed border-2 border-gray-100 flex flex-col items-center justify-center text-center space-y-4">
         <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center">
             <Briefcase className="w-6 h-6 text-gray-300" />
         </div>
-        <div>
-            <h3 className="text-sm font-bold text-gray-900">No applications tracked</h3>
-            <p className="text-[11px] text-gray-400">Applications submitted via the Matching Lab will appear here as a Kanban pipeline.</p>
+        <div className="space-y-1">
+            <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight">No applications tracked</h3>
+            <p className="text-[11px] text-gray-400 max-w-sm mx-auto">Applications submitted via the <b>Matching Lab</b> will appear here as a Kanban pipeline.</p>
+        </div>
+        
+        <div className="flex flex-col items-center gap-3">
+            <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={refresh}
+                className="h-8 rounded-lg border-gray-200 text-[10px] font-bold text-gray-500 hover:text-brand-600 hover:border-brand-200"
+            >
+                <RefreshCw className={cn("w-3 h-3 mr-1.5", isLoading && "animate-spin")} />
+                Sync Pipeline
+            </Button>
+            
+            <p className="text-[9px] font-bold text-gray-300 uppercase tracking-[0.2em]">Context: {clientUrn}</p>
         </div>
       </Card>
     );

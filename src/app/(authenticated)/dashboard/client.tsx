@@ -11,6 +11,7 @@ import {
   MapPin,
   Clock,
   Zap,
+  BadgeCheck
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -63,6 +64,15 @@ export default function DashboardPage() {
       bgColor: 'bg-purple-50',
       borderColor: 'border-purple-200',
       href: '/compare',
+    },
+    {
+      label: 'Eligibility Check',
+      description: 'Check PR points',
+      icon: BadgeCheck,
+      color: 'text-emerald-600',
+      bgColor: 'bg-emerald-50',
+      borderColor: 'border-emerald-200',
+      href: '/dashboard/eligibility',
     },
   ];
 

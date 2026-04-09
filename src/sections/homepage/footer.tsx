@@ -42,7 +42,7 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-gray-500">
               <li><FooterLink href="/for-immigration-consultants">For RCICs</FooterLink></li>
               <li><FooterLink href="/for-recruiters">For Recruiters</FooterLink></li>
-              <li><FooterLink href="/what-is-lmia">What is LMIA?</FooterLink></li>
+              {/* <li><FooterLink href="/what-is-lmia">What is LMIA?</FooterLink></li> */}
               <li><FooterLink href="/lmia-employers-list">Employers List</FooterLink></li>
               <li><FooterLink href="/lmia-processing-time">Processing Times</FooterLink></li>
             </ul>

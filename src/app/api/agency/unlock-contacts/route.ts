@@ -5,8 +5,20 @@ import db from '@/db';
 
 export async function POST(req: NextRequest) {
     try {
+        const authHeader = req.headers.get("authorization");
+        const token = authHeader?.split("Bearer ")[1];
+
         const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        let user;
+
+        if (token) {
+            const { data } = await supabase.auth.getUser(token);
+            user = data?.user;
+        } else {
+            const { data } = await supabase.auth.getUser();
+            user = data?.user;
+        }
+
         if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
         const { jobIds, source } = await req.json();

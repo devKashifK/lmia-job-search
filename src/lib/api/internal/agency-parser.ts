@@ -53,11 +53,16 @@ export async function parseAgencyResume(
         "skills": "Comma separated list of top 10 skills",
         "education": "Array of strings. Format: 'Degree at Institution (Date Range): Description'",
         "work_experience": "Array of strings. Format: 'Role at Company (Date Range): Description'",
-        "experience": "Total years of experience (number)",
-        "recommended_job_titles": "Array of 3-5 job titles. CRITICAL: Select from the VALID Job Titles list above. If no suitable match is found in the list, provide the 3 most professional/standard titles based on resume content.",
+        "experience_years": "Total numeric years of experience. Leave empty if not determinable.",
+        "age": "Current age in years (number). ONLY if DOB is present or can be clearly inferred from graduation dates (e.g. Grad Year - 22). Leave empty if not found.",
+        "education_level": "Standardized degree level (high_school, diploma, bachelors, masters, phd). Leave empty if not found.",
+        "language_clb": "Detected English CLB level (4-10) based on IELTS/CELPIP mentions. Do NOT guess if no language metrics are present.",
+        "noc_teer": "Inferred NOC TEER level (0-5) based on responsibilities. Leave empty if unclear.",
+        "job_offer": "Is there a mention of a valid Canadian job offer? ('yes' or 'no'). Leave empty if not mentioned.",
+        "recommended_job_titles": "Array of 3-5 job titles. CRITICAL: Select from the VALID Job Titles list above.",
         "recommended_noc_codes": "Array of best matching 5-digit NOC 2021 codes.",
         "recommended_employers": "Array of 3-5 real employer names from the provided database list that hire for these roles.",
-        "target_canadian_province": "MANDATORY. If the candidate is currently outside Canada, analyze their profession to suggest exactly ONE best-fitting Canadian Province (e.g., 'Ontario', 'British Columbia', 'Alberta') where demand for their role is highest."
+        "target_canadian_province": "If the candidate is currently outside Canada, analyze their profession to suggest exactly ONE best-fitting Canadian Province (e.g., 'Ontario', 'British Columbia', 'Alberta') where demand for their role is highest."
       }
 
       STRICT FALLBACK RULES:
@@ -83,9 +88,27 @@ export async function parseAgencyResume(
         const result = await model.generateContent(parts);
         const responseText = result.response.text();
         const cleaned = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
-        
+
         try {
-            return JSON.parse(cleaned);
+            const parsed = JSON.parse(cleaned);
+            
+            // Normalization & Backward Compatibility
+            if (parsed.experience_years) {
+                parsed.experience = parsed.experience_years;
+            }
+            if (parsed.experience && !parsed.experience_years) {
+                parsed.experience_years = parsed.experience;
+            }
+
+            // Numeric cleaning
+            if (parsed.experience_years) {
+                parsed.experience_years = parseFloat(String(parsed.experience_years)) || 0;
+            }
+            if (parsed.age) {
+                parsed.age = parseFloat(String(parsed.age)) || 0;
+            }
+            
+            return parsed;
         } catch (e) {
             console.error("Failed to parse Gemini response for agency resume:", responseText);
             throw new Error("The AI returned an invalid response structure. Please try again.");

@@ -18,7 +18,7 @@ export async function getUserCredits(userId: string): Promise<CreditRecord | nul
         .from('credits')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
     if (error) {
         if (error.code === 'PGRST116') {
@@ -82,7 +82,7 @@ export async function incrementUsedCredit(userId: string, amount: number = 1) {
         .update({ used_credit: (current.used_credit ?? 0) + amount })
         .eq('id', userId)
         .select()
-        .single();
+        .maybeSingle();
 
     if (error) throw error;
     return data;
