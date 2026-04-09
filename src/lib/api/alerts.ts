@@ -8,11 +8,12 @@ export interface JobAlert {
     criteria: any;
     frequency: 'daily' | 'weekly' | 'instant';
     is_active: boolean;
+    client_urn?: string; // Set for agency-led alerts
     created_at: string;
 }
 
 export async function getUserAlerts(userId: string): Promise<JobAlert[]> {
-    const { data, error } = await db
+    const { data, error } = await (db as any)
         .from('job_alerts')
         .select('*')
         .eq('user_id', userId)
@@ -27,7 +28,7 @@ export async function getUserAlerts(userId: string): Promise<JobAlert[]> {
 }
 
 export async function createAlert(alertData: Partial<JobAlert>): Promise<JobAlert | null> {
-    const { data, error } = await db.from('job_alerts').insert(alertData).select().single();
+    const { data, error } = await (db as any).from('job_alerts').insert(alertData).select().single();
 
     if (error) {
         console.error('Error creating alert:', error);
@@ -38,7 +39,7 @@ export async function createAlert(alertData: Partial<JobAlert>): Promise<JobAler
 }
 
 export async function deleteAlert(alertId: string): Promise<void> {
-    const { error } = await db.from('job_alerts').delete().eq('id', alertId);
+    const { error } = await (db as any).from('job_alerts').delete().eq('id', alertId);
 
     if (error) {
         console.error('Error deleting alert:', error);
@@ -47,7 +48,7 @@ export async function deleteAlert(alertId: string): Promise<void> {
 }
 
 export async function updateAlertStatus(alertId: string, isActive: boolean): Promise<void> {
-    const { error } = await db.from('job_alerts').update({ is_active: isActive }).eq('id', alertId);
+    const { error } = await (db as any).from('job_alerts').update({ is_active: isActive }).eq('id', alertId);
 
     if (error) {
         console.error('Error updating alert status:', error);

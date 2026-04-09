@@ -24,12 +24,18 @@ import { RecentActivityFeed } from '@/components/dashboard/recent-activity-feed'
 import { RecommendationsWidget } from '@/components/dashboard/recommendations-widget';
 import { useRouter } from 'next/navigation';
 import { useCreditData } from '@/hooks/use-credits';
+import { AgencyDashboard } from '@/components/agency/agency-dashboard';
+import { CareerRoadmap } from '@/components/dashboard/career-roadmap';
 
 export default function DashboardPage() {
   const { session } = useSession();
   const router = useRouter();
   const { isMobile, isMounted } = useMobile();
-  const { isUnlimited } = useCreditData();
+  const { isUnlimited, creditData } = useCreditData();
+
+  if (creditData?.plan_type === 'agency') {
+    return <AgencyDashboard />;
+  }
 
   // Get time-based greeting
   const getGreeting = () => {
@@ -229,6 +235,15 @@ export default function DashboardPage() {
 
           {/* Sidebar Column (Right - 4/12) */}
           <div className="lg:col-span-4">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mb-6"
+            >
+              <CareerRoadmap />
+            </motion.div>
+
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}

@@ -96,13 +96,83 @@ export async function generateRecommendations(
 }
 
 /**
- * Get candidate jobs based on user preferences and recent activity
+ * Generate job matches for an agency client based on extracted JSON data
  */
+export async function generateClientRecommendations(
+    extractedData: any,
+    overrides?: {
+        jobTitles?: string[],
+        nocCodes?: string[],
+        locations?: string[],
+        employers?: string[],
+        dateRange?: string,
+        source?: string
+    }
+): Promise<JobRecommendation[]> {
+    try {
+        // Build preferences using overrides (from UI) or extracted data (from AI)
+        const preferences: UserPreferences = {
+            user_id: 'temp',
+            preferred_job_titles: overrides?.jobTitles?.length 
+                ? overrides.jobTitles 
+                : (extractedData.recommended_job_titles || (extractedData.position ? [extractedData.position] : [])),
+            preferred_locations: overrides?.locations?.length 
+                ? overrides.locations 
+                : (extractedData.location ? [extractedData.location] : []),
+            preferred_industries: [],
+            preferred_noc_codes: overrides?.nocCodes?.length 
+                ? overrides.nocCodes 
+                : (extractedData.recommended_noc_codes || (extractedData.noc_code ? [extractedData.noc_code] : [])),
+            preferred_company_tiers: overrides?.employers || [],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+
+        const candidates = await getCandidateJobs(preferences, [], { dateRange: overrides?.dateRange, source: overrides?.source });
+
+        const scoredRecommendations = candidates.map((job) => {
+            const scoring = scoreJob(job, preferences, [], []);
+            return {
+                job_id: job.id,
+                job_source: job.source,
+                score: scoring.totalScore,
+                reasons: scoring.reasons,
+                job_data: job,
+            };
+        });
+
+        return scoredRecommendations
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 100);
+    } catch (error) {
+        console.error('Error in generateClientRecommendations:', error);
+        return [];
+    }
+}
+
 async function getCandidateJobs(
     preferences: UserPreferences,
-    recentSearches: any[] = []
+    recentSearches: any[] = [],
+    filters?: { dateRange?: string; source?: string }
 ): Promise<any[]> {
     const candidates: any[] = [];
+
+    // Filter Logic Control Blocks
+    const includeLmia = !filters?.source || filters.source === 'all' || filters.source === 'lmia';
+    const includeTrending = !filters?.source || filters.source === 'all' || filters.source === 'trending_job';
+
+    let trendingDateFilter: string | null = null;
+    if (filters?.dateRange && filters.dateRange !== 'all') {
+        const d = new Date();
+        if (filters.dateRange === 'today') {
+            d.setHours(0, 0, 0, 0);
+        } else if (filters.dateRange === 'last_10') {
+            d.setDate(d.getDate() - 10);
+        } else if (filters.dateRange === 'last_30') {
+            d.setDate(d.getDate() - 30);
+        }
+        trendingDateFilter = d.toISOString();
+    }
 
     // Extract unique keywords from recent searches
     const searchKeywords = recentSearches
@@ -110,12 +180,7 @@ async function getCandidateJobs(
         .filter(k => k && k.length > 2 && !k.startsWith('__job_view__')) // Filter out short keywords and internal tracking
         .map(k => k.trim());
 
-    // De-duplicate keywords
     const uniqueKeywords = [...new Set(searchKeywords)];
-
-    // For trending_job, we select limited fields. For lmia, we select what's available
-    let trendingQuery = db.from('trending_job').select('id, job_title, operating_name, employer, city, state, noc_code').limit(500);
-    let lmiaQuery = db.from('lmia').select('*').limit(500);
 
     // Filter by job titles OR search keywords
     const titleFilters = [];
@@ -131,94 +196,65 @@ async function getCandidateJobs(
     // Filter by Job Title / Keywords (Primary Strategy)
     const hasTitleFilters = titleFilters.length > 0;
 
-    if (hasTitleFilters) {
-        // If we have specific job titles/keywords, use them as the primary filter
-        // We DO NOT filter by location here to ensure we find matches even if they are in different provinces
-        // The scoring algorithm will prioritize local matches higher
-        const conditions = titleFilters
-            .map(term => `job_title.ilike.%${term}%`)
-            .join(',');
-        lmiaQuery = lmiaQuery.or(conditions);
-    } else if (preferences.preferred_industries?.length > 0) {
-        // Fallback to Industry matching if no titles (Secondary Strategy)
-        // Again, prioritized over location to ensure role fit
-        // Note: LMIA data often lacks explicit "industry" field, so this might rely on NAICS logic or be skipped
-        // For now, we'll try to match NAICS_Title if available or skip
-        // (Assuming LMIA records have a way to match industry - often they don't directly, but let's keep placeholder)
-    }
-
-    // Only apply Strict Location/NOC/TEER filters if we lack specific Title/Industry preferences
-    // This prevents over-filtering where "Cook in Toronto" returns 0 because only "Cook in Vancouver" exists
-    // Only apply Strict Location/NOC/TEER filters if we lack specific Title/Industry preferences
-    // This prevents over-filtering where "Cook in Toronto" returns 0 because only "Cook in Vancouver" exists
-    if (!hasTitleFilters && !(preferences.preferred_industries?.length)) {
-        if ((preferences.preferred_provinces?.length || 0) > 0) {
-            lmiaQuery = lmiaQuery.in('territory', preferences.preferred_provinces || []);
+    if (includeLmia) {
+        let lmiaQuery = db.from('lmia').select('*').limit(500);
+        if (hasTitleFilters) {
+            const lmiaConditions = titleFilters
+                .flatMap(term => [`"JobTitle".ilike.%${term}%`, `job_title.ilike.%${term}%`])
+                .join(',');
+            lmiaQuery = lmiaQuery.or(lmiaConditions);
+        } 
+        
+        if (!hasTitleFilters && !(preferences.preferred_industries?.length)) {
+            if ((preferences.preferred_locations?.length || 0) > 0) {
+                lmiaQuery = lmiaQuery.in('territory', preferences.preferred_locations || []);
+            }
+            if ((preferences.preferred_noc_codes?.length || 0) > 0) {
+                lmiaQuery = lmiaQuery.in('noc_code', preferences.preferred_noc_codes || []);
+            }
         }
-
-        if ((preferences.preferred_cities?.length || 0) > 0) {
-            lmiaQuery = lmiaQuery.in('city', preferences.preferred_cities || []);
-        }
-
-        if ((preferences.preferred_noc_codes?.length || 0) > 0) {
-            lmiaQuery = lmiaQuery.in('noc_code', preferences.preferred_noc_codes || []);
-        }
-
-        // Filter by TEER if specified (assuming 'Teer' column exists OR using NOC pattern)
-        if ((preferences.preferred_teer_categories?.length || 0) > 0) {
-            lmiaQuery = lmiaQuery.in('tier', preferences.preferred_teer_categories || []);
+        
+        const { data: lmiaJobs } = await lmiaQuery;
+        if (lmiaJobs) {
+            candidates.push(
+                ...(lmiaJobs as any[]).map((job) => ({ ...job, source: 'lmia', id: job.RecordID }))
+            );
         }
     }
 
-    const { data: lmiaJobs } = await lmiaQuery;
-    if (lmiaJobs) {
-        candidates.push(
-            ...(lmiaJobs as any[]).map((job) => ({ ...job, source: 'lmia', id: job.RecordID }))
-        );
-    }
+    if (includeTrending) {
+        let trendingQuery = db.from('trending_job').select('*').limit(500);
 
-    // Fetch from trending jobs
-    trendingQuery = db.from('trending_job').select('*').limit(500);
-
-    // Apply similar logic for trending jobs
-    if (hasTitleFilters) {
-        const conditions = titleFilters
-            .map(term => `job_title.ilike.%${term}%`)
-            .join(',');
-        trendingQuery = trendingQuery.or(conditions);
-    } else if ((preferences.preferred_industries?.length || 0) > 0) {
-        const industryConditions = (preferences.preferred_industries || [])
-            .map(ind => `industry.ilike.%${ind}%`)
-            .join(',');
-        trendingQuery = trendingQuery.or(industryConditions);
-    }
-
-    // Only strict filter by location/TEER if no title/industry prefs
-    if (!hasTitleFilters && !(preferences.preferred_industries?.length)) {
-        if ((preferences.preferred_provinces?.length || 0) > 0) {
-            trendingQuery = trendingQuery.in('state', preferences.preferred_provinces || []);
+        if (trendingDateFilter) {
+            trendingQuery = trendingQuery.gte('date_of_job_posting', trendingDateFilter);
         }
 
-        if ((preferences.preferred_cities?.length || 0) > 0) {
-            trendingQuery = trendingQuery.in('city', preferences.preferred_cities || []);
+        if (hasTitleFilters) {
+            const conditions = titleFilters
+                .map(term => `job_title.ilike.%${term}%`)
+                .join(',');
+            trendingQuery = trendingQuery.or(conditions);
+        } else if ((preferences.preferred_industries?.length || 0) > 0) {
+            const industryConditions = (preferences.preferred_industries || [])
+                .map(ind => `industry.ilike.%${ind}%`)
+                .join(',');
+            trendingQuery = trendingQuery.or(industryConditions);
         }
 
-        // Add TEER filter for trending jobs (assuming column 'teer')
-        if ((preferences.preferred_teer_categories?.length || 0) > 0) {
-            // Wait: trending_job actually has 'tier' column, not 'teer'
-            trendingQuery = trendingQuery.in('tier', preferences.preferred_teer_categories || []);
+        if (!hasTitleFilters && !(preferences.preferred_industries?.length)) {
+            if ((preferences.preferred_locations?.length || 0) > 0) {
+                trendingQuery = trendingQuery.in('state', preferences.preferred_locations || []);
+            }
+        }
+
+        const { data: trendingJobs } = await trendingQuery;
+        if (trendingJobs) {
+            candidates.push(
+                ...(trendingJobs as any[]).map((job) => ({ ...job, source: 'trending_job' }))
+            );
         }
     }
 
-    const { data: trendingJobs } = await trendingQuery;
-    if (trendingJobs) {
-        candidates.push(
-            ...(trendingJobs as any[]).map((job) => ({ ...job, source: 'trending_job' }))
-        );
-    }
-
-    // If no candidates found with filters, return empty array
-    // This prevents showing random 0% match jobs
     return candidates;
 }
 
@@ -247,23 +283,15 @@ function scoreJob(
     }
 
     // 2. Location Match (weight: 0.25)
-    const hasLocationPreferences =
-        (preferences.preferred_provinces?.length || 0) > 0 ||
-        (preferences.preferred_cities?.length || 0) > 0;
-
-    if (hasLocationPreferences) {
+    if (preferences.preferred_locations?.length > 0) {
         const jobCity = (job.city || '').toLowerCase();
         const jobProvince = (job.territory || job.province || '').toLowerCase();
 
-        const provinceMatch = preferences.preferred_provinces?.some((prov: string) =>
-            jobProvince.includes(prov.toLowerCase())
+        const locationMatch = preferences.preferred_locations?.some((loc: string) =>
+            jobProvince.includes(loc.toLowerCase()) || jobCity.includes(loc.toLowerCase())
         );
 
-        const cityMatch = preferences.preferred_cities?.some((city: string) =>
-            jobCity.includes(city.toLowerCase())
-        );
-
-        if (provinceMatch || cityMatch) {
+        if (locationMatch) {
             score += 0.25;
             reasons.push(`Located in your preferred area`);
         }
@@ -291,22 +319,11 @@ function scoreJob(
     }
 
     // 5. TEER Category Match (weight: 0.15)
-    // Try to find TEER in job data or infer from NOC (2nd digit in NOC 2021 usually indicates TEER)
-    // NOTE: This assumes database has a 'Teer' column or we can parse it.
-    if ((preferences.preferred_teer_categories?.length || 0) > 0) {
-        let jobTeer = String(job.Teer || job.teer || '');
-
-        // If no explicit TEER field, try to derive from NOC if it's a 5-digit 2021 NOC
-        if (!jobTeer && (job.noc_code || job.noc)) {
-            const noc = String(job.noc_code || job.noc);
-            if (noc.length === 5) {
-                jobTeer = noc.charAt(1); // 2nd digit is often TEER-related in 2021 system
-            }
-        }
-
-        if ((preferences.preferred_teer_categories || []).includes(jobTeer)) {
-            score += 0.15;
-            reasons.push(`Matches your preferred TEER category`);
+    // Derive from NOC if it's a 5-digit 2021 NOC
+    if (job.noc_code || job.noc) {
+        const noc = String(job.noc_code || job.noc);
+        if (noc.length === 5) {
+            // Logic can be added here if TEER mapping is available
         }
     }
 

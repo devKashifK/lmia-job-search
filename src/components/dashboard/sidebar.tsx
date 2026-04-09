@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "@/hooks/use-session";
+import { useCreditData } from "@/hooks/use-credits";
 import db from "@/db";
 import { toast } from "@/hooks/use-toast";
 import Logo from "@/components/ui/logo";
@@ -75,12 +76,25 @@ export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { session } = useSession();
+  const { creditData } = useCreditData();
+  const isAgency = creditData?.plan_type === 'agency';
+
+  const menuItems = navigation.map(item => {
+    if (isAgency) {
+      if (item.name === "Overview") return { ...item, name: "Dashboard" };
+      if (item.name === "Profile") return { ...item, name: "Profile" };
+      if (item.name === "Applications") return { ...item, name: "Client Applications" };
+      if (item.name === "Job Alerts") return { ...item, name: "Client Alerts" };
+      if (item.name === "Saved Jobs") return { ...item, name: "Shortlisted" };
+    }
+    return item;
+  });
 
   const handleLogout = async () => {
     try {
       localStorage.removeItem("brandColor");
       const { error } = await db.auth.signOut();
-      
+
       // If there's an error, check if it's "Auth session missing!"
       // and treat it as a success for the purpose of the redirect.
       if (error && error.message !== 'Auth session missing!') {
@@ -131,7 +145,6 @@ export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
       </AnimatePresence>
 
       {/* Sidebar */}
-      {/* Sidebar */}
       <motion.div
         className={cn(
           "flex flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out",
@@ -162,7 +175,7 @@ export function Sidebar({ isOpen, isMobile, onClose }: SidebarProps) {
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto py-6 px-3">
           <nav className="space-y-1">
-            {navigation.map((item) => (
+            {menuItems.map((item) => (
               <NavItem
                 key={item.name}
                 icon={item.icon}

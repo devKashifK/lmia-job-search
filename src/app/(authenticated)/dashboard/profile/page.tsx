@@ -188,8 +188,12 @@ function EditableField({
   );
 }
 
+import { AgencyProfileView } from "@/components/agency/agency-profile-view";
+import { useCreditData } from "@/hooks/use-credits";
+
 export default function UserProfile() {
   const { session } = useSession();
+  const { creditData } = useCreditData();
   const { preferences, updatePreferences } = useUserPreferences();
   const { profile, updateProfile, isLoading: isProfileLoading } = useUserProfile();
   const { toast } = useToast();
@@ -203,6 +207,16 @@ export default function UserProfile() {
   const [pendingNocJobTitles, setPendingNocJobTitles] = useState<string[]>([]);
 
   if (!session) return null;
+
+  const isAgency = creditData?.plan_type === 'agency';
+
+  if (isAgency) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
+        <AgencyProfileView />
+      </div>
+    );
+  }
 
   const updateUserMetadata = async (key: string, value: string) => {
     // Only name and email stay in Auth metadata to keep JWT small

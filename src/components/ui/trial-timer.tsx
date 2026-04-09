@@ -3,14 +3,14 @@
 import React from 'react';
 import { Clock, AlertCircle } from 'lucide-react';
 import { useControl } from '@/context/control';
-import { useTrial } from '@/context/trial';
+import { useSession } from '@/hooks/use-session';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function TrialTimer() {
   const { remainingTime } = useControl();
-  const { isTrialActive } = useTrial();
+  const { isTrial } = useSession();
 
-  if (!isTrialActive) return null;
+  if (!isTrial) return null;
 
   const minutes = Math.floor(remainingTime / 60);
   const seconds = remainingTime % 60;

@@ -7,9 +7,21 @@ import { Button } from '@/components/ui/button';
 // import Link from 'next/link'; // Not needed
 import { Plus } from 'lucide-react';
 import { CreateAlertDialog } from '@/components/alerts/create-alert-dialog';
+import { useCreditData } from '@/hooks/use-credits';
+import { AgencyAlertsView } from '@/components/agency/agency-alerts-view';
 
 export default function AlertsPage() {
     const [showNewAlertDialog, setShowNewAlertDialog] = useState(false);
+    const { creditData } = useCreditData();
+    const isAgency = creditData?.plan_type === 'agency';
+
+    if (isAgency) {
+      return (
+        <div className="mx-auto max-w-7xl px-4 py-8 md:px-8">
+            <AgencyAlertsView />
+        </div>
+      );
+    }
 
     return (
         <div className="p-6 md:p-8 space-y-8">

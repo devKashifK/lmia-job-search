@@ -18,18 +18,26 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/hooks/use-session";
+import { useCreditData } from "@/hooks/use-credits";
 import { getUserApplications, JobApplication } from "@/lib/api/applications";
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { AgencyApplicationsView } from "@/components/agency/agency-applications-view";
 
 export default function ApplicationsClient() {
   const { session } = useSession();
+  const { creditData } = useCreditData();
+  const isAgency = creditData?.plan_type === 'agency';
+
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchApplications() {
-      if (!session?.user?.id) return;
+      if (!session?.user?.id || isAgency) {
+        if (isAgency) setIsLoading(false);
+        return;
+      }
       try {
         const data = await getUserApplications(session.user.id);
         setApplications(data);
@@ -46,7 +54,7 @@ export default function ApplicationsClient() {
     }
 
     fetchApplications();
-  }, [session?.user?.id]);
+  }, [session?.user?.id, isAgency]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -85,6 +93,14 @@ export default function ApplicationsClient() {
     return (
       <div className="w-full h-[400px] flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-brand-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (isAgency) {
+    return (
+      <div className="w-full max-w-6xl mx-auto px-4 py-8 md:px-8">
+        <AgencyApplicationsView />
       </div>
     );
   }

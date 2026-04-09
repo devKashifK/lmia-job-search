@@ -45,7 +45,9 @@ export const SessionProvider = ({
     // Fetch the current session
     const fetchSession = async () => {
       const { data, error } = await db.auth.getSession();
-      setSession(data?.session || null);
+      const currentSession = data?.session || null;
+      setSession(currentSession);
+      if (currentSession) setIsTrialActive(false);
       setLoading(false);
     };
 
@@ -55,6 +57,7 @@ export const SessionProvider = ({
     const { data: authListener } = db.auth.onAuthStateChange(
       (_event, session) => {
         setSession(session);
+        if (session) setIsTrialActive(false);
       }
     );
 

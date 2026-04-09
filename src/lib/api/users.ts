@@ -26,6 +26,7 @@ export interface UserProfile {
     skills?: string | null;
     education?: string | null;
     work_history?: string | null;
+    career_roadmap?: any;
     created_at?: string;
     updated_at?: string;
 }
@@ -89,7 +90,7 @@ export async function upsertUserPreferences(userId: string, preferences: Partial
  * Track a visitor
  */
 export async function trackVisitor(visitorData: Record<string, any>): Promise<void> {
-    const { error } = await db.from('visitors').insert(visitorData);
+    const { error } = await (db.from('visitors') as any).insert(visitorData);
     if (error) console.error('Error tracking visitor:', error);
 }
 

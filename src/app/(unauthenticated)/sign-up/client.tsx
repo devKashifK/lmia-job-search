@@ -235,9 +235,9 @@ export default function SignUpPage() {
                               <Briefcase className="w-3.5 h-3.5" /> Employer
                             </div>
                           </SelectItem>
-                          <SelectItem value="business">
+                          <SelectItem value="agency">
                             <div className="flex items-center gap-2">
-                              <Building2 className="w-3.5 h-3.5" /> Business
+                              <Building2 className="w-3.5 h-3.5" /> Agency
                             </div>
                           </SelectItem>
                         </SelectContent>

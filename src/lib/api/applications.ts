@@ -2,7 +2,9 @@ import db from '@/db';
 
 export interface JobApplication {
   id?: string;
-  user_id: string;
+  user_id?: string; // Optional for agency apps
+  agency_id?: string; // Set for agency-led apps
+  client_urn?: string; // Set for agency-led apps
   job_id: string | number;
   job_title: string;
   noc_code: string;
@@ -25,6 +27,8 @@ export async function submitApplication(application: JobApplication) {
     .insert([
       {
         user_id: application.user_id,
+        agency_id: application.agency_id,
+        client_urn: application.client_urn,
         job_id: application.job_id.toString(),
         job_title: application.job_title,
         noc_code: application.noc_code,
@@ -71,4 +75,18 @@ export async function getUserApplications(userId: string) {
 
   if (error) throw error;
   return (data || []) as JobApplication[];
+}
+
+/**
+ * Get all job applications submitted by an agency for their clients
+ */
+export async function getAgencyApplications(agencyId: string) {
+  const { data, error } = await (db as any)
+    .from('job_applications')
+    .select('*, client:agency_clients!client_urn(*)')
+    .eq('agency_id', agencyId)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+  return (data || []) as (JobApplication & { client?: any })[];
 }
