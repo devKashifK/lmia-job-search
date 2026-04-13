@@ -83,6 +83,10 @@ async function proxyRequest(
             }
         });
 
+        if (targetPath.includes('agency_profiles')) {
+            console.log(`[proxy-debug] Profiles status: ${response.status} ${response.statusText}`);
+        }
+
         return new Response(response.body, {
             status: response.status,
             statusText: response.statusText,

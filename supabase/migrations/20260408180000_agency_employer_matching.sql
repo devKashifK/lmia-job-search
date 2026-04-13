@@ -10,15 +10,15 @@ RETURNS TABLE (
 BEGIN
     RETURN QUERY
     WITH combined_employers AS (
-        -- From LMIA (using confirmed column names)
-        SELECT "Employer" as e_name
+        -- From LMIA (using confirmed lowercase names)
+        SELECT employer as e_name
         FROM public.lmia
-        WHERE (noc_code = ANY(p_noc_codes) OR "JobTitle" = ANY(p_job_titles))
-          AND "Employer" IS NOT NULL
+        WHERE (noc_code = ANY(p_noc_codes) OR job_title = ANY(p_job_titles))
+          AND employer IS NOT NULL
         
         UNION ALL
         
-        -- From Trending Jobs (using confirmed column names)
+        -- From Trending Jobs (using confirmed lowercase names)
         SELECT employer as e_name
         FROM public.trending_job
         WHERE (noc_code = ANY(p_noc_codes) OR job_title = ANY(p_job_titles))

@@ -38,17 +38,45 @@ export async function getAgencyProfile(userId: string): Promise<AgencyProfile> {
   const { data, error } = await (db.from('agency_profiles') as any)
     .select('*')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (error) {
-    if (error.code === 'PGRST116') {
-      // Record not found - this is okay, we'll return default
-      return { ...DEFAULT_AGENCY_PROFILE, id: userId };
+    // If the table is missing (PGRST205) or schema out of sync, log and return default
+    if (error.code === 'PGRST205' || error.code === 'PGRST204') {
+        console.warn(`[api/agency] Profile table missing or unreachable. Using default for ${userId}.`);
+        return { ...DEFAULT_AGENCY_PROFILE, id: userId };
     }
+    console.error(`[api/agency] Profile fetch error [${error.code}]:`, error.message);
     throw error;
   }
 
-  return data;
+  // 2. If record exists, return it
+  if (data) return data;
+
+  // 3. Fallback: Self-Healing
+  // If no record exists, we return a default, but also attempt a silent initialization
+  // to ensure future requests (and RLS) work correctly.
+  console.warn(`[api/agency] Profile missing for ${userId}. Initializing default...`);
+  
+  const defaultProfile = { ...DEFAULT_AGENCY_PROFILE, id: userId };
+  
+  try {
+    // Attempt a silent insert to heal the DB state
+    const { data: newData, error: upsertError } = await (db.from('agency_profiles') as any)
+      .upsert({ id: userId, updated_at: new Date().toISOString() }, { onConflict: 'id' })
+      .select()
+      .maybeSingle();
+
+    if (!upsertError && newData) {
+        console.log(`[api/agency] Profile healed for ${userId}`);
+        return newData;
+    }
+  } catch (e) {
+    // If healing fails (e.g. RLS blocks insert), just return the memory-default
+    console.error(`[api/agency] Silent healing failed for ${userId}:`, e);
+  }
+
+  return defaultProfile;
 }
 
 export async function upsertAgencyProfile(userId: string, profile: Partial<AgencyProfile>) {
@@ -109,6 +137,7 @@ export interface ClientStrategy {
   agency_id: string;
   internal_notes: string | null;
   strategy_roadmap: any;
+  interview_questions: any[] | null;
   updated_at: string;
 }
 

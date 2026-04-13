@@ -14,8 +14,8 @@ export default function Map() {
   useEffect(() => {
     if (!L || !mapRef.current) return;
 
-    const LONDON_CENTER = [22.5744, 88.3629];
-    const ZOOM_LEVEL = 13;
+    const REGINA_CENTER = [50.4485, -104.6090];
+    const ZOOM_LEVEL = 15;
 
     // Fix Leaflet's default icon path issues
     delete L.Icon.Default.prototype._getIconUrl;
@@ -26,7 +26,7 @@ export default function Map() {
     });
 
     // Initialize the map
-    const map = L.map(mapRef.current).setView(LONDON_CENTER, ZOOM_LEVEL);
+    const map = L.map(mapRef.current).setView(REGINA_CENTER, ZOOM_LEVEL);
 
     // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -35,11 +35,12 @@ export default function Map() {
     }).addTo(map);
 
     // Add a marker
-    L.marker(LONDON_CENTER).addTo(map).bindPopup(`
-        <div class="text-center">
-          <h3 class="font-semibold">Job Maze London Office</h3>
-          <p class="text-sm text-gray-600">
-            2124 Broad Street, Regina, Saskatchewan, S4P 1Y5, Canada
+    L.marker(REGINA_CENTER).addTo(map).bindPopup(`
+        <div class="text-center p-1">
+          <h3 class="font-bold text-brand-900">Job Maze HQ</h3>
+          <p class="text-[11px] text-gray-600 mt-1">
+            2124 Broad Street, Regina<br/>
+            Saskatchewan, S4P 1Y5, Canada
           </p>
         </div>
       `);

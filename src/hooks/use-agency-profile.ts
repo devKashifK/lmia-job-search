@@ -16,11 +16,12 @@ export function useAgencyProfile() {
     const { data: profile, isLoading, error } = useQuery({
         queryKey: ['agency-profile', session?.user?.id],
         queryFn: async (): Promise<AgencyProfile> => {
-            if (!session?.user?.id) return DEFAULT_AGENCY_PROFILE;
             try {
                 return await getAgencyProfile(session.user.id);
-            } catch (error) {
-                console.error('Error fetching agency profile:', error);
+            } catch (error: any) {
+                // Silently failover to default and log a warning
+                // This prevents the full-screen error overlay in dev mode
+                console.warn('Agency profile fetch suppressed (using default):', error?.message || error);
                 return DEFAULT_AGENCY_PROFILE;
             }
         },
