@@ -38,7 +38,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import useMobile from '@/hooks/use-mobile';
 import { MobileHeader } from '@/components/mobile/mobile-header';
 
@@ -64,6 +64,8 @@ export default function SignUpPage() {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams?.get('redirect') || null;
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,7 +117,7 @@ export default function SignUpPage() {
             name: name,
             user_type: userType,
           },
-          emailRedirectTo: `${window.location.origin}`,
+          emailRedirectTo: `${window.location.origin}${redirect ? `/sign-in?redirect=${encodeURIComponent(redirect)}` : ''}`,
         },
       });
 
@@ -339,7 +341,7 @@ export default function SignUpPage() {
                 <p className="text-center text-xs text-gray-500 mt-6">
                   Already have an account?{' '}
                   <CustomLink
-                    href="/sign-in"
+                    href={`/sign-in${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ''}`}
                     className="font-semibold text-brand-600 hover:text-brand-500 transition-colors"
                   >
                     Sign in
@@ -451,7 +453,7 @@ export default function SignUpPage() {
                   Close
                 </Button>
                 <Button
-                  onClick={() => router.push('/sign-in')}
+                  onClick={() => router.push(`/sign-in${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ''}`)}
                   className="rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold h-11 shadow-lg shadow-brand-500/20"
                 >
                   Go to Login

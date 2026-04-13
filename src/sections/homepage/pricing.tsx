@@ -1,300 +1,184 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Check, Info, Users, Building2, CheckCircle2, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, Info, Users, Building2, Zap, ArrowRight, Sparkles, User, Mail } from "lucide-react";
 import SectionTitle from "@/components/ui/section-title";
 import { cn } from "@/lib/utils";
 import useMobile from "@/hooks/use-mobile";
 import { useRouter } from "next/navigation";
-
-type Currency = 'CAD' | 'INR';
-
-type Plan = {
-  name: string;
-  badge?: string;
-  cadPrice?: string;
-  inrPrice?: string;
-  period?: string;
-  description?: string;
-  features: string[];
-  popular?: boolean;
-  cta?: string;
-  href?: string;
-  tone?: 'primary' | 'dark';
-  bestFor?: string;
-};
-
-const individualPlans: Plan[] = [
-  {
-    name: 'Free Plan',
-    cadPrice: '$0',
-    inrPrice: '₹0',
-    period: '',
-    description: 'Perfect for trying things out',
-    features: [
-      '5 job searches',
-      'Free NOC Code Finder',
-      'No employer contacts',
-    ],
-    cta: 'Start Free',
-    tone: 'dark',
-  },
-  {
-    name: 'Pay-as-you-go',
-    cadPrice: '$3',
-    inrPrice: '₹199',
-    period: '/search',
-    description: 'Only pay when you need results',
-    features: [
-      '1 job search with full contact details',
-      'NOC Code insights included',
-      'Lifetime access to result',
-    ],
-    badge: 'Flexible',
-    cta: 'Buy a Search',
-    tone: 'primary',
-  },
-  {
-    name: 'Weekly Plan',
-    cadPrice: '$10',
-    inrPrice: '₹599',
-    period: '/week',
-    description: 'Great for intensive weekly searches',
-    features: [
-      'Unlimited job searches',
-      'NOC insights + employer contacts',
-      'Valid for 7 days',
-    ],
-    popular: true,
-    cta: 'Go Weekly',
-    tone: 'primary',
-  },
-  {
-    name: 'Monthly Plan',
-    cadPrice: '$25',
-    inrPrice: '₹1,499',
-    period: '/month',
-    description: 'Best long-term value',
-    features: [
-      'Unlimited searches',
-      'NOC guidance',
-      'Employer contacts',
-      'Analytics dashboard access',
-      'Valid for 30 days',
-    ],
-    cta: 'Subscribe Monthly',
-    tone: 'dark',
-  },
-];
-
-const agencyPlans: Plan[] = [
-  {
-    name: 'Starter Plan',
-    cadPrice: '$59',
-    inrPrice: '₹3,799',
-    period: '/month',
-    description: 'Essentials for small agencies',
-    features: [
-      'Job database access',
-      '150 employer contacts / month',
-      'Basic analytics',
-      'NOC-based search'
-    ],
-    bestFor: 'Small agencies',
-    cta: 'Choose Starter',
-    tone: 'dark',
-  },
-  {
-    name: 'Pro Plan',
-    cadPrice: '$119',
-    inrPrice: '₹7,599',
-    period: '/month',
-    description: 'Advanced tools for growing agencies',
-    features: [
-      'Unlimited contacts',
-      '5-year employer analytics',
-      'Hiring trends (seasonal + location)',
-      'NOC-based hiring insights',
-      'Export employer lists'
-    ],
-    bestFor: 'Growing agencies',
-    popular: true,
-    cta: 'Choose Pro',
-    tone: 'primary',
-  },
-  {
-    name: 'Advanced Intelligence',
-    cadPrice: '$199',
-    inrPrice: '₹12,799',
-    period: '/month',
-    description: 'Precision data for top performance',
-    features: [
-      'Everything in Pro',
-      'Top hiring employers by NOC',
-      'LMIA trend tracking',
-      'Market demand insights',
-      'Priority data updates'
-    ],
-    bestFor: 'Performance-driven agencies',
-    cta: 'Choose Advanced',
-    tone: 'dark',
-  },
-  {
-    name: 'Enterprise',
-    cadPrice: 'Custom',
-    inrPrice: 'Custom',
-    period: '',
-    description: 'Scale with confidence',
-    features: [
-      'Multi-user dashboard',
-      'API + CRM integration',
-      'White-label reports',
-      'Dedicated support',
-    ],
-    bestFor: 'Large consultancies',
-    badge: 'Contact Sales',
-    cta: 'Talk to Sales',
-    tone: 'dark',
-  },
-];
+import { INDIVIDUAL_PLANS, AGENCY_PLANS, PlanInterval, Plan } from "@/config/plans";
 
 export default function Pricing() {
   const router = useRouter();
-  const [currency, setCurrency] = useState<Currency>('CAD');
+  const [interval, setInterval] = useState<PlanInterval>('monthly');
   const { isMobile, isMounted } = useMobile();
 
   if (!isMounted) return null;
 
-  const renderPlans = (plans: Plan[]) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  const renderPlans = (plans: Plan[], isAgency = false) => (
+    <div className={cn(
+      "grid grid-cols-1 gap-6",
+      isAgency ? "md:grid-cols-3 max-w-5xl mx-auto" : "md:grid-cols-2 lg:grid-cols-4"
+    )}>
       {plans.map((plan, i) => {
-        const value = plan.cadPrice === 'Custom' || plan.inrPrice === 'Custom'
-          ? 'Custom'
-          : currency === 'CAD'
-            ? plan.cadPrice ?? '—'
-            : plan.inrPrice ?? '—';
-
+        const price = interval === 'monthly' ? plan.monthlyPrice : plan.annualPrice;
+        
         return (
           <motion.div
-            key={i}
+            key={plan.id}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
             className={cn(
-              "relative flex flex-col p-6 rounded-2xl border transition-all duration-300",
+              "relative flex flex-col p-8 rounded-3xl border transition-all duration-300",
               plan.popular
-                ? "bg-white border-brand-200 shadow-xl shadow-brand-100/50 ring-1 ring-brand-100"
-                : "bg-gray-50 border-transparent hover:bg-white hover:border-gray-200 hover:shadow-lg"
+                ? "bg-white border-brand-200 shadow-xl shadow-brand-100/50 ring-2 ring-brand-100/30 scale-105 z-10"
+                : "bg-white/50 border-gray-100 hover:bg-white hover:border-brand-200 hover:shadow-lg"
             )}
           >
             {plan.popular && (
-              <div className="absolute top-0 right-0 -mt-3 mr-6 bg-brand-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+              <div className="absolute top-0 right-0 -mt-3.5 mr-6 bg-brand-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg shadow-brand-200">
                 Most Popular
               </div>
             )}
             {plan.badge && !plan.popular && (
-              <div className="absolute top-0 right-0 -mt-3 mr-6 bg-brand-100 text-brand-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+              <div className="absolute top-0 right-0 -mt-3.5 mr-6 bg-brand-50 text-brand-700 border border-brand-100 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest">
                 {plan.badge}
               </div>
             )}
 
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
-              <div className="mt-4 flex items-baseline text-gray-900">
-                <span className="text-3xl font-extrabold tracking-tight">{value}</span>
-                {plan.period && <span className="ml-1 text-sm font-medium text-gray-500">{plan.period}</span>}
-              </div>
-              <p className="mt-4 text-sm text-gray-500 line-clamp-2">{plan.description}</p>
-              {plan.bestFor && (
-                <div className="mt-3 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-100 text-[10px] font-bold text-gray-600 uppercase tracking-tight">
-                  <span className="w-1 h-1 bg-gray-400 rounded-full" />
-                  Best For: {plan.bestFor}
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+              <p className="mt-2 text-xs text-gray-500 font-medium line-clamp-2 h-8">{plan.description}</p>
+              
+              <div className="mt-6 flex flex-col">
+                <div className="flex items-baseline text-gray-900">
+                  <span className="text-4xl font-extrabold tracking-tight">CAD ${price}</span>
+                  <span className="ml-1 text-sm font-medium text-gray-500">/{interval === 'monthly' ? 'mo' : 'mo'}</span>
                 </div>
-              )}
+                {interval === 'annual' && !isAgency && price > 0 && (
+                  <p className="text-[10px] font-bold text-brand-600 mt-1 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" />
+                    Billed annually
+                  </p>
+                )}
+              </div>
             </div>
 
-            <ul className="space-y-3 mb-6 flex-1">
-              {plan.features.map((feature, idx) => (
+            <div className="flex flex-col gap-2 mb-8">
+               <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-brand-50/50 border border-brand-100/30">
+                  {isAgency ? <Users className="w-3.5 h-3.5 text-brand-600" /> : <Zap className="w-3.5 h-3.5 text-brand-600" />}
+                  <span className="text-[11px] font-bold text-brand-700">
+                     {interval === 'annual' ? plan.credits.monthly + (plan.credits.bonusAnnual || 0) : plan.credits.monthly} {isAgency ? 'Shared ' : ''}Credits/mo
+                  </span>
+               </div>
+               {plan.employerContacts > 0 && (
+                 <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-purple-50/50 border border-purple-100/30">
+                    <Mail className="w-3.5 h-3.5 text-purple-600" />
+                    <span className="text-[11px] font-bold text-purple-700">
+                       {plan.employerContacts > 5000 ? 'Unlimited' : plan.employerContacts} Employer Contacts
+                    </span>
+                 </div>
+               )}
+            </div>
+
+            <ul className="space-y-3.5 mb-8 flex-1">
+              {plan.features.slice(0, isAgency ? 6 : 5).map((feature, idx) => (
                 <li key={idx} className="flex items-start">
-                  <Check className="flex-shrink-0 w-5 h-5 text-brand-500 mr-3" />
-                  <span className="text-gray-600 text-sm font-medium">{feature}</span>
+                  <Check className={cn("flex-shrink-0 w-4 h-4 mr-3 mt-0.5", plan.popular ? "text-brand-600" : "text-gray-400")} />
+                  <span className="text-gray-600 text-xs font-semibold leading-tight">
+                    {feature.text}
+                    {feature.upcoming && (
+                      <span className="ml-1.5 inline-flex items-center px-1 py-0.5 rounded text-[8px] font-bold bg-amber-50 text-amber-600 border border-amber-100 uppercase tracking-tighter">
+                        Soon
+                      </span>
+                    )}
+                  </span>
                 </li>
               ))}
             </ul>
 
             <button 
-              onClick={() => router.push(plan.href || '/pricing')}
+              onClick={() => router.push('/pricing')}
               className={cn(
-              "w-full py-4 px-6 rounded-xl font-bold text-sm transition-colors",
+              "w-full py-4 rounded-xl font-bold text-sm transition-all group/btn",
               plan.tone === 'primary'
-                ? "bg-brand-600 text-white hover:bg-brand-700 shadow-lg shadow-brand-500/30"
-                : "bg-white text-gray-900 border border-gray-200 hover:bg-gray-50"
+                ? "bg-brand-600 text-white hover:bg-brand-700 shadow-lg shadow-brand-200/50"
+                : "bg-white text-gray-900 border border-gray-200 hover:bg-gray-100"
             )}>
-              {plan.cta}
+              <span className="flex items-center justify-center gap-2">
+                {isAgency ? (plan.id === 'agency_elite' ? 'Contact Sales' : 'Start Trial') : 'Get Started'}
+                <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+              </span>
             </button>
-
           </motion.div>
-        )
+        );
       })}
     </div>
   );
 
   return (
-    <section id="pricing" className="py-12 bg-gray-50/30 relative">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-
+    <section id="pricing" className="py-24 bg-white relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-brand-50/50 to-transparent pointer-events-none" />
+      
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <SectionTitle
-          badge="Flexible Data Plans"
-          title={<>Transparent <span className="text-brand-600">Data Pricing</span></>}
-          subtitle="Invest in clarity. Choose the plan that fits your search needs."
+          badge="Pricing Plans"
+          title={<>Simple, <span className="text-brand-600">Transparent</span> Plans</>}
+          subtitle="Choose the perfect plan to accelerate your career or talent acquisition."
         />
 
-        {/* Currency Toggle */}
-        {/* <div className="flex items-center justify-center gap-2 mt-6 mb-10">
-          <span className={cn('text-sm font-medium', currency === 'CAD' ? 'text-gray-900' : 'text-gray-500')}>CAD</span>
+        {/* Billing Toggle */}
+        <div className="flex items-center justify-center gap-4 mb-16 mt-8">
+          <span className={cn("text-sm font-bold transition-colors", interval === 'monthly' ? "text-gray-900" : "text-gray-400")}>Monthly</span>
           <button
-            aria-label="Toggle currency"
-            className="relative inline-flex h-8 w-14 items-center rounded-full bg-gray-200"
-            onClick={() => setCurrency((c) => (c === 'CAD' ? 'INR' : 'CAD'))}
+            onClick={() => setInterval(interval === 'monthly' ? 'annual' : 'monthly')}
+            className="relative w-14 h-7 rounded-full bg-gray-100 border border-gray-200 p-1 transition-colors hover:border-brand-200"
           >
-            <span
-              className={cn(
-                'inline-block h-6 w-6 transform rounded-full bg-white shadow transition',
-                currency === 'INR' ? 'translate-x-7' : 'translate-x-1'
-              )}
+            <motion.div
+              animate={{ x: interval === 'monthly' ? 0 : 28 }}
+              className="w-5 h-5 rounded-full bg-brand-600"
             />
           </button>
-          <span className={cn('text-sm font-medium', currency === 'INR' ? 'text-gray-900' : 'text-gray-500')}>INR</span>
-        </div> */}
+          <div className="flex items-center gap-2">
+            <span className={cn("text-sm font-bold transition-colors", interval === 'annual' ? "text-gray-900" : "text-gray-400")}>Annual</span>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-tight border border-emerald-100 shadow-sm animate-pulse-subtle">
+              Save up to 25%
+            </span>
+          </div>
+        </div>
 
         {/* Individual Plans */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-6 ml-2 justify-center md:justify-start">
-            <Users className="w-5 h-5 text-brand-600" />
-            <h4 className="text-xl font-bold text-gray-900">For Individuals</h4>
+        <div className="mb-20">
+          <div className="flex items-center gap-3 mb-10 justify-center">
+            <div className="h-px w-10 bg-gray-200 hidden md:block" />
+            <User className="w-5 h-5 text-brand-600" />
+            <h4 className="text-lg font-bold text-gray-400 uppercase tracking-[0.2em]">For Individuals</h4>
+            <div className="h-px w-10 bg-gray-200 hidden md:block" />
           </div>
-          {renderPlans(individualPlans)}
+          {renderPlans(INDIVIDUAL_PLANS)}
         </div>
 
         {/* Agency Plans */}
         <div>
-          <div className="flex items-center gap-3 mb-6 ml-2 justify-center md:justify-start">
+          <div className="flex items-center gap-3 mb-10 justify-center">
+            <div className="h-px w-10 bg-gray-200 hidden md:block" />
             <Building2 className="w-5 h-5 text-brand-600" />
-            <h4 className="text-xl font-bold text-gray-900">For Agencies</h4>
+            <h4 className="text-lg font-bold text-gray-400 uppercase tracking-[0.2em]">For Agencies</h4>
+            <div className="h-px w-10 bg-gray-200 hidden md:block" />
           </div>
-          {renderPlans(agencyPlans)}
+          {renderPlans(AGENCY_PLANS, true)}
         </div>
 
-
-        <div className="mt-16 text-center">
-          <p className="text-sm text-gray-400 flex items-center justify-center gap-2">
+        <div className="mt-20 text-center">
+          <p className="text-sm font-semibold text-gray-400 flex items-center justify-center gap-2">
             <Info className="w-4 h-4" />
-            Secure payments. Cancel anytime.
+            Launch Offer: First Month Free on all paid plans. Limited time only.
           </p>
         </div>
-
       </div>
     </section>
   );

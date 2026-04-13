@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from '@/hooks/use-session';
 import { getUserCredits, isUnlimitedPlan } from '@/lib/api/credits';
 
-export type PlanType = 'free' | 'pay_as_you_go' | 'weekly' | 'monthly' | 'starter' | 'pro' | 'advanced' | 'enterprise' | 'admin';
+export type PlanType = 'explorer' | 'starter' | 'pro' | 'elite' | 'agency_starter' | 'agency_pro' | 'agency_elite' | 'admin';
 
 export interface PlanFeatures {
     planType: PlanType;
@@ -46,10 +46,10 @@ export function usePlanFeatures(): PlanFeatures {
     const creditRemaining = isUnlimited ? Infinity : (credits?.total_credit ?? 0) - (credits?.used_credit ?? 0);
     
     // Feature gating logic
-    const premiumPlans = ['weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'];
+    const premiumPlans = ['starter', 'pro', 'elite', 'agency_starter', 'agency_pro', 'agency_elite', 'admin'];
     const canViewEmployerContacts = premiumPlans.includes(planType);
-    const canUseAIAnalysis = ['weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'].includes(planType);
-    const canUseComparator = ['weekly', 'monthly', 'starter', 'pro', 'advanced', 'enterprise', 'admin'].includes(planType);
+    const canUseAIAnalysis = premiumPlans.includes(planType);
+    const canUseComparator = premiumPlans.includes(planType);
 
     return {
         planType,

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { LogIn, Lock, ArrowRight } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 interface LoginAlertDialogProps {
   isOpen: boolean;
@@ -28,6 +28,10 @@ export function LoginAlertDialog({
   const router = useRouter();
   const [shouldAnimate, setShouldAnimate] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Construct full redirect path
+  const fullPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
 
   useEffect(() => {
     if (isOpen) {
@@ -40,7 +44,7 @@ export function LoginAlertDialog({
   }
 
   const handleLogin = () => {
-    router.push('/sign-in');
+    router.push(`/sign-in?redirect=${encodeURIComponent(fullPath)}`);
     onClose();
   };
 
@@ -190,7 +194,7 @@ export function LoginAlertDialog({
             Don&apos;t have an account?{' '}
             <button
               onClick={() => {
-                router.push('/sign-up');
+                router.push(`/sign-up?redirect=${encodeURIComponent(fullPath)}`);
                 onClose();
               }}
               className="text-brand-600 hover:text-brand-700 font-semibold hover:underline transition-colors"

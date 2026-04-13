@@ -237,7 +237,7 @@ export default function LoginForm() {
                 <p className="text-center text-xs text-gray-500 mt-6">
                   Don&apos;t have an account?{' '}
                   <CustomLink
-                    href="/sign-up"
+                    href={`/sign-up${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ''}`}
                     className="font-semibold text-brand-600 hover:text-brand-500 transition-colors"
                   >
                     Sign up for free
