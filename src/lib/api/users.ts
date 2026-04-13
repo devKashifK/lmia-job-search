@@ -26,6 +26,7 @@ export interface UserProfile {
     skills?: string | null;
     education?: string | null;
     work_history?: string | null;
+    projects?: string | null;
     career_roadmap?: any;
     created_at?: string;
     updated_at?: string;

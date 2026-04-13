@@ -271,6 +271,7 @@ export default function UserProfile() {
         experience: data.experience ? String(data.experience) : profile?.experience,
         education: Array.isArray(data.education) ? data.education.join("\n\n") : data.education || profile?.education,
         work_history: Array.isArray(data.work_experience) ? data.work_experience.join("\n\n") : data.work_experience || profile?.work_history,
+        projects: Array.isArray(data.projects) ? data.projects.join("\n\n") : data.projects || profile?.projects,
       };
 
       await updateProfile(profileUpdates);
@@ -344,6 +345,7 @@ export default function UserProfile() {
     skills: profile?.skills,
     education: profile?.education,
     work_history: profile?.work_history,
+    projects: profile?.projects,
     experience: profile?.experience,
     linkedin: profile?.linkedin,
   };
@@ -579,6 +581,16 @@ export default function UserProfile() {
           value={profile?.education || ""}
           onUpdate={(value) => updateUserMetadata("education", value)}
           placeholder="List your education..."
+          weight={9}
+        />
+        
+        {/* Projects */}
+        <TimelineSection
+          title="Personal Projects"
+          type="projects"
+          value={profile?.projects || ""}
+          onUpdate={(value) => updateUserMetadata("projects", value)}
+          placeholder="List your key projects (e.g. Job Maze)..."
           weight={9}
         />
 

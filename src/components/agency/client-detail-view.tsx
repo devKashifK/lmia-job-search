@@ -36,6 +36,7 @@ import {
   Settings2,
   Sparkles
 } from 'lucide-react';
+import { CanadianResumeButton } from '../dashboard/canadian-resume-button';
 import { AgencyTab } from '@/context/agency-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -449,6 +450,24 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                         </a>
                     </Button>
                 )}
+                <CanadianResumeButton 
+                  profile={{
+                    full_name: client.full_name,
+                    email: client.email,
+                    phone: client.phone,
+                    bio: data.bio,
+                    skills: data.skills,
+                    work_history: data.work_experience?.join('\n\n'),
+                    education: data.education?.join('\n\n'),
+                    location: data.location,
+                    position: data.position,
+                    company: data.company
+                  }}
+                  clientId={client.id}
+                  initialData={data.canadian_resume}
+                  variant="outline"
+                  className="rounded-xl text-[10px] font-bold h-9 px-3 border-brand-200 text-brand-600 hover:bg-brand-50 flex-1"
+                />
                 <Button 
                    size="sm" 
                    variant="outline" 
@@ -511,6 +530,25 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                 <TabsContent value="overview">
                     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div className="md:col-span-3 space-y-4 flex flex-col">
+                            {!data.canadian_resume && (!data.location || !['canada', 'toronto', 'vancouver', 'ontario', 'bc', 'alberta', 'on', 'ab', 'qc'].some(v => data.location.toLowerCase().includes(v))) && (
+                                <motion.div 
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="p-4 bg-brand-50/50 border border-brand-100 rounded-xl flex items-center gap-4 group"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center shrink-0">
+                                        <Sparkles className="w-5 h-5 text-brand-600 animate-pulse" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-sm font-bold text-gray-900 group-hover:text-brand-700 transition-colors">Improve Canadian Candidate Success</h4>
+                                        <p className="text-xs text-gray-500 leading-relaxed">
+                                            This candidate's profile is currently localized outside of Canada. To apply for Canadian roles, we recommend generating a 
+                                            <span className="font-bold text-brand-600"> Canadian-standard resume</span> using our AI tool above.
+                                        </p>
+                                    </div>
+                                    <Badge variant="outline" className="bg-white text-brand-600 border-brand-200 text-[10px] font-black uppercase">Action Needed</Badge>
+                                </motion.div>
+                            )}
                             <ClientProfileGaps client={client} />
                             
                             <Card className="p-4 border-gray-100 rounded-xl shadow-sm flex-1 space-y-4">

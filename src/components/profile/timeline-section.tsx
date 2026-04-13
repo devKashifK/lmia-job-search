@@ -86,7 +86,7 @@ const serializeItems = (items: TimelineItemData[]): string => {
 interface TimelineItemProps {
     data: TimelineItemData;
     isLast: boolean;
-    type: "work" | "education";
+    type: "work" | "education" | "projects";
     onEdit?: () => void;
     onDelete?: () => void;
     editable?: boolean;
@@ -103,9 +103,13 @@ function TimelineItem({ data, isLast, type, onEdit, onDelete, editable }: Timeli
             {/* Icon Node */}
             <div className={cn(
                 "absolute left-0 top-1 h-8 w-8 rounded-full border-4 border-white shadow-sm flex items-center justify-center z-10 transition-all duration-300",
-                type === "work" ? "bg-brand-50 text-brand-600 group-hover:bg-brand-100" : "bg-blue-50 text-blue-600 group-hover:bg-blue-100"
+                type === "work" ? "bg-brand-50 text-brand-600 group-hover:bg-brand-100" : 
+                type === "education" ? "bg-blue-50 text-blue-600 group-hover:bg-blue-100" :
+                "bg-purple-50 text-purple-600 group-hover:bg-purple-100"
             )}>
-                {type === "work" ? <Briefcase className="h-3.5 w-3.5" /> : <GraduationCap className="h-3.5 w-3.5" />}
+                {type === "work" ? <Briefcase className="h-3.5 w-3.5" /> : 
+                 type === "education" ? <GraduationCap className="h-3.5 w-3.5" /> :
+                 <Code className="h-3.5 w-3.5" />}
             </div>
 
             {/* Content Card */}
@@ -163,7 +167,7 @@ interface TimelineSectionProps {
     value: string;
     onUpdate: (newValue: string) => Promise<void>;
     placeholder: string;
-    type: "work" | "education";
+    type: "work" | "education" | "projects";
     weight?: number;
 }
 
@@ -229,7 +233,9 @@ export function TimelineSection({ title, value, onUpdate, placeholder, type, wei
         <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    {type === "work" ? <Briefcase className="h-5 w-5 text-brand-600" /> : <GraduationCap className="h-5 w-5 text-blue-600" />}
+                    {type === "work" ? <Briefcase className="h-5 w-5 text-brand-600" /> : 
+                     type === "education" ? <GraduationCap className="h-5 w-5 text-blue-600" /> :
+                     <Code className="h-5 w-5 text-purple-600" />}
                     {title}
                     {weight && items.length > 0 && (
                         <div className="ml-auto flex items-center gap-1.5">
@@ -263,7 +269,7 @@ export function TimelineSection({ title, value, onUpdate, placeholder, type, wei
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs text-gray-500 font-medium">{type === "work" ? "Job Title" : "Degree / Certificate"}</Label>
+                                    <Label className="text-xs text-gray-500 font-medium">{type === "work" ? "Job Title" : type === "education" ? "Degree / Certificate" : "Project Name"}</Label>
                                     <Input
                                         value={formData.title}
                                         onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -272,7 +278,7 @@ export function TimelineSection({ title, value, onUpdate, placeholder, type, wei
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs text-gray-500 font-medium">{type === "work" ? "Company" : "School / University"}</Label>
+                                    <Label className="text-xs text-gray-500 font-medium">{type === "work" ? "Company" : type === "education" ? "School / University" : "Organization / Platform"}</Label>
                                     <Input
                                         value={formData.subtitle}
                                         onChange={e => setFormData({ ...formData, subtitle: e.target.value })}
@@ -338,7 +344,7 @@ export function TimelineSection({ title, value, onUpdate, placeholder, type, wei
 
                             <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                                 <Button variant="outline" size="sm" onClick={handleAddNew} className="text-brand-600 border-brand-200 hover:bg-brand-50 h-8 text-xs">
-                                    <Plus className="h-3.5 w-3.5 mr-1" /> Add {type === "work" ? "Role" : "Education"}
+                                    <Plus className="h-3.5 w-3.5 mr-1" /> Add {type === "work" ? "Role" : type === "education" ? "Education" : "Project"}
                                 </Button>
 
                                 <div className="flex gap-2">
@@ -369,8 +375,13 @@ export function TimelineSection({ title, value, onUpdate, placeholder, type, wei
                             </div>
                         ) : (
                             <div className="text-center py-10 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
-                                <div className={cn("mx-auto h-12 w-12 rounded-full flex items-center justify-center mb-3", type === "work" ? "bg-brand-50 text-brand-500" : "bg-blue-50 text-blue-500")}>
-                                    {type === "work" ? <Briefcase className="h-6 w-6" /> : <GraduationCap className="h-6 w-6" />}
+                                <div className={cn("mx-auto h-12 w-12 rounded-full flex items-center justify-center mb-3", 
+                                    type === "work" ? "bg-brand-50 text-brand-500" : 
+                                    type === "education" ? "bg-blue-50 text-blue-500" :
+                                    "bg-purple-50 text-purple-500")}>
+                                    {type === "work" ? <Briefcase className="h-6 w-6" /> : 
+                                     type === "education" ? <GraduationCap className="h-6 w-6" /> :
+                                     <Code className="h-6 w-6" />}
                                 </div>
                                 <div className="flex items-center justify-center gap-2">
                                     <h3 className="text-sm font-semibold text-gray-900">No {title.toLowerCase()} added</h3>

@@ -27,12 +27,14 @@ import { useRouter } from 'next/navigation';
 import { useCreditData } from '@/hooks/use-credits';
 import { AgencyDashboard } from '@/components/agency/agency-dashboard';
 import { CareerRoadmap } from '@/components/dashboard/career-roadmap';
+import { useUserProfile } from '@/hooks/use-user-profile';
 
 export default function DashboardPage() {
   const { session } = useSession();
   const router = useRouter();
   const { isMobile, isMounted } = useMobile();
   const { isUnlimited, creditData } = useCreditData();
+  const { profile } = useUserProfile();
 
   if (creditData?.plan_type === 'agency') {
     return <AgencyDashboard />;

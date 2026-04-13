@@ -11,7 +11,6 @@ export default function TruckingLMIAJobs() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-inter">
       <Navbar />
-
       <main className="flex-1">
         {/* HERO SECTION */}
         <section className="bg-brand-900 pt-40 pb-16 px-6 relative overflow-hidden">
@@ -167,7 +166,6 @@ export default function TruckingLMIAJobs() {
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   );
