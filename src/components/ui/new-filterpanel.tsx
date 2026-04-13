@@ -49,7 +49,7 @@ const USE_NORMALIZED = true as const; // flip to false if you DID NOT create *_n
 const NORM_MAP = {
   state: 'state_norm',
   city: 'city_norm',
-  category: 'category_norm',
+  category: 'category',
   job_title: 'job_title_norm',
   noc_code: 'noc_code_norm',
   employer: 'employer_norm',
@@ -428,7 +428,7 @@ function FilterAttributes({ column }: { column: string }) {
 
   const handleFilterUpdate = (accessorKey: string, value: string) => {
     if (!sp) return;
-    
+
     const filterKey = (tableName === 'lmia' && accessorKey === 'state') ? 'territory' : accessorKey;
     // derive from URL (single source of truth)
     const current = new Set(sp.getAll(filterKey));

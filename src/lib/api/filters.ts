@@ -7,14 +7,17 @@ export async function getFacetCounts(
     searchTerm: string | null = null,
     searchField: string | null = null
 ) {
-    console.log('DEBUG getFacetCounts:', { table, column, filters, searchTerm, searchField });
+    // Redirect 'category' to the real 'category' column for LMIA
+    const facetColumn = (table === 'lmia' && column === 'category') ? 'category' : column;
+
+    console.log('DEBUG getFacetCounts:', { table, column, facetColumn, filters, searchTerm, searchField });
 
     // Try RPC first for performance
     const { data: rpcData, error: rpcError } = await (db as any).rpc(
         'get_facet_counts_with_filters',
         {
             p_table_name: table,
-            p_column_name: column,
+            p_column_name: facetColumn,
             p_filters: filters,
             p_search_field: searchField !== 'all' ? searchField : null,
             p_search_term: searchTerm || null,
@@ -43,15 +46,22 @@ export async function getFacetCounts(
     console.warn('RPC failed for facet counts, using fallback:', rpcError?.message);
 
     // Fallback: query the column directly
-    let q = db.from(table).select(column);
+    let q = db.from(table).select(facetColumn);
 
     // Apply filters
-    Object.entries(filters).forEach(([key, val]) => {
-        if (!val || val === 'all') return;
+    for (const [key, val] of Object.entries(filters)) {
+        if (!val || val === 'all') continue;
+
+        // If filtering by category, use 'category' column for LMIA
+        const filterCol = (table === 'lmia' && key === 'category') ? 'category' : key;
+
         if (key === 'salary_min') q = q.gte('min_wage', val);
         else if (key === 'salary_max') q = q.lte('max_wage', val);
-        else q = q.eq(key, val);
-    });
+        else {
+            if (Array.isArray(val)) q = q.in(filterCol, val);
+            else q = q.eq(filterCol, val);
+        }
+    }
 
     // Apply search
     if (searchTerm && searchField && searchField !== 'all') {
@@ -67,7 +77,7 @@ export async function getFacetCounts(
 
     const counts: Record<string, number> = {};
     (data || []).forEach((row: any) => {
-        const val = row[column];
+        const val = row[facetColumn];
         if (val) counts[val] = (counts[val] || 0) + 1;
     });
 

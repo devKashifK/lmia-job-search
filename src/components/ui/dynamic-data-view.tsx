@@ -105,7 +105,7 @@ export function useData(
     ? [
       'territory', 'program', 'city', 'postal_code', 'lmia_period',
       'lmia_year', 'priority_occupation', 'employer', 'noc_code', 'job_title',
-      'state', 'province'
+      'category', 'state', 'province'
     ]
     : ['state', 'city', 'category', 'job_title', 'noc_code', 'employer'];
 

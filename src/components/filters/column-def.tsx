@@ -8,6 +8,7 @@ import {
   PersonStanding,
   PowerSquare,
   Satellite,
+  Tag,
 } from 'lucide-react'; // Example icons from Lucide
 import { ReactNode } from 'react';
 
@@ -205,6 +206,16 @@ export const lmiaColumns: ColumnWithIcon[] = [
       <div className="flex items-center gap-1">
         <AreaChart className="h-3 w-3 text-black/50" />
         <span className="text-xs">Operating Name </span>
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'category',
+    meta: { icon: <Tag className="h-3 w-3 text-black/50" /> },
+    header: () => (
+      <div className="flex items-center gap-1">
+        <Tag className="h-3 w-3 text-black/50" />
+        <span className="text-xs">Category </span>
       </div>
     ),
   },

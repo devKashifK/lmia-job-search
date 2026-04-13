@@ -54,7 +54,7 @@ export default function TruckingLMIAJobs() {
 
               <div className="flex flex-wrap items-center gap-4">
                 <Link
-                  href="/search/lmia/all?category=Trucking&t=lmia"
+                  href="/search/lmia/all?field=all&t=lmia&page=1&category=Transportation+%26+Logistics"
                   className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-amber-500/20"
                 >
                   Search Trucking LMIA Jobs
@@ -158,7 +158,7 @@ export default function TruckingLMIAJobs() {
               Updated daily. Filter by province, city, NOC code, TEER level, and wage range.
             </p>
             <Link
-              href="/search/lmia/all?category=Trucking&t=lmia"
+              href="/search/lmia/all?field=all&t=lmia&page=1&category=Transportation+%26+Logistics"
               className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg"
             >
               Search Transportation LMIA Jobs Free

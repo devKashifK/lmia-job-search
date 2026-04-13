@@ -46,7 +46,7 @@ function getAllowedFields(table: string): string[] {
     if (table === 'lmia') {
         return [
             'territory', 'program', 'city', 'postal_code', 'lmia_period',
-            'lmia_year', 'priority_occupation', 'employer', 'noc_code', 'job_title',
+            'lmia_year', 'priority_occupation', 'employer', 'noc_code', 'job_title', 'category',
         ];
     }
     return ['state', 'city', 'category', 'job_title', 'noc_code', 'employer'];
@@ -56,7 +56,7 @@ function getTextSearchFields(table: string): string[] {
     if (table === 'lmia') {
         return [
             'territory', 'program', 'city', 'postal_code', 'lmia_period',
-            'priority_occupation', 'employer', 'noc_code', 'job_title',
+            'priority_occupation', 'employer', 'noc_code', 'job_title', 'category',
         ];
     }
     return ['state', 'city', 'category', 'job_title', 'noc_code', 'employer'];
@@ -65,7 +65,7 @@ function getTextSearchFields(table: string): string[] {
 const NORM_MAP_TRENDING: Record<string, string> = {
     state: 'state_norm',
     city: 'city_norm',
-    category: 'category_norm',
+    category: 'category',
     job_title: 'job_title_norm',
     noc_code: 'noc_code_norm',
     employer: 'employer_norm',
@@ -81,6 +81,7 @@ const NORM_MAP_LMIA: Record<string, string> = {
     employer: 'employer_norm',
     noc_code: 'noc_code_norm',
     job_title: 'job_title_norm',
+    category: 'category',
 };
 
 function getNormMap(table: string): Record<string, string> {
@@ -160,6 +161,8 @@ export async function queryJobs({
                 if (Number.isFinite(num)) {
                     builder = builder.eq('lmia_year', Math.floor(num));
                 }
+            } else if (tableName === 'lmia' && activeField === 'category') {
+                builder = builder.ilike('category', `%${q}%`);
             } else {
                 builder = builder.ilike(activeField, `%${q}%`);
             }
@@ -184,17 +187,16 @@ export async function queryJobs({
 
         const normCol = normMap[key] ?? key;
 
-        if (normCol !== key) {
-            // Use normalized exact matching logic (assumes values are raw, need lowercasing if logic required, 
-            // but usually filters passed here might already be processed or we process them:
+        if (normCol !== key && normCol.endsWith('_norm')) {
             const canon = values.map(v => v.trim().toLowerCase()).filter(Boolean);
             if (canon.length > 0) {
                 if (canon.length === 1) builder = builder.eq(normCol, canon[0]);
                 else builder = builder.in(normCol, canon);
             }
         } else {
-            if (values.length === 1) builder = builder.eq(key, values[0]);
-            else builder = builder.in(key, values);
+            // Use the mapped column name (e.g. Category) or the key directly
+            if (values.length === 1) builder = builder.eq(normCol, values[0]);
+            else builder = builder.in(normCol, values);
         }
     });
 
@@ -239,11 +241,13 @@ export async function getJobTitles(): Promise<string[]> {
 }
 
 export async function getCategories(): Promise<string[]> {
-    const [trendingRes] = await Promise.all([
+    const [trendingRes, lmiaCatRes] = await Promise.all([
         db.from('trending_job').select('category').not('category', 'is', null).limit(1000),
+        db.from('lmia').select('category').not('category', 'is', null).limit(1000),
     ]);
     const all = [
         ...((trendingRes.data as any[])?.map((r) => r.category) ?? []),
+        ...((lmiaCatRes.data as any[])?.map((r) => r.category) ?? []),
     ].filter(Boolean) as string[];
     return [...new Set(all)].sort((a, b) => a.localeCompare(b));
 }

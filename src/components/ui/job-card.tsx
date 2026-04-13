@@ -118,6 +118,7 @@ export default function JobCard({
   const tags =
     type === 'lmia'
       ? [
+        category ? `Category: ${category}` : null,
         `Program: ${program}`,
         `Priority Occupation: ${priorityOccupation}`,
         `NOC: ${noc}`,
