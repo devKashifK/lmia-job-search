@@ -8,7 +8,7 @@ interface LogoProps {
 const Logo = ({ className, style }: LogoProps) => {
   return (
     <Image
-      src="/job_maze_favicon_.svg"
+      src="/ll.png"
       alt="JobMaze Logo"
       width={32}
       height={32}

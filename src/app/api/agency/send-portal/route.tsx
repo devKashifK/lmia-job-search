@@ -44,8 +44,14 @@ export async function POST(req: NextRequest) {
 
         const host = req.headers.get("host") || "jobmaze.ca";
         const protocol = host.includes("localhost") ? "http" : "https";
-        const portalUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}/report/${urn}`;
+        const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`).replace(/\/$/, "");
+        const portalUrl = `${baseUrl}/report/${urn}`;
         const accessPin = strategy?.access_pin || "1234";
+
+        let normalizedLogo = agency.logo_url;
+        if (normalizedLogo && normalizedLogo.startsWith("/")) {
+            normalizedLogo = `${baseUrl}${normalizedLogo}`;
+        }
 
         // 2. Render the professional email template
         const emailHtml = await render(
@@ -54,7 +60,7 @@ export async function POST(req: NextRequest) {
                 agencyName={agency.company_name || "Your Agency"}
                 portalUrl={portalUrl}
                 accessPin={accessPin}
-                agencyLogo={agency.logo_url || undefined}
+                agencyLogo={normalizedLogo || undefined}
             />
         );
 
