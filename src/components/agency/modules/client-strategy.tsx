@@ -6,12 +6,13 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Save, Plus, Trash2, ClipboardList, PenLine, Loader2, Sparkles, BadgeCheck, MessageSquareQuote, ChevronRight, Lightbulb, Share2, History, Globe, ExternalLink } from 'lucide-react';
+import { Save, Plus, Trash2, ClipboardList, PenLine, Loader2, Sparkles, BadgeCheck, MessageSquareQuote, ChevronRight, Lightbulb, Share2, History, Globe, ExternalLink, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { useAgencyStrategy } from '@/hooks/use-agency-clients';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { Input } from '@/components/ui/input';
 
 interface ClientStrategyProps {
     client: any;
@@ -24,6 +25,7 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
     const [isEditingNotes, setIsEditingNotes] = useState(false);
     const [notes, setNotes] = useState('');
     const [roadmap, setRoadmap] = useState<any[]>([]);
+    const [accessPin, setAccessPin] = useState('');
     const [newStep, setNewStep] = useState('');
     const [isSavingNotes, setIsSavingNotes] = useState(false);
     const [isAddingStep, setIsAddingStep] = useState(false);
@@ -36,6 +38,14 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
             if (!isEditingNotes) setNotes(strategy.internal_notes || '');
             setRoadmap(Array.isArray(strategy.strategy_roadmap) ? strategy.strategy_roadmap : []);
             setInterviewQuestions(Array.isArray(strategy.interview_questions) ? strategy.interview_questions : []);
+            setAccessPin(strategy.access_pin || '');
+
+            // Auto-generate PIN if missing
+            if (!strategy.access_pin) {
+                const autoPin = Math.floor(1000 + Math.random() * 9000).toString();
+                setAccessPin(autoPin);
+                updateStrategy({ access_pin: autoPin });
+            }
         }
     }, [strategy, isEditingNotes]);
 
@@ -168,6 +178,27 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
                         <Globe className="w-3.5 h-3.5 mr-2" />
                         Preview Portal
                     </Button>
+                    <div className="flex items-center bg-gray-50 border border-gray-100 rounded-xl px-3 h-10 gap-3">
+                        <div className="flex items-center gap-1.5 shrink-0">
+                            <Lock className="w-3 h-3 text-brand-600" />
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Access PIN</span>
+                        </div>
+                        <Input 
+                            value={accessPin}
+                            onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                setAccessPin(val);
+                            }}
+                            onBlur={() => {
+                                if (accessPin.length === 4 && accessPin !== strategy?.access_pin) {
+                                    updateStrategy({ access_pin: accessPin });
+                                    toast({ title: "PIN Updated", description: `Security code set to ${accessPin}` });
+                                }
+                            }}
+                            className="w-14 h-6 p-0 text-center text-xs font-black bg-white border-brand-200 focus:ring-0 rounded text-brand-700"
+                            placeholder="0000"
+                        />
+                    </div>
                     <Button onClick={handleSharePortal} className="h-10 px-5 rounded-xl text-[11px] font-black uppercase tracking-widest bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/20">
                         <Share2 className="w-3.5 h-3.5 mr-2" />
                         Share Progress Report

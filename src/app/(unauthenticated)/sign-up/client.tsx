@@ -73,7 +73,7 @@ export default function SignUpPage() {
     if (!agreed) {
       toast({
         title: 'Agreement Required',
-        description: 'Please agree to the Terms & Privacy Policy',
+        description: 'Please agree to the Terms, Privacy Policy, and Disclaimers',
         variant: 'destructive',
       });
       return;
@@ -315,10 +315,14 @@ export default function SignUpPage() {
                       I agree to the{' '}
                       <CustomLink href="/terms" className="text-brand-600 hover:text-brand-500 font-medium hover:underline">
                         Terms of Service
-                      </CustomLink>{' '}
-                      and{' '}
-                      <CustomLink href="/privacy" className="text-brand-600 hover:text-brand-500 font-medium hover:underline">
+                      </CustomLink>
+                      ,{' '}
+                      <CustomLink href="/privacy-policy" className="text-brand-600 hover:text-brand-500 font-medium hover:underline">
                         Privacy Policy
+                      </CustomLink>
+                      , and{' '}
+                      <CustomLink href="/disclaimer" className="text-brand-600 hover:text-brand-500 font-medium hover:underline">
+                        Disclaimers
                       </CustomLink>
                     </Label>
                   </div>

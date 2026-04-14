@@ -76,6 +76,7 @@ import { ClientProfileGaps } from './modules/client-profile-gaps';
 import { ClientChecklist } from './modules/client-checklist';
 import { ClientSimulator } from './modules/client-simulator';
 import { ClientPitchDeck } from './modules/client-pitch-deck';
+import { StrategicAdvisorInsight } from './modules/strategic-advisor-insight';
 import { useAgencyProfile } from '@/hooks/use-agency-profile';
 import { useSession } from '@/hooks/use-session';
 
@@ -907,6 +908,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
         </TabsContent>
 
         <TabsContent value="matches" className="m-0 focus-visible:outline-none space-y-6">
+          <StrategicAdvisorInsight client={client} />
           <ClientSimulator client={client} />
           <ClientMatches 
             key={`${client.id}-${JSON.stringify(client.extracted_data)}`}

@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useAgencyProfile } from "@/hooks/use-agency-profile";
+import db from "@/db";
+import { useSession } from "@/hooks/use-session";
 import {
   Building2,
   Globe,
@@ -22,6 +24,8 @@ import {
   CalendarDays,
   Award,
   Target,
+  Loader2,
+  Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -125,6 +129,55 @@ function EditableField({
 
 export function AgencyProfileView() {
   const { profile, updateProfile, isLoading } = useAgencyProfile();
+  const { session } = useSession();
+  const { toast } = useToast();
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !session?.user?.id) return;
+
+    // Validate
+    if (!file.type.startsWith('image/')) {
+      toast({ variant: "destructive", title: "Invalid file", description: "Please upload an image file." });
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast({ variant: "destructive", title: "File too large", description: "Logo must be under 2MB." });
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${session.user.id}/logo-${Date.now()}.${fileExt}`;
+
+      // 1. Upload to Storage
+      const { error: uploadError } = await db.storage
+        .from('agency-logos')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // 2. Get Public URL
+      const { data: { publicUrl } } = db.storage
+        .from('agency-logos')
+        .getPublicUrl(fileName);
+
+      // 3. Update Profile
+      await updateProfile({ logo_url: publicUrl });
+
+      toast({ title: "Logo updated", description: "Your agency logo has been successfully updated." });
+    } catch (error: any) {
+      console.error('Logo upload error:', error);
+      toast({ variant: "destructive", title: "Upload failed", description: error.message || "Failed to upload logo." });
+    } finally {
+      setIsUploadingLogo(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   if (isLoading) {
     return (
@@ -145,11 +198,34 @@ export function AgencyProfileView() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-8">
           <div className="relative group shrink-0">
-            <div className="h-28 w-28 rounded-2xl bg-white border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-400 group-hover:border-brand-300 group-hover:bg-brand-50 transition-all overflow-hidden shadow-inner font-bold">
-               {profile.logo_url ? (
-                 <img src={profile.logo_url} alt={profile.company_name} className="h-full w-full object-contain p-2" />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleLogoUpload}
+              accept="image/*"
+              className="hidden"
+            />
+            <div 
+              onClick={() => !isUploadingLogo && fileInputRef.current?.click()}
+              className={cn(
+                "h-28 w-28 rounded-2xl bg-white border-2 border-dashed flex items-center justify-center transition-all overflow-hidden shadow-inner font-bold cursor-pointer group/logo relative",
+                isUploadingLogo ? "border-brand-300 bg-brand-50" : "border-gray-200 hover:border-brand-300 hover:bg-brand-50"
+              )}
+            >
+               {isUploadingLogo ? (
+                 <Loader2 className="h-8 w-8 text-brand-600 animate-spin" />
+               ) : profile.logo_url ? (
+                 <>
+                   <img src={profile.logo_url} alt={profile.company_name} className="h-full w-full object-contain p-2" />
+                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/logo:opacity-100 transition-opacity flex items-center justify-center">
+                      <Upload className="h-6 w-6 text-white" />
+                   </div>
+                 </>
                ) : (
-                 <ImageIcon className="h-10 w-10 text-gray-300" />
+                 <div className="flex flex-col items-center gap-1">
+                    <ImageIcon className="h-10 w-10 text-gray-300 group-hover/logo:text-brand-400" />
+                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Upload Logo</span>
+                 </div>
                )}
             </div>
           </div>

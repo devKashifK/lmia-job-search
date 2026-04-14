@@ -7,8 +7,6 @@ import {
     ChevronLeft,
     ArrowRight,
     Plus,
-    Sparkles,
-    Search,
     Filter,
     BadgeCheck,
     Languages,
@@ -292,72 +290,6 @@ export function ClientCalculators({ client }: ClientCalculatorsProps) {
             </div>
 
             <div id="eligibility-hub-title" className="space-y-6">
-                {/* Best Strategic Move Inisght */}
-                {Object.keys(preCalculatedScores).length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="w-full"
-                    >
-                        <div className="bg-slate-950 border border-brand-500/20 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
-                            {/* Animated Background Accents */}
-                            <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-500/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-brand-500/20 transition-all duration-700" />
-                            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-600/5 blur-[80px] rounded-full pointer-events-none" />
-                            
-                            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-                                <div className="space-y-5 max-w-3xl">
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 rounded-full px-3 py-1">
-                                            <div className="relative">
-                                                <Sparkles className="w-3.5 h-3.5 text-brand-400" />
-                                                <motion.div 
-                                                    animate={{ opacity: [0, 1, 0], scale: [0.8, 1.2, 0.8] }}
-                                                    transition={{ duration: 2, repeat: Infinity }}
-                                                    className="absolute inset-0 bg-brand-400 blur-sm rounded-full"
-                                                />
-                                            </div>
-                                            <span className="text-[10px] font-black uppercase text-brand-400 tracking-[0.25em]">Strategic Advisor Insight</span>
-                                        </div>
-                                        <div className="h-1 w-1 bg-slate-700 rounded-full" />
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Powered by JobMaze AI</span>
-                                    </div>
-                                    
-                                    <div className="space-y-3">
-                                        <h3 className="text-2xl md:text-3xl font-black text-white leading-[1.15] tracking-tight">
-                                            {getBestStrategyText(preCalculatedScores)}
-                                        </h3>
-                                        <p className="text-slate-400 text-sm font-medium max-w-2xl leading-relaxed">
-                                            Our strategic engine has analyzed <span className="text-brand-400 font-bold">{Object.keys(preCalculatedScores).length} pathways</span> and identified this as the highest-probability route for your client.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="shrink-0 flex items-center gap-4">
-                                    <Button
-                                        onClick={() => {
-                                            const text = getBestStrategyText(preCalculatedScores);
-                                            navigator.clipboard.writeText(`🇨🇦 Priority Immigration Strategy:\n${text}`);
-                                            toast({ title: "Strategy Copied", description: "Ready to share with client." });
-                                        }}
-                                        className="bg-brand-600 hover:bg-brand-500 text-white rounded-2xl px-8 py-7 h-auto text-xs font-black uppercase tracking-widest shadow-xl shadow-brand-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] border border-brand-400/20"
-                                    >
-                                        Share Strategy
-                                    </Button>
-                                    <div className="p-4 bg-slate-900/50 border border-slate-800 rounded-2xl hidden md:block">
-                                        <div className="flex -space-x-2">
-                                            {[1,2,3].map(i => (
-                                                <div key={i} className="w-6 h-6 rounded-full border-2 border-slate-950 bg-slate-800 flex items-center justify-center">
-                                                    <div className="w-full h-full bg-brand-500/10 rounded-full scale-75" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase tracking-tighter text-center">Verified Data</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
 
                 {preCalculatedScores['express-entry'] && (
                     <PoolAnalytics currentScore={preCalculatedScores['express-entry'].score} />

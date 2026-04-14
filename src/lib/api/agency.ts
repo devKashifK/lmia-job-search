@@ -132,20 +132,31 @@ export async function getAgencyClient(clientId: string): Promise<AgencyClient> {
   return data;
 }
 
+export async function getAgencyClientByUrn(urn: string): Promise<AgencyClient | null> {
+  const { data, error } = await (db.from('agency_clients') as any)
+    .select('*')
+    .ilike('urn', urn)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
 export interface ClientStrategy {
   client_urn: string;
   agency_id: string;
   internal_notes: string | null;
   strategy_roadmap: any;
   interview_questions: any[] | null;
+  access_pin: string | null;
   updated_at: string;
 }
 
 export async function getClientStrategy(urn: string): Promise<ClientStrategy | null> {
   const { data, error } = await (db.from('agency_client_strategies') as any)
     .select('*')
-    .eq('client_urn', urn)
-    .single();
+    .ilike('client_urn', urn)
+    .maybeSingle();
 
   if (error) {
     if (error.code === 'PGRST116') return null;
