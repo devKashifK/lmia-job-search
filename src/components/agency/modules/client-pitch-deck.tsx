@@ -3,13 +3,13 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-    FileText, 
-    Download, 
-    Share2, 
-    ShieldCheck, 
-    Trophy, 
-    BadgeCheck, 
+import {
+    FileText,
+    Download,
+    Share2,
+    ShieldCheck,
+    Trophy,
+    BadgeCheck,
     Briefcase,
     Globe,
     ExternalLink
@@ -25,7 +25,7 @@ interface ClientPitchDeckProps {
 export function ClientPitchDeck({ client }: ClientPitchDeckProps) {
     const data = client?.extracted_data || {};
     const score = calculateCandidateScore(data);
-    
+
     const handlePrint = () => {
         window.print();
     };
@@ -38,21 +38,21 @@ export function ClientPitchDeck({ client }: ClientPitchDeckProps) {
                     <p className="text-[10px] text-gray-400 font-medium">Anonymized profile for professional outreach.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
+                    <Button
+                        variant="outline"
+                        size="sm"
                         onClick={handlePrint}
                         className="h-9 rounded-xl border-gray-200 text-[10px] font-bold gap-2 px-4 shadow-sm"
                     >
                         <Download className="w-3.5 h-3.5" />
                         Save PDF
                     </Button>
-                    <Button 
+                    {/* <Button 
                         className="h-9 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-[10px] font-bold gap-2 px-4 shadow-lg shadow-brand-500/20"
                     >
                         <Share2 className="w-3.5 h-3.5" />
                         Share Deck
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
 
@@ -80,7 +80,7 @@ export function ClientPitchDeck({ client }: ClientPitchDeckProps) {
                                 Expert in {Array.isArray(data.skills) ? data.skills.slice(0, 3).join(', ') : 'strategic operations'} with {data.experience || 0}+ years of international experience.
                             </p>
                         </div>
-                        
+
                         <div className="shrink-0 flex flex-col items-center p-4 bg-brand-50 rounded-2xl border border-brand-100/50 print:bg-brand-50 print:border-brand-100">
                             <div className="text-2xl font-black text-brand-900 tracking-tighter leading-none">{score}%</div>
                             <div className="text-[7px] font-black text-brand-600 uppercase tracking-widest mt-1">Readiness Score</div>

@@ -316,6 +316,20 @@ export function AgencyProfileView() {
                 placeholder="Number of years"
                 type="number"
                 onUpdate={(val) => updateProfile({ experience_years: val })}
+              />
+              <EditableField
+                icon={<Shield className="h-5 w-5" />}
+                title="Legal Disclaimer"
+                value={profile.legal_disclaimer || ""}
+                placeholder="Default disclaimer for your client reports..."
+                onUpdate={(val) => updateProfile({ legal_disclaimer: val })}
+              />
+              <EditableField
+                icon={<Shield className="h-5 w-5" />}
+                title="Privacy Policy"
+                value={profile.privacy_policy || ""}
+                placeholder="Custom privacy policy link or text..."
+                onUpdate={(val) => updateProfile({ privacy_policy: val })}
                 last
               />
             </div>

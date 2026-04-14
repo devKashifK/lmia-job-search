@@ -153,6 +153,7 @@ export function ClientList() {
                 <TableHead className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">Contact</TableHead>
                 <TableHead className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">Position</TableHead>
                 <TableHead className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">Status</TableHead>
+                <TableHead className="font-bold text-gray-500 text-[10px] uppercase tracking-wider text-center">Engagement</TableHead>
                 <TableHead className="font-bold text-gray-500 text-[10px] uppercase tracking-wider">Date Added</TableHead>
                 <TableHead className="w-[60px] text-right"></TableHead>
               </TableRow>
@@ -231,6 +232,20 @@ export function ClientList() {
                         </SelectContent>
                     </Select>
                   </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex flex-col items-center gap-1">
+                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-50 rounded-full border border-gray-100">
+                             <div className={cn(
+                                 "w-1.5 h-1.5 rounded-full",
+                                 (client.engagement_stats?.views || 0) > 0 ? "bg-emerald-500 animate-pulse" : "bg-gray-300"
+                             )} />
+                             <span className="text-[10px] font-black text-gray-600">{(client.engagement_stats?.views || 0)} Views</span>
+                        </div>
+                        {client.engagement_stats?.views > 0 && (
+                            <span className="text-[8px] font-bold text-emerald-600 uppercase tracking-tighter">Active Lead</span>
+                        )}
+                    </div>
+                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold uppercase">
                       <Calendar className="w-3 h-3" />

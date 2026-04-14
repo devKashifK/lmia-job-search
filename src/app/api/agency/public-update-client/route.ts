@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/server";
 
 const ALLOWED_FIELDS = [
+    'email',
+    'phone',
+    'location',
+    'current_location',
     'age', 
     'experience_years', 
     'education_level', 
@@ -36,7 +40,7 @@ export async function POST(req: NextRequest) {
 
         // 2. Fetch current client data to merge
         const { data: client, error: clientError } = await (supabase.from('agency_clients') as any)
-            .select('id, extracted_data')
+            .select('id, email, phone, extracted_data')
             .ilike('urn', urn)
             .single();
 
@@ -44,27 +48,34 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Client record missing" }, { status: 404 });
         }
 
-        // 3. Filter updates to allowed fields only
-        const filteredUpdates: any = {};
+        // 3. Filter updates and separate top-level vs JSON
+        const filteredJsonUpdates: any = {};
+        const topLevelUpdates: any = {};
+
         for (const key of ALLOWED_FIELDS) {
             if (updates[key] !== undefined) {
-                filteredUpdates[key] = updates[key];
+                if (key === 'email' || key === 'phone') {
+                    topLevelUpdates[key] = updates[key];
+                } else {
+                    filteredJsonUpdates[key] = updates[key];
+                }
             }
         }
 
-        if (Object.keys(filteredUpdates).length === 0) {
+        if (Object.keys(filteredJsonUpdates).length === 0 && Object.keys(topLevelUpdates).length === 0) {
             return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
         }
 
-        // 4. Merge and Update
+        // 4. Merge JSON and Update
         const newExtractedData = {
             ...(client.extracted_data || {}),
-            ...filteredUpdates,
+            ...filteredJsonUpdates,
             updated_by: 'public_portal'
         };
 
         const { data: updatedClient, error: updateError } = await (supabase.from('agency_clients') as any)
             .update({
+                ...topLevelUpdates,
                 extracted_data: newExtractedData,
                 updated_at: new Date().toISOString()
             })

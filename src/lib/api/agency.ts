@@ -14,6 +14,8 @@ export interface AgencyProfile {
   experience_years: number | null;
   linkedin_url: string | null;
   twitter_url: string | null;
+  legal_disclaimer: string | null;
+  privacy_policy: string | null;
   updated_at: string;
 }
 
@@ -31,6 +33,8 @@ export const DEFAULT_AGENCY_PROFILE: AgencyProfile = {
   experience_years: null,
   linkedin_url: null,
   twitter_url: null,
+  legal_disclaimer: null,
+  privacy_policy: null,
   updated_at: new Date().toISOString(),
 };
 
@@ -149,6 +153,8 @@ export interface ClientStrategy {
   strategy_roadmap: any;
   interview_questions: any[] | null;
   access_pin: string | null;
+  advisor_notes: string | null;
+  engagement_stats: any;
   updated_at: string;
 }
 

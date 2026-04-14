@@ -144,67 +144,62 @@ export function StrategicAdvisorInsight({ client }: StrategicAdvisorInsightProps
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="w-full"
         >
-            <div className="bg-slate-950 border border-brand-500/20 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group">
-                {/* Animated Background Accents */}
-                <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-500/10 blur-[80px] rounded-full pointer-events-none group-hover:bg-brand-500/20 transition-all duration-700" />
-                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-600/5 blur-[80px] rounded-full pointer-events-none" />
+            <Card className="relative overflow-hidden border-gray-100 shadow-sm p-4 bg-white rounded-xl">
+                {/* Brand Accent Top Line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-brand-600/80" />
                 
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-                    <div className="space-y-5 max-w-3xl">
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2 bg-brand-500/10 border border-brand-500/20 rounded-full px-3 py-1">
-                                <div className="relative">
-                                    <Sparkles className="w-3.5 h-3.5 text-brand-400" />
-                                    <motion.div 
-                                        animate={{ opacity: [0, 1, 0], scale: [0.8, 1.2, 0.8] }}
-                                        transition={{ duration: 2, repeat: Infinity }}
-                                        className="absolute inset-0 bg-brand-400 blur-sm rounded-full"
-                                    />
-                                </div>
-                                <span className="text-[10px] font-black uppercase text-brand-400 tracking-[0.25em]">Strategic Advisor Insight</span>
-                            </div>
-                            <div className="h-1 w-1 bg-slate-700 rounded-full" />
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Powered by JobMaze AI</span>
+                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    {/* Intelligence Info */}
+                    <div className="flex flex-1 items-start gap-4">
+                        <div className="mt-1 shrink-0 w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                            <Sparkles className="w-4 h-4 text-white animate-pulse" />
                         </div>
-                        
-                        <div className="space-y-3">
-                            <h3 className="text-2xl md:text-3xl font-black text-white leading-[1.15] tracking-tight">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest">Strategic Intelligence</span>
+                                <div className="h-1 w-1 bg-gray-200 rounded-full" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">AI Engine v3.0</span>
+                            </div>
+                            <h3 className="text-base font-black text-gray-900 leading-tight tracking-tight">
                                 {getBestStrategyText(preCalculatedScores)}
                             </h3>
-                            <p className="text-slate-400 text-sm font-medium max-w-2xl leading-relaxed">
-                                Our strategic engine has analyzed <span className="text-brand-400 font-bold">{Object.keys(preCalculatedScores).length} pathways</span> and identified this as the highest-probability route for your client.
+                            <p className="text-[11px] text-gray-500 font-medium">
+                                Cross-referenced <span className="text-brand-600 font-bold">{Object.keys(preCalculatedScores).length} regulatory pathways</span> to architect this personalized immigration roadmap.
                             </p>
                         </div>
                     </div>
 
-                    <div className="shrink-0 flex items-center gap-4">
+                    {/* Action Hub */}
+                    <div className="flex items-center gap-4 shrink-0 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 border-gray-50 pt-3 md:pt-0">
+                        {/* Compliance Shield - Compact */}
+                        <div className="flex flex-col items-center md:items-end">
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-md border border-emerald-100">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-emerald-600">
+                                    <path d="M12 2L3 7V12C3 17.5228 7.02944 22 12 22C16.9706 22 21 17.5228 21 12V7L12 2Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-tight">Data Verified</span>
+                            </div>
+                            <span className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter mt-1">Legal Compliant</span>
+                        </div>
+
                         <Button
                             onClick={() => {
                                 const text = getBestStrategyText(preCalculatedScores);
-                                navigator.clipboard.writeText(`🇨🇦 Priority Immigration Strategy:\n${text}`);
-                                toast({ title: "Strategy Copied", description: "Ready to share with client." });
+                                navigator.clipboard.writeText(`🇨🇦 JobMaze Priority Strategy:\n${text}`);
+                                toast({ title: "Intelligence Copied", description: "Strategic narrative ready for client delivery." });
                             }}
-                            className="bg-brand-600 hover:bg-brand-500 text-white rounded-2xl px-8 py-7 h-auto text-xs font-black uppercase tracking-widest shadow-xl shadow-brand-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] border border-brand-400/20"
+                            className="bg-brand-600 hover:bg-brand-700 text-white rounded-xl px-6 h-10 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-500/20 transition-all active:scale-95"
                         >
-                            Share Strategy
+                            Deploy Strategy
                         </Button>
-                        <div className="p-4 bg-slate-900/50 border border-slate-800 rounded-2xl hidden md:block">
-                            <div className="flex -space-x-2">
-                                {[1,2,3].map(i => (
-                                    <div key={i} className="w-6 h-6 rounded-full border-2 border-slate-950 bg-slate-800 flex items-center justify-center">
-                                        <div className="w-full h-full bg-brand-500/10 rounded-full scale-75" />
-                                    </div>
-                                ))}
-                            </div>
-                            <p className="text-[9px] font-bold text-slate-500 mt-2 uppercase tracking-tighter text-center">Verified Data</p>
-                        </div>
                     </div>
                 </div>
-            </div>
+            </Card>
         </motion.div>
     );
 }

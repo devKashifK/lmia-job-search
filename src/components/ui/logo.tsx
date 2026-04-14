@@ -8,11 +8,11 @@ interface LogoProps {
 const Logo = ({ className, style }: LogoProps) => {
   return (
     <Image
-      src="/ll.png"
-      alt="Job Maze Logo"
+      src="/job_maze_favicon_.svg"
+      alt="JobMaze Logo"
       width={32}
       height={32}
-      className={className || "w-4 h-4 -mt-0.5"}
+      className={className || "w-5 h-5"}
       style={style}
     />
   );

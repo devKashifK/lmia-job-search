@@ -1,22 +1,24 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { 
-  CloudUpload, 
-  FileText, 
-  X, 
-  Loader2, 
-  CheckCircle2, 
-  AlertCircle 
+import {
+  CloudUpload,
+  FileText,
+  X,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  Sparkles,
+  Download
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -27,7 +29,10 @@ interface ClientUploadDialogProps {
   onUploadSuccess: () => void;
 }
 
+type UploadMode = 'resumes' | 'csv';
+
 export function ClientUploadDialog({ open, onOpenChange, onUploadSuccess }: ClientUploadDialogProps) {
+  const [mode, setMode] = useState<UploadMode>('resumes');
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadResults, setUploadResults] = useState<any[] | null>(null);
@@ -46,17 +51,65 @@ export function ClientUploadDialog({ open, onOpenChange, onUploadSuccess }: Clie
 
   const handleUpload = async () => {
     if (files.length === 0) return;
-
     setIsUploading(true);
     setUploadResults(null);
 
+    // Get the session to include the access token in headers for robust auth
+    const { data: { session } } = await (await import('@/db')).default.auth.getSession();
+
+    if (mode === 'csv') {
+      // Handle CSV parsing and upload
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const text = e.target?.result as string;
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+
+        const clients = lines.slice(1).filter(l => l.trim()).map(line => {
+          const values = line.split(',').map(v => v.trim());
+          const client: any = {};
+          headers.forEach((header, i) => {
+            if (header.includes('name')) client.fullName = values[i];
+            else if (header.includes('email')) client.email = values[i];
+            else if (header.includes('phone')) client.phone = values[i];
+            else if (header.includes('title') || header.includes('position')) client.position = values[i];
+            else if (header.includes('location')) client.location = values[i];
+          });
+          return client;
+        });
+
+        try {
+          const response = await fetch('/api/agency/import-csv', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
+            },
+            body: JSON.stringify({ clients }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Import failed');
+
+          setUploadResults(data.records.map((r: any) => ({ success: true, fileName: r.urn, client: r })));
+          onUploadSuccess();
+          toast({ title: 'Import complete', description: `Successfully imported ${data.count} candidates.` });
+        } catch (error: any) {
+          toast({ variant: 'destructive', title: 'Import failed', description: error.message });
+        } finally {
+          setIsUploading(false);
+        }
+      };
+      reader.readAsText(file);
+      return;
+    }
+
+    // Existing Resume Upload Logic...
     const formData = new FormData();
     files.forEach(file => formData.append('resumes', file));
 
     try {
-      // Get the session to include the access token in headers for robust auth
-      const { data: { session } } = await (await import('@/db')).default.auth.getSession();
-      
       const response = await fetch('/api/agency/upload-resumes', {
         method: 'POST',
         headers: {
@@ -66,12 +119,11 @@ export function ClientUploadDialog({ open, onOpenChange, onUploadSuccess }: Clie
       });
 
       const data = await response.json();
-      
       if (!response.ok) throw new Error(data.error || 'Upload failed');
 
       setUploadResults(data.results);
       onUploadSuccess();
-      
+
       const successCount = data.results.filter((r: any) => r.success).length;
       toast({
         title: 'Upload complete',
@@ -94,44 +146,99 @@ export function ClientUploadDialog({ open, onOpenChange, onUploadSuccess }: Clie
     setIsUploading(false);
   };
 
+  const downloadTemplate = () => {
+    const csvContent = "Full Name,Email,Phone,Position,Location\nJohn Doe,john@example.com,+1 234 567 890,Software Engineer,\"Toronto, ON\"\nJane Smith,jane@example.com,+1 987 654 321,Project Manager,\"Vancouver, BC\"";
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "jobmaze_candidate_template.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast({ title: 'Template Downloaded', description: 'Use this structure for your CSV import.' });
+  };
+
   return (
     <Dialog open={open} onOpenChange={(val) => {
-        onOpenChange(val);
-        if (!val) reset();
+      onOpenChange(val);
+      if (!val) reset();
     }}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Upload Client Resumes</DialogTitle>
+          <DialogTitle>Add Candidates</DialogTitle>
           <DialogDescription>
-            Upload one or more resumes to automatically generate client cases.
+            Onboard new clients to your agency roster.
           </DialogDescription>
         </DialogHeader>
 
+        {!uploadResults && (
+          <div className="flex gap-1 p-1 bg-gray-100/50 rounded-xl border border-gray-100 mb-2">
+            <Button
+              variant={mode === 'resumes' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => { setMode('resumes'); setFiles([]); }}
+              className={cn("flex-1 h-8 rounded-lg text-[10px] font-bold uppercase", mode === 'resumes' && "bg-white text-brand-600 shadow-sm hover:bg-white")}
+            >
+              Resumes
+            </Button>
+            <Button
+              variant={mode === 'csv' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => { setMode('csv'); setFiles([]); }}
+              className={cn("flex-1 h-8 rounded-lg text-[10px] font-bold uppercase", mode === 'csv' && "bg-white text-brand-600 shadow-sm hover:bg-white")}
+            >
+              CSV Import
+            </Button>
+          </div>
+        )}
+
         {!uploadResults ? (
           <div className="space-y-4 py-4">
-            <div 
+            <div
               onClick={() => fileInputRef.current?.click()}
               className={cn(
                 "border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer transition-all hover:bg-gray-50 hover:border-brand-300 group",
                 files.length > 0 && "border-brand-200 bg-brand-50/20"
               )}
             >
-              <input 
-                type="file" 
-                multiple 
-                hidden 
-                ref={fileInputRef} 
+              <input
+                type="file"
+                multiple={mode === 'resumes'}
+                hidden
+                ref={fileInputRef}
                 onChange={handleFileChange}
-                accept=".pdf,.docx,.doc"
+                accept={mode === 'resumes' ? ".pdf,.docx,.doc" : ".csv"}
               />
               <div className="flex flex-col items-center gap-2">
                 <div className="p-3 bg-brand-50 rounded-full text-brand-600 group-hover:scale-110 transition-transform">
                   <CloudUpload className="w-6 h-6" />
                 </div>
                 <p className="text-sm font-semibold text-gray-700">Click to upload or drag and drop</p>
-                <p className="text-xs text-gray-400">PDF or DOCX up to 10MB each</p>
+                <p className="text-xs text-gray-400">
+                  {mode === 'resumes' ? "PDF or DOCX up to 10MB each" : "CSV file with names and emails"}
+                </p>
               </div>
             </div>
+
+            {mode === 'csv' && files.length === 0 && (
+              <div className="space-y-3">
+                <div className="p-3 bg-brand-50 rounded-xl border border-brand-100/50 flex items-center gap-3">
+                    <Sparkles className="w-4 h-4 text-brand-600" />
+                    <p className="text-[10px] font-bold text-brand-700 leading-normal">
+                    Tip: Ensure your CSV has headers like "Full Name", "Email", and "Phone".
+                    </p>
+                </div>
+                <button 
+                  onClick={downloadTemplate}
+                  className="w-full py-2 px-3 border border-gray-200 rounded-xl text-[10px] font-bold text-gray-500 hover:bg-gray-50 flex items-center justify-center gap-2 transition-all"
+                >
+                  <Download className="w-3 h-3" />
+                  Download Example CSV Template
+                </button>
+              </div>
+            )}
 
             {files.length > 0 && (
               <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
@@ -172,18 +279,18 @@ export function ClientUploadDialog({ open, onOpenChange, onUploadSuccess }: Clie
           {!uploadResults ? (
             <>
               <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isUploading}>Cancel</Button>
-              <Button 
-                onClick={handleUpload} 
+              <Button
+                onClick={handleUpload}
                 disabled={files.length === 0 || isUploading}
                 className="bg-brand-600 hover:bg-brand-700 text-white min-w-[120px]"
               >
                 {isUploading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processing...
+                    {mode === 'csv' ? 'Importing...' : 'Processing...'}
                   </>
                 ) : (
-                  `Process ${files.length} Resumes`
+                  mode === 'csv' ? `Import ${files.length} File` : `Process ${files.length} Resumes`
                 )}
               </Button>
             </>
