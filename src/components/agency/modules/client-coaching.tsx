@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-    Sparkles, 
-    Save, 
-    Loader2, 
-    LineChart, 
-    TrendingUp, 
-    Users, 
+import {
+    Sparkles,
+    Save,
+    Loader2,
+    LineChart,
+    TrendingUp,
+    Users,
     Eye,
     MessageSquareQuote,
     LayoutDashboard,
@@ -112,8 +112,8 @@ export function ClientCoaching({ client }: ClientCoachingProps) {
                                 <p className="text-xs text-gray-400 font-bold">Injected directly into the candidate's roadmap report.</p>
                             </div>
                         </div>
-                        <Button 
-                            onClick={handleSave} 
+                        <Button
+                            onClick={handleSave}
                             disabled={isUpdating}
                             className="bg-brand-600 hover:bg-brand-700 text-white rounded-xl h-10 px-6 font-black text-xs uppercase tracking-widest shadow-lg shadow-brand-500/20 gap-2"
                         >
@@ -124,7 +124,7 @@ export function ClientCoaching({ client }: ClientCoachingProps) {
 
                     <div className="space-y-4">
                         <div className="relative">
-                            <Textarea 
+                            <Textarea
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 placeholder="Write your personalized advice for this candidate here... Use this to guide them through the next steps of their job search."
@@ -146,32 +146,7 @@ export function ClientCoaching({ client }: ClientCoachingProps) {
 
                 {/* Preview / Guidelines */}
                 <div className="lg:col-span-2 space-y-6">
-                    <Card className="p-6 border-gray-100 shadow-sm bg-slate-900 text-white rounded-2xl relative overflow-hidden">
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-4">
-                                <LayoutDashboard className="w-4 h-4 text-brand-400" />
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-brand-300">Portal Preview</h4>
-                            </div>
-                            
-                            <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center text-[10px] font-bold">
-                                        JM
-                                    </div>
-                                    <span className="text-[10px] font-bold text-slate-400">Coaching Insight</span>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="h-2 w-full bg-white/10 rounded-full" />
-                                    <div className="h-2 w-[80%] bg-white/10 rounded-full" />
-                                    <div className="h-2 w-[90%] bg-white/10 rounded-full" />
-                                </div>
-                                <p className="text-[9px] text-brand-400 mt-4 font-bold uppercase tracking-tighter">Rendered as premium alert box</p>
-                            </div>
-                        </div>
-                        <div className="absolute -bottom-10 -right-10 opacity-10">
-                            <Target className="w-40 h-40" />
-                        </div>
-                    </Card>
+                   */}
 
                     <Card className="p-6 border-gray-100 shadow-sm bg-white rounded-2xl space-y-4">
                         <h4 className="text-xs font-black text-gray-900 uppercase tracking-tight flex items-center gap-2">
@@ -184,9 +159,9 @@ export function ClientCoaching({ client }: ClientCoachingProps) {
                                 <code className="text-[10px] bg-white px-2 py-1 rounded border border-gray-200 text-brand-700 truncate flex-1">
                                     report/{client.urn}
                                 </code>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
                                     className="h-8 w-8 hover:bg-brand-50 hove:text-brand-600"
                                     onClick={() => {
                                         const url = `${window.location.origin}/report/${client.urn}`;
