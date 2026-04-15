@@ -35,7 +35,9 @@ import {
     Trash2,
     Settings2,
     Sparkles,
-    MessageSquareQuote
+    MessageSquareQuote,
+    FolderOpen,
+    MessageSquare
 } from 'lucide-react';
 import { CanadianResumeButton } from '../dashboard/canadian-resume-button';
 import { AgencyTab } from '@/context/agency-store';
@@ -80,6 +82,9 @@ import { ClientPitchDeck } from './modules/client-pitch-deck';
 import { StrategicAdvisorInsight } from './modules/strategic-advisor-insight';
 import { ClientCoaching } from './modules/client-coaching';
 import { StrategicCommand } from './modules/strategic-command';
+import { ClientDocumentVault } from './modules/client-document-vault';
+import { ClientMessages } from './modules/client-messages';
+import { ClientActivityLog } from './modules/client-activity-log';
 import { useAgencyProfile } from '@/hooks/use-agency-profile';
 import { useSession } from '@/hooks/use-session';
 
@@ -516,7 +521,13 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                         <Calculator className="w-3.5 h-3.5" /> Calculators
                     </TabsTrigger>
                     <TabsTrigger value="checklist" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
-                        <ClipboardList className="w-3.5 h-3.5" /> Documents
+                        <ClipboardList className="w-3.5 h-3.5" /> Checklist
+                    </TabsTrigger>
+                    <TabsTrigger value="vault" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                        <FolderOpen className="w-3.5 h-3.5" /> Vault
+                    </TabsTrigger>
+                    <TabsTrigger value="messages" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                        <MessageSquare className="w-3.5 h-3.5" /> Messages
                     </TabsTrigger>
                 </TabsList>
 
@@ -956,6 +967,30 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
 
                 <TabsContent value="checklist" className="mt-0 focus-visible:outline-none pb-20">
                     <ClientChecklist client={client} />
+                </TabsContent>
+
+                <TabsContent value="vault" className="mt-0 focus-visible:outline-none pb-20">
+                    <div className="space-y-6">
+                        <ClientDocumentVault
+                            clientUrn={client.urn}
+                            clientName={client.full_name || 'Client'}
+                        />
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="messages" className="mt-0 focus-visible:outline-none pb-20">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2">
+                            <ClientMessages
+                                clientUrn={client.urn}
+                                clientName={client.full_name || 'Candidate'}
+                                agencyName={agencyProfile?.company_name || 'Your Agency'}
+                            />
+                        </div>
+                        <div>
+                            <ClientActivityLog clientUrn={client.urn} />
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
 

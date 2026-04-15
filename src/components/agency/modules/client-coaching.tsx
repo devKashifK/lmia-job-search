@@ -146,7 +146,6 @@ export function ClientCoaching({ client }: ClientCoachingProps) {
 
                 {/* Preview / Guidelines */}
                 <div className="lg:col-span-2 space-y-6">
-                   */}
 
                     <Card className="p-6 border-gray-100 shadow-sm bg-white rounded-2xl space-y-4">
                         <h4 className="text-xs font-black text-gray-900 uppercase tracking-tight flex items-center gap-2">

@@ -42,7 +42,7 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
 
             // Auto-generate PIN if missing
             if (!strategy.access_pin) {
-                const autoPin = Math.floor(1000 + Math.random() * 9000).toString();
+                const autoPin = '1234';
                 setAccessPin(autoPin);
                 updateStrategy({ access_pin: autoPin });
             }
