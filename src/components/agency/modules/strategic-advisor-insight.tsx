@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import * as CalcLogic from '@/lib/calculators';
 import { useToast } from '@/hooks/use-toast';
+import { Card } from '@/components/ui/card';
 
 interface StrategicAdvisorInsightProps {
     client: any;
@@ -151,7 +152,7 @@ export function StrategicAdvisorInsight({ client }: StrategicAdvisorInsightProps
             <Card className="relative overflow-hidden border-gray-100 shadow-sm p-4 bg-white rounded-xl">
                 {/* Brand Accent Top Line */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-brand-600/80" />
-                
+
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     {/* Intelligence Info */}
                     <div className="flex flex-1 items-start gap-4">
@@ -179,15 +180,15 @@ export function StrategicAdvisorInsight({ client }: StrategicAdvisorInsightProps
                         <div className="flex flex-col items-center md:items-end">
                             <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-md border border-emerald-100">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-emerald-600">
-                                    <path d="M12 2L3 7V12C3 17.5228 7.02944 22 12 22C16.9706 22 21 17.5228 21 12V7L12 2Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M12 2L3 7V12C3 17.5228 7.02944 22 12 22C16.9706 22 21 17.5228 21 12V7L12 2Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                                 <span className="text-[9px] font-black text-emerald-700 uppercase tracking-tight">Data Verified</span>
                             </div>
                             <span className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter mt-1">Legal Compliant</span>
                         </div>
 
-                        <Button
+                        {/* <Button
                             onClick={() => {
                                 const text = getBestStrategyText(preCalculatedScores);
                                 navigator.clipboard.writeText(`🇨🇦 JobMaze Priority Strategy:\n${text}`);
@@ -196,7 +197,7 @@ export function StrategicAdvisorInsight({ client }: StrategicAdvisorInsightProps
                             className="bg-brand-600 hover:bg-brand-700 text-white rounded-xl px-6 h-10 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-500/20 transition-all active:scale-95"
                         >
                             Deploy Strategy
-                        </Button>
+                        </Button> */}
                     </div>
                 </div>
             </Card>

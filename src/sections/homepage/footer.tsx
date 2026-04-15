@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowUpRight, Github, Twitter, Linkedin, Facebook } from 'lucide-react';
+import { ArrowUpRight, Github, Twitter, Linkedin, Facebook, Instagram } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -18,10 +18,9 @@ export default function Footer() {
               Empowering global talent with data intelligence. We aggregate, analyze, and visualize government hiring records to uncover hidden opportunities in the Canadian job market.
             </p>
             <div className="flex gap-4">
-              <SocialLink href="#" icon={<Twitter className="w-4 h-4" />} label="Twitter" />
-              <SocialLink href="#" icon={<Linkedin className="w-4 h-4" />} label="LinkedIn" />
-              <SocialLink href="#" icon={<Github className="w-4 h-4" />} label="GitHub" />
-              <SocialLink href="#" icon={<Facebook className="w-4 h-4" />} label="Facebook" />
+              <SocialLink href="https://www.facebook.com/jobmaze.ca/" icon={<Facebook className="w-4 h-4" />} label="Facebook" />
+              <SocialLink href="https://www.instagram.com/jobmaze.ca/" icon={<Instagram className="w-4 h-4" />} label="Instagram" />
+              <SocialLink href="https://www.linkedin.com/company/job-maze/" icon={<Linkedin className="w-4 h-4" />} label="LinkedIn" />
             </div>
           </div>
 
