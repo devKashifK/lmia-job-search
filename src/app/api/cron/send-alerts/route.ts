@@ -76,30 +76,49 @@ export async function POST(request: Request) {
                     .order('created_at', { ascending: false })
                     .limit(maxMatches);
 
-                if (criteria.title) trendingQuery = trendingQuery.ilike('title', `%${criteria.title}%`);
+                // Handle Titles (Plural or Singular)
+                const titles = criteria.job_titles || (criteria.title ? [criteria.title] : []);
+                if (titles.length > 0) {
+                    trendingQuery = trendingQuery.or(titles.map((t: string) => `title.ilike.%${t}%`).join(','));
+                }
+
                 if (criteria.location) trendingQuery = trendingQuery.ilike('location', `%${criteria.location}%`);
                 if (criteria.province) trendingQuery = trendingQuery.ilike('location', `%${criteria.province}%`);
-                if (criteria.company) trendingQuery = trendingQuery.ilike('company', `%${criteria.company}%`);
+                
+                // Handle Employers
+                const employers = criteria.employers || (criteria.company ? [criteria.company] : []);
+                if (employers.length > 0) {
+                    trendingQuery = trendingQuery.or(employers.map((e: string) => `company.ilike.%${e}%`).join(','));
+                }
 
                 const { data: trendingResults } = await trendingQuery;
                 if (trendingResults) matchedJobs.push(...trendingResults.map(job => ({ ...job, type: 'Trending' })));
 
 
                 // 5. Query lmia_approved_employers based on criteria
-                // Note: LMIA database structure implies company-level focus, but some users might search LMIA tables via alert.
                 if (matchedJobs.length < maxMatches) {
                     let lmiaQuery = supabaseAdmin
                         .from('lmia_approved_employers')
-                        .select('id, employer_name, city, province, occupation, approved_lmia, created_at')
+                        .select('id, employer_name, city, province, occupation, approved_lmia, created_at, noc_code')
                         .gte('created_at', timeWindow)
                         .order('created_at', { ascending: false })
                         .limit(maxMatches - matchedJobs.length);
 
-                    if (criteria.title) lmiaQuery = lmiaQuery.ilike('occupation', `%${criteria.title}%`);
+                    if (titles.length > 0) {
+                        lmiaQuery = lmiaQuery.or(titles.map((t: string) => `occupation.ilike.%${t}%`).join(','));
+                    }
                     if (criteria.location) lmiaQuery = lmiaQuery.ilike('city', `%${criteria.location}%`);
                     if (criteria.province) lmiaQuery = lmiaQuery.ilike('province', `%${criteria.province}%`);
-                    if (criteria.company) lmiaQuery = lmiaQuery.ilike('employer_name', `%${criteria.company}%`);
-                    if (criteria.noc_code) lmiaQuery = lmiaQuery.eq('noc_code', criteria.noc_code);
+                    
+                    if (employers.length > 0) {
+                        lmiaQuery = lmiaQuery.or(employers.map((e: string) => `employer_name.ilike.%${e}%`).join(','));
+                    }
+
+                    // Handle NOC Codes (Plural or Singular)
+                    const nocs = criteria.noc_codes || (criteria.noc_code ? [criteria.noc_code] : []);
+                    if (nocs.length > 0) {
+                        lmiaQuery = lmiaQuery.or(nocs.map((n: string | number) => `noc_code.eq.${n}`).join(','));
+                    }
 
                     const { data: lmiaResults } = await lmiaQuery;
                     if (lmiaResults) {

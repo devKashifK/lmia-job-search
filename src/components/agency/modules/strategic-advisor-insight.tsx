@@ -163,7 +163,7 @@ export function StrategicAdvisorInsight({ client }: StrategicAdvisorInsightProps
                             <div className="flex items-center gap-2">
                                 <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest">Strategic Intelligence</span>
                                 <div className="h-1 w-1 bg-gray-200 rounded-full" />
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">AI Engine v3.0</span>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Powered By JobMaze AI</span>
                             </div>
                             <h3 className="text-base font-black text-gray-900 leading-tight tracking-tight">
                                 {getBestStrategyText(preCalculatedScores)}

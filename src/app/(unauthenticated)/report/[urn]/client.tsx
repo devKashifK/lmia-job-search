@@ -66,6 +66,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from 'sonner';
 import { getWageStats, WageStats } from '@/lib/api/analytics';
+import { ClientProfileGaps } from "@/components/agency/modules/client-profile-gaps";
 
 interface ReportClientProps {
     strategy: any;
@@ -528,137 +529,146 @@ export default function ReportClient({ strategy, agency, client, applications, s
             </header>
 
             <main className="max-w-6xl mx-auto px-4 pt-4 space-y-6 pb-12">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    {/* Progress Section */}
-                    <Card className="lg:col-span-2 border-none shadow-lg bg-white overflow-hidden flex flex-col rounded-[1.5rem]">
-                        <CardContent className="p-6 flex-1">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="space-y-0.5">
-                                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Search Progress</h2>
-                                    <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest opacity-70">Strategy Roadmap</p>
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-3xl font-black text-brand-600">{progress}%</span>
-                                </div>
-                            </div>
-                            <Progress value={progress} className="h-2.5 bg-slate-100 rounded-full" />
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-                                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Applications</p>
-                                    <p className="text-lg font-black text-slate-900">{applications.length}</p>
-                                </div>
-                                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Benchmarks</p>
-                                    <p className="text-lg font-black text-slate-900">{scores.length}</p>
-                                </div>
-                                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">NOC Code</p>
-                                    <p className="text-lg font-black text-brand-600">{targetNoc || 'N/A'}</p>
-                                </div>
-                                <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
-                                    <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-0.5">Market Fit</p>
-                                    <p className="text-lg font-black text-emerald-700">Prime</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                        <AnimatePresence>
-                            {gaps.length > 0 && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
-                                    className="bg-amber-50 border-t border-amber-100 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <AlertCircle className="w-4 h-4 text-amber-600" />
-                                        <p className="text-[10px] font-black text-amber-900 uppercase tracking-tight">Complete Profile ({gaps.length} Gaps)</p>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* Main Content Area */}
+                    <div className="lg:col-span-8 space-y-6">
+                        {/* Progress Section */}
+                        <Card className="border-none shadow-lg bg-white overflow-hidden flex flex-col rounded-[1.5rem]">
+                            <CardContent className="p-6 flex-1">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="space-y-0.5">
+                                        <h2 className="text-xl font-black text-slate-900 tracking-tight">Search Progress</h2>
+                                        <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest opacity-70">Strategy Roadmap</p>
                                     </div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {gaps.map(gap => (
-                                            <Badge
-                                                key={gap.key}
-                                                variant="outline"
-                                                className="bg-white border-amber-200 text-amber-700 text-[9px] font-black uppercase tracking-widest px-2 py-1 cursor-pointer hover:bg-amber-100 transition-all rounded-lg"
-                                                onClick={() => triggerEdit(gap.key)}
-                                            >
-                                                + {gap.label}
-                                            </Badge>
-                                        ))}
+                                    <div className="text-right">
+                                        <span className="text-3xl font-black text-brand-600">{progress}%</span>
                                     </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </Card>
+                                </div>
+                                <Progress value={progress} className="h-2.5 bg-slate-100 rounded-full" />
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+                                    <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Applications</p>
+                                        <p className="text-lg font-black text-slate-900">{applications.length}</p>
+                                    </div>
+                                    <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Benchmarks</p>
+                                        <p className="text-lg font-black text-slate-900">{scores.length}</p>
+                                    </div>
+                                    <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">NOC Code</p>
+                                        <p className="text-lg font-black text-brand-600">{targetNoc || 'N/A'}</p>
+                                    </div>
+                                    <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
+                                        <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-0.5">Market Fit</p>
+                                        <p className="text-lg font-black text-emerald-700">Prime</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
 
-                    {/* Personal Profiler Section */}
-                    <Card className="border-none shadow-lg bg-slate-900 text-white rounded-[1.5rem] p-6 flex flex-col justify-between overflow-hidden relative">
-                         <div className="space-y-4 relative z-10">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <ShieldCheck className="w-5 h-5 text-brand-400" />
-                                    <h3 className="font-black text-sm tracking-tight uppercase">Advisor Notes</h3>
-                                </div>
-                                <div className="flex gap-2">
-                                   {canadianResume && (
-                                        <Button
-                                            variant="ghost"
-                                            className="h-8 w-8 p-0 bg-white/10 hover:bg-white/20 text-white rounded-lg"
-                                            onClick={() => generatePDF(canadianResume)}
-                                            title="Download CV"
-                                        >
-                                            <FileText className="w-4 h-4" />
-                                        </Button>
-                                    )}
+                        {/* Market Snapshot (Wow Factor) */}
+                        {targetNoc && (
+                            <div className="space-y-4">
+                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+                                    <TrendingUp className="w-3.5 h-3.5 text-brand-600" />
+                                    Market Intel: NOC {targetNoc}
+                                </h3>
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-[1.5rem]">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Median Wage</p>
+                                        <h3 className="text-xl font-black text-slate-900">
+                                            {statsLoading ? '...' : (wageStats?.median_wage ? `$${(wageStats.median_wage).toFixed(2)}/hr` : '$-.--')}
+                                        </h3>
+                                        <DollarSign className="absolute top-4 right-4 w-8 h-8 text-brand-500/10" />
+                                    </Card>
+
+                                    <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-[1.5rem]">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase mb-2">LMIA Volume</p>
+                                        <h3 className="text-xl font-black text-slate-900">
+                                            {statsLoading ? '...' : (wageStats ? `${wageStats.sample_size}+` : '---')}
+                                        </h3>
+                                        <Briefcase className="absolute top-4 right-4 w-8 h-8 text-brand-500/10" />
+                                    </Card>
+
+                                    <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-[1.5rem]">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Classification</p>
+                                        <h3 className="text-xl font-black text-brand-600 truncate">
+                                            TEER {localExtractedData.noc_teer || '1'}
+                                        </h3>
+                                        <Star className="absolute top-4 right-4 w-8 h-8 text-brand-500/10" />
+                                    </Card>
+
+                                    <Card className="border-none shadow-md bg-slate-800 text-white p-5 relative overflow-hidden rounded-[1.5rem]">
+                                        <p className="text-[9px] font-black text-white/50 uppercase mb-2">Placement</p>
+                                        <h3 className="text-xl font-black">OPTIMAL</h3>
+                                        <Zap className="absolute top-4 right-4 w-8 h-8 text-brand-400/20" />
+                                    </Card>
                                 </div>
                             </div>
-                            <p className="text-slate-400 text-[11px] leading-relaxed italic border-l-3 border-brand-500 pl-3 py-0.5">
-                                {strategy.internal_notes || "Your strategist is finalizing your roadmap."}
-                            </p>
-                            
-                            {/* Direct Edit Area */}
-                            <div className="space-y-2 pt-2">
-                               <div 
-                                    className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-white/10 transition-all group/field"
-                                    onClick={() => triggerEdit('email')}
-                                >
-                                  <div className="flex items-center gap-2.5 overflow-hidden">
-                                     <Mail className="w-3.5 h-3.5 text-brand-500" />
-                                     <span className="text-[10px] font-bold text-slate-300 truncate">{localClient.email || 'Click to set email'}</span>
-                                  </div>
-                                  <Plus className="w-3 h-3 text-slate-500 opacity-0 group-hover/field:opacity-100" />
-                               </div>
-                               <div 
-                                    className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-white/10 transition-all group/field"
-                                    onClick={() => triggerEdit('phone')}
-                                >
-                                  <div className="flex items-center gap-2.5 overflow-hidden">
-                                     <Phone className="w-3.5 h-3.5 text-brand-500" />
-                                     <span className="text-[10px] font-bold text-slate-300 truncate">{localClient.phone || 'Click to set phone'}</span>
-                                  </div>
-                                  <Plus className="w-3 h-3 text-slate-500 opacity-0 group-hover/field:opacity-100" />
-                               </div>
-                               <div 
-                                    className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-white/10 transition-all group/field"
-                                    onClick={() => triggerEdit('location')}
-                                >
-                                  <div className="flex items-center gap-2.5 overflow-hidden">
-                                     <MapPin className="w-3.5 h-3.5 text-brand-500" />
-                                     <span className="text-[10px] font-bold text-slate-300 truncate">{localExtractedData.location || localExtractedData.current_location || 'Address pending'}</span>
-                                  </div>
-                                  <Plus className="w-3 h-3 text-slate-500 opacity-0 group-hover/field:opacity-100" />
-                               </div>
-                            </div>
-                         </div>
-                         <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-end">
-                             <div>
-                                <p className="text-[8px] font-black text-brand-400 uppercase tracking-widest leading-none">Status</p>
-                                <p className="text-[10px] font-black text-white uppercase">{localClient.status || 'Active'}</p>
+                        )}
+                    </div>
+
+                    {/* Sidebar / Profile Gaps & Info */}
+                    <div className="lg:col-span-4 space-y-6">
+                        {/* Auto-Scoring Profile Block (The Gaps & Values) */}
+                        <ClientProfileGaps 
+                            client={{ ...localClient, extracted_data: localExtractedData }}
+                            context="public"
+                            urn={client.urn}
+                            pin={verifiedPin}
+                            onUpdate={(updatedData) => setLocalExtractedData(updatedData)}
+                        />
+
+                        <Card className="border-none shadow-lg bg-slate-900 text-white rounded-[1.5rem] p-6 flex flex-col justify-between overflow-hidden relative">
+                             <div className="space-y-4 relative z-10">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <ShieldCheck className="w-5 h-5 text-brand-400" />
+                                        <h3 className="font-black text-sm tracking-tight uppercase">Advisor Support</h3>
+                                    </div>
+                                    <div className="flex gap-2">
+                                       {canadianResume && (
+                                            <Button
+                                                variant="ghost"
+                                                className="h-8 w-8 p-0 bg-white/10 hover:bg-white/20 text-white rounded-lg"
+                                                onClick={() => generatePDF(canadianResume)}
+                                                title="Download CV"
+                                            >
+                                                <FileText className="w-4 h-4" />
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                                <p className="text-slate-400 text-[11px] leading-relaxed italic border-l-3 border-brand-500 pl-3 py-0.5">
+                                    {strategy.internal_notes || strategy.advisor_notes || "Your strategist is finalizing your roadmap."}
+                                </p>
+                                
+                                {/* Core Contact Info (Always Visible/Editable) */}
+                                <div className="space-y-2 pt-2">
+                                   <div 
+                                        className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-white/10 transition-all group/field"
+                                        onClick={() => triggerEdit('email')}
+                                    >
+                                      <div className="flex items-center gap-2.5 overflow-hidden">
+                                         <Mail className="w-3.5 h-3.5 text-brand-500" />
+                                         <span className="text-[10px] font-bold text-slate-300 truncate">{localClient.email || 'Set contact email'}</span>
+                                      </div>
+                                      <Plus className="w-3 h-3 text-slate-500 opacity-0 group-hover/field:opacity-100" />
+                                   </div>
+                                   <div 
+                                        className="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer border border-transparent hover:border-white/10 transition-all group/field"
+                                        onClick={() => triggerEdit('phone')}
+                                    >
+                                      <div className="flex items-center gap-2.5 overflow-hidden">
+                                         <Phone className="w-3.5 h-3.5 text-brand-500" />
+                                         <span className="text-[10px] font-bold text-slate-300 truncate">{localClient.phone || 'Set phone number'}</span>
+                                      </div>
+                                      <Plus className="w-3 h-3 text-slate-500 opacity-0 group-hover/field:opacity-100" />
+                                   </div>
+                                </div>
                              </div>
-                             <div className="text-right">
-                                <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest leading-none">Verified By</p>
-                                <p className="text-[10px] font-black text-white">{agency.company_name}</p>
-                             </div>
-                         </div>
-                    </Card>
+                        </Card>
+                    </div>
                 </div>
 
                 {/* Market Snapshot (Wow Factor) */}

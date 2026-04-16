@@ -10,8 +10,23 @@ const ALLOWED_FIELDS = [
     'experience_years', 
     'education_level', 
     'language_clb', 
+    'second_language_clb',
     'noc_teer', 
-    'job_offer'
+    'job_offer',
+    'marital_status',
+    'spouse_accompanying',
+    'has_canadian_education',
+    'canadian_experience_years',
+    'foreign_experience_years',
+    'has_canadian_sibling',
+    'has_pnp',
+    'provincial_ties',
+    'target_region',
+    'skilled_exp_recent',
+    'skilled_exp_older',
+    'job_offer_wage', 
+    'has_bc_experience',
+    'has_bc_education'
 ];
 
 export async function POST(req: NextRequest) {

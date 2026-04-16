@@ -1,10 +1,20 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Globe, Lock, Share2, Building2, Mail, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Globe, Lock, Share2, Building2, Mail, Loader2, Link as LinkIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { 
+    Dialog, 
+    DialogContent, 
+    DialogHeader, 
+    DialogTitle, 
+    DialogDescription,
+    DialogTrigger
+} from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Label } from '@/components/ui/label';
 import { useAgencyStrategy } from '@/hooks/use-agency-clients';
 import { useToast } from '@/hooks/use-toast';
 import { useSession } from '@/hooks/use-session';
@@ -19,6 +29,11 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
     const { session } = useSession();
     const [accessPin, setAccessPin] = useState('');
     const [isSendingEmail, setIsSendingEmail] = useState(false);
+    
+    // Outreach State
+    const [recipientEmail, setRecipientEmail] = useState('');
+    const [recipientName, setRecipientName] = useState('');
+    const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
     useEffect(() => {
         if (strategy) {
@@ -45,12 +60,12 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
         toast({ title: "Pitch Deck Link Copied", description: "Blind employer link is on your clipboard." });
     };
 
-    const handleSendEmail = async () => {
+    const handleSendPortalInvite = async () => {
         if (!client.email) {
-            toast({ 
-                title: "Email Missing", 
+            toast({
+                title: "Email Missing",
                 description: "This client does not have an email address associated with their profile.",
-                variant: "destructive" 
+                variant: "destructive"
             });
             return;
         }
@@ -59,7 +74,7 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
         try {
             const response = await fetch('/api/agency/send-portal', {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
                 },
@@ -68,16 +83,61 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
 
             const result = await response.json();
             if (result.success) {
-                toast({ 
-                    title: "Access Email Sent", 
-                    description: `Portal credentials successfully dispatched to ${client.email}` 
+                toast({
+                    title: "Access Email Sent",
+                    description: `Portal credentials successfully dispatched to ${client.email}`
                 });
             } else {
                 throw new Error(result.error || "Failed to send email");
             }
         } catch (error: any) {
-            toast({ 
-                title: "Dispatch Error", 
+            toast({
+                title: "Dispatch Error",
+                description: error.message || "An unexpected error occurred while sending the email.",
+                variant: "destructive"
+            });
+        } finally {
+            setIsSendingEmail(false);
+        }
+    };
+
+    const handleSendOutreach = async () => {
+        if (!recipientEmail) {
+            toast({ title: "Email Required", description: "Please enter the employer's email address.", variant: "destructive" });
+            return;
+        }
+
+        setIsSendingEmail(true);
+        try {
+            const response = await fetch('/api/agency/send-pitch-deck', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(session?.access_token ? { 'Authorization': `Bearer ${session.access_token}` } : {}),
+                },
+                body: JSON.stringify({ 
+                    clientId: client.id, 
+                    urn: client.urn,
+                    recipientEmail,
+                    recipientName 
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                toast({
+                    title: "Pitch Deck Shared",
+                    description: `Professional introduction sent to ${recipientEmail}`
+                });
+                setIsShareDialogOpen(false);
+                setRecipientEmail('');
+                setRecipientName('');
+            } else {
+                throw new Error(result.error || "Failed to send email");
+            }
+        } catch (error: any) {
+            toast({
+                title: "Dispatch Error",
                 description: error.message || "An unexpected error occurred while sending the email.",
                 variant: "destructive"
             });
@@ -94,10 +154,10 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
         >
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
-                    <img src="/job_maze_favicon_.svg" alt="JobMaze" className="w-6 h-6 invert brightness-0" />
+                    <img src="/ll.png" alt="JobMaze" className="w-6 h-6" />
                 </div>
                 <div className="space-y-0.5">
-                    <h2 className="text-sm font-black text-gray-900 tracking-tight uppercase">JobMaze Command Center</h2>
+                    <h2 className="text-sm font-black text-gray-900 tracking-tight uppercase">Command Center</h2>
                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Candidate Ecosystem & Access Control</p>
                 </div>
             </div>
@@ -134,17 +194,93 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
                     />
                 </div>
 
-                <Button
-                    variant="outline"
-                    onClick={handleSharePitchDeck}
-                    className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border-brand-200 text-brand-700 hover:bg-brand-50 transition-all font-bold"
-                >
-                    <Share2 className="w-3.5 h-3.5 mr-2" />
-                    Share Pitch Deck
-                </Button>
+                <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button
+                            variant="outline"
+                            className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border-brand-200 text-brand-700 hover:bg-brand-50 transition-all font-bold"
+                        >
+                            <Share2 className="w-3.5 h-3.5 mr-2" />
+                            Share Pitch Deck
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md rounded-2xl sm:rounded-3xl border-gray-100 shadow-2xl">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-black tracking-tight text-gray-900 uppercase italic">
+                                Share Candidate Deck
+                            </DialogTitle>
+                            <DialogDescription className="text-xs font-medium text-gray-500 leading-relaxed">
+                                Share a blind, professional profile of **{client.full_name}** with potential employers.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        <Tabs defaultValue="link" className="mt-4">
+                            <TabsList className="grid w-full grid-cols-2 bg-gray-50 p-1 rounded-xl h-10">
+                                <TabsTrigger value="link" className="rounded-lg text-[10px] font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                    Direct Link
+                                </TabsTrigger>
+                                <TabsTrigger value="email" className="rounded-lg text-[10px] font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                    Send to Employer
+                                </TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="link" className="space-y-4 pt-4">
+                                <div className="p-4 bg-brand-50 border border-brand-100 rounded-2xl flex items-center justify-between gap-4">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-[10px] font-black text-brand-700 uppercase tracking-widest mb-1.5">Pitch Deck URL</p>
+                                        <p className="text-xs font-bold text-gray-600 truncate opacity-60 italic">
+                                            {`${typeof window !== 'undefined' ? window.location.origin : ''}/pitch/${client.urn}`}
+                                        </p>
+                                    </div>
+                                    <Button 
+                                        size="sm"
+                                        onClick={() => handleSharePitchDeck()}
+                                        className="bg-white hover:bg-brand-50 text-brand-600 border border-brand-100 rounded-xl h-8 px-4 text-[10px] font-black uppercase shadow-none"
+                                    >
+                                        Copy Link
+                                    </Button>
+                                </div>
+                                <p className="text-[10px] text-gray-400 font-medium text-center italic">
+                                     Employers will see a blind profile without personal contact info.
+                                </p>
+                            </TabsContent>
+
+                            <TabsContent value="email" className="space-y-4 pt-4">
+                                <div className="space-y-3">
+                                    <div className="space-y-1.5">
+                                        <Label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Recipient Email</Label>
+                                        <Input 
+                                            placeholder="recruiter@employer.com" 
+                                            value={recipientEmail}
+                                            onChange={(e) => setRecipientEmail(e.target.value)}
+                                            className="h-10 rounded-xl border-gray-100 focus:border-brand-500 bg-gray-50/50 text-sm font-bold"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <Label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Recipient Name (Optional)</Label>
+                                        <Input 
+                                            placeholder="Hiring Manager" 
+                                            value={recipientName}
+                                            onChange={(e) => setRecipientName(e.target.value)}
+                                            className="h-10 rounded-xl border-gray-100 focus:border-brand-500 bg-gray-50/50 text-sm font-bold"
+                                        />
+                                    </div>
+                                </div>
+                                <Button 
+                                    className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-xl h-11 text-xs font-black uppercase tracking-widest shadow-lg shadow-brand-500/20 disabled:opacity-70 transition-all font-bold"
+                                    onClick={handleSendOutreach}
+                                    disabled={isSendingEmail}
+                                >
+                                    {isSendingEmail ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Mail className="w-4 h-4 mr-2" />}
+                                    Send Pitch Deck
+                                </Button>
+                            </TabsContent>
+                        </Tabs>
+                    </DialogContent>
+                </Dialog>
 
                 <Button
-                    onClick={handleSendEmail}
+                    onClick={handleSendPortalInvite}
                     disabled={isSendingEmail}
                     className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/20 transition-all font-bold disabled:opacity-70"
                 >
@@ -153,7 +289,7 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
                     ) : (
                         <Mail className="w-3.5 h-3.5 mr-2" />
                     )}
-                    Send via Email
+                    Send Portal Access
                 </Button>
 
                 {/* <Button 

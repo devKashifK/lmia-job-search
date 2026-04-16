@@ -72,6 +72,7 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
     const [newDocs, setNewDocs] = useState([{ name: '', category: 'general', required: true, request_note: '' }]);
     const [rejectTarget, setRejectTarget] = useState<{ id: string; name: string } | null>(null);
     const [rejectionReason, setRejectionReason] = useState('');
+    const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
     const { data, isLoading } = useQuery({
         queryKey: ['agency-documents', clientUrn],
@@ -129,6 +130,23 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                 title: vars.action === 'approved' ? '✅ Document Approved' : '❌ Document Rejected',
                 description: 'Status updated and logged.'
             });
+        },
+        onError: (e: any) => toast({ title: 'Error', description: e.message, variant: 'destructive' })
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: async (documentId: string) => {
+            const res = await fetch(`/api/agency/documents/delete?documentId=${documentId}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${session?.access_token}` },
+            });
+            if (!res.ok) throw new Error((await res.json()).error);
+            return res.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['agency-documents', clientUrn] });
+            setDeleteTarget(null);
+            toast({ title: 'Request Deleted', description: 'The document request has been removed.' });
         },
         onError: (e: any) => toast({ title: 'Error', description: e.message, variant: 'destructive' })
     });
@@ -334,6 +352,13 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                                                 </Button>
                                             </a>
                                         )}
+                                        <Button
+                                            onClick={() => setDeleteTarget({ id: doc.id, name: doc.name })}
+                                            variant="ghost"
+                                            className="h-8 w-8 p-0 rounded-xl text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" />
+                                        </Button>
                                     </div>
                                 </div>
 
@@ -389,6 +414,49 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                                 >
                                     Confirm Rejection
                                 </Button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteTarget && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+                        onClick={() => setDeleteTarget(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex flex-col items-center text-center space-y-4">
+                                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                    <Trash2 className="w-6 h-6 text-red-600" />
+                                </div>
+                                <div>
+                                    <h3 className="font-black text-gray-900 text-sm uppercase tracking-tight">Delete Request?</h3>
+                                    <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                                        This will permanently remove the request for <span className="font-bold text-slate-900">{deleteTarget.name}</span>. 
+                                        If a file was uploaded, it will also be deleted from storage.
+                                    </p>
+                                </div>
+                                <div className="flex w-full gap-2 pt-2">
+                                    <Button variant="outline" onClick={() => setDeleteTarget(null)} className="flex-1 rounded-xl">Cancel</Button>
+                                    <Button
+                                        onClick={() => deleteMutation.mutate(deleteTarget.id)}
+                                        disabled={deleteMutation.isPending}
+                                        className="flex-1 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] tracking-widest"
+                                    >
+                                        {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                                    </Button>
+                                </div>
                             </div>
                         </motion.div>
                     </motion.div>

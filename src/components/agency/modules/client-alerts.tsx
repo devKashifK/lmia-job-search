@@ -12,6 +12,57 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { Sparkles, Globe, Building2, MapPin, ChevronRight } from 'lucide-react';
+
+const ALERT_TEMPLATES = [
+    {
+        id: 'titles',
+        name: 'Role Pulse',
+        description: 'Laser-focused monitoring for specific matched job titles.',
+        icon: Sparkles,
+        color: 'text-indigo-600',
+        bg: 'bg-indigo-50',
+        getCriteria: (c: any) => ({
+            job_titles: c.extracted_data.recommended_job_titles || [c.extracted_data.position],
+            location: 'Any Canada'
+        })
+    },
+    {
+        id: 'nocs',
+        name: 'NOC Specific',
+        description: 'Monitor all job listings strictly matching candidate NOC codes.',
+        icon: ShieldCheck,
+        color: 'text-amber-600',
+        bg: 'bg-amber-50',
+        getCriteria: (c: any) => ({
+            noc_codes: c.extracted_data.recommended_noc_codes || [c.extracted_data.noc_code],
+            location: 'Any Canada'
+        })
+    },
+    {
+        id: 'employer',
+        name: 'Employer Watch',
+        description: 'Strictly monitor new listings from target database employers.',
+        icon: Building2,
+        color: 'text-slate-600',
+        bg: 'bg-slate-50',
+        getCriteria: (c: any) => ({
+            employers: c.extracted_data.recommended_employers || [],
+        })
+    },
+    {
+        id: 'regional',
+        name: 'Regional Pulse',
+        description: 'Focused monitoring for all roles in preferred provinces/cities.',
+        icon: MapPin,
+        color: 'text-emerald-600',
+        bg: 'bg-emerald-50',
+        getCriteria: (c: any) => ({
+            location: c.extracted_data.location || 'Any Canada'
+        })
+    }
+];
 
 interface ClientAlertsProps {
   client: any;
@@ -26,6 +77,7 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
   // New alert form state
   const [alertName, setAlertName] = useState(`Match Alert: ${client.full_name}`);
   const [frequency, setFrequency] = useState('daily');
+  const [activeCriteria, setActiveCriteria] = useState<any>(null);
 
   if (isLoading) {
     return <div className="p-12 text-center text-xs text-gray-400 font-medium flex flex-col items-center gap-2">
@@ -34,11 +86,18 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
     </div>;
   }
 
+  const handleTemplateSelect = (template: typeof ALERT_TEMPLATES[0]) => {
+    const criteria = template.getCriteria(client);
+    setActiveCriteria(criteria);
+    setAlertName(`${template.name}: ${client.full_name}`);
+    setIsOpen(true);
+  };
+
   const handleCreate = async () => {
     setIsCreating(true);
     try {
-        // Pre-fill criteria from candidate's extracted_data
-        const criteria = {
+        // Use activeCriteria if set (from template), else default logic
+        const criteria = activeCriteria || {
             job_titles: client.extracted_data.recommended_job_titles || [client.extracted_data.position],
             noc_codes: client.extracted_data.recommended_noc_codes || [client.extracted_data.noc_code],
             location: client.extracted_data.location
@@ -76,12 +135,40 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
         </div>
         <Button 
             size="sm" 
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+                setActiveCriteria(null);
+                setAlertName(`Match Alert: ${client.full_name}`);
+                setIsOpen(true);
+            }}
             className="bg-brand-600 rounded-lg text-[10px] font-bold h-8 hover:bg-brand-700 transition-all shadow-sm shadow-brand-500/10"
         >
             <Plus className="w-3 h-3 mr-1.5" />
             Create Alert
         </Button>
+      </div>
+
+      {/* Smart Templates */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pb-2 pt-1">
+        {ALERT_TEMPLATES.map(template => (
+            <Card 
+                key={template.id}
+                onClick={() => handleTemplateSelect(template)}
+                className="p-3 border-gray-100 hover:border-brand-200 transition-all cursor-pointer group bg-white/50 border-dashed"
+            >
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                        <div className={cn("p-1.5 rounded-lg shrink-0", template.bg, template.color)}>
+                            <template.icon className="w-3.5 h-3.5" />
+                        </div>
+                        <ChevronRight className="w-3 h-3 text-gray-300 group-hover:text-brand-500 transition-colors" />
+                    </div>
+                    <div>
+                        <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-tight">{template.name}</h4>
+                        <p className="text-[9px] text-gray-400 font-bold leading-tight mt-0.5">{template.description}</p>
+                    </div>
+                </div>
+            </Card>
+        ))}
       </div>
 
       {/* Create Alert Dialog */}
@@ -121,18 +208,53 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                     </Select>
                 </div>
 
-                <div className="p-3 bg-gray-50/50 rounded-xl border border-gray-100 space-y-2">
-                    <p className="text-[9px] uppercase font-bold text-gray-400">Match Logic Summary</p>
-                    <div className="flex flex-wrap gap-1.5">
-                        <Badge variant="outline" className="bg-white text-[9px] border-gray-200">
-                            {client.extracted_data.recommended_job_titles?.length || 1} Titles
-                        </Badge>
-                        <Badge variant="outline" className="bg-white text-[9px] border-gray-200">
-                            {client.extracted_data.recommended_noc_codes?.length || 1} NOCs
-                        </Badge>
-                        <Badge variant="outline" className="bg-white text-[9px] border-gray-200">
-                            {client.extracted_data.location || 'Any Canada'}
-                        </Badge>
+                <div className="p-3 bg-gray-50/50 rounded-xl border border-gray-100 space-y-2.5">
+                    <p className="text-[9px] uppercase font-bold text-gray-400">Targeting Summary</p>
+                    <div className="max-h-[120px] overflow-y-auto pr-1 space-y-2 custom-scrollbar">
+                        {/* Job Titles - Only if specifically targeted */}
+                        {activeCriteria?.job_titles && (
+                            <div className="flex flex-wrap gap-1.5">
+                                {activeCriteria.job_titles.filter(Boolean).map((t: string) => (
+                                    <Badge key={t} variant="outline" className="bg-white text-[9px] border-indigo-100 text-indigo-700 font-bold uppercase truncate max-w-[180px]">
+                                        <Sparkles className="w-2.5 h-2.5 mr-1 text-indigo-400" /> {t}
+                                    </Badge>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* NOC Codes - Only if specifically targeted */}
+                        {activeCriteria?.noc_codes && (
+                            <div className="flex flex-wrap gap-1.5">
+                                {activeCriteria.noc_codes.filter(Boolean).map((n: string | number) => (
+                                    <Badge key={n} variant="outline" className="bg-white text-[9px] border-amber-100 text-amber-900 font-bold uppercase">
+                                        <ShieldCheck className="w-2.5 h-2.5 mr-1 text-amber-500" /> NOC {n}
+                                    </Badge>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Location / Employers */}
+                        <div className="flex flex-wrap gap-1.5">
+                            {activeCriteria?.location && (
+                                <Badge variant="outline" className="bg-emerald-50 text-[9px] border-emerald-200 text-emerald-700 font-bold uppercase">
+                                    <MapPin className="w-2.5 h-2.5 mr-1" /> {activeCriteria.location}
+                                </Badge>
+                            )}
+                            {activeCriteria?.employers?.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5">
+                                    {activeCriteria.employers.map((emp: string) => (
+                                        <Badge key={emp} variant="outline" className="bg-slate-50 text-slate-700 text-[9px] border-slate-200 font-bold uppercase truncate max-w-[150px]">
+                                            <Building2 className="w-2.5 h-2.5 mr-1 text-slate-400" /> {emp}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Fallback for 'Manual/Legacy' alerts with no activeCriteria yet */}
+                        {!activeCriteria && (
+                            <p className="text-[10px] text-gray-400 italic">Configure targeting details above...</p>
+                        )}
                     </div>
                 </div>
             </div>
