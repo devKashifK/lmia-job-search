@@ -98,7 +98,7 @@ export function ClientOutreach({ client }: ClientOutreachProps) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Log Interaction Panel */}
-            <Card className="p-5 border-gray-100 shadow-sm space-y-4 h-fit">
+            <Card className="p-5 border-gray-100 shadow-sm space-y-4 h-fit rounded-xl">
                 <div>
                     <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                         <Plus className="w-4 h-4 text-brand-600" />
@@ -132,7 +132,7 @@ export function ClientOutreach({ client }: ClientOutreachProps) {
                                         key={t}
                                         onClick={() => setType(t)}
                                         className={cn(
-                                            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all",
+                                            "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold border transition-all",
                                             isActive 
                                                 ? cn(Config.bg, Config.color, "border-current shadow-sm") 
                                                 : "bg-white text-gray-400 border-gray-100 hover:bg-gray-50"
@@ -171,7 +171,7 @@ export function ClientOutreach({ client }: ClientOutreachProps) {
             <div className="lg:col-span-2 space-y-4">
                 <div className="flex items-center justify-between px-2">
                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Interaction History</h3>
-                    <Badge variant="outline" className="text-[9px] font-bold text-gray-400 h-5">
+                    <Badge variant="outline" className="text-[9px] font-bold text-gray-400 h-5 rounded-xl">
                         {outreachLog.length} Records
                     </Badge>
                 </div>
@@ -194,7 +194,7 @@ export function ClientOutreach({ client }: ClientOutreachProps) {
 
                                     <div className="flex-1 space-y-1 min-w-0">
                                         <div className="flex items-center justify-between gap-2">
-                                            <h4 className="text-[11px] font-black text-gray-900 uppercase truncate">
+                                            <h4 className="text-[11px] font-bold text-gray-900 uppercase truncate">
                                                 {entry.employer}
                                             </h4>
                                             <div className="flex items-center gap-2 shrink-0">
@@ -204,14 +204,14 @@ export function ClientOutreach({ client }: ClientOutreachProps) {
                                                 </div>
                                                 <button 
                                                     onClick={() => removeEntry(entry.id)}
-                                                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-300 hover:text-red-500 transition-all rounded"
+                                                    className="opacity-0 group-hover:opacity-100 p-1 text-gray-300 hover:text-red-500 transition-all rounded-xl"
                                                 >
                                                     <Trash2 className="w-3 h-3" />
                                                 </button>
                                             </div>
                                         </div>
                                         <p className="text-[11px] text-gray-600 leading-relaxed font-medium">
-                                            <span className="uppercase text-[9px] font-black mr-2 opacity-50">{entry.type}:</span>
+                                            <span className="uppercase text-[9px] font-bold mr-2 opacity-50">{entry.type}:</span>
                                             {entry.notes || <span className="italic text-gray-300">No notes provided.</span>}
                                         </p>
                                     </div>
@@ -221,12 +221,12 @@ export function ClientOutreach({ client }: ClientOutreachProps) {
                     </AnimatePresence>
 
                     {outreachLog.length === 0 && (
-                        <div className="py-16 flex flex-col items-center justify-center text-center space-y-3 bg-white rounded-2xl border border-dashed border-gray-100">
-                            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center">
+                        <div className="py-16 flex flex-col items-center justify-center text-center space-y-3 bg-white rounded-xl border border-dashed border-gray-100">
+                            <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center">
                                 <AlertCircle className="w-6 h-6 text-gray-200" />
                             </div>
                             <div>
-                                <p className="text-[11px] font-black uppercase text-gray-400 tracking-wider">No interactions logged</p>
+                                <p className="text-[11px] font-bold uppercase text-gray-400 tracking-wider">No interactions logged</p>
                                 <p className="text-[10px] text-gray-300 max-w-[200px] mt-1">Start logging your calls and submissions to track your recruitment funnel.</p>
                             </div>
                         </div>

@@ -80,7 +80,7 @@ export default function LMIAJobsPage() {
         <section className="bg-brand-900 pt-40 pb-16 px-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_80%_50%,rgba(15,123,94,0.18)_0%,transparent_55%)] pointer-events-none" />
           <div className="max-w-4xl mx-auto text-center relative z-10">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight mb-4">
               Browse LMIA Jobs in Canada
             </h1>
             <p className="text-blue-100/70 text-lg md:text-xl font-light leading-relaxed max-w-3xl mx-auto mb-12">
@@ -106,7 +106,7 @@ export default function LMIAJobsPage() {
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-200/30 pointer-events-none" />
               </div>
-              <Button className="h-12 bg-amber-400 hover:bg-amber-500 text-brand-900 font-black px-8 rounded-xl transition-all">
+              <Button className="h-12 bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 rounded-xl transition-all">
                 Search Jobs
               </Button>
             </div>
@@ -119,7 +119,7 @@ export default function LMIAJobsPage() {
           <aside className="hidden lg:block space-y-8">
             <div className="sticky top-24">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-sm font-black text-brand-900 uppercase tracking-widest flex items-center gap-2">
+                <h3 className="text-sm font-bold text-brand-900 uppercase tracking-widest flex items-center gap-2">
                   <Filter className="w-4 h-4" />
                   Filters
                 </h3>
@@ -179,7 +179,7 @@ export default function LMIAJobsPage() {
           <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
               <div>
-                <h2 className="text-2xl font-black text-brand-900 tracking-tight">10,247 LMIA Jobs Found</h2>
+                <h2 className="text-2xl font-bold text-brand-900 tracking-tight">10,247 LMIA Jobs Found</h2>
                 <p className="text-slate-400 text-sm italic mt-1 flex items-center gap-1.5">
                   <TrendingUp className="w-3 h-3 text-emerald-500" />
                   Showing real-time vacancies for 2026
@@ -208,29 +208,29 @@ export default function LMIAJobsPage() {
                     </h3>
                     <p className="text-slate-500 text-sm font-medium mb-4 flex items-center gap-1.5">
                       {job.employer}
-                      <span className="w-1 h-1 rounded-full bg-slate-200" />
+                      <span className="w-1 h-1 rounded-xl bg-slate-200" />
                       <span className="text-slate-400">{job.location}</span>
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <Badge className={`bg-${job.color}-500/10 text-${job.color}-600 border-${job.color}-500/20 text-[10px] font-black tracking-widest uppercase`}>
+                      <Badge className={`bg-${job.color}-500/10 text-${job.color}-600 border-${job.color}-500/20 text-[10px] font-bold tracking-widest uppercase`}>
                         {job.status}
                       </Badge>
-                      <Badge variant="outline" className="border-slate-200 text-slate-400 text-[10px] font-black tracking-widest uppercase">
+                      <Badge variant="outline" className="border-slate-200 text-slate-400 text-[10px] font-bold tracking-widest uppercase">
                         NOC {job.noc}
                       </Badge>
-                      <Badge variant="outline" className="border-slate-200 text-slate-400 text-[10px] font-black tracking-widest uppercase">
+                      <Badge variant="outline" className="border-slate-200 text-slate-400 text-[10px] font-bold tracking-widest uppercase">
                         TEER {job.teer}
                       </Badge>
-                      <Badge variant="outline" className="border-slate-200 text-slate-400 text-[10px] font-black tracking-widest uppercase">
+                      <Badge variant="outline" className="border-slate-200 text-slate-400 text-[10px] font-bold tracking-widest uppercase">
                         {job.industry}
                       </Badge>
                     </div>
                   </div>
                   <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-4 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-8">
-                    <div className="text-brand-900 font-black text-xl tracking-tight">
+                    <div className="text-brand-900 font-bold text-xl tracking-tight">
                       {job.wage}
                     </div>
-                    <Button className="bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-full px-6 text-sm h-10 group-hover:scale-105 transition-all">
+                    <Button className="bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl px-6 text-sm h-10 group-hover:scale-105 transition-all">
                       View Details
                     </Button>
                   </div>
@@ -248,25 +248,25 @@ export default function LMIAJobsPage() {
                     <div className="w-1/2 h-5 bg-slate-200 rounded-md mb-2" />
                     <div className="w-1/4 h-3 bg-slate-100 rounded-md mb-4" />
                     <div className="flex gap-2">
-                      <div className="w-20 h-5 bg-slate-100 rounded-full" />
-                      <div className="w-16 h-5 bg-slate-100 rounded-full" />
+                      <div className="w-20 h-5 bg-slate-100 rounded-xl" />
+                      <div className="w-16 h-5 bg-slate-100 rounded-xl" />
                     </div>
                   </div>
-                  <div className="w-full md:w-32 h-10 bg-slate-100 rounded-full" />
+                  <div className="w-full md:w-32 h-10 bg-slate-100 rounded-xl" />
                 </div>
               ))}
             </div>
 
             {/* GATE BANNER */}
             <div className="mt-12 bg-brand-900 rounded-[32px] p-10 md:p-16 text-center overflow-hidden relative border-4 border-amber-400/20">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 blur-[80px] rounded-xl -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-500/10 blur-[80px] rounded-xl translate-y-1/2 -translate-x-1/2" />
 
               <div className="relative z-10">
                 <div className="w-16 h-16 bg-amber-400 rounded-3xl flex items-center justify-center mx-auto mb-8 rotate-6 shadow-2xl shadow-amber-400/20">
                   <Lock className="w-8 h-8 text-brand-900" />
                 </div>
-                <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-4">
+                <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">
                   Showing 4 of 10,247 listings
                 </h2>
                 <p className="text-blue-100/70 text-lg md:text-xl font-light mb-12 max-w-2xl mx-auto leading-relaxed">
@@ -274,7 +274,7 @@ export default function LMIAJobsPage() {
                 </p>
                 <Link
                   href="/sign-up"
-                  className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-black px-12 py-5 rounded-full text-lg shadow-2xl shadow-amber-400/30 transition-all inline-flex items-center gap-3 hover:-translate-y-1"
+                  className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-12 py-5 rounded-xl text-lg shadow-2xl shadow-amber-400/30 transition-all inline-flex items-center gap-3 hover:-translate-y-1"
                 >
                   Sign Up Free — Unlock All Jobs
                   <ArrowRight className="w-6 h-6" />

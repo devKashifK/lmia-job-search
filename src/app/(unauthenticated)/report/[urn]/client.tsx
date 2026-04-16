@@ -64,6 +64,11 @@ import {
     SelectValue
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { toast } from 'sonner';
 import { getWageStats, WageStats } from '@/lib/api/analytics';
 import { ClientProfileGaps } from "@/components/agency/modules/client-profile-gaps";
@@ -443,10 +448,10 @@ export default function ReportClient({ strategy, agency, client, applications, s
                     className="w-full max-w-md relative z-10 text-center space-y-8"
                 >
                     <div className="space-y-4">
-                        <div className="w-20 h-20 bg-brand-600 rounded-3xl mx-auto flex items-center justify-center shadow-2xl shadow-brand-500/20 mb-6">
+                        <div className="w-20 h-20 bg-brand-600 rounded-xl mx-auto flex items-center justify-center shadow-2xl shadow-brand-500/20 mb-6">
                             <Lock className="w-8 h-8 text-white" />
                         </div>
-                        <h1 className="text-3xl font-black tracking-tight uppercase">Secure Portal</h1>
+                        <h1 className="text-3xl font-bold tracking-tight uppercase">Secure Portal</h1>
                         <p className="text-slate-400 text-sm font-medium">
                             This strategic report is protected by <b>{agency.company_name}</b>.<br />
                             Please enter the 4-digit PIN shared with you.
@@ -454,24 +459,23 @@ export default function ReportClient({ strategy, agency, client, applications, s
                     </div>
 
                     <div className="space-y-6">
-                        <div className="flex justify-center gap-3">
-                            <input
-                                type="password"
+                        <div className="flex justify-center">
+                            <InputOTP
                                 maxLength={4}
                                 value={pin}
-                                onChange={(e) => {
-                                    const val = e.target.value.replace(/\D/g, '');
+                                onChange={(val) => {
                                     setPin(val);
                                     if (val.length === 4) setPinError(false);
                                 }}
-                                onKeyDown={(e) => e.key === 'Enter' && pin.length === 4 && handleVerifyPin()}
-                                className={cn(
-                                    "w-full h-20 text-center text-4xl font-black bg-slate-900 border-2 rounded-2xl tracking-[1em] pl-[0.5em] transition-all focus:ring-4 focus:ring-brand-500/20 outline-none",
-                                    pinError ? "border-red-500 animate-shake" : "border-slate-800 focus:border-brand-500"
-                                )}
-                                placeholder="0000"
-                                autoFocus
-                            />
+                                onComplete={handleVerifyPin}
+                            >
+                                <InputOTPGroup className="gap-3">
+                                    <InputOTPSlot index={0} className={cn("w-14 h-20 text-3xl font-bold bg-slate-900/50 border-2 rounded-xl transition-all", pinError ? "border-red-500/50" : "border-slate-800 focus:border-brand-500")} />
+                                    <InputOTPSlot index={1} className={cn("w-14 h-20 text-3xl font-bold bg-slate-900/50 border-2 rounded-xl transition-all", pinError ? "border-red-500/50" : "border-slate-800 focus:border-brand-500")} />
+                                    <InputOTPSlot index={2} className={cn("w-14 h-20 text-3xl font-bold bg-slate-900/50 border-2 rounded-xl transition-all", pinError ? "border-red-500/50" : "border-slate-800 focus:border-brand-500")} />
+                                    <InputOTPSlot index={3} className={cn("w-14 h-20 text-3xl font-bold bg-slate-900/50 border-2 rounded-xl transition-all", pinError ? "border-red-500/50" : "border-slate-800 focus:border-brand-500")} />
+                                </InputOTPGroup>
+                            </InputOTP>
                         </div>
 
                         {pinError && <p className="text-red-400 text-xs font-bold uppercase tracking-widest">Incorrect PIN. Please try again.</p>}
@@ -479,7 +483,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                         <Button
                             onClick={handleVerifyPin}
                             disabled={pin.length < 4}
-                            className="w-full h-14 bg-brand-600 hover:bg-brand-500 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-brand-600/20"
+                            className="w-full h-14 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold uppercase tracking-widest text-sm shadow-xl shadow-brand-600/20"
                         >
                             Access Report
                         </Button>
@@ -511,7 +515,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                             </div>
                         )}
                         <div>
-                            <h1 className="text-sm font-black text-slate-900 uppercase tracking-tighter leading-none">
+                            <h1 className="text-sm font-bold text-slate-900 uppercase tracking-tighter leading-none">
                                 {agency.company_name || 'Your Agency'}
                             </h1>
                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
@@ -520,10 +524,13 @@ export default function ReportClient({ strategy, agency, client, applications, s
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                         <div className="hidden sm:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">{localClient.status || 'Active'}</span>
-                         </div>
+                         <Badge 
+                            variant="secondary"
+                            className="hidden sm:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 hover:bg-slate-100 transition-colors shadow-none"
+                         >
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">{localClient.status || 'Active'}</span>
+                         </Badge>
                     </div>
                 </div>
             </header>
@@ -533,34 +540,34 @@ export default function ReportClient({ strategy, agency, client, applications, s
                     {/* Main Content Area */}
                     <div className="lg:col-span-8 space-y-6">
                         {/* Progress Section */}
-                        <Card className="border-none shadow-lg bg-white overflow-hidden flex flex-col rounded-[1.5rem]">
+                        <Card className="border-none shadow-lg bg-white overflow-hidden flex flex-col rounded-xl">
                             <CardContent className="p-6 flex-1">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="space-y-0.5">
-                                        <h2 className="text-xl font-black text-slate-900 tracking-tight">Search Progress</h2>
+                                        <h2 className="text-xl font-bold text-slate-900 tracking-tight">Search Progress</h2>
                                         <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest opacity-70">Strategy Roadmap</p>
                                     </div>
                                     <div className="text-right">
-                                        <span className="text-3xl font-black text-brand-600">{progress}%</span>
+                                        <span className="text-3xl font-bold text-brand-600">{progress}%</span>
                                     </div>
                                 </div>
                                 <Progress value={progress} className="h-2.5 bg-slate-100 rounded-full" />
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-                                    <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Applications</p>
-                                        <p className="text-lg font-black text-slate-900">{applications.length}</p>
+                                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Applications</p>
+                                        <p className="text-lg font-bold text-slate-900">{applications.length}</p>
                                     </div>
-                                    <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Benchmarks</p>
-                                        <p className="text-lg font-black text-slate-900">{scores.length}</p>
+                                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Benchmarks</p>
+                                        <p className="text-lg font-bold text-slate-900">{scores.length}</p>
                                     </div>
-                                    <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">NOC Code</p>
-                                        <p className="text-lg font-black text-brand-600">{targetNoc || 'N/A'}</p>
+                                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-center">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">NOC Code</p>
+                                        <p className="text-lg font-bold text-brand-600">{targetNoc || 'N/A'}</p>
                                     </div>
-                                    <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
-                                        <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-0.5">Market Fit</p>
-                                        <p className="text-lg font-black text-emerald-700">Prime</p>
+                                    <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-center">
+                                        <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest mb-0.5">Market Fit</p>
+                                        <p className="text-lg font-bold text-emerald-700">Prime</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -569,38 +576,38 @@ export default function ReportClient({ strategy, agency, client, applications, s
                         {/* Market Snapshot (Wow Factor) */}
                         {targetNoc && (
                             <div className="space-y-4">
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
                                     <TrendingUp className="w-3.5 h-3.5 text-brand-600" />
                                     Market Intel: NOC {targetNoc}
                                 </h3>
                                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                    <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-[1.5rem]">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Median Wage</p>
-                                        <h3 className="text-xl font-black text-slate-900">
+                                    <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-xl">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">Median Wage</p>
+                                        <h3 className="text-xl font-bold text-slate-900">
                                             {statsLoading ? '...' : (wageStats?.median_wage ? `$${(wageStats.median_wage).toFixed(2)}/hr` : '$-.--')}
                                         </h3>
                                         <DollarSign className="absolute top-4 right-4 w-8 h-8 text-brand-500/10" />
                                     </Card>
 
-                                    <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-[1.5rem]">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase mb-2">LMIA Volume</p>
-                                        <h3 className="text-xl font-black text-slate-900">
+                                    <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-xl">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">LMIA Volume</p>
+                                        <h3 className="text-xl font-bold text-slate-900">
                                             {statsLoading ? '...' : (wageStats ? `${wageStats.sample_size}+` : '---')}
                                         </h3>
                                         <Briefcase className="absolute top-4 right-4 w-8 h-8 text-brand-500/10" />
                                     </Card>
 
-                                    <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-[1.5rem]">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Classification</p>
-                                        <h3 className="text-xl font-black text-brand-600 truncate">
+                                    <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-xl">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">Classification</p>
+                                        <h3 className="text-xl font-bold text-brand-600 truncate">
                                             TEER {localExtractedData.noc_teer || '1'}
                                         </h3>
                                         <Star className="absolute top-4 right-4 w-8 h-8 text-brand-500/10" />
                                     </Card>
 
-                                    <Card className="border-none shadow-md bg-slate-800 text-white p-5 relative overflow-hidden rounded-[1.5rem]">
-                                        <p className="text-[9px] font-black text-white/50 uppercase mb-2">Placement</p>
-                                        <h3 className="text-xl font-black">OPTIMAL</h3>
+                                    <Card className="border-none shadow-md bg-slate-800 text-white p-5 relative overflow-hidden rounded-xl">
+                                        <p className="text-[9px] font-bold text-white/50 uppercase mb-2">Placement</p>
+                                        <h3 className="text-xl font-bold">OPTIMAL</h3>
                                         <Zap className="absolute top-4 right-4 w-8 h-8 text-brand-400/20" />
                                     </Card>
                                 </div>
@@ -619,12 +626,12 @@ export default function ReportClient({ strategy, agency, client, applications, s
                             onUpdate={(updatedData) => setLocalExtractedData(updatedData)}
                         />
 
-                        <Card className="border-none shadow-lg bg-slate-900 text-white rounded-[1.5rem] p-6 flex flex-col justify-between overflow-hidden relative">
+                        <Card className="border-none shadow-lg bg-slate-900 text-white rounded-xl p-6 flex flex-col justify-between overflow-hidden relative">
                              <div className="space-y-4 relative z-10">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <ShieldCheck className="w-5 h-5 text-brand-400" />
-                                        <h3 className="font-black text-sm tracking-tight uppercase">Advisor Support</h3>
+                                        <h3 className="font-bold text-sm tracking-tight uppercase">Advisor Support</h3>
                                     </div>
                                     <div className="flex gap-2">
                                        {canadianResume && (
@@ -674,38 +681,38 @@ export default function ReportClient({ strategy, agency, client, applications, s
                 {/* Market Snapshot (Wow Factor) */}
                 {targetNoc && (
                     <div className="space-y-4">
-                       <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+                       <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
                             <TrendingUp className="w-3.5 h-3.5 text-brand-600" />
                             Market Intel: NOC {targetNoc}
                         </h3>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-[1.5rem]">
-                                <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Median Wage</p>
-                                <h3 className="text-xl font-black text-slate-900">
+                            <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-xl">
+                                <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">Median Wage</p>
+                                <h3 className="text-xl font-bold text-slate-900">
                                     {statsLoading ? '...' : (wageStats?.median_wage ? `$${(wageStats.median_wage).toFixed(2)}/hr` : '$-.--')}
                                 </h3>
                                 <DollarSign className="absolute top-4 right-4 w-8 h-8 text-brand-500/10" />
                             </Card>
 
-                            <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-[1.5rem]">
-                                <p className="text-[9px] font-black text-slate-400 uppercase mb-2">LMIA Volume</p>
-                                <h3 className="text-xl font-black text-slate-900">
+                            <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-xl">
+                                <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">LMIA Volume</p>
+                                <h3 className="text-xl font-bold text-slate-900">
                                     {statsLoading ? '...' : (wageStats ? `${wageStats.sample_size}+` : '---')}
                                 </h3>
                                 <Briefcase className="absolute top-4 right-4 w-8 h-8 text-brand-500/10" />
                             </Card>
 
-                            <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-[1.5rem]">
-                                <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Classification</p>
-                                <h3 className="text-xl font-black text-brand-600 truncate">
+                            <Card className="border-none shadow-md bg-white p-5 relative overflow-hidden rounded-xl">
+                                <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">Classification</p>
+                                <h3 className="text-xl font-bold text-brand-600 truncate">
                                     TEER {localExtractedData.noc_teer || '1'}
                                 </h3>
                                 <Star className="absolute top-4 right-4 w-8 h-8 text-brand-500/10" />
                             </Card>
 
-                            <Card className="border-none shadow-md bg-slate-800 text-white p-5 relative overflow-hidden rounded-[1.5rem]">
-                                <p className="text-[9px] font-black text-white/50 uppercase mb-2">Placement</p>
-                                <h3 className="text-xl font-black">OPTIMAL</h3>
+                            <Card className="border-none shadow-md bg-slate-800 text-white p-5 relative overflow-hidden rounded-xl">
+                                <p className="text-[9px] font-bold text-white/50 uppercase mb-2">Placement</p>
+                                <h3 className="text-xl font-bold">OPTIMAL</h3>
                                 <Zap className="absolute top-4 right-4 w-8 h-8 text-brand-400/20" />
                             </Card>
                         </div>
@@ -716,19 +723,19 @@ export default function ReportClient({ strategy, agency, client, applications, s
                      <div className="lg:col-span-8 space-y-8">
                             {/* Strategic Ticker / Pulse */}
                             <div className="space-y-3">
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
                                     <Zap className="w-3.5 h-3.5 text-brand-600 animate-pulse" />
                                     Activity Pulse
                                 </h3>
-                                <div className="bg-white border border-slate-100 rounded-[1.5rem] p-4 shadow-sm">
+                                <div className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
                                      <div className="flex gap-3 overflow-x-auto scrollbar-hide py-1">
                                         {outreachLog.length > 0 ? outreachLog.map((log, i) => (
                                             <div key={i} className="flex flex-col shrink-0 bg-slate-50 p-3 rounded-xl min-w-[160px] border border-slate-100">
                                                <div className="flex items-center justify-between mb-1.5">
-                                                    <span className="text-[8px] font-black text-brand-600 uppercase">Live Task</span>
+                                                    <span className="text-[8px] font-bold text-brand-600 uppercase">Live Task</span>
                                                     <span className="text-[8px] text-slate-400 font-bold">{log.timestamp ? format(new Date(log.timestamp), 'MMM d') : 'Live'}</span>
                                                </div>
-                                               <span className="text-[11px] font-black text-slate-900 truncate leading-none">{log.employer}</span>
+                                               <span className="text-[11px] font-bold text-slate-900 truncate leading-none">{log.employer}</span>
                                                <span className="text-[9px] text-slate-500 font-bold uppercase mt-1">{log.type}</span>
                                             </div>
                                         )) : (
@@ -743,14 +750,14 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="p-5 rounded-2xl bg-brand-900 text-white relative overflow-hidden shadow-xl shadow-brand-900/10"
+                                    className="p-5 rounded-xl bg-brand-900 text-white relative overflow-hidden shadow-xl shadow-brand-900/10"
                                 >
                                     <div className="relative z-10">
                                         <div className="flex items-center gap-2 mb-3">
                                             <div className="p-1.5 bg-brand-500 rounded-lg">
                                                 <Sparkles className="w-4 h-4 text-white" />
                                             </div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-300">Advisor Coaching Hub</span>
+                                            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-300">Advisor Coaching Hub</span>
                                         </div>
                                         <div className="prose prose-sm prose-invert max-w-none">
                                             {strategy.advisor_notes.split('\n').map((para: string, i: number) => (
@@ -769,11 +776,11 @@ export default function ReportClient({ strategy, agency, client, applications, s
 
                             {/* Main Roadmap */}
                             <div className="space-y-4">
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
                                     <Sparkles className="w-3.5 h-3.5 text-brand-600" />
                                     Placement Roadmap
                                 </h3>
-                                <Card className="border-none shadow-lg bg-white overflow-hidden rounded-[1.5rem]">
+                                <Card className="border-none shadow-lg bg-white overflow-hidden rounded-xl">
                                     <CardContent className="p-6">
                                         {roadmap.length > 0 ? (
                                             <div className="relative space-y-6">
@@ -787,7 +794,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                                             {step.completed ? <CheckCircle2 className="w-3 h-3" /> : <div className="w-1.5 h-1.5 rounded-full bg-slate-100" />}
                                                         </div>
                                                         <div className="pt-0.5">
-                                                            <h4 className={cn("text-sm font-black tracking-tight", step.completed ? "text-slate-900" : "text-slate-400")}>{step.title}</h4>
+                                                            <h4 className={cn("text-sm font-bold tracking-tight", step.completed ? "text-slate-900" : "text-slate-400")}>{step.title}</h4>
                                                             <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5 font-medium">{step.description}</p>
                                                         </div>
                                                     </div>
@@ -796,7 +803,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                         ) : (
                                             <div className="py-12 text-center opacity-30">
                                                 <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-                                                <p className="text-[9px] font-black uppercase tracking-widest">Compiling roadmap...</p>
+                                                <p className="text-[9px] font-bold uppercase tracking-widest">Compiling roadmap...</p>
                                             </div>
                                         )}
                                     </CardContent>
@@ -806,15 +813,15 @@ export default function ReportClient({ strategy, agency, client, applications, s
                             {/* Coaching / Questions (Compact) */}
                             {interviewQuestions.length > 0 && (
                                 <div className="space-y-4">
-                                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+                                    <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
                                         <MessageSquareQuote className="w-3.5 h-3.5 text-indigo-500" />
                                         Interview Prep
                                     </h3>
                                     <div className="space-y-2">
                                         {interviewQuestions.map((q: any, idx: number) => (
-                                            <div key={idx} className="p-4 rounded-2xl bg-slate-900 text-white border border-slate-800 shadow-lg group hover:border-brand-500/30 transition-all">
+                                            <div key={idx} className="p-4 rounded-xl bg-slate-900 text-white border border-slate-800 shadow-lg group hover:border-brand-500/30 transition-all">
                                                 <div className="flex gap-3">
-                                                    <div className="shrink-0 w-6 h-6 rounded-lg bg-brand-500/20 flex items-center justify-center text-brand-400 text-[10px] font-black border border-brand-500/20 group-hover:bg-brand-500 group-hover:text-white transition-colors">
+                                                    <div className="shrink-0 w-6 h-6 rounded-lg bg-brand-500/20 flex items-center justify-center text-brand-400 text-[10px] font-bold border border-brand-500/20 group-hover:bg-brand-500 group-hover:text-white transition-colors">
                                                         {idx + 1}
                                                     </div>
                                                     <div className="space-y-1 pt-0.5">
@@ -832,25 +839,25 @@ export default function ReportClient({ strategy, agency, client, applications, s
                      <div className="lg:col-span-4 space-y-8">
                             {/* Detailed Recruitment Pipeline */}
                             <div className="space-y-4">
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
                                     <Trophy className="w-3.5 h-3.5 text-brand-600" />
                                     Applications
                                 </h3>
                                 <div className="space-y-2">
                                     {applications.length > 0 ? applications.slice(0, 5).map((app: any) => (
-                                        <div key={app.id} className="bg-white border border-slate-100 p-3.5 rounded-2xl flex items-center justify-between shadow-sm hover:border-brand-100 transition-all">
+                                        <div key={app.id} className="bg-white border border-slate-100 p-3.5 rounded-xl flex items-center justify-between shadow-sm hover:border-brand-100 transition-all">
                                             <div className="flex items-center gap-3 overflow-hidden">
                                                 <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
                                                 <div className="overflow-hidden">
-                                                    <h4 className="text-[10px] font-black text-slate-900 uppercase truncate leading-none mb-1">{app.job_title}</h4>
+                                                    <h4 className="text-[10px] font-bold text-slate-900 uppercase truncate leading-none mb-1">{app.job_title}</h4>
                                                     <p className="text-[9px] text-slate-400 font-bold uppercase truncate">{app.employer_name}</p>
                                                 </div>
                                             </div>
-                                            <Badge className="bg-slate-100 text-slate-600 border-none text-[8px] font-black uppercase px-2 py-0.5 rounded-full">{app.status}</Badge>
+                                            <Badge className="bg-slate-100 text-slate-600 border-none text-[8px] font-bold uppercase px-2 py-0.5 rounded-xl">{app.status}</Badge>
                                         </div>
                                     )) : (
-                                        <div className="text-center py-6 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                                           <p className="text-[9px] uppercase font-black text-slate-400">Pipeline Empty</p>
+                                        <div className="text-center py-6 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                                           <p className="text-[9px] uppercase font-bold text-slate-400">Pipeline Empty</p>
                                         </div>
                                     )}
                                 </div>
@@ -858,11 +865,11 @@ export default function ReportClient({ strategy, agency, client, applications, s
 
                             {/* Active Checklist */}
                             <div className="space-y-4">
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
                                     <FileText className="w-3.5 h-3.5 text-indigo-600" />
                                     Checklist
                                 </h3>
-                                <div className="bg-white rounded-[1.5rem] p-4 shadow-md border border-slate-50 space-y-2">
+                                <div className="bg-white rounded-xl p-4 shadow-md border border-slate-50 space-y-2">
                                     {checklist.slice(0, 6).map((item: any, i: number) => (
                                         <div key={i} className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-transparent hover:border-brand-100 transition-all">
                                             <div className="flex items-center gap-3">
@@ -872,9 +879,9 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                                 )}>
                                                     {item.status === 'verified' && <CheckCircle2 className="w-2.5 h-2.5" />}
                                                 </div>
-                                                <span className={cn("text-[10px] font-black uppercase", item.status === 'verified' ? "text-slate-800" : "text-slate-500")}>{item.label || item.name}</span>
+                                                <span className={cn("text-[10px] font-bold uppercase", item.status === 'verified' ? "text-slate-800" : "text-slate-500")}>{item.label || item.name}</span>
                                             </div>
-                                            <span className="text-[8px] font-black uppercase text-slate-400">{item.status || 'Pending'}</span>
+                                            <span className="text-[8px] font-bold uppercase text-slate-400">{item.status || 'Pending'}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -882,19 +889,19 @@ export default function ReportClient({ strategy, agency, client, applications, s
 
                             {/* Trust Badges Employer Section */}
                             <div className="space-y-4">
-                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
+                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 flex items-center gap-2">
                                     <Building2 className="w-3.5 h-3.5 text-brand-600" />
                                     Target Employers
                                 </h3>
                                 <div className="grid grid-cols-1 gap-2.5">
                                     {targetEmployers.slice(0, 4).map((emp: string, i: number) => (
-                                        <div key={i} className="bg-white p-3.5 rounded-2xl flex items-center gap-3 border border-slate-100 hover:border-brand-100 transition-all shadow-sm">
+                                        <div key={i} className="bg-white p-3.5 rounded-xl flex items-center gap-3 border border-slate-100 hover:border-brand-100 transition-all shadow-sm">
                                             <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center shrink-0">
                                                 <Building2 className="w-4 h-4 text-slate-400" />
                                             </div>
                                             <div className="overflow-hidden">
-                                                <h4 className="text-[10px] font-black text-slate-800 uppercase truncate leading-none mb-1">{emp}</h4>
-                                                <div className="flex items-center gap-1 text-[8px] font-black text-emerald-600">
+                                                <h4 className="text-[10px] font-bold text-slate-800 uppercase truncate leading-none mb-1">{emp}</h4>
+                                                <div className="flex items-center gap-1 text-[8px] font-bold text-emerald-600">
                                                     <Shield className="w-2.5 h-2.5" /> VERIFIED
                                                 </div>
                                             </div>
@@ -915,7 +922,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden"
+                            className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden"
                         >
                             <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -923,7 +930,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                         <FolderOpen className="w-4 h-4 text-indigo-600" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">My Documents</h3>
+                                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-tight">My Documents</h3>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Requested by your advisor</p>
                                     </div>
                                 </div>
@@ -945,25 +952,25 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                 {docsLoading ? (
                                     <div className="text-center py-8">
                                         <Loader2 className="w-6 h-6 animate-spin text-slate-300 mx-auto mb-2" />
-                                        <p className="text-[10px] font-black text-slate-400 uppercase">Loading...</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase">Loading...</p>
                                     </div>
                                 ) : documents.length === 0 ? (
                                     <div className="text-center py-10">
                                         <FolderOpen className="w-10 h-10 text-slate-200 mx-auto mb-3" />
-                                        <p className="text-sm font-black text-slate-400 uppercase tracking-tight">No Documents Requested</p>
+                                        <p className="text-sm font-bold text-slate-400 uppercase tracking-tight">No Documents Requested</p>
                                         <p className="text-[11px] text-slate-400 mt-1">Your advisor hasn't requested any documents yet.</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-3">
                                         {documents.map((doc: any) => (
-                                            <div key={doc.id} className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                            <div key={doc.id} className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
                                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                                     <div className="w-9 h-9 bg-white rounded-xl border border-slate-100 flex items-center justify-center shrink-0">
                                                         <FileText className="w-4 h-4 text-slate-400" />
                                                     </div>
                                                     <div className="min-w-0">
-                                                        <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight truncate">{doc.name}</p>
-                                                        {doc.required && <span className="text-[9px] font-black text-red-500">Required</span>}
+                                                        <p className="text-[11px] font-bold text-slate-900 uppercase tracking-tight truncate">{doc.name}</p>
+                                                        {doc.required && <span className="text-[9px] font-bold text-red-500">Required</span>}
                                                         {doc.request_note && <p className="text-[10px] text-slate-500 mt-0.5 truncate">{doc.request_note}</p>}
                                                         {doc.status === 'rejected' && doc.rejection_reason && (
                                                             <p className="text-[10px] font-bold text-red-600 mt-1">Rejected: {doc.rejection_reason}</p>
@@ -973,24 +980,24 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                                 <div className="flex items-center gap-2 shrink-0">
                                                     {/* Status Badge */}
                                                     {doc.status === 'approved' && (
-                                                        <span className="flex items-center gap-1 text-[9px] font-black text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
+                                                        <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg">
                                                             <CheckCircle2 className="w-3 h-3" /> Approved
                                                         </span>
                                                     )}
                                                     {doc.status === 'uploaded' && (
-                                                        <span className="flex items-center gap-1 text-[9px] font-black text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded-lg">
+                                                        <span className="flex items-center gap-1 text-[9px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded-lg">
                                                             <Loader2 className="w-3 h-3" /> Under Review
                                                         </span>
                                                     )}
                                                     {doc.status === 'rejected' && (
-                                                        <span className="flex items-center gap-1 text-[9px] font-black text-red-700 bg-red-50 border border-red-100 px-2 py-1 rounded-lg">
+                                                        <span className="flex items-center gap-1 text-[9px] font-bold text-red-700 bg-red-50 border border-red-100 px-2 py-1 rounded-lg">
                                                             <XCircle className="w-3 h-3" /> Rejected
                                                         </span>
                                                     )}
                                                     {/* Upload Button */}
                                                     {(doc.status === 'requested' || doc.status === 'rejected') && (
                                                         <label className={cn(
-                                                            "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase cursor-pointer transition-all",
+                                                            "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase cursor-pointer transition-all",
                                                             "bg-brand-600 hover:bg-brand-700 text-white",
                                                             uploadingDocId === doc.id && "opacity-60 pointer-events-none"
                                                         )}>
@@ -1024,7 +1031,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden"
+                            className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden"
                         >
                             <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -1032,7 +1039,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                         <MessageSquare className="w-4 h-4 text-brand-600" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">Message Your Advisor</h3>
+                                        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-tight">Message Your Advisor</h3>
                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Secure • End-to-End</p>
                                     </div>
                                 </div>
@@ -1061,7 +1068,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                     ) : messages.length === 0 ? (
                                         <div className="text-center py-8">
                                             <MessageSquare className="w-8 h-8 text-slate-200 mx-auto mb-2" />
-                                            <p className="text-[11px] font-black text-slate-400 uppercase">No Messages Yet</p>
+                                            <p className="text-[11px] font-bold text-slate-400 uppercase">No Messages Yet</p>
                                             <p className="text-[10px] text-slate-400 mt-1">Send your advisor a message below.</p>
                                         </div>
                                     ) : (
@@ -1074,7 +1081,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                                                 )}
                                             >
                                                 <div className={cn(
-                                                    "max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed",
+                                                    "max-w-[80%] px-4 py-3 rounded-xl text-sm leading-relaxed",
                                                     msg.sender_type === 'candidate'
                                                         ? "bg-brand-600 text-white rounded-br-sm"
                                                         : "bg-slate-100 text-slate-800 rounded-bl-sm"
@@ -1125,13 +1132,13 @@ export default function ReportClient({ strategy, agency, client, applications, s
                     <div className="flex items-center gap-3">
                         <img src="/job_maze_favicon_.svg" alt="JobMaze" className="h-7 w-7 object-contain" />
                         <div className="h-4 w-[1px] bg-slate-200" />
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">JobMaze Portal</span>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">JobMaze Portal</span>
                     </div>
 
                     <div className="flex items-center gap-4">
                         <div className="hidden sm:flex flex-col items-end">
-                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Partner</span>
-                            <span className="text-[10px] font-black text-slate-900 uppercase truncate max-w-[120px]">{agency.company_name}</span>
+                            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Partner</span>
+                            <span className="text-[10px] font-bold text-slate-900 uppercase truncate max-w-[120px]">{agency.company_name}</span>
                         </div>
                         <div className="h-4 w-[1px] bg-slate-200 hidden sm:block" />
                         <div className="flex items-center gap-2">
@@ -1153,7 +1160,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                     <div className="space-y-6 max-w-sm">
                         <div className="flex items-center gap-3">
                             <img src="/job_maze_favicon_.svg" alt="JobMaze" className="h-8 w-8 opacity-60 grayscale hover:opacity-100 transition-opacity" />
-                            <span className="text-xs font-black text-slate-400 uppercase tracking-widest">JobMaze</span>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">JobMaze</span>
                         </div>
                         <p className="text-[10px] font-medium text-slate-400 leading-relaxed">
                             JobMaze is an AI-powered talent intelligence platform enabling agencies to accelerate sponsorship workflows and candidate placement tracking.
@@ -1162,20 +1169,20 @@ export default function ReportClient({ strategy, agency, client, applications, s
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-12">
                         <div className="space-y-3">
-                            <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Compliance</h4>
+                            <h4 className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Compliance</h4>
                             <div className="flex flex-col gap-2">
                                 <a href="/disclaimer" className="text-[10px] font-bold text-slate-400 hover:text-brand-600 transition-colors">Legal Disclaimer</a>
                                 <a href="/privacy-policy" className="text-[10px] font-bold text-slate-400 hover:text-brand-600 transition-colors">Privacy Policy</a>
                             </div>
                         </div>
                         <div className="space-y-3">
-                            <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Verification</h4>
+                            <h4 className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Verification</h4>
                             <p className="text-[10px] font-bold text-slate-400 leading-tight">
                                 This report is verified and issued by {agency.company_name}.
                             </p>
                         </div>
                         <div className="space-y-1">
-                             <p className="text-[10px] font-black text-slate-900 uppercase">© {new Date().getFullYear()}</p>
+                             <p className="text-[10px] font-bold text-slate-900 uppercase">© {new Date().getFullYear()}</p>
                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">JobMaze Portal</p>
                         </div>
                     </div>
@@ -1184,9 +1191,9 @@ export default function ReportClient({ strategy, agency, client, applications, s
 
             {/* Gap Update Dialog with Enhanced UI (Compact) */}
             <Dialog open={!!activeGap} onOpenChange={() => setActiveGap(null)}>
-                <DialogContent className="sm:max-w-[400px] rounded-[1.5rem] border-none shadow-2xl p-8 bg-white">
+                <DialogContent className="sm:max-w-[400px] rounded-xl border-none shadow-2xl p-8 bg-white">
                     <DialogHeader className="text-left">
-                        <DialogTitle className="text-xl font-black text-slate-900 tracking-tight uppercase leading-none mb-1">
+                        <DialogTitle className="text-xl font-bold text-slate-900 tracking-tight uppercase leading-none mb-1">
                              Update <span className="text-brand-600">{activeGap?.label}</span>
                         </DialogTitle>
                         <DialogDescription className="text-slate-500 font-medium text-[11px] pt-1 leading-relaxed">
@@ -1195,7 +1202,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                     </DialogHeader>
                     <div className="space-y-4 pt-6 pb-4">
                         <div className="space-y-1.5">
-                            <Label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-0.5">{activeGap?.label}</Label>
+                            <Label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-0.5">{activeGap?.label}</Label>
                             {activeGap?.type === 'select' ? (
                                 <Select value={gapValue} onValueChange={setGapValue}>
                                     <SelectTrigger className="h-12 bg-slate-50 border border-slate-100 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 rounded-xl font-bold transition-all">
@@ -1224,7 +1231,7 @@ export default function ReportClient({ strategy, agency, client, applications, s
                     </div>
                     <DialogFooter className="pt-2">
                         <Button 
-                            className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-black uppercase tracking-widest text-[11px] shadow-lg transition-all active:scale-[0.98]"
+                            className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-lg transition-all active:scale-[0.98]"
                             onClick={handleUpdateGap}
                             disabled={!gapValue || isSaving}
                         >

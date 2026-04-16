@@ -301,7 +301,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                     <Input
                                         value={editedClient.full_name || ''}
                                         onChange={(e) => setEditedClient({ ...editedClient, full_name: e.target.value })}
-                                        className="h-8 text-base font-bold w-64 bg-white/50 border-brand-100 focus:border-brand-500 transition-all rounded-lg"
+                                        className="h-8 text-base font-bold w-64 bg-white/50 border-brand-100 focus:border-brand-500 transition-all rounded-xl"
                                         placeholder="Full Name"
                                     />
                                 </div>
@@ -318,7 +318,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                     onValueChange={(val) => updateClient({ id: client.id, updates: { status: val } })}
                                 >
                                     <SelectTrigger className={cn(
-                                        "h-6 min-w-[120px] text-[10px] font-bold uppercase tracking-wider rounded-lg border px-2.5 transition-all shadow-none focus:ring-0",
+                                        "h-6 min-w-[120px] text-[10px] font-bold uppercase tracking-wider rounded-xl border px-2.5 transition-all shadow-none focus:ring-0",
                                         STATUS_CONFIG[client.status as PipelineStatus]?.bg || 'bg-gray-50',
                                         STATUS_CONFIG[client.status as PipelineStatus]?.color || 'text-gray-600',
                                         STATUS_CONFIG[client.status as PipelineStatus]?.border || 'border-gray-200'
@@ -329,7 +329,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                         {PIPELINE_STATUSES.map(status => (
                                             <SelectItem key={status} value={status} className="text-[11px] font-bold uppercase tracking-tight py-2 cursor-pointer">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={cn("w-1.5 h-1.5 rounded-full", STATUS_CONFIG[status as PipelineStatus].dot)} />
+                                                    <div className={cn("w-1.5 h-1.5 rounded-xl", STATUS_CONFIG[status as PipelineStatus].dot)} />
                                                     {STATUS_CONFIG[status as PipelineStatus].label}
                                                 </div>
                                             </SelectItem>
@@ -349,7 +349,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                     rows={3}
                                 />
                             ) : (
-                                <p className="text-gray-500 text-xs leading-relaxed line-clamp-2 italic">
+                                <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">
                                     "{data.bio || "No professional summary available."}"
                                 </p>
                             )}
@@ -357,7 +357,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
 
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-y-2 gap-x-6 pt-1">
                             <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-600">
-                                <div className="w-6 h-6 rounded-full bg-brand-50 flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-xl bg-brand-50 flex items-center justify-center">
                                     <Mail className="w-3.5 h-3.5 text-brand-600" />
                                 </div>
                                 {isEditing ? (
@@ -373,7 +373,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                             </div>
 
                             <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-600">
-                                <div className="w-6 h-6 rounded-full bg-brand-50 flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-xl bg-brand-50 flex items-center justify-center">
                                     <Phone className="w-3.5 h-3.5 text-brand-600" />
                                 </div>
                                 {isEditing ? (
@@ -389,7 +389,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                             </div>
 
                             <div className="flex items-center gap-2 text-[11px] font-semibold text-gray-600">
-                                <div className="w-6 h-6 rounded-full bg-brand-50 flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-xl bg-brand-50 flex items-center justify-center">
                                     <MapPin className="w-3.5 h-3.5 text-brand-600" />
                                 </div>
                                 {isEditing ? (
@@ -496,37 +496,37 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
             {/* CASE MANAGEMENT HIGHER LEVEL TABS */}
             <Tabs defaultValue="profile" className="w-full">
                 <TabsList className="bg-gray-100/50 p-1 rounded-xl w-full justify-start gap-1 mb-4 border border-gray-100 h-11">
-                    <TabsTrigger value="profile" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="profile" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <FileUser className="w-3.5 h-3.5" /> Profile
                     </TabsTrigger>
-                    <TabsTrigger value="matches" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="matches" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <Target className="w-3.5 h-3.5" /> Lab
                     </TabsTrigger>
-                    <TabsTrigger value="coaching" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="coaching" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <MessageSquareQuote className="w-3.5 h-3.5" /> Coaching
                     </TabsTrigger>
-                    <TabsTrigger value="track" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="track" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <LineChart className="w-3.5 h-3.5" /> Track
                     </TabsTrigger>
-                    <TabsTrigger value="marketing" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="marketing" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <Send className="w-3.5 h-3.5" /> Marketing
                     </TabsTrigger>
-                    <TabsTrigger value="alerts" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="alerts" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <Bell className="w-3.5 h-3.5" /> Alerts
                     </TabsTrigger>
-                    <TabsTrigger value="strategy" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="strategy" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Strategy
                     </TabsTrigger>
-                    <TabsTrigger value="calculators" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="calculators" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <Calculator className="w-3.5 h-3.5" /> Calculators
                     </TabsTrigger>
-                    <TabsTrigger value="checklist" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="checklist" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <ClipboardList className="w-3.5 h-3.5" /> Checklist
                     </TabsTrigger>
-                    <TabsTrigger value="vault" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="vault" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <FolderOpen className="w-3.5 h-3.5" /> Vault
                     </TabsTrigger>
-                    <TabsTrigger value="messages" className="flex-1 max-w-[140px] rounded-lg h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
+                    <TabsTrigger value="messages" className="flex-1 max-w-[140px] rounded-xl h-9 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm font-bold text-[11px] uppercase tracking-tight transition-all gap-1.5 text-gray-500">
                         <MessageSquare className="w-3.5 h-3.5" /> Messages
                     </TabsTrigger>
                 </TabsList>
@@ -534,16 +534,16 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                 <TabsContent value="profile" className="mt-0 focus-visible:outline-none">
                     <Tabs defaultValue="overview" className="w-full">
                         <TabsList className="bg-transparent h-auto p-0 w-full justify-start gap-2 mb-4">
-                            <TabsTrigger value="overview" className="rounded-lg h-8 px-3 data-[state=active]:bg-brand-600 data-[state=active]:text-white font-bold text-[10px] uppercase tracking-wider transition-all gap-1.5 border border-transparent data-[state=active]:border-brand-600 text-gray-400">
+                            <TabsTrigger value="overview" className="rounded-xl h-8 px-3 data-[state=active]:bg-brand-600 data-[state=active]:text-white font-bold text-[10px] uppercase tracking-wider transition-all gap-1.5 border border-transparent data-[state=active]:border-brand-600 text-gray-400">
                                 Overview
                             </TabsTrigger>
-                            <TabsTrigger value="experience" className="rounded-lg h-8 px-3 data-[state=active]:bg-brand-600 data-[state=active]:text-white font-bold text-[10px] uppercase tracking-wider transition-all gap-1.5 border border-transparent data-[state=active]:border-brand-600 text-gray-400">
+                            <TabsTrigger value="experience" className="rounded-xl h-8 px-3 data-[state=active]:bg-brand-600 data-[state=active]:text-white font-bold text-[10px] uppercase tracking-wider transition-all gap-1.5 border border-transparent data-[state=active]:border-brand-600 text-gray-400">
                                 History
                             </TabsTrigger>
-                            <TabsTrigger value="education" className="rounded-lg h-8 px-3 data-[state=active]:bg-brand-600 data-[state=active]:text-white font-bold text-[10px] uppercase tracking-wider transition-all gap-1.5 border border-transparent data-[state=active]:border-brand-600 text-gray-400">
+                            <TabsTrigger value="education" className="rounded-xl h-8 px-3 data-[state=active]:bg-brand-600 data-[state=active]:text-white font-bold text-[10px] uppercase tracking-wider transition-all gap-1.5 border border-transparent data-[state=active]:border-brand-600 text-gray-400">
                                 Education
                             </TabsTrigger>
-                            <TabsTrigger value="skills" className="rounded-lg h-8 px-3 data-[state=active]:bg-brand-600 data-[state=active]:text-white font-bold text-[10px] uppercase tracking-wider transition-all gap-1.5 border border-transparent data-[state=active]:border-brand-600 text-gray-400">
+                            <TabsTrigger value="skills" className="rounded-xl h-8 px-3 data-[state=active]:bg-brand-600 data-[state=active]:text-white font-bold text-[10px] uppercase tracking-wider transition-all gap-1.5 border border-transparent data-[state=active]:border-brand-600 text-gray-400">
                                 Skills
                             </TabsTrigger>
                         </TabsList>
@@ -557,7 +557,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                             animate={{ opacity: 1, y: 0 }}
                                             className="p-4 bg-brand-50/50 border border-brand-100 rounded-xl flex items-center gap-4 group"
                                         >
-                                            <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center shrink-0">
+                                            <div className="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center shrink-0">
                                                 <Sparkles className="w-5 h-5 text-brand-600 animate-pulse" />
                                             </div>
                                             <div className="flex-1 min-w-0">
@@ -567,7 +567,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                                     <span className="font-bold text-brand-600"> Canadian-standard resume</span> using our AI tool above.
                                                 </p>
                                             </div>
-                                            <Badge variant="outline" className="bg-white text-brand-600 border-brand-200 text-[10px] font-black uppercase">Action Needed</Badge>
+                                            <Badge variant="outline" className="bg-white text-brand-600 border-brand-200 text-[10px] font-bold uppercase rounded-xl">Action Needed</Badge>
                                         </motion.div>
                                     )}
                                     <ClientProfileGaps client={client} />
@@ -581,15 +581,15 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                         </div>
 
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                            <div className="p-3 bg-gray-50 border border-gray-100 rounded-lg">
+                                            <div className="p-3 bg-gray-50 border border-gray-100 rounded-xl">
                                                 <p className="text-[9px] uppercase font-bold text-gray-400 tracking-wider mb-0.5">Exp. Total</p>
                                                 <p className="text-sm font-bold text-gray-800">{data.experience_years || data.experience || '0'} Years</p>
                                             </div>
-                                            <div className="p-3 bg-gray-50 border border-gray-100 rounded-lg">
+                                            <div className="p-3 bg-gray-50 border border-gray-100 rounded-xl">
                                                 <p className="text-[9px] uppercase font-bold text-gray-400 tracking-wider mb-0.5">Top Title</p>
                                                 <p className="text-sm font-bold text-gray-800 truncate">{data.position || 'Unknown'}</p>
                                             </div>
-                                            <div className="p-3 bg-gray-50 border border-gray-100 rounded-lg">
+                                            <div className="p-3 bg-gray-50 border border-gray-100 rounded-xl">
                                                 <p className="text-[9px] uppercase font-bold text-gray-400 tracking-wider mb-0.5">Location Pref.</p>
                                                 <p className="text-sm font-bold text-gray-800 truncate">{data.location || 'Any'}</p>
                                             </div>
@@ -597,10 +597,10 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
 
                                         <div className="space-y-3">
                                             <h3 className="text-xs font-bold text-gray-900">Latest Experience Overview</h3>
-                                            <div className="p-3 border border-brand-50 bg-brand-50/10 rounded-lg relative overflow-hidden group">
+                                            <div className="p-3 border border-brand-50 bg-brand-50/10 rounded-xl relative overflow-hidden group">
                                                 <Building2 className="absolute top-[-5px] right-[-5px] w-12 h-12 text-brand-500/5 group-hover:scale-110 transition-transform duration-500" />
                                                 <p className="text-xs font-bold text-gray-900 mb-1">{data.position} <span className="text-gray-400">at</span> {data.company}</p>
-                                                <p className="text-[11px] text-gray-500 leading-relaxed italic line-clamp-3">
+                                                <p className="text-[11px] text-gray-500 leading-relaxed font-medium line-clamp-3">
                                                     {data.work_experience?.[0]?.split('): ')[1] || 'No detailed description available.'}
                                                 </p>
                                             </div>
@@ -614,11 +614,11 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                             <div className="w-5 h-5 rounded bg-brand-50 flex items-center justify-center">
                                                 <BrainCircuit className="w-3 h-3 text-brand-600" />
                                             </div>
-                                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Candidate Readiness</h3>
+                                            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Candidate Readiness</h3>
                                         </div>
                                         <Popover>
                                             <PopoverTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-brand-50 hover:text-brand-600 transition-colors">
+                                                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-xl hover:bg-brand-50 hover:text-brand-600 transition-colors">
                                                     <Info className="w-3.5 h-3.5 text-gray-300" />
                                                 </Button>
                                             </PopoverTrigger>
@@ -665,9 +665,9 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                                 />
                                             </svg>
                                             <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                                <span className="text-xl font-black text-gray-900 tracking-tighter leading-none">{score}%</span>
+                                                <span className="text-xl font-bold text-gray-900 tracking-tighter leading-none">{score}%</span>
                                                 <span className={cn(
-                                                    "text-[7px] font-black uppercase tracking-widest mt-0.5",
+                                                    "text-[7px] font-bold uppercase tracking-widest mt-0.5",
                                                     score >= 75 ? "text-green-600" : "text-gray-400"
                                                 )}>{label}</span>
                                             </div>
@@ -681,15 +681,15 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                                 { label: 'Depth', weight: 20, val: Math.min((data.work_experience?.length || 0) * 5, 20) }
                                             ].map((metric, i) => (
                                                 <div key={i} className="space-y-1">
-                                                    <div className="flex justify-between items-center text-[8px] font-black uppercase text-gray-400 tracking-tighter">
+                                                    <div className="flex justify-between items-center text-[8px] font-bold uppercase text-gray-400 tracking-tighter">
                                                         <span>{metric.label}</span>
                                                         <span>{Math.round((metric.val / metric.weight) * 100)}%</span>
                                                     </div>
-                                                    <div className="h-1 w-full bg-gray-50 rounded-full overflow-hidden border border-gray-100/50">
+                                                    <div className="h-1 w-full bg-gray-50 rounded-xl overflow-hidden border border-gray-100/50">
                                                         <motion.div
                                                             initial={{ width: 0 }}
                                                             animate={{ width: `${(metric.val / metric.weight) * 100}%` }}
-                                                            className="h-full bg-brand-600 rounded-full"
+                                                            className="h-full bg-brand-600 rounded-xl"
                                                         />
                                                     </div>
                                                 </div>
@@ -699,19 +699,19 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
 
                                     <div className="mt-auto pt-3 border-t border-gray-50">
                                         {!data.language_clb || !data.noc_teer ? (
-                                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50/50 border border-amber-100 group cursor-help transition-all hover:bg-amber-100/50">
+                                            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50/50 border border-amber-100 group cursor-help transition-all hover:bg-amber-100/50">
                                                 <AlertCircle className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
                                                 <div className="flex-1">
-                                                    <p className="text-[10px] font-black text-amber-700 uppercase tracking-tighter leading-none">Assessment Incomplete</p>
+                                                    <p className="text-[10px] font-bold text-amber-700 uppercase tracking-tighter leading-none">Assessment Incomplete</p>
                                                     <p className="text-[8px] font-bold text-amber-600 mt-0.5">Missing NOC/CLB Evidence</p>
                                                 </div>
                                                 <ChevronRight className="w-3 h-3 text-amber-300 group-hover:translate-x-0.5 transition-transform" />
                                             </div>
                                         ) : (
-                                            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-green-50/50 border border-green-100">
+                                            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-green-50/50 border border-green-100">
                                                 <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
                                                 <div className="flex-1">
-                                                    <p className="text-[10px] font-black text-green-700 uppercase tracking-tighter leading-none">High Fidelity Evaluation</p>
+                                                    <p className="text-[10px] font-bold text-green-700 uppercase tracking-tighter leading-none">High Fidelity Evaluation</p>
                                                     <p className="text-[8px] font-bold text-green-600 mt-0.5">Full Prerequisite Data Sync</p>
                                                 </div>
                                                 <BadgeCheck className="w-3 h-3 text-green-500" />
@@ -729,7 +729,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                     <Button
                                         size="sm"
                                         variant="outline"
-                                        className="h-8 rounded-lg border-brand-100 text-brand-600 hover:bg-brand-50 gap-1.5 text-[10px] font-bold uppercase"
+                                        className="h-8 rounded-xl border-brand-100 text-brand-600 hover:bg-brand-50 gap-1.5 text-[10px] font-bold uppercase"
                                         onClick={() => openItemEditor('work_experience')}
                                     >
                                         <Plus className="w-3.5 h-3.5" /> Add Experience
@@ -742,7 +742,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
 
                                         return (
                                             <motion.div key={i} variants={itemVariants} className="relative pl-6 group/item">
-                                                <div className="absolute left-0 top-1.5 w-3.5 h-3.5 bg-white border-2 border-brand-500 rounded-full z-10" />
+                                                <div className="absolute left-0 top-1.5 w-3.5 h-3.5 bg-white border-2 border-brand-500 rounded-xl z-10" />
                                                 <div className="space-y-1">
                                                     <div className="flex items-center justify-between gap-2">
                                                         <div className="flex items-center gap-2">
@@ -766,7 +766,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                                                 </Button>
                                                             </div>
                                                         </div>
-                                                        <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-50 rounded text-gray-400">{date}</span>
+                                                        <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-50 rounded-xl text-gray-400">{date}</span>
                                                     </div>
                                                     <p className="text-[11px] font-bold text-brand-600/80">{company}</p>
                                                     <p className="text-[10px] text-gray-500 leading-normal line-clamp-4 pt-1">
@@ -785,11 +785,11 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
 
                         <TabsContent value="education">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Academic Background</h3>
+                                <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Academic Background</h3>
                                 <Button
                                     size="sm"
                                     variant="outline"
-                                    className="h-8 rounded-lg border-brand-100 text-brand-600 hover:bg-brand-50 gap-1.5 text-[10px] font-bold uppercase"
+                                    className="h-8 rounded-xl border-brand-100 text-brand-600 hover:bg-brand-50 gap-1.5 text-[10px] font-bold uppercase"
                                     onClick={() => openItemEditor('education')}
                                 >
                                     <Plus className="w-3.5 h-3.5" /> Add Education
@@ -801,7 +801,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
 
                                     return (
                                         <Card key={i} className="p-4 border-gray-100 rounded-xl shadow-sm hover:border-brand-100 transition-all flex gap-3 h-fit group/edu relative">
-                                            <div className="p-2 bg-brand-50 rounded-lg text-brand-600 h-fit">
+                                            <div className="p-2 bg-brand-50 rounded-xl text-brand-600 h-fit">
                                                 <GraduationCap className="w-4 h-4" />
                                             </div>
                                             <div className="space-y-1 flex-1 min-w-0">
@@ -830,7 +830,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                                     <span className="text-[9px] font-bold text-gray-400 uppercase">{date}</span>
                                                 </div>
                                                 <p className="text-[11px] font-bold text-gray-600">{school}</p>
-                                                <p className="text-[10px] text-gray-400 leading-snug pt-1 line-clamp-2 italic">
+                                                <p className="text-[10px] text-gray-400 leading-snug pt-1 line-clamp-2">
                                                     {desc}
                                                 </p>
                                             </div>
@@ -848,19 +848,19 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                 <div className="relative z-10 space-y-5">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <h3 className="text-sm font-black text-gray-900 tracking-tight">Technical & Soft Skills</h3>
+                                            <h3 className="text-sm font-bold text-gray-900 tracking-tight">Technical & Soft Skills</h3>
                                             <p className="text-[10px] text-gray-400 font-medium">Refine the candidate's core competencies.</p>
                                         </div>
-                                        <Badge className="bg-brand-50 text-brand-600 border-none uppercase text-[8px] font-black tracking-widest px-2 py-0.5">
+                                        {/* <Badge className="bg-brand-50 text-brand-600 border-none uppercase text-[8px] font-bold tracking-widest px-2 py-0.5">
                                             Inline Edit
-                                        </Badge>
+                                        </Badge> */}
                                     </div>
 
                                     <div className="bg-gray-50/80 border border-gray-100 p-4 rounded-xl space-y-3">
                                         <div className="flex gap-2">
                                             <Input
                                                 placeholder="Add skill (e.g. AWS)..."
-                                                className="h-9 rounded-lg bg-white border-gray-200 text-xs font-bold px-3 flex-1"
+                                                className="h-9 rounded-xl bg-white border-gray-200 text-xs font-bold px-3 flex-1"
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter') {
                                                         const val = e.currentTarget.value.trim();
@@ -891,7 +891,7 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                                         input.value = '';
                                                     }
                                                 }}
-                                                className="bg-brand-600 hover:bg-brand-700 text-white rounded-lg px-4 h-9 font-black text-[10px] uppercase tracking-widest"
+                                                className="bg-brand-600 hover:bg-brand-700 text-white rounded-xl px-4 h-9 font-bold text-[10px] uppercase tracking-widest"
                                             >
                                                 Add
                                             </Button>
@@ -903,9 +903,9 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                                             {(editedClient.extracted_data?.skills || "").split(',').filter(Boolean).map((skill: string, i: number) => (
                                                 <div
                                                     key={i}
-                                                    className="group relative px-2.5 py-1.5 bg-white border border-gray-100 rounded-lg text-[10px] font-bold text-gray-700 flex items-center gap-2 shadow-sm"
+                                                    className="group relative px-2.5 py-1.5 bg-white border border-gray-100 rounded-xl text-[10px] font-bold text-gray-700 flex items-center gap-2 shadow-sm"
                                                 >
-                                                    <div className="w-1 h-1 rounded-full bg-brand-500" />
+                                                    <div className="w-1 h-1 rounded-xl bg-brand-500" />
                                                     {skill.trim()}
                                                     <button
                                                         onClick={() => {
@@ -1005,11 +1005,11 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                 <DialogContent className="sm:max-w-[400px] p-0 overflow-hidden rounded-xl border-none shadow-2xl">
                     <div className="bg-brand-600 px-5 py-4 relative">
                         <div className="relative z-10 flex items-center gap-3">
-                            <div className="w-9 h-9 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center text-white shrink-0">
+                            <div className="w-9 h-9 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white shrink-0">
                                 {editingItemType === 'work_experience' ? <History className="w-5 h-5" /> : <GraduationCap className="w-5 h-5" />}
                             </div>
                             <div>
-                                <DialogTitle className="text-base font-black text-white tracking-tight">
+                                <DialogTitle className="text-base font-bold text-white tracking-tight">
                                     {editingItemIndex >= 0 ? 'Update' : 'Add'} {editingItemType === 'work_experience' ? 'Experience' : 'Education'}
                                 </DialogTitle>
                             </div>
@@ -1019,53 +1019,53 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                     <div className="p-4 space-y-4 bg-white">
                         <div className="space-y-3">
                             <div className="space-y-1">
-                                <Label htmlFor="role" className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-1">
+                                <Label htmlFor="role" className="text-[9px] font-bold uppercase text-gray-400 tracking-widest px-1">
                                     {editingItemType === 'work_experience' ? 'Position' : 'Degree'}
                                 </Label>
                                 <Input
                                     id="role"
                                     value={itemFormData.role}
                                     onChange={(e) => setItemFormData({ ...itemFormData, role: e.target.value })}
-                                    className="h-9 rounded-lg bg-gray-50 border-gray-100 focus:bg-white text-xs font-bold"
+                                    className="h-9 rounded-xl bg-gray-50 border-gray-100 focus:bg-white text-xs font-bold"
                                     placeholder={editingItemType === 'work_experience' ? 'e.g. Manager' : 'e.g. B.Sc.'}
                                 />
                             </div>
 
                             <div className="space-y-1">
-                                <Label htmlFor="company" className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-1">
+                                <Label htmlFor="company" className="text-[9px] font-bold uppercase text-gray-400 tracking-widest px-1">
                                     {editingItemType === 'work_experience' ? 'Employer' : 'Institution'}
                                 </Label>
                                 <Input
                                     id="company"
                                     value={itemFormData.company}
                                     onChange={(e) => setItemFormData({ ...itemFormData, company: e.target.value })}
-                                    className="h-9 rounded-lg bg-gray-50 border-gray-100 focus:bg-white text-xs font-bold"
+                                    className="h-9 rounded-xl bg-gray-50 border-gray-100 focus:bg-white text-xs font-bold"
                                     placeholder={editingItemType === 'work_experience' ? 'e.g. Google' : 'e.g. Stanford'}
                                 />
                             </div>
 
                             <div className="space-y-1">
-                                <Label htmlFor="date" className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-1">
+                                <Label htmlFor="date" className="text-[9px] font-bold uppercase text-gray-400 tracking-widest px-1">
                                     Period
                                 </Label>
                                 <Input
                                     id="date"
                                     value={itemFormData.date}
                                     onChange={(e) => setItemFormData({ ...itemFormData, date: e.target.value })}
-                                    className="h-9 rounded-lg bg-gray-50 border-gray-100 focus:bg-white text-xs font-bold"
+                                    className="h-9 rounded-xl bg-gray-50 border-gray-100 focus:bg-white text-xs font-bold"
                                     placeholder="e.g. 2020 - 2023"
                                 />
                             </div>
 
                             <div className="space-y-1">
-                                <Label htmlFor="desc" className="text-[9px] font-black uppercase text-gray-400 tracking-widest px-1">
+                                <Label htmlFor="desc" className="text-[9px] font-bold uppercase text-gray-400 tracking-widest px-1">
                                     Description
                                 </Label>
                                 <Textarea
                                     id="desc"
                                     value={itemFormData.desc}
                                     onChange={(e) => setItemFormData({ ...itemFormData, desc: e.target.value })}
-                                    className="min-h-[80px] rounded-lg bg-gray-50 border-gray-100 focus:bg-white text-[11px] leading-tight p-3 resize-none"
+                                    className="min-h-[80px] rounded-xl bg-gray-50 border-gray-100 focus:bg-white text-[11px] leading-tight p-3 resize-none"
                                     placeholder="Key responsibilities..."
                                 />
                             </div>
@@ -1075,13 +1075,13 @@ export function ClientDetailView({ tab }: ClientDetailViewProps) {
                             <Button
                                 variant="ghost"
                                 onClick={() => setIsItemEditorOpen(false)}
-                                className="flex-1 h-10 rounded-lg text-xs font-bold text-gray-400"
+                                className="flex-1 h-10 rounded-xl text-xs font-bold text-gray-400"
                             >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={saveItem}
-                                className="flex-[1.5] h-10 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-black uppercase tracking-widest"
+                                className="flex-[1.5] h-10 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold uppercase tracking-widest"
                             >
                                 Save
                             </Button>

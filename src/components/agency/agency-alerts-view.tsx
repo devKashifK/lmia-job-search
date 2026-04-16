@@ -55,11 +55,11 @@ export function AgencyAlertsView() {
     if (loading) {
         return (
           <div className="animate-pulse space-y-8">
-            <div className="h-48 bg-gray-100 rounded-3xl" />
+            <div className="h-48 bg-gray-100 rounded-xl" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="h-40 bg-gray-100 rounded-2xl" />
-              <div className="h-40 bg-gray-100 rounded-2xl" />
-              <div className="h-40 bg-gray-100 rounded-2xl" />
+              <div className="h-40 bg-gray-100 rounded-xl" />
+              <div className="h-40 bg-gray-100 rounded-xl" />
+              <div className="h-40 bg-gray-100 rounded-xl" />
             </div>
           </div>
         );
@@ -68,7 +68,7 @@ export function AgencyAlertsView() {
     return (
         <div className="space-y-8">
             {/* Agency Header Section */}
-            <div className="relative overflow-hidden rounded-3xl bg-white p-8 border border-gray-200 shadow-sm">
+            <div className="relative overflow-hidden rounded-xl bg-white p-8 border border-gray-200 shadow-sm">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-transparent opacity-50" />
                 <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
@@ -83,7 +83,7 @@ export function AgencyAlertsView() {
                             Real-time tracking for new job listings that match your clients' criteria and eligibility.
                         </p>
                     </div>
-                    <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                    <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
                         <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
                             <Bell className="h-5 w-5" />
                         </div>
@@ -96,8 +96,8 @@ export function AgencyAlertsView() {
             </div>
 
             {alerts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-gray-100 rounded-3xl bg-gray-50/50">
-                    <div className="p-4 bg-white rounded-full shadow-sm mb-4">
+                <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-gray-100 rounded-xl bg-gray-50/50">
+                    <div className="p-4 bg-white rounded-xl">
                         <Target className="w-8 h-8 text-gray-300" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-1">No Active Match Monitors</h3>
@@ -116,7 +116,7 @@ export function AgencyAlertsView() {
                                 animate={{ opacity: 1, y: 0 }}
                             >
                                 <Card className={cn(
-                                    "overflow-hidden transition-all duration-300 border bg-white rounded-2xl",
+                                    "overflow-hidden transition-all duration-300 border bg-white rounded-xl",
                                     alert.is_active ? "border-brand-100 hover:shadow-lg hover:shadow-brand-500/5 hover:border-brand-200" : "opacity-60 border-gray-100 shadow-none grayscale-[50%]"
                                 )}>
                                     <CardHeader className="p-5 pb-3">
@@ -135,7 +135,7 @@ export function AgencyAlertsView() {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg shrink-0"
+                                                className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl shrink-0"
                                                 onClick={() => handleDelete(alert.id)}
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -159,7 +159,7 @@ export function AgencyAlertsView() {
                                                 Active since {format(new Date(alert.created_at), 'MMMM yyyy')}
                                             </div>
                                             <div className={cn(
-                                                "h-2 w-2 rounded-full",
+                                                "h-2 w-2 rounded-xl",
                                                 alert.is_active ? "bg-brand-500 animate-pulse" : "bg-gray-300"
                                             )} />
                                         </div>

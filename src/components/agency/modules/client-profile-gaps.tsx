@@ -250,25 +250,25 @@ export function ClientProfileGaps({ client, context = 'agency', urn, pin, onUpda
     };
 
     return (
-        <Card className="border-indigo-100 bg-indigo-50/10 shadow-none overflow-hidden h-full flex flex-col">
-            <div className="bg-white px-4 py-3 border-b border-indigo-100 flex items-center justify-between">
+        <Card className="border-brand-100 bg-brand-50 shadow-none overflow-hidden h-full flex flex-col">
+            <div className="bg-white px-4 py-3 border-b border-brand-100 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-indigo-600 rounded-lg text-white">
+                    <div className="p-1.5 bg-brand-600 rounded-xl text-white">
                         <BrainCircuit className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 block">Universal Eligibility Engine</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-900 block">Universal Eligibility Engine</span>
                         <span className="text-[8px] font-bold text-gray-400 uppercase">Live Path Simulation</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-1">
                     <div className="text-right px-2 border-r border-gray-100">
-                        <span className="text-[8px] font-black text-indigo-600 uppercase block">CRS Score</span>
-                        <span className="text-xs font-black text-gray-900">{scores.crs}</span>
+                        <span className="text-[8px] font-bold text-brand-600 uppercase block">CRS Score</span>
+                        <span className="text-xs font-bold text-gray-900">{scores.crs}</span>
                     </div>
                     <div className="text-right px-2">
-                        <span className="text-[8px] font-black text-emerald-600 uppercase block">PNP Fit</span>
-                        <span className="text-xs font-black text-gray-900 flex items-center gap-1 justify-end">
+                        <span className="text-[8px] font-bold text-emerald-600 uppercase block">PNP Fit</span>
+                        <span className="text-xs font-bold text-gray-900 flex items-center gap-1 justify-end">
                             {Math.max(scores.manitoba, scores.sinp, scores.bc)}
                             <Star className="w-2 h-2 fill-amber-500 text-amber-500" />
                         </span>
@@ -280,7 +280,7 @@ export function ClientProfileGaps({ client, context = 'agency', urn, pin, onUpda
                 {/* Scoreboard Carousel */}
                 <div className="flex gap-2 p-1 overflow-x-auto no-scrollbar pb-2">
                     {[
-                        { label: 'Express Entry', val: scores.crs, color: 'text-indigo-600', bg: 'bg-indigo-50', icon: Target },
+                        { label: 'Express Entry', val: scores.crs, color: 'text-brand-600', bg: 'bg-indigo-50', icon: Target },
                         { label: 'Manitoba', val: scores.manitoba, color: 'text-cyan-600', bg: 'bg-cyan-50', icon: MapPin },
                         { label: 'Saskatchewan', val: scores.sinp, color: 'text-orange-600', bg: 'bg-orange-50', icon: Award },
                         { label: 'BC PNP', val: scores.bc, color: 'text-emerald-600', bg: 'bg-emerald-50', icon: Target },
@@ -288,14 +288,14 @@ export function ClientProfileGaps({ client, context = 'agency', urn, pin, onUpda
                     ].map(s => (
                         <div key={s.label} className={cn("min-w-[100px] p-2 rounded-xl border flex flex-col gap-1 transition-all shadow-sm", s.bg, "border-white/50")}>
                             <s.icon className={cn("w-3 h-3", s.color)} />
-                            <span className="text-[8px] font-black uppercase tracking-tighter text-gray-500 truncate">{s.label}</span>
-                            <span className={cn("text-xs font-black", s.color)}>{s.val} <span className="text-[8px] font-bold opacity-60">PTS</span></span>
+                            <span className="text-[8px] font-bold uppercase tracking-tighter text-gray-500 truncate">{s.label}</span>
+                            <span className={cn("text-xs font-bold", s.color)}>{s.val} <span className="text-[8px] font-bold opacity-60">PTS</span></span>
                         </div>
                     ))}
                 </div>
 
                 {/* Category Selector */}
-                <div className="flex gap-1 bg-gray-100/50 p-1 rounded-lg">
+                <div className="flex gap-1 bg-gray-100/50 p-1 rounded-xl">
                     {['General', 'Education/Language', 'Experience', 'Regional/PNP'].map(cat => {
                         const count = allGaps.filter(g => g.category === cat).length;
                         return (
@@ -303,12 +303,12 @@ export function ClientProfileGaps({ client, context = 'agency', urn, pin, onUpda
                                 key={cat}
                                 onClick={() => setActiveCategory(cat)}
                                 className={cn(
-                                    "flex-1 px-1 py-1 px-2 rounded-md transition-all text-[8px] font-black uppercase tracking-tighter relative",
-                                    activeCategory === cat ? "bg-white text-indigo-600 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                                    "flex-1 px-1 py-1 px-2 rounded-xl transition-all text-[8px] font-bold uppercase tracking-tighter relative",
+                                    activeCategory === cat ? "bg-white text-brand-600 shadow-sm" : "text-gray-400 hover:text-gray-600"
                                 )}
                             >
                                 {cat.split('/')[0]}
-                                {count > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 text-white rounded-full flex items-center justify-center text-[7px] border-white border">
+                                {count > 0 && <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 text-white rounded-xl flex items-center justify-center text-[7px] border-white border">
                                     {count}
                                 </span>}
                             </button>
@@ -324,23 +324,23 @@ export function ClientProfileGaps({ client, context = 'agency', urn, pin, onUpda
                                 {editingField === field.key ? (
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center">
-                                            <Label className="text-[9px] font-black uppercase text-gray-400">{field.label}</Label>
+                                            <Label className="text-[9px] font-bold uppercase text-gray-400">{field.label}</Label>
                                             <Button size="sm" variant="ghost" onClick={() => setEditingField(null)} className="h-4 w-4 p-0 text-gray-300"><X className="w-3 h-3" /></Button>
                                         </div>
                                         <div className="flex gap-1.5">
                                             {field.type === 'number' ? (
-                                                <Input autoFocus type="number" value={value} onChange={(e) => setValue(e.target.value)} className="h-7 text-xs rounded-md border-indigo-100 focus:ring-indigo-500 shadow-none" placeholder={field.placeholder}/>
+                                                <Input autoFocus type="number" value={value} onChange={(e) => setValue(e.target.value)} className="h-7 text-xs rounded-xl border-brand-100 focus:ring-brand-500 shadow-none font-bold" placeholder={field.placeholder}/>
                                             ) : (
                                                 <Select value={value} onValueChange={setValue}>
-                                                    <SelectTrigger className="h-7 text-xs rounded-md border-indigo-100 focus:ring-indigo-500 shadow-none">
+                                                    <SelectTrigger className="h-7 text-xs rounded-xl border-brand-100 focus:ring-brand-500 shadow-none font-bold">
                                                         <SelectValue placeholder="Select..." />
                                                     </SelectTrigger>
-                                                    <SelectContent className="rounded-xl border-indigo-100 shadow-xl">
-                                                        {field.options?.map(opt => <SelectItem key={opt.value} value={opt.value} className="text-xs font-medium py-1.5">{opt.label}</SelectItem>)}
+                                                    <SelectContent className="rounded-xl border-brand-100 shadow-xl">
+                                                        {field.options?.map(opt => <SelectItem key={opt.value} value={opt.value} className="text-xs font-bold py-1.5">{opt.label}</SelectItem>)}
                                                     </SelectContent>
                                                 </Select>
                                             )}
-                                            <Button size="sm" onClick={() => handleSave(field.key)} disabled={isUpdating || !value} className="bg-indigo-600 hover:bg-indigo-700 h-7 w-7 p-0 shrink-0 shadow-lg shadow-indigo-500/20">
+                                            <Button size="sm" onClick={() => handleSave(field.key)} disabled={isUpdating || !value} className="bg-brand-600 hover:bg-indigo-700 h-7 w-7 p-0 shrink-0 shadow-lg shadow-brand-500/20">
                                                 {isUpdating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                                             </Button>
                                         </div>
@@ -348,12 +348,12 @@ export function ClientProfileGaps({ client, context = 'agency', urn, pin, onUpda
                                 ) : (
                                     <button onClick={() => { setEditingField(field.key); setValue(data[field.key]?.toString() || ''); }} className="flex items-center justify-between group text-left w-full">
                                         <div className="flex items-center gap-2">
-                                            <div className="p-1.5 bg-gray-50 rounded-lg group-hover:bg-indigo-50 transition-colors">
-                                                <Icon className="w-3 h-3 text-gray-400 group-hover:text-indigo-600" />
+                                            <div className="p-1.5 bg-gray-50 rounded-xl group-hover:bg-indigo-50 transition-colors">
+                                                <Icon className="w-3 h-3 text-gray-400 group-hover:text-brand-600" />
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">{field.label}</span>
-                                                <span className="text-[10px] font-black uppercase text-amber-600">MISSING</span>
+                                                <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">{field.label}</span>
+                                                <span className="text-[10px] font-bold uppercase text-amber-600">MISSING</span>
                                             </div>
                                         </div>
                                         <Plus className="w-3.5 h-3.5 text-gray-200 group-hover:text-amber-500 transition-colors" />

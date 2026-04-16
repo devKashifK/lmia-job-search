@@ -37,7 +37,7 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
         <motion.div 
             animate={{ rotate: 360 }}
             transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-            className="w-6 h-6 border-2 border-brand-200 border-t-brand-600 rounded-full"
+            className="w-6 h-6 border-2 border-brand-200 border-t-brand-600 rounded-xl"
         />
       </div>
     );
@@ -46,11 +46,11 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
   if (error) {
     return (
       <Card className="p-12 border-red-100 bg-red-50/10 flex flex-col items-center justify-center text-center space-y-4">
-        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
+        <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
             <AlertCircle className="w-6 h-6 text-red-400" />
         </div>
         <div>
-            <h3 className="text-sm font-bold text-gray-900 font-black uppercase tracking-tight">Sync Failed</h3>
+            <h3 className="text-sm font-bold text-gray-900 font-bold uppercase tracking-tight">Sync Failed</h3>
             <p className="text-[11px] text-red-600 max-w-xs mx-auto mb-4">{error}</p>
             <Button size="sm" onClick={refresh} className="bg-red-600 hover:bg-red-700 text-white rounded-xl h-8 px-6 text-[10px] font-bold">
                 Retry Connection
@@ -63,11 +63,11 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
   if (applications.length === 0) {
     return (
       <Card className="p-12 border-dashed border-2 border-gray-100 flex flex-col items-center justify-center text-center space-y-4">
-        <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center">
+        <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center">
             <Briefcase className="w-6 h-6 text-gray-300" />
         </div>
         <div className="space-y-1">
-            <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight">No applications tracked</h3>
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-tight">No applications tracked</h3>
             <p className="text-[11px] text-gray-400 max-w-sm mx-auto">Applications submitted via the <b>Matching Lab</b> will appear here as a Kanban pipeline.</p>
         </div>
         
@@ -76,7 +76,7 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
                 variant="outline" 
                 size="sm" 
                 onClick={refresh}
-                className="h-8 rounded-lg border-gray-200 text-[10px] font-bold text-gray-500 hover:text-brand-600 hover:border-brand-200"
+                className="h-8 rounded-xl border-gray-200 text-[10px] font-bold text-gray-500 hover:text-brand-600 hover:border-brand-200"
             >
                 <RefreshCw className={cn("w-3 h-3 mr-1.5", isLoading && "animate-spin")} />
                 Sync Pipeline
@@ -98,7 +98,7 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
         {/* Header */}
         <div className="flex items-center justify-between px-1">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Application Pipeline</h3>
-            <Badge variant="outline" className="text-[9px] font-bold text-gray-400">
+            <Badge variant="outline" className="text-[9px] font-bold text-gray-400 rounded-xl">
                 {applications.length} Total
             </Badge>
         </div>
@@ -112,15 +112,15 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
                 return (
                     <div key={status} className="flex flex-col gap-2">
                         {/* Column Header */}
-                        <div className={cn("flex items-center justify-between px-2.5 py-2 rounded-lg border", config.bg, config.border)}>
+                        <div className={cn("flex items-center justify-between px-2.5 py-2 rounded-xl border", config.bg, config.border)}>
                             <div className="flex items-center gap-1.5">
                                 <div className={cn("w-1.5 h-1.5 rounded-full", config.dotColor)} />
-                                <span className={cn("text-[10px] font-black uppercase tracking-wider", config.color)}>
+                                <span className={cn("text-[10px] font-bold uppercase tracking-wider", config.color)}>
                                     {config.label}
                                 </span>
                             </div>
                             {stageApps.length > 0 && (
-                                <span className={cn("text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center", config.bg, config.color)}>
+                                <span className={cn("text-[9px] font-bold rounded-xl", config.bg, config.color)}>
                                     {stageApps.length}
                                 </span>
                             )}
@@ -136,7 +136,7 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.95 }}
-                                        className="bg-white rounded-lg border border-gray-100 shadow-sm p-2.5 space-y-2 group hover:shadow-md transition-shadow"
+                                        className="bg-white rounded-xl border border-gray-100 shadow-sm p-2.5 space-y-2 group hover:shadow-md transition-shadow"
                                     >
                                         {/* Job Title + Actions */}
                                         <div className="flex items-start justify-between gap-1">
@@ -145,7 +145,7 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
                                             </p>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <button className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-gray-100 rounded transition-all shrink-0">
+                                                    <button className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-gray-100 rounded-xl transition-all shrink-0">
                                                         <MoreHorizontal className="w-3 h-3 text-gray-400" />
                                                     </button>
                                                 </DropdownMenuTrigger>
@@ -191,7 +191,7 @@ export function ClientApplications({ clientUrn }: ClientApplicationsProps) {
 
                             {/* Empty state per column */}
                             {stageApps.length === 0 && (
-                                <div className="flex-1 flex items-center justify-center border border-dashed border-gray-100 rounded-lg min-h-[80px]">
+                                <div className="flex-1 flex items-center justify-center border border-dashed border-gray-100 rounded-xl min-h-[80px]">
                                     <span className="text-[9px] text-gray-300 font-bold uppercase">Empty</span>
                                 </div>
                             )}

@@ -163,7 +163,7 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="p-4 border-gray-100 shadow-sm flex flex-col space-y-4">
+                <Card className="p-4 border-gray-100 shadow-sm flex flex-col space-y-4 rounded-xl">
                     <div className="flex items-center justify-between">
                         <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                             <PenLine className="w-4 h-4 text-brand-600" />
@@ -179,7 +179,7 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
                     {isEditingNotes ? (
                         <Textarea
                             placeholder="Document strategy..."
-                            className="flex-1 min-h-[200px] text-xs leading-relaxed border-gray-100 focus:ring-brand-500/20 resize-none bg-gray-50/50"
+                            className="flex-1 min-h-[200px] text-xs leading-relaxed border-gray-100 focus:ring-brand-500/20 resize-none bg-gray-50/50 rounded-xl"
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             disabled={isSavingNotes}
@@ -197,10 +197,10 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
                             )}
                         </div>
                     )}
-                    <p className="text-[9px] text-gray-400 italic">Internal only.</p>
+                    <p className="text-[9px] text-gray-400">Internal only.</p>
                 </Card>
 
-                <Card className="p-4 border-gray-100 shadow-sm space-y-4">
+                <Card className="p-4 border-gray-100 shadow-sm space-y-4 rounded-xl">
                     <div className="flex items-center justify-between">
                         <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                             <ClipboardList className="w-4 h-4 text-brand-600" />
@@ -209,13 +209,13 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
                         <div className="flex items-center gap-3">
                             {roadmap.length > 0 && (
                                 <div className="flex items-center gap-2">
-                                    <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                    <div className="w-24 h-1.5 bg-gray-100 rounded-xl overflow-hidden">
                                         <div className="h-full bg-brand-600" style={{ width: `${Math.round((roadmap.filter(s => s.completed).length / roadmap.length) * 100)}%` }} />
                                     </div>
                                     <span className="text-[10px] font-bold text-brand-600">{Math.round((roadmap.filter(s => s.completed).length / roadmap.length) * 100)}%</span>
                                 </div>
                             )}
-                            <Button onClick={handleGenerateRoadmap} disabled={isGenerating} size="sm" className="h-8 text-[10px] font-bold bg-brand-600 text-white">
+                            <Button onClick={handleGenerateRoadmap} disabled={isGenerating} size="sm" className="h-8 text-[10px] font-bold bg-brand-600 text-white rounded-xl">
                                 {isGenerating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />}
                                 AI Strategy
                             </Button>
@@ -224,7 +224,7 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
                     <div className="space-y-4 max-h-[400px] overflow-auto pr-1">
                         {roadmap.map((step, idx) => (
                             <div key={step.id} className="flex gap-3 group">
-                                <div className={cn("w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 cursor-pointer", step.completed ? "border-brand-600 bg-brand-600 text-white" : "border-gray-200 text-gray-300")} onClick={() => toggleStep(step.id)}>
+                                <div className={cn("w-6 h-6 rounded-xl border-2 flex items-center justify-center shrink-0 cursor-pointer", step.completed ? "border-brand-600 bg-brand-600 text-white" : "border-gray-200 text-gray-300")} onClick={() => toggleStep(step.id)}>
                                     {step.completed ? <BadgeCheck className="w-3.5 h-3.5" /> : <span className="text-[10px] font-bold">{idx + 1}</span>}
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -243,29 +243,29 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
                     </div>
                 </Card>
 
-                <Card className="md:col-span-2 p-6 border-brand-100 bg-brand-50/10 shadow-sm space-y-6">
+                <Card className="md:col-span-2 p-6 border-brand-100 bg-brand-50/10 shadow-sm space-y-6 rounded-xl">
                     <div className="flex items-center justify-between">
                         <div className="space-y-1">
-                            <h3 className="text-sm font-black text-gray-900 flex items-center gap-2 uppercase">
+                            <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 uppercase">
                                 <MessageSquareQuote className="w-4 h-4 text-brand-600" />
                                 Interview Coaching Hub
                             </h3>
                         </div>
-                        <Button onClick={handleGenerateInterviewPrep} disabled={isGeneratingPrep} className="bg-brand-600 text-white font-black text-[10px] uppercase h-8 px-4 rounded-xl">
+                        <Button onClick={handleGenerateInterviewPrep} disabled={isGeneratingPrep} className="bg-brand-600 text-white font-bold text-[10px] uppercase h-8 px-4 rounded-xl">
                             {isGeneratingPrep ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />}
                             Generate Prep
                         </Button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {interviewQuestions.length > 0 ? interviewQuestions.map((item, idx) => (
-                            <div key={idx} className="p-4 bg-white rounded-2xl border border-gray-100 space-y-2">
+                            <div key={idx} className="p-4 bg-white rounded-xl border border-gray-100 space-y-2">
                                 <div className="flex gap-3">
-                                    <span className="w-5 h-5 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600 text-[10px] font-black">{idx + 1}</span>
+                                    <span className="w-5 h-5 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600 text-[10px] font-bold">{idx + 1}</span>
                                     <h4 className="text-[12px] font-bold text-gray-900 leading-tight">{item.question}</h4>
                                 </div>
                                 <div className="pl-8 space-y-2">
-                                    <p className="text-[10px] text-gray-500 font-medium"><span className="font-black text-gray-900 uppercase text-[9px] mr-1">Rationale:</span>{item.rationale}</p>
-                                    <div className="bg-amber-50 rounded-lg p-2 border border-amber-100/50 flex gap-2">
+                                    <p className="text-[10px] text-gray-500 font-medium"><span className="font-bold text-gray-900 uppercase text-[9px] mr-1">Rationale:</span>{item.rationale}</p>
+                                    <div className="bg-amber-50 rounded-xl p-2 border border-amber-100/50 flex gap-2">
                                         <Lightbulb className="w-3 h-3 text-amber-600 shrink-0" />
                                         <p className="text-[9px] text-amber-800 font-bold"><span className="uppercase text-[8px] mr-1 underline">Tip:</span>{item.star_tip}</p>
                                     </div>
@@ -274,13 +274,13 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
                         )) : (
                             <div className="md:col-span-2 py-8 text-center text-gray-300">
                                 <MessageSquareQuote className="w-6 h-6 mx-auto mb-2 opacity-20" />
-                                <p className="text-[10px] uppercase font-black">Coaching Pending</p>
+                                <p className="text-[10px] uppercase font-bold">Coaching Pending</p>
                             </div>
                         )}
                     </div>
                 </Card>
 
-                <Card className="md:col-span-2 p-6 border-gray-100 bg-white shadow-sm space-y-4">
+                <Card className="md:col-span-2 p-6 border-gray-100 bg-white shadow-sm space-y-4 rounded-xl">
                     <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                         <History className="w-4 h-4 text-brand-600" />
                         Outreach Activity History
@@ -288,7 +288,7 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="border-b border-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                <tr className="border-b border-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                     <th className="pb-2">Employer</th>
                                     <th className="pb-2">Strategy Note</th>
                                     <th className="pb-2 text-right">Performed At</th>
@@ -302,7 +302,7 @@ export function ClientStrategy({ client }: ClientStrategyProps) {
                                         <td className="py-3 text-right text-gray-400">{log.timestamp ? format(new Date(log.timestamp), 'MMM dd, HH:mm') : 'Recently'}</td>
                                     </tr>
                                 )) : (
-                                    <tr><td colSpan={3} className="py-8 text-center text-[10px] text-gray-300 uppercase font-black">No outreach recorded</td></tr>
+                                    <tr><td colSpan={3} className="py-8 text-center text-[10px] text-gray-300 uppercase font-bold">No outreach recorded</td></tr>
                                 )}
                             </tbody>
                         </table>

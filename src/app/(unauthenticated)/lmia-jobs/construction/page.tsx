@@ -67,12 +67,12 @@ export default function ConstructionJobsPage() {
                 <span className="text-white">Construction</span>
               </div>
 
-              <div className="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/20 text-amber-400 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
+              <div className="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/20 text-amber-400 rounded-xl px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <HardHat className="w-3.5 h-3.5" />
                 Construction & Infrastructure Sector
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-[56px] font-black text-white leading-[1.1] tracking-tight mb-6">
+              <h1 className="text-4xl md:text-5xl lg:text-[56px] font-bold text-white leading-[1.1] tracking-tight mb-6">
                 LMIA Jobs in <span className="text-amber-400">Construction</span>
               </h1>
 
@@ -82,15 +82,15 @@ export default function ConstructionJobsPage() {
 
               <div className="grid grid-cols-3 gap-4 mb-10">
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-black text-white tracking-tight">2,500+</div>
+                  <div className="text-2xl font-bold text-white tracking-tight">2,500+</div>
                   <div className="text-[10px] text-blue-300/50 uppercase tracking-widest font-bold mt-1">Live Listings</div>
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                  <div className="text-exl font-black text-white">TEER 2-5</div>
+                  <div className="text-exl font-bold text-white">TEER 2-5</div>
                   <div className="text-[10px] text-blue-300/50 uppercase tracking-widest font-bold mt-1">Common NOCs</div>
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-black text-white">ON/AB/BC</div>
+                  <div className="text-2xl font-bold text-white">ON/AB/BC</div>
                   <div className="text-[10px] text-blue-300/50 uppercase tracking-widest font-bold mt-1">Top Provinces</div>
                 </div>
               </div>
@@ -98,7 +98,7 @@ export default function ConstructionJobsPage() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link
                   href="/search/lmia/all?category=Construction&t=lmia"
-                  className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-amber-400/20"
+                  className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 py-4 rounded-xl transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-amber-400/20"
                 >
                   Search Construction LMIA Jobs
                   <ArrowRight className="w-4 h-4" />
@@ -109,8 +109,8 @@ export default function ConstructionJobsPage() {
             {/* PREVIEW COMPONENT */}
             <div className="relative">
               <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl">
-                <div className="text-xs font-black tracking-widest uppercase text-amber-400 mb-6 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                <div className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-xl bg-amber-400 animate-pulse" />
                   Live Construction Listings
                 </div>
 
@@ -129,7 +129,7 @@ export default function ConstructionJobsPage() {
                         <div className="font-bold text-white text-sm truncate">{job.title}</div>
                         <div className="text-blue-300/40 text-[11px] font-medium mt-0.5 truncate">{job.employer} · {job.location}</div>
                       </div>
-                      <Badge className="bg-amber-400/20 text-amber-400 border border-amber-400/30 text-[10px] font-black uppercase tracking-wider">LMIA Active</Badge>
+                      <Badge className="bg-amber-400/20 text-amber-400 border border-amber-400/30 text-[10px] font-bold uppercase tracking-wider">LMIA Active</Badge>
                     </div>
                   ))}
                 </div>
@@ -149,8 +149,8 @@ export default function ConstructionJobsPage() {
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
               <div className="max-w-xl">
-                <div className="text-xs font-black text-amber-600 uppercase tracking-widest mb-3">Construction Trades</div>
-                <h2 className="text-3xl md:text-4xl font-black text-brand-900 tracking-tight leading-tight">
+                <div className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-3">Construction Trades</div>
+                <h2 className="text-3xl md:text-4xl font-bold text-brand-900 tracking-tight leading-tight">
                   Top Construction occupations with active LMIA hiring
                 </h2>
               </div>
@@ -166,7 +166,7 @@ export default function ConstructionJobsPage() {
                     {i === 0 ? <Hammer className="w-7 h-7 text-amber-500 group-hover:text-white" /> : i === 3 ? <Truck className="w-7 h-7 text-amber-500 group-hover:text-white" /> : <HardHat className="w-7 h-7 text-amber-500 group-hover:text-white" />}
                   </div>
                   <h3 className="font-bold text-brand-900 mb-2 leading-tight">{occ.title}</h3>
-                  <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-4">NOC {occ.noc} · TEER {occ.teer}</div>
+                  <div className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4">NOC {occ.noc} · TEER {occ.teer}</div>
                   <Badge variant="outline" className="border-amber-100 text-amber-600 font-bold uppercase text-[9px] tracking-[0.15em] px-3">
                     {occ.demand} Demand
                   </Badge>
@@ -195,8 +195,8 @@ export default function ConstructionJobsPage() {
         {/* BOTTOM CTA */}
         <section className="bg-brand-900 py-24 px-6 text-center border-t-4 border-amber-400">
           <div className="max-w-2xl mx-auto">
-            <div className="text-xs font-black text-amber-400 uppercase tracking-widest mb-4">Build your future</div>
-            <h2 className="text-3xl md:text-[52px] font-black text-white tracking-tight leading-tight mb-8">
+            <div className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-4">Build your future</div>
+            <h2 className="text-3xl md:text-[52px] font-bold text-white tracking-tight leading-tight mb-8">
               Search 2,500+ Construction LMIA Listings
             </h2>
             <p className="text-blue-100/70 text-lg mb-12 font-light leading-relaxed">
@@ -204,7 +204,7 @@ export default function ConstructionJobsPage() {
             </p>
             <Link
               href="/search/lmia/all?category=Construction&t=lmia"
-              className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-black px-12 py-5 rounded-full transition-all inline-flex items-center gap-3 hover:-translate-y-1 shadow-2xl shadow-amber-400/30 text-lg"
+              className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-12 py-5 rounded-xl transition-all inline-flex items-center gap-3 hover:-translate-y-1 shadow-2xl shadow-amber-400/30 text-lg"
             >
               Start Free Search
               <ArrowRight className="w-6 h-6" />

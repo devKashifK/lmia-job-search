@@ -130,7 +130,7 @@ export function ClientSimulator({ client }: ClientSimulatorProps) {
                 <Card className="lg:col-span-2 border-gray-100 shadow-sm bg-white overflow-hidden">
                     <CardHeader className="border-b border-gray-50 bg-gray-50/10 px-4 py-3">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-sm font-black text-gray-900 flex items-center gap-2 uppercase tracking-tight">
+                            <CardTitle className="text-sm font-bold text-gray-900 flex items-center gap-2 uppercase tracking-tight">
                                 <Zap className="w-4 h-4 text-brand-500 fill-brand-500" />
                                 Growth Simulator
                             </CardTitle>
@@ -138,7 +138,7 @@ export function ClientSimulator({ client }: ClientSimulatorProps) {
                                 variant="ghost"
                                 size="sm"
                                 onClick={handleReset}
-                                className="h-7 text-[10px] font-bold text-gray-400 hover:text-brand-600 px-2 rounded-lg"
+                                className="h-7 text-[10px] font-bold text-gray-400 hover:text-brand-600 px-2 rounded-xl"
                             >
                                 <RotateCcw className="w-3 h-3 mr-1" />
                                 Reset
@@ -153,7 +153,7 @@ export function ClientSimulator({ client }: ClientSimulatorProps) {
                                     <Languages className="w-3.5 h-3.5" />
                                     English Proficiency (CLB)
                                 </Label>
-                                <span className="text-xs font-black text-brand-600 bg-brand-50 px-2 py-0.5 rounded-md border border-brand-100">
+                                <span className="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-xl border border-brand-100">
                                     CLB {sim.firstLangCLB}
                                 </span>
                             </div>
@@ -228,11 +228,11 @@ export function ClientSimulator({ client }: ClientSimulatorProps) {
                             </div>
                         </div>
 
-                        <div className="pt-4 bg-brand-50/50 rounded-2xl p-4 border border-brand-100 border-dashed">
+                        <div className="pt-4 bg-brand-50/50 rounded-xl p-4 border border-brand-100 border-dashed">
                             <div className="flex items-start gap-3">
                                 <Sparkles className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
                                 <div>
-                                    <p className="text-[10px] font-black text-brand-900 uppercase tracking-tight">Growth Insight</p>
+                                    <p className="text-[10px] font-bold text-brand-900 uppercase tracking-tight">Growth Insight</p>
                                     <p className="text-[10px] text-brand-700 font-medium leading-relaxed mt-1">
                                         Improving from CLB 7 to CLB 9 can trigger high-value <b>Transferability Points</b>, often adding 50+ points to the CRS score.
                                     </p>
@@ -250,11 +250,11 @@ export function ClientSimulator({ client }: ClientSimulatorProps) {
 
                     <Card className="border-brand-100 bg-brand-50/20 overflow-hidden">
                         <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-4">
-                            <div className="p-3 bg-white rounded-2xl shadow-sm border border-brand-100 text-brand-600">
+                            <div className="p-3 bg-white rounded-xl shadow-sm border border-brand-100 text-brand-600">
                                 <TrendingUp className="w-6 h-6" />
                             </div>
                             <div className="space-y-1">
-                                <h3 className="text-lg font-black text-gray-900 tracking-tight underline decoration-brand-500 decoration-4 underline-offset-4">
+                                <h3 className="text-lg font-bold text-gray-900 tracking-tight underline decoration-brand-500 decoration-4 underline-offset-4">
                                     Simulated Potential: {simulatedScore}
                                 </h3>
                                 <p className="text-xs text-gray-500 font-medium max-w-xs mx-auto">
@@ -264,7 +264,7 @@ export function ClientSimulator({ client }: ClientSimulatorProps) {
                             <Button
                                 onClick={handleSendSimulatedRoadmap}
                                 disabled={isUpdating}
-                                className="bg-gray-900 text-white hover:bg-black rounded-xl font-black text-[10px] px-6 h-9 uppercase tracking-widest shadow-md gap-2"
+                                className="bg-gray-900 text-white hover:bg-black rounded-xl font-bold text-[10px] px-6 h-9 uppercase tracking-widest shadow-md gap-2"
                             >
                                 {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                                 {isUpdating ? 'Saving...' : 'Send Simulated Roadmap'}

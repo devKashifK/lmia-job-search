@@ -341,7 +341,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
     return (
         <div className="space-y-6">
             {/* Smart Refinement Controls */}
-            <Card className="p-4 border-gray-100 bg-gray-50/30 space-y-4">
+            <Card className="p-4 border-gray-100 bg-gray-50/30 space-y-4 rounded-xl">
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                         <Star className="w-4 h-4 text-brand-600 fill-brand-600" />
@@ -366,7 +366,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                             key={title}
                                             onClick={() => toggleFilter(selectedTitles, setSelectedTitles, title)}
                                             className={cn(
-                                                "cursor-pointer text-[10px] font-bold py-1 px-2.5 rounded-lg border transition-all",
+                                                "cursor-pointer text-[10px] font-bold py-1 px-2.5 rounded-xl border transition-all",
                                                 selectedTitles.includes(title)
                                                     ? "bg-brand-600 text-white border-brand-600"
                                                     : "bg-white text-gray-500 border-gray-200 hover:border-brand-300"
@@ -395,7 +395,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                             key={noc}
                                             onClick={() => toggleFilter(selectedNocs, setSelectedNocs, String(noc))}
                                             className={cn(
-                                                "cursor-pointer text-[10px] font-bold py-1 px-2.5 rounded-lg border transition-all",
+                                                "cursor-pointer text-[10px] font-bold py-1 px-2.5 rounded-xl border transition-all",
                                                 selectedNocs.includes(String(noc))
                                                     ? "bg-amber-500 text-white border-amber-600"
                                                     : "bg-white text-gray-500 border-gray-200 hover:border-amber-300"
@@ -448,7 +448,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                             <p className="text-[10px] font-bold text-gray-400 uppercase">Target Employers (Database Fit)</p>
                             <div className="flex flex-wrap gap-1.5 h-auto min-h-[32px] items-center">
                                 {isLoadingEmployers ? (
-                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg text-gray-400 text-[10px] animate-pulse">
+                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-xl text-gray-400 text-[10px] animate-pulse">
                                         <Loader2 className="w-3 h-3 animate-spin" /> Matching Employers...
                                     </div>
                                 ) : (
@@ -460,7 +460,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                                     key={emp}
                                                     onClick={() => toggleFilter(selectedEmployers, setSelectedEmployers, emp)}
                                                     className={cn(
-                                                        "cursor-pointer text-[10px] font-bold py-1 px-2.5 rounded-lg border transition-all",
+                                                        "cursor-pointer text-[10px] font-bold py-1 px-2.5 rounded-xl border transition-all",
                                                         selectedEmployers.includes(emp)
                                                             ? "bg-slate-700 text-white border-slate-800"
                                                             : "bg-white text-gray-500 border-gray-200 hover:border-slate-300"
@@ -482,7 +482,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                             }}
                                         />
                                         {(!suggestedEmployers.length && !extractedData.company) && (
-                                            <span className="text-[10px] text-gray-400 italic">No specific employers identified</span>
+                                            <span className="text-[10px] text-gray-400">No specific employers identified</span>
                                         )}
                                     </>
                                 )}
@@ -495,14 +495,14 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                 variant="outline"
                                 onClick={handleSaveRefinements}
                                 disabled={!isDirty || isSaving}
-                                className="flex-1 border-brand-200 text-brand-700 hover:bg-brand-50 rounded-lg text-[10px] font-bold h-8"
+                                className="flex-1 border-brand-200 text-brand-700 hover:bg-brand-50 rounded-xl text-[10px] font-bold h-8"
                             >
                                 {isSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : "Update Profile"}
                             </Button>
                             <Button
                                 size="sm"
                                 onClick={fetchMatches}
-                                className="flex-1 bg-brand-600 rounded-lg text-[10px] font-bold h-8"
+                                className="flex-1 bg-brand-600 rounded-xl text-[10px] font-bold h-8"
                             >
                                 Apply Filters
                             </Button>
@@ -534,23 +534,23 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                     setSelectedEmployerForInsight(employer);
                                     setIsInsightOpen(true);
                                 }}
-                                className="p-4 border-gray-100 hover:border-brand-300 hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group bg-white shadow-sm"
+                                className="p-4 border-gray-100 hover:border-brand-300 hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group bg-white shadow-sm rounded-xl"
                             >
                                 <div className="flex flex-col h-full justify-between gap-3">
                                     <div className="space-y-2">
                                         <div className="flex items-center justify-between">
-                                            <div className="p-1.5 bg-brand-50 rounded-lg group-hover:bg-brand-600 group-hover:text-white transition-colors">
+                                            <div className="p-1.5 bg-brand-50 rounded-xl group-hover:bg-brand-600 group-hover:text-white transition-colors">
                                                 <Building2 className="w-3.5 h-3.5" />
                                             </div>
                                             <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <span className="text-[9px] font-black text-brand-600 uppercase">View Intelligence</span>
+                                                <span className="text-[9px] font-bold text-brand-600 uppercase">View Intelligence</span>
                                                 <Sparkles className="w-3 h-3 text-brand-400 animate-pulse" />
                                             </div>
-                                            <Badge variant="outline" className="text-[9px] font-black text-brand-600 border-brand-100 bg-brand-50 shadow-sm">
+                                            <Badge variant="outline" className="text-[9px] font-bold text-brand-600 border-brand-100 bg-brand-50 shadow-sm">
                                                 HISTORIC SPONSOR
                                             </Badge>
                                         </div>
-                                        <h4 className="text-xs font-black text-gray-900 leading-tight uppercase tracking-tight">{employer}</h4>
+                                        <h4 className="text-xs font-bold text-gray-900 leading-tight uppercase tracking-tight">{employer}</h4>
                                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-1">
                                             <MapPin className="w-3 h-3" /> Potential Fit
                                         </p>
@@ -562,7 +562,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                             e.stopPropagation();
                                             handlePitch(employer);
                                         }}
-                                        className="h-8 text-[10px] font-black text-brand-600 hover:bg-brand-50 border border-brand-50 uppercase tracking-widest mt-1"
+                                        className="h-8 text-[10px] font-bold text-brand-600 hover:bg-brand-50 border border-brand-50 uppercase tracking-widest mt-1"
                                     >
                                         Pitch Client
                                     </Button>
@@ -577,17 +577,17 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                 </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-between bg-white p-3 rounded-lg border border-gray-100 shadow-sm gap-4">
-                <div className="flex flex-wrap items-center bg-gray-50 p-1 rounded-lg">
-                    <button onClick={() => setTableSource('all')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-md transition-all", tableSource === 'all' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>All Sources</button>
-                    <button onClick={() => setTableSource('trending_job')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-md transition-all", tableSource === 'trending_job' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Trending Jobs</button>
-                    <button onClick={() => setTableSource('lmia')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-md transition-all", tableSource === 'lmia' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>LMIA Records</button>
+            <div className="flex flex-col md:flex-row items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm gap-4">
+                <div className="flex flex-wrap items-center bg-gray-50 p-1 rounded-xl">
+                    <button onClick={() => setTableSource('all')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all", tableSource === 'all' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>All Sources</button>
+                    <button onClick={() => setTableSource('trending_job')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all", tableSource === 'trending_job' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Trending Jobs</button>
+                    <button onClick={() => setTableSource('lmia')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all", tableSource === 'lmia' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>LMIA Records</button>
                 </div>
 
-                <div className="flex flex-wrap items-center bg-gray-50 p-1 rounded-lg">
-                    <button onClick={() => setDateRange('today')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-md transition-all", dateRange === 'today' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Today</button>
-                    <button onClick={() => setDateRange('last_10')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-md transition-all", dateRange === 'last_10' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Last 10 Days</button>
-                    <button onClick={() => setDateRange('last_30')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-md transition-all", dateRange === 'last_30' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Last 30 Days</button>
+                <div className="flex flex-wrap items-center bg-gray-50 p-1 rounded-xl">
+                    <button onClick={() => setDateRange('today')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all", dateRange === 'today' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Today</button>
+                    <button onClick={() => setDateRange('last_10')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all", dateRange === 'last_10' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Last 10 Days</button>
+                    <button onClick={() => setDateRange('last_30')} className={cn("px-3 py-1.5 text-[10px] font-bold rounded-xl transition-all", dateRange === 'last_30' ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700")}>Last 30 Days</button>
                 </div>
             </div>
 
@@ -620,7 +620,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                     </div>
                     <div className="flex items-center gap-2">
                         {isLoading && <Loader2 className="w-3 h-3 text-brand-600 animate-spin" />}
-                        <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                        <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-xl">
                             {matches.length} matches
                         </span>
                     </div>
@@ -666,7 +666,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                 transition={{ delay: i * 0.05 }}
                             >
                                 <Card className={cn(
-                                    "p-4 hover:shadow-md transition-all group relative overflow-hidden h-full border",
+                                    "p-4 hover:shadow-md transition-all group relative overflow-hidden h-full border rounded-xl",
                                     selectedJobIds.includes(match.job_id) ? "border-brand-500 bg-brand-50/10" : "border-gray-100 bg-white hover:border-brand-200"
                                 )}>
                                     <div className="flex gap-3">
@@ -696,18 +696,18 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border-none px-2 py-0.5 text-[11px] font-bold rounded-md shrink-0 shadow-sm ring-1 ring-green-600/10">
+                                                <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border-none px-2 py-0.5 text-[11px] font-bold rounded-xl shrink-0 shadow-sm ring-1 ring-green-600/10">
                                                     {Math.round(match.score * 100)}% Match
                                                 </Badge>
                                             </div>
 
                                             {appliedJobIds.has(match.job_id) && (
-                                                <div className="bg-brand-50/50 border border-brand-100 p-2 rounded-lg flex items-center justify-between">
+                                                <div className="bg-brand-50/50 border border-brand-100 p-2 rounded-xl flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <div className="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center">
+                                                        <div className="w-5 h-5 rounded-xl bg-brand-100 flex items-center justify-center">
                                                             <CheckCircle2 className="w-3.5 h-3.5 text-brand-600" />
                                                         </div>
-                                                        <span className="text-[10px] font-black uppercase text-brand-700 tracking-wider">Already Applied</span>
+                                                        <span className="text-[10px] font-bold uppercase text-brand-700 tracking-wider">Already Applied</span>
                                                     </div>
                                                     <Badge variant="outline" className="text-[9px] font-bold text-brand-600 border-brand-200 bg-white">
                                                         In Pipeline
@@ -718,7 +718,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                             <div className="flex items-center justify-between mt-2 flex-wrap">
                                                 <div className="flex flex-wrap gap-1.5 flex-1 pr-2">
                                                     {match.reasons.slice(0, 2).map((reason: string, idx: number) => (
-                                                        <span key={idx} className="bg-green-50/50 text-green-700 text-[8.5px] font-bold px-2 py-1 rounded truncate uppercase tracking-widest">
+                                                        <span key={idx} className="bg-green-50/50 text-green-700 text-[8.5px] font-bold px-2 py-1 rounded-xl truncate uppercase tracking-widest">
                                                             {reason.toUpperCase()}
                                                         </span>
                                                     ))}
@@ -728,7 +728,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                                         e.stopPropagation();
                                                         window.open(`/search/${match.job_source === 'trending_job' ? 'hot-leads' : 'lmia'}/${encodeURIComponent(title)}?field=title&t=${match.job_source}`, '_blank');
                                                     }}
-                                                    className="p-1.5 bg-gray-50 text-gray-500 rounded flex items-center justify-center hover:bg-gray-100 hover:text-brand-600 transition-all shrink-0 border border-gray-100"
+                                                    className="p-1.5 bg-gray-50 text-gray-500 rounded-xl flex items-center justify-center hover:bg-gray-100 hover:text-brand-600 transition-all shrink-0 border border-gray-100"
                                                 >
                                                     <ExternalLink className="w-3.5 h-3.5" />
                                                 </button>
@@ -740,7 +740,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                         );
                     })
                 ) : (
-                    <div className="col-span-full py-12 text-center text-gray-400 text-xs italic">
+                    <div className="col-span-full py-12 text-center text-gray-400 text-xs">
                         No active matches found matching the current Filters.
                     </div>
                 )}
@@ -764,7 +764,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                             </p>
                         ) : (
                             unlockedContacts.map((contact, i) => (
-                                <div key={i} className="p-3 bg-gray-50 rounded-lg border border-gray-100 space-y-2">
+                                <div key={i} className="p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
                                     <div>
                                         <p className="text-xs font-bold text-gray-900">{contact.employer}</p>
                                         <p className="text-[10px] text-gray-500">{contact.job_title} · {contact.location}</p>
@@ -786,7 +786,7 @@ export function ClientMatches({ clientId, clientUrn, extractedData }: ClientMatc
                                             </p>
                                         )}
                                         {!contact.phone && !contact.email && !contact.address && (
-                                            <p className="text-[10px] text-gray-400 italic">No direct contact info available for this employer.</p>
+                                            <p className="text-[10px] text-gray-400">No direct contact info available for this employer.</p>
                                         )}
                                     </div>
                                 </div>

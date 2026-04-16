@@ -84,7 +84,7 @@ function EditableField({
           <div className="flex-1">
             <p className="text-[11px] font-semibold text-gray-500 tracking-wide mb-0.5">{title}</p>
             {!isEditing ? (
-              <p className={cn("text-sm font-semibold", !value ? "text-gray-400 italic" : "text-gray-900")}>
+              <p className={cn("text-sm font-semibold", !value ? "text-gray-400" : "text-gray-900")}>
                 {value || `Set ${title.toLowerCase()}`}
               </p>
             ) : (
@@ -98,7 +98,7 @@ function EditableField({
                   autoFocus
                 />
                 <div className="flex items-center gap-2">
-                  <Button size="sm" onClick={handleUpdate} disabled={isLoading} className="h-8 bg-brand-600 px-4 rounded-lg">
+                  <Button size="sm" onClick={handleUpdate} disabled={isLoading} className="h-8 bg-brand-600 px-4 rounded-xl">
                     {isLoading ? "Saving..." : <><Check className="mr-2 h-4 w-4" />Save</>}
                   </Button>
                   <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)} disabled={isLoading} className="h-8 px-4">
@@ -117,7 +117,7 @@ function EditableField({
               setEditValue(value?.toString() || "");
               setIsEditing(true);
             }}
-            className="h-8 w-8 text-gray-300 opacity-0 group-hover:opacity-100 transition-all hover:text-brand-600 hover:bg-brand-50 rounded-lg"
+            className="h-8 w-8 text-gray-300 opacity-0 group-hover:opacity-100 transition-all hover:text-brand-600 hover:bg-brand-50 rounded-xl"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -182,10 +182,10 @@ export function AgencyProfileView() {
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-8">
-        <div className="h-48 bg-gray-100 rounded-3xl" />
+        <div className="h-48 bg-gray-100 rounded-xl" />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="h-96 bg-gray-100 rounded-2xl" />
-          <div className="h-96 bg-gray-100 rounded-2xl" />
+          <div className="h-96 bg-gray-100 rounded-xl" />
+          <div className="h-96 bg-gray-100 rounded-xl" />
         </div>
       </div>
     );
@@ -194,8 +194,8 @@ export function AgencyProfileView() {
   return (
     <div className="space-y-8 pb-12">
       {/* Hero / Brand Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-white p-8 border border-gray-200 shadow-sm">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50" />
+      <div className="relative overflow-hidden rounded-xl bg-white p-8 border border-gray-200 shadow-sm">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-50 rounded-xl" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-8">
           <div className="relative group shrink-0">
             <input
@@ -208,7 +208,7 @@ export function AgencyProfileView() {
             <div 
               onClick={() => !isUploadingLogo && fileInputRef.current?.click()}
               className={cn(
-                "h-28 w-28 rounded-2xl bg-white border-2 border-dashed flex items-center justify-center transition-all overflow-hidden shadow-inner font-bold cursor-pointer group/logo relative",
+                "h-28 w-28 rounded-xl bg-white border-2 border-dashed flex items-center justify-center transition-all overflow-hidden shadow-inner font-bold cursor-pointer group/logo relative",
                 isUploadingLogo ? "border-brand-300 bg-brand-50" : "border-gray-200 hover:border-brand-300 hover:bg-brand-50"
               )}
             >
@@ -232,9 +232,9 @@ export function AgencyProfileView() {
 
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-                <span className="px-3 py-1 rounded-full bg-brand-600 text-white text-[10px] font-bold uppercase tracking-widest">Agency Partner</span>
+                <span className="px-3 py-1 rounded-xl">Agency Partner</span>
                 {profile.license_number && (
-                    <span className="px-3 py-1 rounded-full bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="px-3 py-1 rounded-xl">
                         <Award className="h-3 w-3" />
                          Verified
                     </span>
@@ -253,7 +253,7 @@ export function AgencyProfileView() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Row 1: Left - Company Details */}
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/30 flex items-center justify-between">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 tracking-tight">
                 <Building2 className="h-4 w-4 text-brand-600" />
@@ -294,7 +294,7 @@ export function AgencyProfileView() {
           </div>
 
           {/* Specialization Section */}
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/30 flex items-center justify-between">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 tracking-tight">
                 <Briefcase className="h-4 w-4 text-brand-600" />
@@ -338,7 +338,7 @@ export function AgencyProfileView() {
 
         {/* Row 1: Right - Contact & Social */}
         <div className="space-y-6">
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/30 flex items-center justify-between">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 tracking-tight">
                 <User className="h-4 w-4 text-brand-600" />
@@ -365,7 +365,7 @@ export function AgencyProfileView() {
           </div>
 
           {/* Social Presence */}
-          <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/30 flex items-center justify-between">
               <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 tracking-tight">
                 <Linkedin className="h-4 w-4 text-brand-600" />

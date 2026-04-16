@@ -165,13 +165,13 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                         <FolderOpen className="w-4 h-4 text-indigo-600" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight">Document Vault</h3>
+                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-tight">Document Vault</h3>
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{documents.length} Total · {approvedCount} Approved · {pendingCount} Pending Review</p>
                     </div>
                 </div>
                 <Button
                     onClick={() => setShowRequestForm(!showRequestForm)}
-                    className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest bg-brand-600 hover:bg-brand-700 text-white"
+                    className="h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-brand-600 hover:bg-brand-700 text-white"
                 >
                     <Plus className="w-3.5 h-3.5 mr-2" />
                     Request Docs
@@ -187,8 +187,8 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                         { label: 'Approved', count: approvedCount, color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-100' },
                     ].map(stat => (
                         <div key={stat.label} className={cn("p-3 rounded-xl border text-center", stat.bg)}>
-                            <p className={cn("text-xl font-black", stat.color)}>{stat.count}</p>
-                            <p className="text-[9px] font-black text-gray-500 uppercase tracking-wide">{stat.label}</p>
+                            <p className={cn("text-xl font-bold", stat.color)}>{stat.count}</p>
+                            <p className="text-[9px] font-bold text-gray-500 uppercase tracking-wide">{stat.label}</p>
                         </div>
                     ))}
                 </div>
@@ -201,15 +201,15 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="bg-slate-50 rounded-2xl border border-slate-100 p-5 space-y-4"
+                        className="bg-slate-50 rounded-xl border border-slate-100 p-5 space-y-4"
                     >
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Quick Add from Presets</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Quick Add from Presets</p>
                         <div className="flex flex-wrap gap-2">
                             {DOCUMENT_PRESETS.map(preset => (
                                 <button
                                     key={preset.name}
                                     onClick={() => setNewDocs(prev => [...prev, { name: preset.name, category: preset.category, required: true, request_note: '' }])}
-                                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] font-black text-slate-700 hover:border-brand-300 hover:bg-brand-50 transition-all"
+                                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-[10px] font-bold text-slate-700 hover:border-brand-300 hover:bg-brand-50 transition-all"
                                 >
                                     + {preset.name}
                                 </button>
@@ -228,7 +228,7 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                                     <select
                                         value={doc.category}
                                         onChange={e => setNewDocs(prev => prev.map((d, j) => j === i ? { ...d, category: e.target.value } : d))}
-                                        className="h-8 text-xs border border-slate-200 rounded-lg px-2 bg-white"
+                                        className="h-8 text-xs border border-slate-200 rounded-xl px-2 bg-white"
                                     >
                                         <option value="general">General</option>
                                         <option value="identity">Identity</option>
@@ -244,7 +244,7 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                             ))}
                             <button
                                 onClick={() => setNewDocs(prev => [...prev, { name: '', category: 'general', required: true, request_note: '' }])}
-                                className="w-full p-2.5 rounded-xl border border-dashed border-slate-300 text-[10px] font-black text-slate-400 hover:border-brand-400 hover:text-brand-600 transition-all"
+                                className="w-full p-2.5 rounded-xl border border-dashed border-slate-300 text-[10px] font-bold text-slate-400 hover:border-brand-400 hover:text-brand-600 transition-all"
                             >
                                 + Add Document
                             </button>
@@ -268,12 +268,12 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
             {isLoading ? (
                 <div className="text-center py-12 text-slate-400">
                     <FolderOpen className="w-8 h-8 mx-auto mb-3 opacity-30 animate-pulse" />
-                    <p className="text-[10px] font-black uppercase tracking-widest">Loading vault...</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest">Loading vault...</p>
                 </div>
             ) : documents.length === 0 ? (
-                <div className="text-center py-16 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                <div className="text-center py-16 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                     <Shield className="w-10 h-10 mx-auto mb-3 text-slate-300" />
-                    <p className="text-sm font-black text-slate-400 uppercase tracking-tight">Document Vault Empty</p>
+                    <p className="text-sm font-bold text-slate-400 uppercase tracking-tight">Document Vault Empty</p>
                     <p className="text-[11px] text-slate-400 mt-1">Request documents from {clientName} to get started.</p>
                 </div>
             ) : (
@@ -286,7 +286,7 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                                 key={doc.id}
                                 initial={{ opacity: 0, y: 4 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="bg-white border border-gray-100 rounded-2xl p-4 hover:border-brand-100 transition-all"
+                                className="bg-white border border-gray-100 rounded-xl p-4 hover:border-brand-100 transition-all"
                             >
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -295,11 +295,11 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                                         </div>
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2 flex-wrap">
-                                                <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight">{doc.name}</h4>
-                                                {doc.required && <span className="text-[8px] font-black text-red-500 uppercase">Required</span>}
+                                                <h4 className="text-sm font-bold text-gray-900 uppercase tracking-tight">{doc.name}</h4>
+                                                {doc.required && <span className="text-[8px] font-bold text-red-500 uppercase">Required</span>}
                                             </div>
                                             <div className="flex items-center gap-2 mt-0.5">
-                                                <span className={cn("text-[9px] font-black px-1.5 py-0.5 rounded-md capitalize", CATEGORY_COLORS[doc.category])}>
+                                                <span className={cn("text-[9px] font-bold px-1.5 py-0.5 rounded-xl capitalize", CATEGORY_COLORS[doc.category])}>
                                                     {doc.category}
                                                 </span>
                                                 <span className="text-[9px] text-slate-400 font-bold">
@@ -313,7 +313,7 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                                     </div>
 
                                     <div className="flex items-center gap-2 shrink-0">
-                                        <Badge className={cn("text-[9px] font-black border rounded-lg px-2 py-1 gap-1.5", cfg.color)}>
+                                        <Badge className={cn("text-[9px] font-bold border rounded-xl px-2 py-1 gap-1.5", cfg.color)}>
                                             <Icon className="w-3 h-3" />
                                             {cfg.label}
                                         </Badge>
@@ -329,14 +329,14 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                                                 <Button
                                                     onClick={() => reviewMutation.mutate({ documentId: doc.id, action: 'approved' })}
                                                     disabled={reviewMutation.isPending}
-                                                    className="h-8 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black uppercase"
+                                                    className="h-8 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-bold uppercase"
                                                 >
                                                     <CheckCircle2 className="w-3 h-3 mr-1" />
                                                     Approve
                                                 </Button>
                                                 <Button
                                                     onClick={() => setRejectTarget({ id: doc.id, name: doc.name })}
-                                                    className="h-8 px-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-[9px] font-black uppercase"
+                                                    className="h-8 px-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-[9px] font-bold uppercase"
                                                 >
                                                     <XCircle className="w-3 h-3 mr-1" />
                                                     Reject
@@ -387,7 +387,7 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
-                            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl"
+                            className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="flex items-center gap-3 mb-4">
@@ -395,7 +395,7 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                                     <XCircle className="w-5 h-5 text-red-600" />
                                 </div>
                                 <div>
-                                    <h3 className="font-black text-gray-900 text-sm uppercase tracking-tight">Reject Document</h3>
+                                    <h3 className="font-bold text-gray-900 text-sm uppercase tracking-tight">Reject Document</h3>
                                     <p className="text-[11px] text-gray-500">{rejectTarget.name}</p>
                                 </div>
                             </div>
@@ -433,15 +433,15 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                             initial={{ scale: 0.95, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.95, opacity: 0 }}
-                            className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl"
+                            className="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl"
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="flex flex-col items-center text-center space-y-4">
-                                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
                                     <Trash2 className="w-6 h-6 text-red-600" />
                                 </div>
                                 <div>
-                                    <h3 className="font-black text-gray-900 text-sm uppercase tracking-tight">Delete Request?</h3>
+                                    <h3 className="font-bold text-gray-900 text-sm uppercase tracking-tight">Delete Request?</h3>
                                     <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
                                         This will permanently remove the request for <span className="font-bold text-slate-900">{deleteTarget.name}</span>. 
                                         If a file was uploaded, it will also be deleted from storage.
@@ -452,7 +452,7 @@ export function ClientDocumentVault({ clientUrn, clientName }: ClientDocumentVau
                                     <Button
                                         onClick={() => deleteMutation.mutate(deleteTarget.id)}
                                         disabled={deleteMutation.isPending}
-                                        className="flex-1 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black uppercase text-[10px] tracking-widest"
+                                        className="flex-1 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold uppercase text-[10px] tracking-widest"
                                     >
                                         {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
                                     </Button>

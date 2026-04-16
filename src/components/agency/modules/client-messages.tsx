@@ -81,20 +81,20 @@ export function ClientMessages({ clientUrn, clientName, agencyName }: ClientMess
     };
 
     return (
-        <div className="flex flex-col h-[460px] bg-white rounded-2xl border border-slate-100 shadow-lg overflow-hidden font-medium">
+        <div className="flex flex-col h-[460px] bg-white rounded-xl border border-slate-100 shadow-lg overflow-hidden font-medium">
             {/* Header */}
             <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 bg-brand-50 rounded-lg flex items-center justify-center border border-brand-100/50 shadow-sm relative">
+                    <div className="w-7 h-7 bg-brand-50 rounded-xl flex items-center justify-center border border-brand-100/50 shadow-sm relative">
                         <MessageSquare className="w-3.5 h-3.5 text-brand-600" />
                         <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 border border-white rounded-full" />
                     </div>
                     <div>
-                        <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-tight leading-none mb-0.5">Secure Thread</h3>
+                        <h3 className="text-[10px] font-bold text-slate-800 uppercase tracking-tight leading-none mb-0.5">Secure Thread</h3>
                         <div className="flex items-center gap-2">
                              <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">{messages.length} Total</p>
                             {unreadCount > 0 && (
-                                <span className="bg-brand-600 text-white text-[7px] font-black px-1.5 py-0.5 rounded shadow-sm animate-pulse whitespace-nowrap">
+                                <span className="bg-brand-600 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-xl shadow-sm animate-pulse whitespace-nowrap">
                                     {unreadCount} NEW
                                 </span>
                             )}
@@ -103,7 +103,7 @@ export function ClientMessages({ clientUrn, clientName, agencyName }: ClientMess
                 </div>
                 <button
                     onClick={() => queryClient.invalidateQueries({ queryKey: ['agency-messages', clientUrn] })}
-                    className="p-1 rounded-lg hover:bg-white hover:shadow-sm text-slate-400 hover:text-brand-600 transition-all"
+                    className="p-1 rounded-xl hover:bg-white hover:shadow-sm text-slate-400 hover:text-brand-600 transition-all"
                 >
                     <RefreshCw className={cn("w-3 h-3", isLoading && "animate-spin")} />
                 </button>
@@ -114,12 +114,12 @@ export function ClientMessages({ clientUrn, clientName, agencyName }: ClientMess
                 {isLoading && messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full space-y-2">
                         <Loader2 className="w-5 h-5 animate-spin text-brand-300" />
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Syncing...</p>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Syncing...</p>
                     </div>
                 ) : messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center max-w-[200px] mx-auto opacity-50">
                         <MessageSquare className="w-5 h-5 text-slate-200 mb-2" />
-                        <h4 className="text-[10px] font-black text-slate-800 uppercase tracking-tight mb-1">Empty Thread</h4>
+                        <h4 className="text-[10px] font-bold text-slate-800 uppercase tracking-tight mb-1">Empty Thread</h4>
                         <p className="text-[9px] text-slate-500 leading-tight">Start the conversation below.</p>
                     </div>
                 ) : (
@@ -134,7 +134,7 @@ export function ClientMessages({ clientUrn, clientName, agencyName }: ClientMess
                                     {showDate && (
                                         <div className="flex items-center gap-2 py-1">
                                             <div className="flex-1 h-px bg-slate-100" />
-                                            <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest px-2">
+                                            <span className="text-[7px] font-bold text-slate-400 uppercase tracking-widest px-2">
                                                 {format(new Date(msg.created_at), 'MMM d, yyyy')}
                                             </span>
                                             <div className="flex-1 h-px bg-slate-100" />
@@ -146,7 +146,7 @@ export function ClientMessages({ clientUrn, clientName, agencyName }: ClientMess
                                         className={cn("flex items-start gap-2", isAgency ? "flex-row-reverse" : "flex-row")}
                                     >
                                         <div className={cn(
-                                            "w-5 h-5 rounded-md flex items-center justify-center shrink-0 shadow-sm border",
+                                            "w-5 h-5 rounded-xl flex items-center justify-center shrink-0 shadow-sm border",
                                             isAgency ? "bg-gradient-to-br from-brand-500 to-brand-600 border-brand-400" : "bg-white border-slate-100"
                                         )}>
                                             {isAgency 
@@ -198,7 +198,7 @@ export function ClientMessages({ clientUrn, clientName, agencyName }: ClientMess
                             onClick={() => sendMutation.mutate()}
                             disabled={sendMutation.isPending || !newMessage.trim()}
                             className={cn(
-                                "h-7 px-3 rounded-lg text-[8px] font-black uppercase tracking-wider transition-all",
+                                "h-7 px-3 rounded-xl text-[8px] font-bold uppercase tracking-wider transition-all",
                                 newMessage.trim() 
                                     ? "bg-brand-600 hover:bg-brand-700 text-white" 
                                     : "bg-slate-100 text-slate-300"

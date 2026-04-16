@@ -38,7 +38,7 @@ export function AgencyDashboard() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "group relative flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg cursor-pointer transition-all duration-200 min-w-[100px] max-w-[200px] border-x border-t border-transparent",
+                  "group relative flex items-center gap-1.5 px-3 py-1.5 rounded-t-xl cursor-pointer transition-all duration-200 min-w-[100px] max-w-[200px] border-x border-t border-transparent",
                   isActive 
                     ? "bg-white border-gray-200 text-brand-600 shadow-[0_-2px_10px_rgba(0,0,0,0.01)]" 
                     : "text-gray-400 hover:text-gray-600 hover:bg-gray-50/50"
@@ -56,7 +56,7 @@ export function AgencyDashboard() {
                       removeTab(tab.id);
                     }}
                     className={cn(
-                      "p-0.5 rounded focus:outline-none opacity-0 group-hover:opacity-100 hover:bg-gray-100 transition-all",
+                      "p-0.5 rounded-xl px-1.5 py-1.5",
                       isActive && "opacity-100"
                     )}
                   >

@@ -48,6 +48,11 @@ import {
     SelectTrigger, 
     SelectValue 
 } from '@/components/ui/select';
+import {
+    Tabs,
+    TabsList,
+    TabsTrigger
+} from '@/components/ui/tabs';
 import { 
     PIPELINE_STATUSES, 
     STATUS_CONFIG, 
@@ -89,34 +94,30 @@ export function ClientList() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {/* View Toggle */}
-          <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-1">
-            <button
-              onClick={() => setActiveView('clients')}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wide transition-all",
-                activeView === 'clients' ? "bg-white text-brand-600 shadow-sm" : "text-gray-400 hover:text-gray-600"
-              )}
-            >
-              <Users className="w-3.5 h-3.5" />
-              Clients
-            </button>
-            <button
-              onClick={() => setActiveView('draws')}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-black uppercase tracking-wide transition-all",
-                activeView === 'draws' ? "bg-white text-brand-600 shadow-sm" : "text-gray-400 hover:text-gray-600"
-              )}
-            >
-              <Calendar className="w-3.5 h-3.5" />
-              Draws
-            </button>
-          </div>
+          {/* View Toggle - Standardized Tabs */}
+          <Tabs value={activeView} onValueChange={(val) => setActiveView(val as any)}>
+            <TabsList className="bg-gray-100 rounded-xl p-1 h-9 border border-gray-100/50">
+              <TabsTrigger 
+                value="clients" 
+                className="rounded-xl text-[10px] font-bold uppercase tracking-wide px-3 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm transition-all"
+              >
+                <Users className="w-3.5 h-3.5 mr-1.5" />
+                Clients
+              </TabsTrigger>
+              <TabsTrigger 
+                value="draws" 
+                className="rounded-xl text-[10px] font-bold uppercase tracking-wide px-3 data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm transition-all"
+              >
+                <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                Draws
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
           {activeView === 'clients' && (
             <Button 
               size="sm"
               onClick={() => setIsUploadOpen(true)}
-              className="bg-brand-600 hover:bg-brand-700 text-white shadow-sm rounded-lg h-9 px-4 text-xs font-bold transition-all"
+              className="bg-brand-600 hover:bg-brand-700 text-white shadow-sm rounded-xl h-9 px-4 text-xs font-bold transition-all"
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Add New Clients
@@ -141,17 +142,17 @@ export function ClientList() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
               <Input 
                 placeholder="Search by name, URN, or email..." 
-                className="pl-9 h-9 border-gray-100 bg-gray-50/50 rounded-lg focus:bg-white transition-all text-xs"
+                className="pl-9 h-9 border-gray-100 bg-gray-50/50 rounded-xl focus:bg-white transition-all text-xs"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Button variant="outline" size="sm" className="h-9 border-gray-100 rounded-lg px-3 flex-1 sm:flex-none text-xs font-bold text-gray-600">
+              <Button variant="outline" size="sm" className="h-9 border-gray-100 rounded-xl px-3 flex-1 sm:flex-none text-xs font-bold text-gray-600">
                 <Filter className="w-3.5 h-3.5 mr-1.5 text-gray-400" />
                 Filter
               </Button>
-              <div className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2.5 py-1.5 rounded-md border border-gray-100">
+              <div className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2.5 py-1.5 rounded-xl border border-gray-100">
                 {filteredClients.length} Clients
               </div>
             </div>
@@ -164,13 +165,13 @@ export function ClientList() {
                  <motion.div 
                    animate={{ rotate: 360 }}
                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                   className="inline-block w-6 h-6 border-2 border-brand-200 border-t-brand-600 rounded-full"
+                   className="inline-block w-6 h-6 border-2 border-brand-200 border-t-brand-600 rounded-xl"
                  />
                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Loading Clients...</p>
               </div>
             ) : filteredClients.length === 0 ? (
               <div className="p-12 text-center space-y-3">
-                <div className="w-12 h-12 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-2">
+                <div className="w-12 h-12 bg-brand-50 rounded-xl flex items-center justify-center mx-auto mb-2">
                   <Users className="w-6 h-6 text-brand-500" />
                 </div>
                 <h3 className="text-sm font-bold text-gray-900">No clients found</h3>
@@ -208,13 +209,13 @@ export function ClientList() {
                       onClick={() => handleRowClick(client)}
                     >
                       <TableCell>
-                        <code className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 rounded text-gray-600">
+                        <code className="text-[10px] font-bold px-1.5 py-0.5 bg-gray-100 rounded-xl text-gray-600">
                           {client.urn}
                         </code>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 bg-brand-600/10 rounded-lg flex items-center justify-center text-brand-700 font-bold uppercase text-xs">
+                          <div className="w-7 h-7 bg-brand-600/10 rounded-xl flex items-center justify-center text-brand-700 font-bold uppercase text-xs">
                             {client.full_name?.[0] || '?'}
                           </div>
                           <div>
@@ -255,7 +256,7 @@ export function ClientList() {
                             onValueChange={(val) => updateClient({ id: client.id, updates: { status: val } })}
                         >
                             <SelectTrigger className={cn(
-                                "h-6 min-w-[120px] text-[9px] font-black uppercase tracking-widest rounded border px-2 transition-all shadow-none focus:ring-0",
+                                "h-6 min-w-[120px] text-[9px] font-bold uppercase tracking-widest rounded-xl border px-2 transition-all shadow-none focus:ring-0",
                                 STATUS_CONFIG[client.status as PipelineStatus]?.bg || 'bg-gray-50',
                                 STATUS_CONFIG[client.status as PipelineStatus]?.color || 'text-gray-600',
                                 STATUS_CONFIG[client.status as PipelineStatus]?.border || 'border-gray-200'
@@ -266,7 +267,7 @@ export function ClientList() {
                                 {PIPELINE_STATUSES.map(status => (
                                     <SelectItem key={status} value={status} className="text-[10px] font-bold uppercase tracking-tight py-2 cursor-pointer">
                                         <div className="flex items-center gap-2">
-                                            <div className={cn("w-1.5 h-1.5 rounded-full", STATUS_CONFIG[status as PipelineStatus].dot)} />
+                                            <div className={cn("w-1.5 h-1.5 rounded-xl", STATUS_CONFIG[status as PipelineStatus].dot)} />
                                             {STATUS_CONFIG[status as PipelineStatus].label}
                                         </div>
                                     </SelectItem>
@@ -276,13 +277,16 @@ export function ClientList() {
                       </TableCell>
                       <TableCell className="text-center">
                         <div className="flex flex-col items-center gap-1">
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-gray-50 rounded-full border border-gray-100">
+                            <Badge 
+                                variant="outline" 
+                                className="h-6 gap-1.5 px-2.5 rounded-xl border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors"
+                            >
                                  <div className={cn(
-                                     "w-1.5 h-1.5 rounded-full",
+                                     "w-1.5 h-1.5 rounded-xl",
                                      (client.engagement_stats?.views || 0) > 0 ? "bg-emerald-500 animate-pulse" : "bg-gray-300"
                                  )} />
-                                 <span className="text-[10px] font-black text-gray-600">{(client.engagement_stats?.views || 0)} Views</span>
-                            </div>
+                                 <span className="text-[10px] font-bold text-gray-600">{(client.engagement_stats?.views || 0)} Views</span>
+                            </Badge>
                             {client.engagement_stats?.views > 0 && (
                                 <span className="text-[8px] font-bold text-emerald-600 uppercase tracking-tighter">Active Lead</span>
                             )}
@@ -298,16 +302,16 @@ export function ClientList() {
                         <div className="flex items-center justify-end gap-1" onClick={e => e.stopPropagation()}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-7 w-7 p-0 rounded-lg hover:bg-gray-100 transition-all">
+                                    <Button variant="ghost" className="h-7 w-7 p-0 rounded-xl hover:bg-gray-100 transition-all">
                                         <MoreVertical className="w-3.5 h-3.5 text-gray-400" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-[160px] rounded-lg border-gray-100 shadow-xl p-1">
-                                    <DropdownMenuItem onClick={() => handleRowClick(client)} className="rounded-md py-1.5 cursor-pointer gap-2 focus:bg-brand-50 focus:text-brand-600 font-bold text-[11px]">
+                                <DropdownMenuContent align="end" className="w-[160px] rounded-xl border-gray-100 shadow-xl p-1">
+                                    <DropdownMenuItem onClick={() => handleRowClick(client)} className="rounded-xl py-1.5 cursor-pointer gap-2 focus:bg-brand-50 focus:text-brand-600 font-bold text-[11px]">
                                         <ExternalLink className="w-3.5 h-3.5" /> View Details
                                     </DropdownMenuItem>
                                     {client.resume_url && (
-                                        <DropdownMenuItem asChild className="rounded-md py-1.5 cursor-pointer gap-2 focus:bg-brand-50 focus:text-brand-600 font-bold text-[11px]">
+                                        <DropdownMenuItem asChild className="rounded-xl py-1.5 cursor-pointer gap-2 focus:bg-brand-50 focus:text-brand-600 font-bold text-[11px]">
                                             <a href={client.resume_url} target="_blank" rel="noopener noreferrer">
                                                 <Download className="w-3.5 h-3.5" /> Resume
                                             </a>
@@ -316,7 +320,7 @@ export function ClientList() {
                                     <DropdownMenuSeparator className="my-1 bg-gray-50" />
                                     <DropdownMenuItem 
                                         onClick={() => deleteClient(client.id)}
-                                        className="rounded-md py-1.5 cursor-pointer gap-2 focus:bg-red-50 focus:text-red-600 font-bold text-[11px] text-red-500"
+                                        className="rounded-xl py-1.5 cursor-pointer gap-2 focus:bg-red-50 focus:text-red-600 font-bold text-[11px] text-red-500"
                                     >
                                         <Trash2 className="w-3.5 h-3.5" /> Delete Case
                                     </DropdownMenuItem>

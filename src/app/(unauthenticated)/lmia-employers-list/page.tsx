@@ -26,7 +26,7 @@ export default function LMIAEmployersList() {
                 📋 Updated 2026
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-[56px] font-black text-white leading-[1.05] tracking-tight mb-8">
+              <h1 className="text-4xl md:text-5xl lg:text-[56px] font-bold text-white leading-[1.05] tracking-tight mb-8">
                 LMIA Approved <span className="text-amber-400 italic underline decoration-amber-200 underline-offset-8">Employers List</span> Canada
               </h1>
 
@@ -50,19 +50,19 @@ export default function LMIAEmployersList() {
 
             <div className="w-full lg:w-[480px] grid grid-cols-2 gap-4">
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center shadow-lg backdrop-blur-sm">
-                <div className="text-3xl font-black text-white">12,400+</div>
+                <div className="text-3xl font-bold text-white">12,400+</div>
                 <div className="text-[10px] font-bold text-blue-200/50 uppercase tracking-widest mt-2">Employers in database</div>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center shadow-lg backdrop-blur-sm">
-                <div className="text-3xl font-black text-amber-400">80,000+</div>
+                <div className="text-3xl font-bold text-amber-400">80,000+</div>
                 <div className="text-[10px] font-bold text-blue-200/50 uppercase tracking-widest mt-2">Historical LMIA records</div>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center shadow-lg backdrop-blur-sm">
-                <div className="text-3xl font-black text-white">All 13</div>
+                <div className="text-3xl font-bold text-white">All 13</div>
                 <div className="text-[10px] font-bold text-blue-200/50 uppercase tracking-widest mt-2">Provinces & territories</div>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center shadow-lg backdrop-blur-sm">
-                <div className="text-3xl font-black text-emerald-500">5 yrs</div>
+                <div className="text-3xl font-bold text-emerald-500">5 yrs</div>
                 <div className="text-[10px] font-bold text-blue-200/50 uppercase tracking-widest mt-2">Historical data available</div>
               </div>
             </div>
@@ -73,19 +73,19 @@ export default function LMIAEmployersList() {
         <div className="bg-white border-b border-gray-100 py-8 px-6">
           <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center group">
-              <div className="text-2xl md:text-3xl font-black text-brand-900 tracking-tight group-hover:text-brand-600 transition-colors">3,200+</div>
+              <div className="text-2xl md:text-3xl font-bold text-brand-900 tracking-tight group-hover:text-brand-600 transition-colors">3,200+</div>
               <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Ontario employers</div>
             </div>
             <div className="text-center group">
-              <div className="text-2xl md:text-3xl font-black text-brand-900 tracking-tight group-hover:text-brand-600 transition-colors">2,100+</div>
+              <div className="text-2xl md:text-3xl font-bold text-brand-900 tracking-tight group-hover:text-brand-600 transition-colors">2,100+</div>
               <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">BC employers</div>
             </div>
             <div className="text-center group">
-              <div className="text-2xl md:text-3xl font-black text-brand-900 tracking-tight group-hover:text-brand-600 transition-colors">1,800+</div>
+              <div className="text-2xl md:text-3xl font-bold text-brand-900 tracking-tight group-hover:text-brand-600 transition-colors">1,800+</div>
               <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Alberta employers</div>
             </div>
             <div className="text-center group">
-              <div className="text-2xl md:text-3xl font-black text-brand-900 tracking-tight group-hover:text-emerald-700 transition-colors">94%</div>
+              <div className="text-2xl md:text-3xl font-bold text-brand-900 tracking-tight group-hover:text-emerald-700 transition-colors">94%</div>
               <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Avg approval rate</div>
             </div>
           </div>
@@ -158,12 +158,12 @@ export default function LMIAEmployersList() {
                     <div className="md:col-span-2 text-[13px] text-gray-600 font-medium hidden md:block">{row.ind}</div>
                     <div className="md:col-span-2 text-center md:text-left flex justify-between md:block">
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest md:hidden">Total LMIAs:</span>
-                      <span className="font-black text-brand-900 text-lg md:text-base">{row.count}</span>
+                      <span className="font-bold text-brand-900 text-lg md:text-base">{row.count}</span>
                     </div>
                     <div className="md:col-span-2">
                       <div className="flex justify-between items-center md:justify-center mb-1.5">
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest md:hidden">Approval:</span>
-                        <span className="text-[13px] font-black text-emerald-700">{row.pct}%</span>
+                        <span className="text-[13px] font-bold text-emerald-700">{row.pct}%</span>
                       </div>
                       <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden hidden md:block">
                         <div className={`h-full ${row.color} rounded-full`} style={{ width: `${row.pct}%` }} />
@@ -202,7 +202,7 @@ export default function LMIAEmployersList() {
                 <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-8 text-3xl shadow-inner group">
                   <div className="transform group-hover:scale-110 transition-transform">🔓</div>
                 </div>
-                <h3 className="text-3xl font-black text-brand-900 tracking-tight mb-4">Unlock the full database</h3>
+                <h3 className="text-3xl font-bold text-brand-900 tracking-tight mb-4">Unlock the full database</h3>
                 <p className="text-gray-500 text-base mb-10 leading-relaxed font-medium">
                   You're seeing 5 of 12,400+ LMIA-approved employers. Sign up free to access the complete list with contact details, 5-year history, and real-time search.
                 </p>
@@ -232,7 +232,7 @@ export default function LMIAEmployersList() {
                     Export to CSV for your CRM
                   </li>
                 </ul>
-                <Link href="/sign-up" className="block w-full bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-black py-5 rounded-[20px] transition-all shadow-xl shadow-amber-100 text-lg">
+                <Link href="/sign-up" className="block w-full bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold py-5 rounded-xl transition-all shadow-xl shadow-amber-100 text-lg">
                   Sign Up Free — No Card Needed
                 </Link>
                 <div className="text-[11px] font-bold text-gray-400 mt-6 uppercase tracking-widest uppercase">Free trial · Immigration professionals only</div>
@@ -246,7 +246,7 @@ export default function LMIAEmployersList() {
           <div className="mt-24 md:mt-32 relative z-20">
             <div className="text-center max-w-2xl mx-auto mb-16">
               <div className="text-[11px] font-bold text-brand-600 uppercase tracking-[3px] mb-4">Professional Database</div>
-              <h2 className="text-3xl md:text-[42px] font-black text-brand-900 tracking-tight mb-4">
+              <h2 className="text-3xl md:text-[42px] font-bold text-brand-900 tracking-tight mb-4">
                 Browse by Sector
               </h2>
               <p className="text-gray-500 font-medium">Top industries in the JobMaze LMIA employer database</p>

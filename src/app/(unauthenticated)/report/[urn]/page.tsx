@@ -22,7 +22,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
-          <h1 className="text-6xl font-black text-gray-200 mb-4">404</h1>
+          <h1 className="text-6xl font-bold text-gray-200 mb-4">404</h1>
           <p className="text-xl font-bold text-gray-900 mb-2">Report Not Found</p>
           <p className="text-gray-500">The link may have expired or is incorrect.</p>
         </div>

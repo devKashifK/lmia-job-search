@@ -238,7 +238,7 @@ export function ClientCalculators({ client }: ClientCalculatorsProps) {
                 <Button
                     variant="ghost"
                     onClick={handleBack}
-                    className="h-8 text-xs font-bold text-gray-500 hover:text-brand-600 gap-2 mb-2"
+                    className="h-8 text-xs font-bold text-gray-500 hover:text-brand-600 gap-2 mb-2 rounded-xl"
                 >
                     <ChevronLeft className="w-4 h-4" />
                     Back to Hub
@@ -259,8 +259,8 @@ export function ClientCalculators({ client }: ClientCalculatorsProps) {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-2">
-                        <div className="p-1.5 bg-brand-600 rounded-lg text-white">
+                    <h2 className="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
+                        <div className="p-1.5 bg-brand-600 rounded-xl text-white">
                             <Calculator className="w-5 h-5" />
                         </div>
                         Eligibility Lab
@@ -309,7 +309,7 @@ export function ClientCalculators({ client }: ClientCalculatorsProps) {
                 {history.length > 0 ? (
                     <div className="grid grid-cols-1 gap-3">
                         {history.map((result) => (
-                            <Card key={result.id} className="border-gray-100 shadow-sm hover:shadow-md transition-shadow group">
+                            <Card key={result.id} className="border-gray-100 shadow-sm hover:shadow-md transition-shadow group rounded-xl">
                                 <CardContent className="p-4 flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <div className="p-2.5 bg-gray-50 rounded-xl text-gray-400 group-hover:bg-brand-50 group-hover:text-brand-600 transition-colors">
@@ -317,8 +317,8 @@ export function ClientCalculators({ client }: ClientCalculatorsProps) {
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2">
-                                                <h4 className="text-[11px] font-black uppercase text-gray-900 tracking-tight">{result.calculator_type.replace('-', ' ')}</h4>
-                                                <Badge className="bg-brand-50 text-brand-700 border-brand-100 text-[10px] font-black h-5 px-1.5">
+                                                <h4 className="text-[11px] font-bold uppercase text-gray-900 tracking-tight">{result.calculator_type.replace('-', ' ')}</h4>
+                                                <Badge className="bg-brand-50 text-brand-700 border-brand-100 text-[10px] font-bold h-5 px-1.5 rounded-xl">
                                                     {result.score} PTS
                                                 </Badge>
                                             </div>
@@ -329,7 +329,7 @@ export function ClientCalculators({ client }: ClientCalculatorsProps) {
                                             </div>
                                         </div>
                                     </div>
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-300 hover:text-brand-600 rounded-lg">
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-300 hover:text-brand-600 rounded-xl">
                                         <ArrowRight className="w-4 h-4" />
                                     </Button>
                                 </CardContent>
@@ -337,7 +337,7 @@ export function ClientCalculators({ client }: ClientCalculatorsProps) {
                         ))}
                     </div>
                 ) : (
-                    <div className="py-12 flex flex-col items-center justify-center text-center opacity-50 bg-gray-50/50 rounded-2xl border border-dashed border-gray-100 italic">
+                    <div className="py-12 flex flex-col items-center justify-center text-center opacity-50 bg-gray-50/50 rounded-xl border border-dashed border-gray-100">
                         <History className="w-8 h-8 text-gray-200 mb-3" />
                         <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">No evaluation history</p>
                     </div>

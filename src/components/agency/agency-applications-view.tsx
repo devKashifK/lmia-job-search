@@ -65,11 +65,11 @@ export function AgencyApplicationsView() {
   if (isLoading) {
     return (
       <div className="animate-pulse space-y-8">
-        <div className="h-48 bg-gray-100 rounded-3xl" />
+        <div className="h-48 bg-gray-100 rounded-xl" />
         <div className="space-y-4">
-          <div className="h-24 bg-gray-100 rounded-2xl" />
-          <div className="h-24 bg-gray-100 rounded-2xl" />
-          <div className="h-24 bg-gray-100 rounded-2xl" />
+          <div className="h-24 bg-gray-100 rounded-xl" />
+          <div className="h-24 bg-gray-100 rounded-xl" />
+          <div className="h-24 bg-gray-100 rounded-xl" />
         </div>
       </div>
     );
@@ -78,12 +78,12 @@ export function AgencyApplicationsView() {
   return (
     <div className="space-y-8">
       {/* Agency Header Section */}
-      <div className="relative overflow-hidden rounded-3xl bg-white p-8 border border-gray-200 shadow-sm transition-all hover:shadow-md">
+      <div className="relative overflow-hidden rounded-xl bg-white p-8 border border-gray-200 shadow-sm transition-all hover:shadow-md">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-50/50 via-transparent to-brand-50/10" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2 mb-1">
-                <span className="px-2.5 py-1 rounded-full bg-brand-100 text-brand-700 text-[10px] font-bold uppercase tracking-wider">Agency Workspace</span>
+                <span className="px-2.5 py-1 rounded-xl">Agency Workspace</span>
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               Client Case Applications
@@ -98,7 +98,7 @@ export function AgencyApplicationsView() {
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Global Submissions</p>
                 <p className="text-2xl font-bold text-gray-900 leading-none">{applications.length}</p>
                 </div>
-                <div className="h-12 w-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-200">
+                <div className="h-12 w-12 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-200">
                     <Target className="h-6 w-6" />
                 </div>
               </div>
@@ -110,9 +110,9 @@ export function AgencyApplicationsView() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl border border-dashed border-gray-300 p-16 text-center space-y-6"
+          className="bg-white rounded-xl border border-dashed border-gray-300 p-16 text-center space-y-6"
         >
-          <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto border border-gray-100">
+          <div className="w-20 h-20 bg-gray-50 rounded-xl">
             <Users className="w-10 h-10 text-gray-300" />
           </div>
           <div className="space-y-2">
@@ -145,7 +145,7 @@ export function AgencyApplicationsView() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Card className="group relative overflow-hidden border border-gray-200 hover:border-brand-200 transition-all duration-300 p-0 bg-white hover:shadow-lg hover:shadow-brand-500/5 rounded-2xl">
+                <Card className="group relative overflow-hidden border border-gray-200 hover:border-brand-200 transition-all duration-300 p-0 bg-white hover:shadow-lg hover:shadow-brand-500/5 rounded-xl">
                   <div className="flex flex-col md:flex-row">
                     {/* Client Sidebar on the Card */}
                     <div className="md:w-48 bg-gray-50 border-r border-gray-100 p-4 flex flex-col justify-center">
@@ -167,7 +167,7 @@ export function AgencyApplicationsView() {
                             {app.job_title}
                             </h3>
                             <div className={cn(
-                            "flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border",
+                            "flex items-center gap-1.5 px-2 py-0.5 rounded-xl",
                             getStatusColor(app.status)
                             )}>
                             {app.status}

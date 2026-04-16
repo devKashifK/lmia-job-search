@@ -25,12 +25,12 @@ export default function AlbertaLMIAJobs() {
                 <span className="text-white">Alberta</span>
               </div>
 
-              <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
+              <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-xl px-4 py-1.5 text-xs font-bold tracking-widest uppercase mb-6">
                 <MapPin className="w-3.5 h-3.5" />
                 Alberta · AB
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-[52px] font-black text-white leading-[1.1] tracking-tight mb-6">
+              <h1 className="text-4xl md:text-5xl lg:text-[52px] font-bold text-white leading-[1.1] tracking-tight mb-6">
                 LMIA Jobs in <span className="text-amber-400">Alberta</span>
               </h1>
 
@@ -40,15 +40,15 @@ export default function AlbertaLMIAJobs() {
 
               <div className="grid grid-cols-3 gap-4 mb-10">
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-black text-white tracking-tight">1,900+</div>
+                  <div className="text-2xl font-bold text-white tracking-tight">1,900+</div>
                   <div className="text-[11px] text-blue-200/60 uppercase tracking-wider mt-1 font-medium">Active LMIA listings</div>
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-black text-white tracking-tight">Trades</div>
+                  <div className="text-2xl font-bold text-white tracking-tight">Trades</div>
                   <div className="text-[11px] text-blue-200/60 uppercase tracking-wider mt-1 font-medium">#1 job category</div>
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                  <div className="text-2xl font-black text-white tracking-tight">AIP</div>
+                  <div className="text-2xl font-bold text-white tracking-tight">AIP</div>
                   <div className="text-[11px] text-blue-200/60 uppercase tracking-wider mt-1 font-medium italic">Most common pathway</div>
                 </div>
               </div>
@@ -56,14 +56,14 @@ export default function AlbertaLMIAJobs() {
               <div className="flex flex-wrap items-center gap-4">
                 <Link
                   href="/search/lmia/all?state=Alberta&t=lmia"
-                  className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 py-4 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-amber-500/20"
+                  className="bg-amber-400 hover:bg-amber-500 text-brand-900 font-bold px-8 py-4 rounded-xl transition-all inline-flex items-center gap-2 hover:-translate-y-1 shadow-lg shadow-amber-500/20"
                 >
                   Search All Alberta LMIA Jobs
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   href="/faq"
-                  className="bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/40 text-white/80 hover:text-white font-medium px-6 py-4 rounded-full transition-all"
+                  className="bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/40 text-white/80 hover:text-white font-medium px-6 py-4 rounded-xl transition-all"
                 >
                   How does it work?
                 </Link>
@@ -74,7 +74,7 @@ export default function AlbertaLMIAJobs() {
             <div className="relative">
               <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-2xl">
                 <div className="text-xs font-bold tracking-widest uppercase text-brand-400 mb-4 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span className="w-2 h-2 rounded-xl bg-green-500 animate-pulse" />
                   Live Listings — Alberta
                 </div>
 
@@ -136,8 +136,8 @@ export default function AlbertaLMIAJobs() {
         <section className="py-20 px-6 bg-white border-b border-slate-100">
           <div className="max-w-5xl mx-auto">
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <div className="text-xs font-black text-amber-600 uppercase tracking-widest mb-3 italic">Top Industries</div>
-              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-4">
+              <div className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-3 italic">Top Industries</div>
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-4">
                 Where LMIA hiring is most active in Alberta
               </h2>
               <p className="text-slate-500 text-lg font-light leading-relaxed">
@@ -168,14 +168,14 @@ export default function AlbertaLMIAJobs() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* PNP column */}
             <div>
-              <div className="text-xs font-black text-amber-500 uppercase tracking-widest mb-3 italic">Provincial Nominee Program</div>
-              <h3 className="text-3xl font-black text-white tracking-tight mb-6 italic">Alberta Advantage Immigration Program (AAIP)</h3>
+              <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-3 italic">Provincial Nominee Program</div>
+              <h3 className="text-3xl font-bold text-white tracking-tight mb-6 italic">Alberta Advantage Immigration Program (AAIP)</h3>
               <p className="text-blue-100/70 mb-8 text-lg font-light leading-relaxed">
                 An LMIA job offer is a key component for several Alberta PNP streams. Finding the right employer through JobMaze is the first step to a successful nomination for your client across active pathways.
               </p>
 
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-sm">
-                <div className="text-[11px] font-black text-amber-400 uppercase tracking-widest mb-4 italic">Active Streams</div>
+                <div className="text-[11px] font-bold text-amber-400 uppercase tracking-widest mb-4 italic">Active Streams</div>
                 <div className="space-y-4">
                   {['Alberta Opportunity Stream', 'Alberta Express Entry Stream', 'Rural Renewal Stream'].map((stream, idx) => (
                     <div key={idx} className="flex items-start gap-3 border-b border-white/5 pb-3 last:border-0 last:pb-0 text-sm text-blue-100 font-bold tracking-tight">
@@ -189,8 +189,8 @@ export default function AlbertaLMIAJobs() {
 
             {/* CITIES & STATS column */}
             <div>
-              <div className="text-xs font-black text-amber-400 uppercase tracking-widest mb-3 italic">Cities Covered</div>
-              <h3 className="text-3xl font-black text-white tracking-tight mb-6 italic">Job searches by Alberta city</h3>
+              <div className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3 italic">Cities Covered</div>
+              <h3 className="text-3xl font-bold text-white tracking-tight mb-6 italic">Job searches by Alberta city</h3>
               <p className="text-blue-100/70 mb-8 text-lg font-light leading-relaxed">
                 JobMaze covers LMIA jobs in every Alberta city and rural municipality. Use the city filter to narrow results for your client's preferred location.
               </p>
@@ -200,7 +200,7 @@ export default function AlbertaLMIAJobs() {
                   <Link
                     key={idx}
                     href={`/search/lmia/all?state=Alberta&city=${city}&t=lmia`}
-                    className="bg-white/5 border border-white/10 hover:bg-amber-600 hover:text-white text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm duration-300"
+                    className="bg-white/5 border border-white/10 hover:bg-amber-600 hover:text-white text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm duration-300"
                   >
                     {city}
                   </Link>
@@ -241,7 +241,7 @@ export default function AlbertaLMIAJobs() {
         <section className="bg-brand-900 py-24 px-6 text-center border-t-4 border-amber-400">
           <div className="max-w-2xl mx-auto">
             <div className="text-xs font-bold text-blue-200/60 uppercase tracking-widest mb-4">Start Searching</div>
-            <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-6">
+            <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-6">
               Find LMIA jobs in Alberta now
             </h2>
             <p className="text-blue-100/70 text-lg mb-10 font-light">
@@ -249,7 +249,7 @@ export default function AlbertaLMIAJobs() {
             </p>
             <Link
               href="/search/lmia/all?state=Alberta&t=lmia"
-              className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-full transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
+              className="bg-amber-400 hover:bg-amber-400/90 text-brand-900 font-bold px-10 py-5 rounded-xl transition-all inline-flex items-center gap-2 hover:-translate-y-1 text-lg shadow-xl shadow-amber-100"
             >
               Search Alberta LMIA Jobs Free
               <ArrowRight className="w-5 h-5 text-brand-900" />
@@ -277,7 +277,7 @@ export default function AlbertaLMIAJobs() {
                 <Link
                   key={i}
                   href={link.href}
-                  className="bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 hover:text-gray-900 px-6 py-3 rounded-full text-sm font-medium transition-colors"
+                  className="bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 hover:text-gray-900 px-6 py-3 rounded-xl text-sm font-medium transition-colors"
                 >
                   {link.title}
                 </Link>

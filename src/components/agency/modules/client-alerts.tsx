@@ -80,7 +80,7 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
   const [activeCriteria, setActiveCriteria] = useState<any>(null);
 
   if (isLoading) {
-    return <div className="p-12 text-center text-xs text-gray-400 font-medium flex flex-col items-center gap-2">
+    return <div className="p-12 text-center text-xs text-gray-400 font-bold flex flex-col items-center gap-2">
         <Loader2 className="w-4 h-4 animate-spin text-brand-600" />
         Syncing alerts...
     </div>;
@@ -131,7 +131,7 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                 <Bell className="w-4 h-4 text-brand-600" />
                 Job Match Alerts
             </h3>
-            <p className="text-[10px] text-gray-400 mt-0.5 font-medium">Automatic monitoring for new jobs matching this candidate.</p>
+            <p className="text-[10px] text-gray-400 mt-0.5 font-bold">Automatic monitoring for new jobs matching this candidate.</p>
         </div>
         <Button 
             size="sm" 
@@ -140,7 +140,7 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                 setAlertName(`Match Alert: ${client.full_name}`);
                 setIsOpen(true);
             }}
-            className="bg-brand-600 rounded-lg text-[10px] font-bold h-8 hover:bg-brand-700 transition-all shadow-sm shadow-brand-500/10"
+            className="bg-brand-600 rounded-xl text-[10px] font-bold h-8 hover:bg-brand-700 transition-all shadow-sm shadow-brand-500/10"
         >
             <Plus className="w-3 h-3 mr-1.5" />
             Create Alert
@@ -157,13 +157,13 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
             >
                 <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between">
-                        <div className={cn("p-1.5 rounded-lg shrink-0", template.bg, template.color)}>
+                        <div className={cn("p-1.5 rounded-xl shrink-0", template.bg, template.color)}>
                             <template.icon className="w-3.5 h-3.5" />
                         </div>
                         <ChevronRight className="w-3 h-3 text-gray-300 group-hover:text-brand-500 transition-colors" />
                     </div>
                     <div>
-                        <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-tight">{template.name}</h4>
+                        <h4 className="text-[11px] font-bold text-gray-900 uppercase tracking-tight">{template.name}</h4>
                         <p className="text-[9px] text-gray-400 font-bold leading-tight mt-0.5">{template.description}</p>
                     </div>
                 </div>
@@ -173,7 +173,7 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
 
       {/* Create Alert Dialog */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-[400px] rounded-2xl border-gray-100 shadow-2xl">
+        <DialogContent className="sm:max-w-[400px] rounded-xl border-gray-100 shadow-2xl">
             <DialogHeader>
                 <DialogTitle className="text-sm font-bold text-gray-900 uppercase tracking-widest flex items-center gap-2">
                     <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
@@ -190,20 +190,20 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                     <Input 
                         value={alertName}
                         onChange={(e) => setAlertName(e.target.value)}
-                        className="rounded-lg border-gray-100 text-[11px] font-medium focus:ring-1 focus:ring-brand-500 h-9"
+                        className="rounded-xl border-gray-100 text-[11px] font-bold focus:ring-1 focus:ring-brand-500 h-9"
                     />
                 </div>
 
                 <div className="space-y-1.5">
                     <Label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Notification Frequency</Label>
                     <Select value={frequency} onValueChange={setFrequency}>
-                        <SelectTrigger className="rounded-lg border-gray-100 text-[11px] font-medium h-9">
+                        <SelectTrigger className="rounded-xl border-gray-100 text-[11px] font-bold h-9">
                             <SelectValue placeholder="Select frequency" />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-gray-100">
-                            <SelectItem value="instant" className="text-[11px] font-medium">Instant Notifications</SelectItem>
-                            <SelectItem value="daily" className="text-[11px] font-medium">Daily Digest</SelectItem>
-                            <SelectItem value="weekly" className="text-[11px] font-medium">Weekly Summary</SelectItem>
+                            <SelectItem value="instant" className="text-[11px] font-bold">Instant Notifications</SelectItem>
+                            <SelectItem value="daily" className="text-[11px] font-bold">Daily Digest</SelectItem>
+                            <SelectItem value="weekly" className="text-[11px] font-bold">Weekly Summary</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -215,7 +215,7 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                         {activeCriteria?.job_titles && (
                             <div className="flex flex-wrap gap-1.5">
                                 {activeCriteria.job_titles.filter(Boolean).map((t: string) => (
-                                    <Badge key={t} variant="outline" className="bg-white text-[9px] border-indigo-100 text-indigo-700 font-bold uppercase truncate max-w-[180px]">
+                                    <Badge key={t} variant="outline" className="bg-white text-[9px] border-indigo-100 text-indigo-700 font-bold uppercase truncate max-w-[180px] rounded-xl">
                                         <Sparkles className="w-2.5 h-2.5 mr-1 text-indigo-400" /> {t}
                                     </Badge>
                                 ))}
@@ -226,7 +226,7 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                         {activeCriteria?.noc_codes && (
                             <div className="flex flex-wrap gap-1.5">
                                 {activeCriteria.noc_codes.filter(Boolean).map((n: string | number) => (
-                                    <Badge key={n} variant="outline" className="bg-white text-[9px] border-amber-100 text-amber-900 font-bold uppercase">
+                                    <Badge key={n} variant="outline" className="bg-white text-[9px] border-amber-100 text-amber-900 font-bold uppercase rounded-xl">
                                         <ShieldCheck className="w-2.5 h-2.5 mr-1 text-amber-500" /> NOC {n}
                                     </Badge>
                                 ))}
@@ -236,14 +236,14 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                         {/* Location / Employers */}
                         <div className="flex flex-wrap gap-1.5">
                             {activeCriteria?.location && (
-                                <Badge variant="outline" className="bg-emerald-50 text-[9px] border-emerald-200 text-emerald-700 font-bold uppercase">
+                                <Badge variant="outline" className="bg-emerald-50 text-[9px] border-emerald-200 text-emerald-700 font-bold uppercase rounded-xl">
                                     <MapPin className="w-2.5 h-2.5 mr-1" /> {activeCriteria.location}
                                 </Badge>
                             )}
                             {activeCriteria?.employers?.length > 0 && (
                                 <div className="flex flex-wrap gap-1.5">
                                     {activeCriteria.employers.map((emp: string) => (
-                                        <Badge key={emp} variant="outline" className="bg-slate-50 text-slate-700 text-[9px] border-slate-200 font-bold uppercase truncate max-w-[150px]">
+                                        <Badge key={emp} variant="outline" className="bg-slate-50 text-slate-700 text-[9px] border-slate-200 font-bold uppercase truncate max-w-[150px] rounded-xl">
                                             <Building2 className="w-2.5 h-2.5 mr-1 text-slate-400" /> {emp}
                                         </Badge>
                                     ))}
@@ -253,18 +253,18 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
 
                         {/* Fallback for 'Manual/Legacy' alerts with no activeCriteria yet */}
                         {!activeCriteria && (
-                            <p className="text-[10px] text-gray-400 italic">Configure targeting details above...</p>
+                            <p className="text-[10px] text-gray-400">Configure targeting details above...</p>
                         )}
                     </div>
                 </div>
             </div>
 
             <DialogFooter className="gap-2">
-                <Button variant="ghost" onClick={() => setIsOpen(false)} className="rounded-lg text-[10px] font-bold h-9">Cancel</Button>
+                <Button variant="ghost" onClick={() => setIsOpen(false)} className="rounded-xl text-[10px] font-bold h-9">Cancel</Button>
                 <Button 
                     onClick={handleCreate} 
                     disabled={isCreating}
-                    className="bg-brand-600 rounded-lg text-[10px] font-bold h-9 flex-1 shadow-md shadow-brand-500/10"
+                    className="bg-brand-600 rounded-xl text-[10px] font-bold h-9 flex-1 shadow-md shadow-brand-500/10"
                 >
                     {isCreating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : "Save & Activate"}
                 </Button>
@@ -283,13 +283,13 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                 >
                     <Card className="p-4 border-gray-100 shadow-sm flex items-center justify-between hover:border-brand-100 transition-colors group">
                         <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${alert.is_active ? "bg-brand-50 text-brand-600" : "bg-gray-50 text-gray-400"}`}>
+                            <div className={`p-2 rounded-xl ${alert.is_active ? "bg-brand-50 text-brand-600" : "bg-gray-50 text-gray-400"}`}>
                                 {alert.is_active ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
                             </div>
                             <div className="space-y-0.5">
                                 <h4 className="text-[11px] font-bold text-gray-900">{alert.name}</h4>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-1.5 py-0.5 rounded">
+                                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-1.5 py-0.5 rounded-xl">
                                         {alert.frequency}
                                     </span>
                                     <span className="text-[9px] text-gray-400">•</span>
@@ -311,7 +311,7 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                             </div>
                             <button 
                                 onClick={() => deleteAlert(alert.id)}
-                                className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-md transition-all opacity-0 group-hover:opacity-100"
+                                className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
                             >
                                 <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -332,7 +332,7 @@ export function ClientAlerts({ client }: ClientAlertsProps) {
                     variant="outline" 
                     size="sm" 
                     onClick={() => setIsOpen(true)}
-                    className="border-brand-200 text-brand-600 hover:bg-brand-50 rounded-lg text-[10px] font-bold h-8"
+                    className="border-brand-200 text-brand-600 hover:bg-brand-50 rounded-xl text-[10px] font-bold h-8"
                 >
                     Setup First Alert
                 </Button>

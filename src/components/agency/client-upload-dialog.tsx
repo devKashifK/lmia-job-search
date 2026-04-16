@@ -9,6 +9,11 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
+import { 
+    Tabs, 
+    TabsList, 
+    TabsTrigger 
+} from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
   CloudUpload,
@@ -174,24 +179,22 @@ export function ClientUploadDialog({ open, onOpenChange, onUploadSuccess }: Clie
         </DialogHeader>
 
         {!uploadResults && (
-          <div className="flex gap-1 p-1 bg-gray-100/50 rounded-xl border border-gray-100 mb-2">
-            <Button
-              variant={mode === 'resumes' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => { setMode('resumes'); setFiles([]); }}
-              className={cn("flex-1 h-8 rounded-lg text-[10px] font-bold uppercase", mode === 'resumes' && "bg-white text-brand-600 shadow-sm hover:bg-white")}
-            >
-              Resumes
-            </Button>
-            <Button
-              variant={mode === 'csv' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => { setMode('csv'); setFiles([]); }}
-              className={cn("flex-1 h-8 rounded-lg text-[10px] font-bold uppercase", mode === 'csv' && "bg-white text-brand-600 shadow-sm hover:bg-white")}
-            >
-              CSV Import
-            </Button>
-          </div>
+          <Tabs value={mode} onValueChange={(val) => { setMode(val as UploadMode); setFiles([]); }} className="mb-2">
+            <TabsList className="grid w-full grid-cols-2 bg-gray-100/50 p-1 rounded-xl h-10 border border-gray-100">
+              <TabsTrigger 
+                value="resumes" 
+                className="rounded-xl text-[10px] font-bold uppercase tracking-wide data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm transition-all"
+              >
+                Resumes
+              </TabsTrigger>
+              <TabsTrigger 
+                value="csv" 
+                className="rounded-xl text-[10px] font-bold uppercase tracking-wide data-[state=active]:bg-white data-[state=active]:text-brand-600 data-[state=active]:shadow-sm transition-all"
+              >
+                CSV Import
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         )}
 
         {!uploadResults ? (
@@ -212,7 +215,7 @@ export function ClientUploadDialog({ open, onOpenChange, onUploadSuccess }: Clie
                 accept={mode === 'resumes' ? ".pdf,.docx,.doc" : ".csv"}
               />
               <div className="flex flex-col items-center gap-2">
-                <div className="p-3 bg-brand-50 rounded-full text-brand-600 group-hover:scale-110 transition-transform">
+                <div className="p-3 bg-brand-50 rounded-xl">
                   <CloudUpload className="w-6 h-6" />
                 </div>
                 <p className="text-sm font-semibold text-gray-700">Click to upload or drag and drop</p>
@@ -243,7 +246,7 @@ export function ClientUploadDialog({ open, onOpenChange, onUploadSuccess }: Clie
             {files.length > 0 && (
               <div className="max-h-[200px] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                 {files.map((file, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-lg shadow-sm">
+                  <div key={i} className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
                     <FileText className="w-4 h-4 text-brand-500" />
                     <span className="text-xs font-medium text-gray-600 flex-1 truncate">{file.name}</span>
                     <button onClick={() => removeFile(i)} className="text-gray-400 hover:text-red-500 transition-colors">
@@ -258,7 +261,7 @@ export function ClientUploadDialog({ open, onOpenChange, onUploadSuccess }: Clie
           <div className="py-4 space-y-3">
             <h4 className="text-sm font-bold text-gray-900 mb-2">Processing Results</h4>
             {uploadResults.map((res, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50/50">
+              <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50/50">
                 {res.success ? (
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
                 ) : (

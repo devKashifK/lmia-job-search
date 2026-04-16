@@ -122,15 +122,15 @@ export function ClientChecklist({ client }: ClientChecklistProps) {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Sidebar / Template Selector */}
             <div className="space-y-4">
-                <Card className="p-4 border-gray-100 shadow-sm space-y-4">
-                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Select Template</h3>
+                <Card className="p-4 border-gray-100 shadow-sm space-y-4 rounded-xl">
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Select Template</h3>
                     <div className="space-y-1.5">
                         {Object.keys(TEMPLATES).map(key => (
                             <button
                                 key={key}
                                 onClick={() => applyTemplate(key)}
                                 className={cn(
-                                    "w-full text-left px-3 py-2 rounded-lg text-[11px] font-bold transition-all border",
+                                    "w-full text-left px-3 py-2 rounded-xl text-[11px] font-bold transition-all border",
                                     template === key 
                                         ? "bg-brand-600 border-brand-600 text-white shadow-md shadow-brand-500/20" 
                                         : "bg-white border-gray-100 text-gray-500 hover:bg-gray-50"
@@ -142,14 +142,14 @@ export function ClientChecklist({ client }: ClientChecklistProps) {
                     </div>
                 </Card>
 
-                <Card className="p-4 border-gray-100 shadow-sm bg-slate-900 text-white relative overflow-hidden">
+                <Card className="p-4 border-gray-100 shadow-sm bg-slate-900 text-white relative overflow-hidden rounded-xl">
                     <ShieldCheck className="absolute top-[-5px] right-[-5px] w-12 h-12 text-white/5" />
-                    <h3 className="text-[10px] font-black uppercase tracking-widest opacity-60">Verification Progress</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest opacity-60">Verification Progress</h3>
                     <div className="mt-4 flex items-end justify-between">
-                        <div className="text-3xl font-black">{progress}%</div>
+                        <div className="text-3xl font-bold">{progress}%</div>
                         <div className="text-[10px] font-bold opacity-60 pb-1">{verifiedCount} / {items.length} VERIFIED</div>
                     </div>
-                    <div className="mt-3 h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                    <div className="mt-3 h-1.5 w-full bg-white/10 rounded-xl overflow-hidden">
                         <motion.div 
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
@@ -162,7 +162,7 @@ export function ClientChecklist({ client }: ClientChecklistProps) {
             {/* Main Checklist */}
             <div className="lg:col-span-3 space-y-4">
                 <div className="flex items-center justify-between px-2">
-                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                         <FileText className="w-3.5 h-3.5" />
                         Required Documents
                     </h3>
@@ -191,10 +191,10 @@ export function ClientChecklist({ client }: ClientChecklistProps) {
                                     <div className="space-y-0.5 min-w-0">
                                         <div className="flex items-center gap-2">
                                             <h4 className={cn(
-                                                "text-[11px] font-black uppercase tracking-tight truncate",
+                                                "text-[11px] font-bold uppercase tracking-tight truncate",
                                                 item.status === 'verified' ? "text-green-700" : "text-gray-900"
                                             )}>{item.label}</h4>
-                                            {item.required && <Badge className="bg-slate-100 text-slate-400 text-[8px] h-3.5 px-1 font-black">MANDATORY</Badge>}
+                                            {item.required && <Badge className="bg-slate-100 text-slate-400 text-[8px] h-3.5 px-1 font-bold rounded-xl">MANDATORY</Badge>}
                                         </div>
                                         <p className="text-[10px] text-gray-400 font-bold tracking-tight truncate">{item.description}</p>
                                     </div>
@@ -209,7 +209,7 @@ export function ClientChecklist({ client }: ClientChecklistProps) {
                                                 key={status}
                                                 onClick={() => handleUpdateStatus(item.id, status)}
                                                 className={cn(
-                                                    "px-2 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tight transition-all border",
+                                                    "px-2 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-tight transition-all border",
                                                     isActive 
                                                         ? cn(Config.bg, Config.color, "border-current shadow-sm scale-110 z-10") 
                                                         : "bg-white border-transparent text-gray-300 hover:text-gray-400"
@@ -225,9 +225,9 @@ export function ClientChecklist({ client }: ClientChecklistProps) {
                     </AnimatePresence>
 
                     {items.length === 0 && (
-                        <div className="py-20 text-center bg-gray-50/50 border border-dashed border-gray-200 rounded-2xl mx-10">
+                        <div className="py-20 text-center bg-gray-50/50 border border-dashed border-gray-200 rounded-xl mx-10">
                             <Search className="w-8 h-8 text-brand-100 mx-auto mb-3" />
-                            <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest leading-none">Checklist Empty</p>
+                            <p className="text-[10px] font-bold uppercase text-gray-400 tracking-widest leading-none">Checklist Empty</p>
                             <p className="text-[9px] text-gray-300 mt-2 max-w-[140px] mx-auto font-bold uppercase tracking-tighter">Apply a template to start tracking documents.</p>
                         </div>
                     )}

@@ -15,6 +15,12 @@ import {
 } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { Badge } from '@/components/ui/badge';
 import { useAgencyStrategy } from '@/hooks/use-agency-clients';
 import { useToast } from '@/hooks/use-toast';
 import { useSession } from '@/hooks/use-session';
@@ -150,14 +156,14 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
         <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm"
+            className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-gray-100 shadow-sm"
         >
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
                     <img src="/ll.png" alt="JobMaze" className="w-6 h-6" />
                 </div>
                 <div className="space-y-0.5">
-                    <h2 className="text-sm font-black text-gray-900 tracking-tight uppercase">Command Center</h2>
+                    <h2 className="text-sm font-bold text-gray-900 tracking-tight uppercase">Command Center</h2>
                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Candidate Ecosystem & Access Control</p>
                 </div>
             </div>
@@ -166,7 +172,7 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
                 <Button
                     variant="outline"
                     onClick={() => window.open(`/report/${client.urn}`, '_blank')}
-                    className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border-gray-200 hover:bg-gray-50 transition-all font-bold"
+                    className="h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest border-gray-200 hover:bg-gray-50 transition-all font-bold"
                 >
                     <Globe className="w-3.5 h-3.5 mr-2" />
                     Preview Portal
@@ -175,12 +181,12 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
                 <div className="flex items-center bg-gray-50 border border-gray-100 rounded-xl px-3 h-9 gap-3">
                     <div className="flex items-center gap-1.5 shrink-0">
                         <Lock className="w-3 h-3 text-brand-600" />
-                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Access PIN</span>
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Access PIN</span>
                     </div>
-                    <Input
+                    <InputOTP
+                        maxLength={4}
                         value={accessPin}
-                        onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                        onChange={(val) => {
                             setAccessPin(val);
                         }}
                         onBlur={() => {
@@ -189,24 +195,29 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
                                 toast({ title: "PIN Updated", description: `Security code set to ${accessPin}` });
                             }
                         }}
-                        className="w-12 h-6 p-0 border-none bg-transparent text-center text-xs font-black focus:ring-0 rounded text-brand-700"
-                        placeholder="0000"
-                    />
+                    >
+                        <InputOTPGroup>
+                            <InputOTPSlot index={0} className="w-6 h-6 p-0 border-none bg-transparent text-center text-xs font-bold text-brand-700" />
+                            <InputOTPSlot index={1} className="w-6 h-6 p-0 border-none bg-transparent text-center text-xs font-bold text-brand-700" />
+                            <InputOTPSlot index={2} className="w-6 h-6 p-0 border-none bg-transparent text-center text-xs font-bold text-brand-700" />
+                            <InputOTPSlot index={3} className="w-6 h-6 p-0 border-none bg-transparent text-center text-xs font-bold text-brand-700" />
+                        </InputOTPGroup>
+                    </InputOTP>
                 </div>
 
                 <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
                     <DialogTrigger asChild>
                         <Button
                             variant="outline"
-                            className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border-brand-200 text-brand-700 hover:bg-brand-50 transition-all font-bold"
+                            className="h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest border-brand-200 text-brand-700 hover:bg-brand-50 transition-all font-bold"
                         >
                             <Share2 className="w-3.5 h-3.5 mr-2" />
                             Share Pitch Deck
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-md rounded-2xl sm:rounded-3xl border-gray-100 shadow-2xl">
+                    <DialogContent className="max-w-md rounded-xl sm:rounded-xl border-gray-100 shadow-2xl">
                         <DialogHeader>
-                            <DialogTitle className="text-xl font-black tracking-tight text-gray-900 uppercase italic">
+                            <DialogTitle className="text-xl font-bold tracking-tight text-gray-900">
                                 Share Candidate Deck
                             </DialogTitle>
                             <DialogDescription className="text-xs font-medium text-gray-500 leading-relaxed">
@@ -216,31 +227,31 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
 
                         <Tabs defaultValue="link" className="mt-4">
                             <TabsList className="grid w-full grid-cols-2 bg-gray-50 p-1 rounded-xl h-10">
-                                <TabsTrigger value="link" className="rounded-lg text-[10px] font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                <TabsTrigger value="link" className="rounded-xl text-[10px] font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:shadow-sm">
                                     Direct Link
                                 </TabsTrigger>
-                                <TabsTrigger value="email" className="rounded-lg text-[10px] font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                <TabsTrigger value="email" className="rounded-xl text-[10px] font-bold uppercase tracking-wider data-[state=active]:bg-white data-[state=active]:shadow-sm">
                                     Send to Employer
                                 </TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="link" className="space-y-4 pt-4">
-                                <div className="p-4 bg-brand-50 border border-brand-100 rounded-2xl flex items-center justify-between gap-4">
+                                <div className="p-4 bg-brand-50 border border-brand-100 rounded-xl flex items-center justify-between gap-4">
                                     <div className="min-w-0 flex-1">
-                                        <p className="text-[10px] font-black text-brand-700 uppercase tracking-widest mb-1.5">Pitch Deck URL</p>
-                                        <p className="text-xs font-bold text-gray-600 truncate opacity-60 italic">
+                                        <p className="text-[10px] font-bold text-brand-700 uppercase tracking-widest mb-1.5">Pitch Deck URL</p>
+                                        <p className="text-xs font-bold text-gray-600 truncate opacity-60">
                                             {`${typeof window !== 'undefined' ? window.location.origin : ''}/pitch/${client.urn}`}
                                         </p>
                                     </div>
                                     <Button 
                                         size="sm"
                                         onClick={() => handleSharePitchDeck()}
-                                        className="bg-white hover:bg-brand-50 text-brand-600 border border-brand-100 rounded-xl h-8 px-4 text-[10px] font-black uppercase shadow-none"
+                                        className="bg-white hover:bg-brand-50 text-brand-600 border border-brand-100 rounded-xl h-8 px-4 text-[10px] font-bold uppercase shadow-none"
                                     >
                                         Copy Link
                                     </Button>
                                 </div>
-                                <p className="text-[10px] text-gray-400 font-medium text-center italic">
+                                <p className="text-[10px] text-gray-400 font-medium text-center">
                                      Employers will see a blind profile without personal contact info.
                                 </p>
                             </TabsContent>
@@ -248,7 +259,7 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
                             <TabsContent value="email" className="space-y-4 pt-4">
                                 <div className="space-y-3">
                                     <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Recipient Email</Label>
+                                        <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Recipient Email</Label>
                                         <Input 
                                             placeholder="recruiter@employer.com" 
                                             value={recipientEmail}
@@ -257,7 +268,7 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
                                         />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <Label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Recipient Name (Optional)</Label>
+                                        <Label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Recipient Name (Optional)</Label>
                                         <Input 
                                             placeholder="Hiring Manager" 
                                             value={recipientName}
@@ -267,7 +278,7 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
                                     </div>
                                 </div>
                                 <Button 
-                                    className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-xl h-11 text-xs font-black uppercase tracking-widest shadow-lg shadow-brand-500/20 disabled:opacity-70 transition-all font-bold"
+                                    className="w-full bg-brand-600 hover:bg-brand-700 text-white rounded-xl h-11 text-xs font-bold uppercase tracking-widest shadow-lg shadow-brand-500/20 disabled:opacity-70 transition-all font-bold"
                                     onClick={handleSendOutreach}
                                     disabled={isSendingEmail}
                                 >
@@ -282,7 +293,7 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
                 <Button
                     onClick={handleSendPortalInvite}
                     disabled={isSendingEmail}
-                    className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/20 transition-all font-bold disabled:opacity-70"
+                    className="h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/20 transition-all font-bold disabled:opacity-70"
                 >
                     {isSendingEmail ? (
                         <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
@@ -294,7 +305,7 @@ export function StrategicCommand({ client }: StrategicCommandProps) {
 
                 {/* <Button 
                     onClick={handleSharePortal} 
-                    className="h-9 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/20 transition-all font-bold"
+                    className="h-9 px-4 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-500/20 transition-all font-bold"
                 >
                     <Share2 className="w-3.5 h-3.5 mr-2" />
                     Share Report

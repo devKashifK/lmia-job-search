@@ -156,19 +156,19 @@ export function StrategicAdvisorInsight({ client }: StrategicAdvisorInsightProps
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     {/* Intelligence Info */}
                     <div className="flex flex-1 items-start gap-4">
-                        <div className="mt-1 shrink-0 w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                        <div className="mt-1 shrink-0 w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center shadow-lg shadow-brand-500/20">
                             <Sparkles className="w-4 h-4 text-white animate-pulse" />
                         </div>
                         <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-black text-brand-600 uppercase tracking-widest">Strategic Intelligence</span>
-                                <div className="h-1 w-1 bg-gray-200 rounded-full" />
+                                <span className="text-[10px] font-bold text-brand-600 uppercase tracking-widest">Strategic Intelligence</span>
+                                <div className="h-1 w-1 bg-gray-200 rounded-xl" />
                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Powered By JobMaze AI</span>
                             </div>
-                            <h3 className="text-base font-black text-gray-900 leading-tight tracking-tight">
+                            <h3 className="text-base font-bold text-gray-900 leading-tight tracking-tight">
                                 {getBestStrategyText(preCalculatedScores)}
                             </h3>
-                            <p className="text-[11px] text-gray-500 font-medium">
+                            <p className="text-[11px] text-gray-500 font-bold">
                                 Cross-referenced <span className="text-brand-600 font-bold">{Object.keys(preCalculatedScores).length} regulatory pathways</span> to architect this personalized immigration roadmap.
                             </p>
                         </div>
@@ -178,12 +178,12 @@ export function StrategicAdvisorInsight({ client }: StrategicAdvisorInsightProps
                     <div className="flex items-center gap-4 shrink-0 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 border-gray-50 pt-3 md:pt-0">
                         {/* Compliance Shield - Compact */}
                         <div className="flex flex-col items-center md:items-end">
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-md border border-emerald-100">
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 rounded-xl border border-emerald-100">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-emerald-600">
                                     <path d="M12 2L3 7V12C3 17.5228 7.02944 22 12 22C16.9706 22 21 17.5228 21 12V7L12 2Z" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                                     <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
-                                <span className="text-[9px] font-black text-emerald-700 uppercase tracking-tight">Data Verified</span>
+                                <span className="text-[9px] font-bold text-emerald-700 uppercase tracking-tight">Data Verified</span>
                             </div>
                             <span className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter mt-1">Legal Compliant</span>
                         </div>
@@ -194,7 +194,7 @@ export function StrategicAdvisorInsight({ client }: StrategicAdvisorInsightProps
                                 navigator.clipboard.writeText(`🇨🇦 JobMaze Priority Strategy:\n${text}`);
                                 toast({ title: "Intelligence Copied", description: "Strategic narrative ready for client delivery." });
                             }}
-                            className="bg-brand-600 hover:bg-brand-700 text-white rounded-xl px-6 h-10 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brand-500/20 transition-all active:scale-95"
+                            className="bg-brand-600 hover:bg-brand-700 text-white rounded-xl px-6 h-10 text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-brand-500/20 transition-all active:scale-95"
                         >
                             Deploy Strategy
                         </Button> */}

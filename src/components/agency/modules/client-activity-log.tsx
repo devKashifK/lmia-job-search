@@ -72,7 +72,7 @@ export function ClientActivityLog({ clientUrn }: ClientActivityLogProps) {
                         <Activity className="w-4 h-4 text-slate-600" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight">Activity Log</h3>
+                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-tight">Activity Log</h3>
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{logs.length} events recorded</p>
                     </div>
                 </div>
@@ -88,7 +88,7 @@ export function ClientActivityLog({ clientUrn }: ClientActivityLogProps) {
                         a.download = `activity-log-${clientUrn}.csv`;
                         a.click();
                     }}
-                    className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-all"
+                    className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-all"
                 >
                     <Download className="w-3 h-3" />
                     Export CSV
@@ -102,7 +102,7 @@ export function ClientActivityLog({ clientUrn }: ClientActivityLogProps) {
                         key={f.key}
                         onClick={() => setActiveFilter(f.key)}
                         className={cn(
-                            "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all border",
+                            "px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border",
                             activeFilter === f.key
                                 ? "bg-slate-900 text-white border-slate-900"
                                 : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
@@ -118,12 +118,12 @@ export function ClientActivityLog({ clientUrn }: ClientActivityLogProps) {
                 {isLoading ? (
                     <div className="text-center py-10 text-slate-400">
                         <Activity className="w-6 h-6 mx-auto mb-2 animate-pulse" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">Parsing Event Stream...</p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest">Parsing Event Stream...</p>
                     </div>
                 ) : filtered.length === 0 ? (
-                    <div className="text-center py-12 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                    <div className="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                         <Activity className="w-8 h-8 mx-auto mb-3 text-slate-300" />
-                        <p className="text-sm font-black text-slate-400 uppercase tracking-tight">No Activity Logged</p>
+                        <p className="text-sm font-bold text-slate-400 uppercase tracking-tight">No Activity Logged</p>
                         <p className="text-[11px] text-slate-400 mt-1">Actions on this candidate will appear here.</p>
                     </div>
                 ) : (
@@ -139,17 +139,17 @@ export function ClientActivityLog({ clientUrn }: ClientActivityLogProps) {
                                         <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0 z-10 border-[3px] border-white shadow-sm ring-1 ring-slate-100", cfg.color)}>
                                             <Icon className="w-4 h-4" />
                                         </div>
-                                        <div className="flex-1 bg-white border border-slate-100 rounded-2xl p-4 hover:border-brand-100 hover:shadow-sm transition-all group">
+                                        <div className="flex-1 bg-white border border-slate-100 rounded-xl p-4 hover:border-brand-100 hover:shadow-sm transition-all group">
                                             <div className="flex items-start justify-between gap-3">
                                                 <p className="text-[11px] font-bold text-slate-800 leading-tight flex-1">{log.description}</p>
                                                 <div className="text-right shrink-0">
-                                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter opacity-70 group-hover:opacity-100">
+                                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter opacity-70 group-hover:opacity-100">
                                                         {formatDistanceToNow(new Date(log.created_at), { addSuffix: false })}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2 mt-2">
-                                                <span className={cn("text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider", cfg.color)}>
+                                                <span className={cn("text-[8px] font-bold px-1.5 py-0.5 rounded-xl uppercase tracking-wider", cfg.color)}>
                                                     {cfg.label}
                                                 </span>
                                                 <span className="text-[9px] text-slate-300 font-bold">
